@@ -1,3 +1,6 @@
+import json
+import sys
+
 import pydicom
 from pydicom.dataset import Dataset
 
@@ -7,7 +10,7 @@ from pynetdicom.sop_class import StudyRootQueryRetrieveInformationModelMove
 
 
 #from pynetdicom.apps import movescu
-import sys
+
 
 known_ae_ipaddr= {"ANY_SCP":"127.0.0.1", "TDD_SCP":"127.0.0.1", "IMS_IHERO_TMS1":"10.211.55.8"}
 known_ae_port = {"ANY_SCP":10403, "TDD_SCP":10402, "IMS_IHERO_TMS1":10401}
@@ -100,10 +103,17 @@ def main(args=None):
     """Run the application."""
     local_store_ae_title="STORE_SCP"
     path = "rsp000001.dcm"
+    ae_config_file="ApplicationEntities.json"
     if args is not None  and len(args) > 2:
         local_store_ae_title = args[1]
         path = args[2]
-    
+    with open(ae_config_file,"r") as f:
+        ae_config_list=json.load(f)
+    for ae in ae_config_list:
+        known_ae_ipaddr[ae["AETitle"]]= ae["IPAddr"]
+        known_ae_port[ae["AETitle"]]=ae["Port"]
+
+
     cmove_inputs(path, local_store_ae_title)
 
 if __name__ == "__main__":
