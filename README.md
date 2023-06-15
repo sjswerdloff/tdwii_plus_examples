@@ -5,7 +5,7 @@ Application entity information now in a configuration file
 
 Text files in dcmdump format for various queries.
 dcmdump and dump2dcm are in dcmtk, typically available 
-on linus using:
+on linux using:
 ```console
 sudo apt install dcmtk
 ```
