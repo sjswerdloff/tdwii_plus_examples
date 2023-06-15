@@ -1,0 +1,28 @@
+
+# Dicom-File-Format
+
+# Dicom-Meta-Information-Header
+# Used TransferSyntax: Little Endian Explicit
+(0002,0000) UL 200                                      #   4, 1 FileMetaInformationGroupLength
+(0002,0001) OB 00\01                                    #   2, 1 FileMetaInformationVersion
+(0002,0002) UI [1.2.276.0.7230010.3.1.0.1]              #  26, 1 MediaStorageSOPClassUID
+(0002,0003) UI [1.2.276.0.7230010.3.1.4.8323329.444095.1685777837.480657] #  56, 1 MediaStorageSOPInstanceUID
+(0002,0010) UI =LittleEndianExplicit                    #  20, 1 TransferSyntaxUID
+(0002,0012) UI [1.2.276.0.7230010.3.0.3.6.6]            #  28, 1 ImplementationClassUID
+(0002,0013) SH [OFFIS_DCMTK_366]                        #  16, 1 ImplementationVersionName
+
+# Dicom-Data-Set
+# Used TransferSyntax: Little Endian Explicit
+(0008,0050) SH (no value available)                     #   0, 0 AccessionNumber
+(0010,0010) PN (no value available)                     #   0, 0 PatientName
+(0010,0020) LO (no value available)                     #   0, 0 PatientID
+(0040,0100) SQ (Sequence with explicit length #=1)      #  70, 1 ScheduledProcedureStepSequence
+  (fffe,e000) na (Item with explicit length #=5)          #  62, 1 Item
+    (0008,0060) CS [CT]                                     #   2, 1 Modality
+    (0040,0001) AE [CTSCANNER]                              #  10, 1 ScheduledStationAETitle
+    (0040,0002) DA [20230603-]                              #  10, 1 ScheduledProcedureStepStartDate
+    (0040,0003) TM (no value available)                     #   0, 0 ScheduledProcedureStepStartTime
+    (0040,0006) PN (no value available)                     #   0, 0 ScheduledPerformingPhysicianName
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+(0040,1001) SH (no value available)                     #   0, 0 RequestedProcedureID
