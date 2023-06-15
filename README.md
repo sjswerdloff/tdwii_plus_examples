@@ -36,4 +36,5 @@ The following will send the C-MOVE-RQ to the AE Title listed for a given input i
 python cmove_inputs.py PPVS_SCP ../../pynetdicom/pynetdicom/apps/findscu/rsp000001.dcm
 ```
 
+Note that the IP Address and Port information for a given Application Entity (e.g. PPVS_SCP as shown above) must be configured in the ApplicationEntities.json file.
 
