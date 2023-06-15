@@ -7,11 +7,11 @@
   {
     "AETitle": "IHERO_SCP",
     "IPAddr": "10.11.255.8",
-    "Port": 10402
+    "Port": 10403
   },
   {
     "AETitle": "PPVS_SCP",
     "IPAddr": "10.11.255.8",
-    "Port": 10403
+    "Port": 10402
   }
 ]

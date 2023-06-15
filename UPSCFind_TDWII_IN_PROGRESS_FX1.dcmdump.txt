@@ -1,0 +1,40 @@
+
+# Dicom-File-Format
+
+# Dicom-Meta-Information-Header
+# Used TransferSyntax: Little Endian Explicit
+(0002,0000) UL 200                                      #   4, 1 FileMetaInformationGroupLength
+(0002,0001) OB 00\01                                    #   2, 1 FileMetaInformationVersion
+(0002,0002) UI [1.2.276.0.7230010.3.1.0.1]              #  26, 1 MediaStorageSOPClassUID
+(0002,0003) UI [1.2.276.0.7230010.3.1.4.8323329.444095.1685777837.480657] #  56, 1 MediaStorageSOPInstanceUID
+(0002,0010) UI =LittleEndianExplicit                    #  20, 1 TransferSyntaxUID
+(0002,0012) UI [1.2.276.0.7230010.3.0.3.6.6]            #  28, 1 ImplementationClassUID
+(0002,0013) SH [OFFIS_DCMTK_366]                        #  16, 1 ImplementationVersionName
+
+# Dicom-Data-Set
+# Used TransferSyntax: Little Endian Explicit
+(0010,0010) PN (no value available)                     #   0, 0 PatientName
+(0010,0020) LO (no value available)                     #   0, 0 PatientID
+(0040,4018) SQ (Sequence with explicit length #=1)      #  42, 1 ScheduledWorkitemCodeSequence
+  (fffe,e000) na (Item with explicit length #=3)          #  34, 1 Item
+    (0008,0100) SH [121726]                                 #   6, 1 CodeValue
+    (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
+    (0008,0104) LO (no value available)                     #   0, 0 CodeMeaning
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+(0040,4021) SQ (Sequence with explicit length #=1)      #   8, 1 InputInformationSequence
+  (fffe,e000) na (Item with explicit length #=0)          #   0, 1 Item
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+(0040,4025) SQ (Sequence with explicit length #=1)      #  36, 1 ScheduledStationNameCodeSequence
+  (fffe,e000) na (Item with explicit length #=3)          #  28, 1 Item
+    (0008,0100) SH [FX1]                                    #   4, 1 CodeValue
+    (0008,0102) SH (no value available)                     #   0, 0 CodingSchemeDesignator
+    (0008,0104) LO (no value available)                     #   0, 0 CodeMeaning
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+(0074,1000) CS [IN PROGRESS]                              #  11, 1 ProcedureStepState
+(0074,1210) SQ (Sequence with explicit length #=1)      #   8, 1 ScheduledProcessingParametersSequence
+  (fffe,e000) na (Item with explicit length #=0)          #   0, 1 Item
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
