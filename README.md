@@ -24,7 +24,7 @@ then use findscu to query the TSM:
 in pynetdicom/apps
 
 ```console
-python findscu.py --ups -f UPSCFin_TDWII_SCHEDULED_FX1.dcm 10.211.55.8 10401
+python findscu.py --ups -f UPSCFind_TDWII_SCHEDULED_FX1.dcm 10.211.55.8 10401
 
 ```
 Assuming the TMS has a session scheduled for machine FX1, this should result in a response file
