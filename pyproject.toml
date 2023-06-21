@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "tdwii-plus-examples"
+version = "0.1.0"
+description = "Working sample code for implementing some tdw-ii transactions and some extensions such as UPSWatch and UPSWEvent based subscriptions for activities of interest in a treatment room"
+authors = ["Stuart Swerdloff <sjswerdloff@gmail.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+packages = [{include = "tdwii_plus_examples"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pydicom = "^2.4.0"
+pynetdicom = "^2.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

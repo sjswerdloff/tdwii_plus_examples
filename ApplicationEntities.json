@@ -13,5 +13,10 @@
     "AETitle": "PPVS_SCP",
     "IPAddr": "10.11.255.8",
     "Port": 10402
+  },
+  {
+    "AETitle": "TDWII_SCP",
+    "IPAddr": "10.11.255.8",
+    "Port": 10404
   }
 ]
