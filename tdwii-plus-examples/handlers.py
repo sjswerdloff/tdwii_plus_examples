@@ -1,4 +1,4 @@
-"""Event handlers for qrscp.py"""
+"""Event handlers for upsscp.py"""
 import os
 from io import BytesIO
 
