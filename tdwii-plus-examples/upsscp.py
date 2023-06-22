@@ -7,22 +7,38 @@ import sys
 from configparser import ConfigParser
 
 import pydicom.config
-from handlers import (handle_echo, handle_find, handle_get, handle_move,
-                      handle_naction, handle_nevent, handle_nget, handle_nset,
-                      handle_store)
-from pynetdicom import (AE, ALL_TRANSFER_SYNTAXES,
-                        AllStoragePresentationContexts,
-                        UnifiedProcedurePresentationContexts, _config,
-                        _handlers, evt)
+from handlers import (
+    handle_echo,
+    handle_find,
+    handle_get,
+    handle_move,
+    handle_naction,
+    handle_nevent,
+    handle_nget,
+    handle_nset,
+    handle_store,
+)
+from pynetdicom import (
+    AE,
+    ALL_TRANSFER_SYNTAXES,
+    AllStoragePresentationContexts,
+    UnifiedProcedurePresentationContexts,
+    _config,
+    _handlers,
+    evt,
+)
 from pynetdicom.apps.common import setup_logging
-from pynetdicom.sop_class import (ModalityWorklistInformationFind,
-                                  PatientRootQueryRetrieveInformationModelFind,
-                                  PatientRootQueryRetrieveInformationModelGet,
-                                  PatientRootQueryRetrieveInformationModelMove,
-                                  StudyRootQueryRetrieveInformationModelFind,
-                                  StudyRootQueryRetrieveInformationModelGet,
-                                  StudyRootQueryRetrieveInformationModelMove,
-                                  UnifiedProcedureStepPull, Verification)
+from pynetdicom.sop_class import (
+    ModalityWorklistInformationFind,
+    PatientRootQueryRetrieveInformationModelFind,
+    PatientRootQueryRetrieveInformationModelGet,
+    PatientRootQueryRetrieveInformationModelMove,
+    StudyRootQueryRetrieveInformationModelFind,
+    StudyRootQueryRetrieveInformationModelGet,
+    StudyRootQueryRetrieveInformationModelMove,
+    UnifiedProcedureStepPull,
+    Verification,
+)
 from pynetdicom.utils import set_ae
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

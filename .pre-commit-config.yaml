@@ -21,6 +21,7 @@ repos:
     hooks:
       - id: isort
         additional_dependencies: ["toml"]
+        args: ["--profile", "black"]
 #        files: ^./.*\.py$
   # - repo: https://github.com/ambv/black
   #   rev: 23.3.0

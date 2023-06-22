@@ -14,13 +14,16 @@ from typing import Optional, Tuple
 
 from pydicom import Dataset, dataset, dcmread
 from pydicom.errors import InvalidDicomError
-from pydicom.uid import (UID, ExplicitVRBigEndian, ExplicitVRLittleEndian,
-                         ImplicitVRLittleEndian)
+from pydicom.uid import (
+    UID,
+    ExplicitVRBigEndian,
+    ExplicitVRLittleEndian,
+    ImplicitVRLittleEndian,
+)
 from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 from pynetdicom._globals import DEFAULT_MAX_LENGTH
 from pynetdicom.apps.common import get_files, setup_logging
-from pynetdicom.sop_class import (UnifiedProcedureStepPush,
-                                  UnifiedProcedureStepWatch)
+from pynetdicom.sop_class import UnifiedProcedureStepPush, UnifiedProcedureStepWatch
 
 GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
 NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"

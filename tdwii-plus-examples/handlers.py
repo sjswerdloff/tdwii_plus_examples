@@ -5,8 +5,10 @@ from io import BytesIO
 from pydicom import Dataset, dcmread
 from pynetdicom.dimse_primitives import N_ACTION
 from pynetdicom.dsutils import encode
-from pynetdicom.sop_class import (UPSFilteredGlobalSubscriptionInstance,
-                                  UPSGlobalSubscriptionInstance)
+from pynetdicom.sop_class import (
+    UPSFilteredGlobalSubscriptionInstance,
+    UPSGlobalSubscriptionInstance,
+)
 from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

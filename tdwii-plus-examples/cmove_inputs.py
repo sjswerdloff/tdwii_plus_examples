@@ -4,8 +4,10 @@ import sys
 import pydicom
 from pydicom.dataset import Dataset
 from pynetdicom import AE, debug_logger
-from pynetdicom.sop_class import (PatientRootQueryRetrieveInformationModelMove,
-                                  StudyRootQueryRetrieveInformationModelMove)
+from pynetdicom.sop_class import (
+    PatientRootQueryRetrieveInformationModelMove,
+    StudyRootQueryRetrieveInformationModelMove,
+)
 
 # from pynetdicom.apps import movescu
 
