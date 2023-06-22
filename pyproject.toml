@@ -12,6 +12,59 @@ python = "^3.9"
 pydicom = "^2.4.0"
 pynetdicom = "^2.0.2"
 
+# ----- #
+# Tests #
+# ----- #
+pytest = { version = "*", optional = true }               # groups = ["all", "tests"]
+pytest-sugar = { version = "*", optional = true }         # groups = ["all", "tests"]
+# hypothesis = { version = "<6", optional = true }          # groups = ["all", "tests"]
+# astroid = { version = "*", optional = true }              # groups = ["all", "tests"]
+# psutil = { version = "*", optional = true }               # groups = ["all", "tests"]
+pylint = { version = "*", optional = true }               # groups = ["all", "tests"]
+pytest-rerunfailures = { version = "*", optional = true } # groups = ["all", "tests"]
+
+
+# ---------------- #
+# Development Only #
+# ---------------- #
+pre-commit = { version = "*", optional = true }      # groups = ["dev", "all"]
+black = { version = "^22.3.0", optional = true }     # groups = ["dev", "all"]
+mypy = { version = "*", optional = true }            # groups = ["dev", "all"]
+rope = { version = "*", optional = true }            # groups = ["dev", "all"]
+doc8 = { version = "*", optional = true }            # groups = ["dev", "all"]
+# readme-renderer = { version = "*", optional = true } # groups = ["dev", "all"]
+# tabulate = { version = "*", optional = true }        # groups = ["dev", "all", "doctests"]
+# pyoxidizer = { version = "*", optional = true }      # groups = ["dev", "all", "build"]
+
+[tool.poetry.extras]
+
+tests = [
+    "pylint",
+    "pytest",
+    "pytest-rerunfailures",
+    "pytest-sugar",
+]
+
+dev = [
+    "pre-commit",
+    "black",
+    "mypy",
+    "rope",
+    "doc8",
+]
+
+all = [
+    "pylint",
+    "pytest",
+    "pytest-rerunfailures",
+    "pytest-sugar",
+    "pre-commit",
+    "black",
+    "mypy",
+    "rope",
+    "doc8",
+]  
+]
 
 [build-system]
 requires = ["poetry-core"]
