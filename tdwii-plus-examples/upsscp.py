@@ -43,7 +43,7 @@ from pynetdicom.utils import set_ae
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# from pynetdicom.apps.qrscp import db
+# from pynetdicom.apps.upsscp import db
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True
@@ -103,11 +103,11 @@ def _setup_argparser():
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The qrscp application implements a Service Class Provider (SCP) "
+            "The upsscp application implements a Service Class Provider (SCP) "
             "for the Verification, Storage and Query/Retrieve (QR) Service "
             "Classes."
         ),
-        usage="qrscp [options]",
+        usage="upsscp [options]",
     )
 
     # General Options
@@ -233,11 +233,11 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"qrscp.py v{__version__}")
+        print(f"upsscp.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "qrscp")
-    APP_LOGGER.debug(f"qrscp.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "upsscp")
+    APP_LOGGER.debug(f"upsscp.py v{__version__}")
     APP_LOGGER.debug("")
 
     APP_LOGGER.debug("Using configuration from:")
