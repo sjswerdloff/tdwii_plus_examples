@@ -2,48 +2,31 @@
 """A Verification, Storage and Query/Retrieve SCP application."""
 
 import argparse
-from configparser import ConfigParser
 import os
 import sys
+from configparser import ConfigParser
 
 import pydicom.config
+from handlers import (handle_echo, handle_find, handle_get, handle_move,
+                      handle_naction, handle_nevent, handle_nget, handle_nset,
+                      handle_store)
+from pynetdicom import (AE, ALL_TRANSFER_SYNTAXES,
+                        AllStoragePresentationContexts,
+                        UnifiedProcedurePresentationContexts, _config,
+                        _handlers, evt)
+from pynetdicom.apps.common import setup_logging
+from pynetdicom.sop_class import (ModalityWorklistInformationFind,
+                                  PatientRootQueryRetrieveInformationModelFind,
+                                  PatientRootQueryRetrieveInformationModelGet,
+                                  PatientRootQueryRetrieveInformationModelMove,
+                                  StudyRootQueryRetrieveInformationModelFind,
+                                  StudyRootQueryRetrieveInformationModelGet,
+                                  StudyRootQueryRetrieveInformationModelMove,
+                                  UnifiedProcedureStepPull, Verification)
+from pynetdicom.utils import set_ae
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from pynetdicom import (
-    AE,
-    _config,
-    evt,
-    AllStoragePresentationContexts,
-    ALL_TRANSFER_SYNTAXES,
-    UnifiedProcedurePresentationContexts,
-)
-from pynetdicom import _config, _handlers
-from pynetdicom.apps.common import setup_logging
-from pynetdicom.sop_class import (
-    Verification,
-    ModalityWorklistInformationFind,
-    PatientRootQueryRetrieveInformationModelFind,
-    PatientRootQueryRetrieveInformationModelMove,
-    PatientRootQueryRetrieveInformationModelGet,
-    StudyRootQueryRetrieveInformationModelFind,
-    StudyRootQueryRetrieveInformationModelMove,
-    StudyRootQueryRetrieveInformationModelGet,
-    UnifiedProcedureStepPull,
-)
-from pynetdicom.utils import set_ae
-
-from handlers import (
-    handle_echo,
-    handle_find,
-    handle_get,
-    handle_move,
-    handle_store,
-    handle_nget,
-    handle_naction,
-    handle_nevent,
-    handle_nset,
-)
 # from pynetdicom.apps.qrscp import db
 
 # Use `None` for empty values
@@ -226,7 +209,6 @@ def _setup_argparser():
     return parser.parse_args()
 
 
-
 def main(args=None):
     """Run the application."""
     if args is not None:
@@ -283,7 +265,6 @@ def main(args=None):
     instance_dir = os.path.join(current_dir, app_config["instance_location"])
     db_path = os.path.join(current_dir, app_config["database_location"])
 
-    
     # Clean up the database and storage directory
     if args.clean:
         response = input(
@@ -331,7 +312,6 @@ def main(args=None):
             cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False
         )
 
-    
     # Set our handler bindings
     handlers = [
         (evt.EVT_C_ECHO, handle_echo, [args, APP_LOGGER]),
@@ -343,7 +323,6 @@ def main(args=None):
         (evt.EVT_N_ACTION, handle_naction, [db_path, args, APP_LOGGER]),
         (evt.EVT_N_EVENT_REPORT, handle_nevent, [db_path, args, APP_LOGGER]),
         (evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]),
-
     ]
 
     # Listen for incoming association requests

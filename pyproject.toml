@@ -5,12 +5,15 @@ description = "Working sample code for implementing some tdw-ii transactions and
 authors = ["Stuart Swerdloff <sjswerdloff@gmail.com>"]
 license = "Apache 2.0"
 readme = "README.md"
-packages = [{include = "tdwii_plus_examples"}]
+packages = [{include = "tdwii-plus-examples"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 pydicom = "^2.4.0"
 pynetdicom = "^2.0.2"
+
+tomlkit = { version = "*", optional = true }    # groups = ["all", "dev"]
+toml = { version = "*", optional = true }       # groups = ["all", "dev"]
 
 # ----- #
 # Tests #
@@ -43,6 +46,7 @@ tests = [
     "pytest",
     "pytest-rerunfailures",
     "pytest-sugar",
+    "toml",
 ]
 
 dev = [
@@ -51,6 +55,7 @@ dev = [
     "mypy",
     "rope",
     "doc8",
+    "toml",
 ]
 
 all = [
@@ -63,7 +68,9 @@ all = [
     "mypy",
     "rope",
     "doc8",
-]  
+    "toml",
+    "tomlkit"
+]
 
 
 [build-system]
