@@ -1,19 +1,20 @@
 """Event handlers for qrscp.py"""
-from io import BytesIO
 import os
+from io import BytesIO
 
-from pydicom import dcmread
-from pydicom import Dataset
-from pynetdicom.dsutils import encode
-from pynetdicom.sop_class import UPSFilteredGlobalSubscriptionInstance, UPSGlobalSubscriptionInstance
+from pydicom import Dataset, dcmread
 from pynetdicom.dimse_primitives import N_ACTION
+from pynetdicom.dsutils import encode
+from pynetdicom.sop_class import (
+    UPSFilteredGlobalSubscriptionInstance,
+    UPSGlobalSubscriptionInstance,
+)
+from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from recursive_print_ds import print_ds
-
-GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5";
-NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1";
+GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
+NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
 
 
 def handle_echo(event, cli_config, logger):
@@ -467,7 +468,7 @@ def handle_naction(event, db_path, cli_config, logger):
     # logger.info(f"Event = {event}")
     # logger.info(f"Action Information:")
     # logger.info(f"{event.action_information}")
-    
+
     naction_primitive = event.request
     # pynetdicom.dimse_primitives.N_ACTION
     """"
@@ -497,13 +498,14 @@ def handle_naction(event, db_path, cli_config, logger):
     """
     if naction_primitive.RequestedSOPInstanceUID == UPSGlobalSubscriptionInstance:
         logger.info("Request was for Subscribing to (unfiltered) Global UPS")
-    elif naction_primitive.RequestedSOPInstanceUID == UPSFilteredGlobalSubscriptionInstance:
+    elif (
+        naction_primitive.RequestedSOPInstanceUID
+        == UPSFilteredGlobalSubscriptionInstance
+    ):
         logger.info("Request was for Subscribing to Filtered Global UPS")
 
     logger.info(f"Requested SOP Class UID: {naction_primitive.RequestedSOPClassUID}")
     logger.info(f"Request dump: {naction_primitive}")
-    
-
 
     response = Dataset()
     # rsp = N_ACTION()
@@ -516,15 +518,14 @@ def handle_naction(event, db_path, cli_config, logger):
     response.AffectedSOPInstanceUID = naction_primitive.RequestedSOPInstanceUID
     response.RequestedSOPClassUID = naction_primitive.RequestedSOPClassUID
     response.RequestedSOPInstanceUID = naction_primitive.RequestedSOPInstanceUID
-    response.action_type= event.action_type
+    response.action_type = event.action_type
     response.action_information = None
     response.action_reply = None
     response.status = 0x0000
     response.is_little_endian = True
     response.is_implicit_VR = True
     response.is_decompressed = False
-    
-    
+
     # bytestream = encode(
     #             rsp,
     #             True,

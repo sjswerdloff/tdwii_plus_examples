@@ -6,37 +6,40 @@ to subscribe for UPS Events
 """
 
 import argparse
-from configparser import ConfigParser
-
 import os
-from pathlib import Path
 import sys
-from typing import Tuple, Optional
+from configparser import ConfigParser
+from pathlib import Path
+from typing import Optional, Tuple
 
-from pydicom import dcmread, Dataset, dataset
+from pydicom import Dataset, dataset, dcmread
 from pydicom.errors import InvalidDicomError
 from pydicom.uid import (
+    UID,
+    ExplicitVRBigEndian,
     ExplicitVRLittleEndian,
     ImplicitVRLittleEndian,
-    ExplicitVRBigEndian,
-    UID,
-
 )
-
-from pynetdicom import AE, UnifiedProcedurePresentationContexts, Association
-from pynetdicom.apps.common import setup_logging, get_files
+from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 from pynetdicom._globals import DEFAULT_MAX_LENGTH
+from pynetdicom.apps.common import get_files, setup_logging
 from pynetdicom.sop_class import UnifiedProcedureStepPush, UnifiedProcedureStepWatch
 
-GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5";
-NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1";
- 
+GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
+NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
+
 __version__ = "0.1.0"
 
 
-def send_action(assoc: Association, class_uid: UID, instance_uid: UID, action_type=3, action_info=None)-> Tuple[Dataset, Optional[Dataset]]:
+def send_action(
+    assoc: Association,
+    class_uid: UID,
+    instance_uid: UID,
+    action_type=3,
+    action_info=None,
+) -> Tuple[Dataset, Optional[Dataset]]:
     """Send an N-ACTION request via `assoc`
-    
+
     Parameters
     ----------
     assoc : association.Association
@@ -52,7 +55,10 @@ def send_action(assoc: Association, class_uid: UID, instance_uid: UID, action_ty
     """
     return assoc.send_n_action(action_info, action_type, class_uid, instance_uid)
 
-def send_global_watch_registration(args: argparse.Namespace, assoc: Association,action_info:Dataset=None):
+
+def send_global_watch_registration(
+    args: argparse.Namespace, assoc: Association, action_info: Dataset = None
+):
     """_summary_
 
     Args:
@@ -72,8 +78,15 @@ def send_global_watch_registration(args: argparse.Namespace, assoc: Association,
         ds.ReceivingAE = args.receiver_aet
         ds.RequestedSOPInstanceUID = GLOBAL_SUBSCRIPTION_UID
         ds.RequestedSOPClassUID = UnifiedProcedureStepPush
-        #ds.RequestedSOPClassUID = UnifiedProcedureStepWatch
-    return send_action(assoc=assoc,class_uid=ds.RequestedSOPClassUID,instance_uid=ds.RequestedSOPInstanceUID,action_type=3,action_info=ds)
+        # ds.RequestedSOPClassUID = UnifiedProcedureStepWatch
+    return send_action(
+        assoc=assoc,
+        class_uid=ds.RequestedSOPClassUID,
+        instance_uid=ds.RequestedSOPInstanceUID,
+        action_type=3,
+        action_info=ds,
+    )
+
 
 def _setup_argparser():
     """Setup the command line arguments"""
@@ -92,7 +105,6 @@ def _setup_argparser():
         "addr", help="TCP/IP address or hostname of DICOM peer", type=str
     )
     req_opts.add_argument("port", help="TCP/IP port number of peer", type=int)
-    
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
@@ -143,7 +155,6 @@ def _setup_argparser():
         help="use configuration file f",
         default=fpath,
     )
-
 
     # Network Options
     net_opts = parser.add_argument_group("Network Options")
@@ -231,7 +242,6 @@ def _setup_argparser():
 
     # Misc Options
     misc_opts = parser.add_argument_group("Miscellaneous Options")
-    
 
     return parser.parse_args()
 
@@ -306,7 +316,6 @@ def main(args=None):
     ae.dimse_timeout = args.dimse_timeout
     ae.network_timeout = args.network_timeout
 
-    
     # Propose the default presentation contexts
     if args.request_little:
         transfer_syntax = [ExplicitVRLittleEndian]
@@ -323,12 +332,15 @@ def main(args=None):
 
     # Request association with remote
     assoc = ae.associate(
-        args.addr, args.port, contexts= UnifiedProcedurePresentationContexts, ae_title=args.called_aet, max_pdu=args.max_pdu
+        args.addr,
+        args.port,
+        contexts=UnifiedProcedurePresentationContexts,
+        ae_title=args.called_aet,
+        max_pdu=args.max_pdu,
     )
     if assoc.is_established:
-        
         try:
-            status, response = send_global_watch_registration(args,assoc=assoc)
+            status, response = send_global_watch_registration(args, assoc=assoc)
             print(f"Status: {status}  response {response}")
         except InvalidDicomError:
             APP_LOGGER.error(f"Bad DICOM: ")

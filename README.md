@@ -4,7 +4,7 @@ Working python sample code for performing various transactions within the IHE-RO
 Application entity information now in a configuration file
 
 Text files in dcmdump format for various queries.
-dcmdump and dump2dcm are in dcmtk, typically available 
+dcmdump and dump2dcm are in dcmtk, typically available
 on linux using:
 ```console
 sudo apt install dcmtk
@@ -12,7 +12,7 @@ sudo apt install dcmtk
 or
 on MacOS using:
 ```console
-brew install dcmtk 
+brew install dcmtk
 ```
 To generate .dcm files needed by ups enabled findscu
 ```console
@@ -37,4 +37,3 @@ python cmove_inputs.py PPVS_SCP ../../pynetdicom/pynetdicom/apps/findscu/rsp0000
 ```
 
 Note that the IP Address and Port information for a given Application Entity (e.g. PPVS_SCP as shown above) must be configured in the ApplicationEntities.json file.
-
