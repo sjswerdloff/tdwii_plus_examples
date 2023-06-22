@@ -27,3 +27,8 @@ repos:
     rev: 23.3.0
     hooks:
       - id: black
+  - repo: https://github.com/floatingpurr/sync_with_poetry
+    rev: 1.1.0
+    hooks:
+      - id: sync_with_poetry
+        args: [] # optional args
