@@ -23,10 +23,15 @@ from pydicom.uid import (
 from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 from pynetdicom._globals import DEFAULT_MAX_LENGTH
 from pynetdicom.apps.common import get_files, setup_logging
-from pynetdicom.sop_class import UnifiedProcedureStepPush, UnifiedProcedureStepWatch
+from pynetdicom.sop_class import (
+    UnifiedProcedureStepPush,
+    UnifiedProcedureStepWatch,
+    UPSFilteredGlobalSubscriptionInstance,
+    UPSGlobalSubscriptionInstance,
+)
 
-GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
-NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
+# GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
+# NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
 
 __version__ = "0.1.0"
 
@@ -76,7 +81,7 @@ def send_global_watch_registration(
         ds.DeletionLock = "FALSE"
         ds.RequestingAE = args.calling_aet
         ds.ReceivingAE = args.receiver_aet
-        ds.RequestedSOPInstanceUID = GLOBAL_SUBSCRIPTION_UID
+        ds.RequestedSOPInstanceUID = UPSGlobalSubscriptionInstance
         ds.RequestedSOPClassUID = UnifiedProcedureStepPush
         # ds.RequestedSOPClassUID = UnifiedProcedureStepWatch
     return send_action(
