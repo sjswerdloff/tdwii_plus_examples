@@ -32,10 +32,84 @@ def _remove_ups_instance(ds: Dataset):
         del _ups_instances[sopInstanceUID]
 
 
+def _ups_is_match_for_query(query: Dataset, ups: Dataset) -> bool:
+    """Determine if a given UPS is a match for the query
+    This would be much better done by having rows in a database and using a SQL query
+    instead of iterating through each UPS
+    But this is a reasonable approach for a simple test bed
+
+    Args:
+        query (Dataset): The UPS C-FIND-RQ
+        ups (Dataset): The actual UPS (SCHEDULED or otherwise )
+
+    Returns:
+        bool: whether the UPS matched the query
+    """
+    if not machine_name_matches(query, ups):
+        return False
+    if not procedure_step_state_matches(query, ups):
+        return False
+    # TODO: add more checks.
+    # DateTime Range is common.
+    # So is ScheduledWorkitemCodeSequence[0].CodeValue e.g. 121726 in combination with CodingSchemeDesignator
+    # (i.e. is this "RT Treatment With Internal Verification")
+    """
+        (0040,4018) SQ (Sequence with explicit length #=1)      #  82, 1 ScheduledWorkitemCodeSequence
+        (fffe,e000) na (Item with explicit length #=3)          #  74, 1 Item
+            (0008,0100) SH [121726]                                 #   6, 1 CodeValue
+            (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
+            (0008,0104) LO [RT Treatment with Internal Verification] #  40, 1 CodeMeaning
+        (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+    """
+    return True
+
+
+def procedure_step_state_matches(query, ups):
+    is_match = True  # until it's false?
+    requested_step_status = get_procedure_step_state_from_ups(query)
+    ups_step_status = get_procedure_step_state_from_ups(ups)
+    if requested_step_status is not None and len(requested_step_status) > 0:
+        if requested_step_status != ups_step_status:
+            is_match = False
+    return is_match
+
+
+def machine_name_matches(query, ups):
+    requested_machine_name = get_machine_name_from_ups(query)
+    scheduled_machine_name = get_machine_name_from_ups(ups)
+    if requested_machine_name is not None and len(requested_machine_name) > 0:
+        if scheduled_machine_name != requested_machine_name:
+            return False
+    return True
+
+
+def get_machine_name_from_ups(query):
+    seq = query.ScheduledStationNameCodeSequence
+    if seq is not None:
+        for item_index in range(len(seq)):
+            machine_name = seq[item_index].CodeValue
+    return machine_name
+
+
+def get_procedure_step_state_from_ups(query):
+    step_status = query.ProcedureStepState
+    return step_status
+
+
 def _search_ups(query_as_ds: Dataset):
     # TODO:  actually try to match instead of sending everything back as a match
-    for value in _ups_instances.values():
-        yield value
+    for ups in _ups_instances.values():
+        if _ups_is_match_for_query(query_as_ds, ups):
+            yield ups
+
+
+def _number_of_matching_ups(query_as_ds: Dataset):
+    number_of_matches = 0
+    for ups in _ups_instances.values():
+        if _ups_is_match_for_query(query_as_ds, ups):
+            number_of_matches += 1
+    return number_of_matches
 
 
 def handle_echo(event, cli_config, logger):
@@ -90,26 +164,13 @@ def handle_find(event, instance_dir, cli_config, logger):
 
     model = event.request.AffectedSOPClassUID
     db_path = None
-    ups_instance_list = []
-    logger.info(f"# UPS Instances currently loaded = {len(_ups_instances)}")
-    if len(_ups_instances) == 0:
-        p = Path(instance_dir)
-        list_of_dcm_ups = [x for x in p.glob("UPS_*.dcm")]
-
-        try:
-            for filename in list_of_dcm_ups:
-                ups = dcmread(filename, force=True)
-                ups_instance_list.append(ups)
-                logger.info(f"Loaded UPS from {filename}")
-        except:
-            logger.warn(f"Unable to load UPS from {filename}")
-
-    for ups in ups_instance_list:
-        _add_ups_instance(ups)
-    logger.info(f"# UPS Instances loaded from {instance_dir} = {len(_ups_instances)}")
+    _reload_ups_instances(instance_dir, logger)
 
     if model.keyword in ("UnifiedProcedureStepPull",):
-        matches = _search_ups(event.identifier)
+        query = (
+            event.identifier
+        )  # the identifier is not available through event multiple times.  so get it copied to a local variable
+        matches = _search_ups(query)
         for response in matches:
             yield 0xFF00, response
         yield 0x0000, None
@@ -152,6 +213,29 @@ def handle_find(event, instance_dir, cli_config, logger):
                 yield 0xC322, None
 
             yield 0xFF00, response
+
+
+def _reload_ups_instances(instance_dir, logger):
+    # TODO: Find a more elegant way to handle these UPS instances
+    #       and maybe allow reload if updated
+    #       right now, it's just loading the first time through, and done.
+    ups_instance_list = []
+    logger.info(f"# UPS Instances currently loaded = {len(_ups_instances)}")
+    if len(_ups_instances) == 0:
+        p = Path(instance_dir)
+        list_of_dcm_ups = [x for x in p.glob("UPS_*.dcm")]
+
+        try:
+            for filename in list_of_dcm_ups:
+                ups = dcmread(filename, force=True)
+                ups_instance_list.append(ups)
+                logger.info(f"Loaded UPS from {filename}")
+        except:
+            logger.warn(f"Unable to load UPS from {filename}")
+
+    for ups in ups_instance_list:
+        _add_ups_instance(ups)
+    logger.info(f"# UPS Instances loaded from {instance_dir} = {len(_ups_instances)}")
 
 
 def handle_get(event, db_path, cli_config, logger):
