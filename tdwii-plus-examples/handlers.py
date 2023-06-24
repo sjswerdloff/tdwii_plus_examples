@@ -1,6 +1,7 @@
 """Event handlers for upsscp.py"""
 import os
 from io import BytesIO
+from pathlib import Path
 
 from pydicom import Dataset, dcmread
 from pynetdicom.dimse_primitives import N_ACTION
@@ -13,8 +14,28 @@ from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
-NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
+# GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
+# NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
+
+_ups_instances = dict()
+
+
+def _add_ups_instance(ds: Dataset):
+    sopInstanceUID = str(ds.SOPInstanceUID)
+    if sopInstanceUID not in _ups_instances.keys():
+        _ups_instances[sopInstanceUID] = ds
+
+
+def _remove_ups_instance(ds: Dataset):
+    sopInstanceUID = str(ds.SOPInstanceUID)
+    if sopInstanceUID in _ups_instances.keys():
+        del _ups_instances[sopInstanceUID]
+
+
+def _search_ups(query_as_ds: Dataset):
+    # TODO:  actually try to match instead of sending everything back as a match
+    for value in _ups_instances.values():
+        yield value
 
 
 def handle_echo(event, cli_config, logger):
@@ -42,7 +63,7 @@ def handle_echo(event, cli_config, logger):
     return 0x0000
 
 
-def handle_find(event, db_path, cli_config, logger):
+def handle_find(event, instance_dir, cli_config, logger):
     """Handler for evt.EVT_C_FIND.
 
     Parameters
@@ -68,11 +89,29 @@ def handle_find(event, db_path, cli_config, logger):
     logger.info(f"Received C-FIND request from {addr}:{port} at {timestamp}")
 
     model = event.request.AffectedSOPClassUID
+    db_path = None
+    ups_instance_list = []
+    logger.info(f"# UPS Instances currently loaded = {len(_ups_instances)}")
+    if len(_ups_instances) == 0:
+        p = Path(instance_dir)
+        list_of_dcm_ups = [x for x in p.glob("UPS_*.dcm")]
 
-    if model.keyword in (
-        "UnifiedProcedureStepPull",
-        "ModalityWorklistInformationModelFind",
-    ):
+        try:
+            for filename in list_of_dcm_ups:
+                ups = dcmread(filename, force=True)
+                ups_instance_list.append(ups)
+                logger.info(f"Loaded UPS from {filename}")
+        except:
+            logger.warn(f"Unable to load UPS from {filename}")
+
+    for ups in ups_instance_list:
+        _add_ups_instance(ups)
+    logger.info(f"# UPS Instances loaded from {instance_dir} = {len(_ups_instances)}")
+
+    if model.keyword in ("UnifiedProcedureStepPull",):
+        matches = _search_ups(event.identifier)
+        for response in matches:
+            yield 0xFF00, response
         yield 0x0000, None
     else:
         engine = create_engine(db_path)

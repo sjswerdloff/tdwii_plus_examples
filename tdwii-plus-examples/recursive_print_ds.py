@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+import sys
+
 from pydicom import dataset, dcmread
 from pydicom.dataelem import DataElement
 from pydicom.tag import Tag
@@ -26,3 +30,14 @@ def _print_seq_only(ds, indent_level=0):
         print(indent_string, seq.name, seq.tag)
         for seq_item in seq.value:
             _print_seq_only(seq_item, indent_level + 1)
+
+
+def main(args):
+    if args is None:
+        args = sys.argv
+    ds = dcmread(args[1], force=True)
+    print_ds(ds)
+
+
+if __name__ == "__main__":
+    main(sys.argv)

@@ -295,8 +295,8 @@ def main(args=None):
         # else:
         #     sys.exit(1)
 
-    # # Try to create the instance storage directory
-    # os.makedirs(instance_dir, exist_ok=True)
+    # Try to create the instance storage directory
+    os.makedirs(instance_dir, exist_ok=True)
 
     ae = AE(app_config["ae_title"])
     ae.maximum_pdu_size = app_config.getint("max_pdu")
@@ -328,10 +328,11 @@ def main(args=None):
             cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False
         )
 
+    APP_LOGGER.info(f"Configured for instance_dir = {instance_dir}")
     # Set our handler bindings
     handlers = [
         (evt.EVT_C_ECHO, handle_echo, [args, APP_LOGGER]),
-        (evt.EVT_C_FIND, handle_find, [db_path, args, APP_LOGGER]),
+        (evt.EVT_C_FIND, handle_find, [instance_dir, args, APP_LOGGER]),
         # (evt.EVT_C_GET, handle_get, [db_path, args, APP_LOGGER]),
         # (evt.EVT_C_MOVE, handle_move, [dests, db_path, args, APP_LOGGER]),
         # (evt.EVT_C_STORE, handle_store, [instance_dir, db_path, args, APP_LOGGER]),
