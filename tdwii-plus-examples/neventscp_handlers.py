@@ -1,4 +1,4 @@
-"""Event handlers for upsscp.py"""
+"""Event handlers for neventscp.py"""
 import os
 from io import BytesIO
 from pathlib import Path
@@ -7,15 +7,14 @@ from pydicom import Dataset, dcmread
 from pynetdicom.dimse_primitives import N_ACTION
 from pynetdicom.dsutils import encode
 from pynetdicom.sop_class import (
+    UnifiedProcedureStepPull,
+    UnifiedProcedureStepPush,
     UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
 from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-# GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
-# NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
 
 _ups_instances = dict()
 
@@ -758,15 +757,15 @@ def handle_naction(event, db_path, cli_config, logger):
     return 0x0000, response
 
 
-def handle_nevent(event, db_path, cli_config, logger):
-    """Handler for evt.EVT_C_GET.
+def handle_nevent(event, event_response_cb, cli_config, logger):
+    """Handler for evt.EVT_N_EVENT.
 
     Parameters
     ----------
     event : pynetdicom.events.Event
-        The C-GET request :class:`~pynetdicom.events.Event`.
-    db_path : str
-        The database path to use with create_engine().
+        The N-EVENT request :class:`~pynetdicom.events.Event`.
+    event_response_cb : function
+        The function to call when receiving an Event (that is a UPS Event).
     cli_config : dict
         A :class:`dict` containing configuration settings passed via CLI.
     logger : logging.Logger
@@ -780,52 +779,81 @@ def handle_nevent(event, db_path, cli_config, logger):
         The C-GET response's *Status* and if the *Status* is pending then
         the dataset to be sent, otherwise ``None``.
     """
+
+    nevent_primitive = event.request
+    r"""Represents a N-EVENT-REPORT primitive.
+
+    +------------------------------------------+---------+----------+
+    | Parameter                                | Req/ind | Rsp/conf |
+    +==========================================+=========+==========+
+    | Message ID                               | M       | \-       |
+    +------------------------------------------+---------+----------+
+    | Message ID Being Responded To            | \-      | M        |
+    +------------------------------------------+---------+----------+
+    | Affected SOP Class UID                   | M       | U(=)     |
+    +------------------------------------------+---------+----------+
+    | Affected SOP Instance UID                | M       | U(=)     |
+    +------------------------------------------+---------+----------+
+    | Event Type ID                            | M       | C(=)     |
+    +------------------------------------------+---------+----------+
+    | Event Information                        | U       | \-       |
+    +------------------------------------------+---------+----------+
+    | Event Reply                              | \-      | C        |
+    +------------------------------------------+---------+----------+
+    | Status                                   | \-      | M        |
+    +------------------------------------------+---------+----------+
+
+    | (=) - The value of the parameter is equal to the value of the parameter
+      in the column to the left
+    | C - The parameter is conditional.
+    | M - Mandatory
+    | MF - Mandatory with a fixed value
+    | U - The use of this parameter is a DIMSE service user option
+    | UF - User option with a fixed value
+
+    Attributes
+    ----------
+    MessageID : int
+        Identifies the operation and is used to distinguish this
+        operation from other notifications or operations that may be in
+        progress. No two identical values for the Message ID shall be used for
+        outstanding operations.
+    MessageIDBeingRespondedTo : int
+        The Message ID of the operation request/indication to which this
+        response/confirmation applies.
+    AffectedSOPClassUID : pydicom.uid.UID, bytes or str
+        For the request/indication this specifies the SOP Class for
+        storage. If included in the response/confirmation, it shall be equal
+        to the value in the request/indication
+    Status : int
+        The error or success notification of the operation.
+    """
     requestor = event.assoc.requestor
     timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
     addr, port = requestor.address, requestor.port
-    logger.info(f"Received C-GET request from {addr}:{port} at {timestamp}")
+    logger.info(f"Received N-EVENT request from {addr}:{port} at {timestamp}")
 
     model = event.request.AffectedSOPClassUID
+    nevent_type_id = nevent_primitive.EventTypeID
+    nevent_information = dcmread(nevent_primitive.EventInformation, force=True)
+    nevent_rsp_primitive = nevent_primitive
+    nevent_rsp_primitive.Status = 0x0000
 
-    engine = create_engine(db_path)
-    with engine.connect() as conn:
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        # Search database using Identifier as the query
-        try:
-            matches = search(model, event.identifier, session)
-        except InvalidIdentifier as exc:
-            session.rollback()
-            logger.error("Invalid C-GET Identifier received")
-            logger.error(str(exc))
-            yield 0xA900, None
-            return
-        except Exception as exc:
-            session.rollback()
-            logger.error("Exception occurred while querying database")
-            logger.exception(exc)
-            yield 0xC420, None
-            return
-        finally:
-            session.close()
+    logger.info(f"Event Information: {nevent_information}")
 
-    # Yield number of sub-operations
-    yield len(matches)
+    if model.keyword in ["UnifiedProcedureStepPush"]:
+        event_response_cb(
+            type_id=nevent_type_id, information_ds=nevent_information, logger=logger
+        )
+    else:
+        logger.warning(
+            f"Received model.keyword = {model.keyword} with AffectedSOPClassUID = {model}"
+        )
+        logger.warning(f"Not a UPS Event")
 
-    # Yield results
-    for match in matches:
-        if event.is_cancelled:
-            yield 0xFE00, None
-            return
-
-        try:
-            ds = dcmread(match.filename)
-        except Exception as exc:
-            logger.error(f"Error reading file: {match.filename}")
-            logger.exception(exc)
-            yield 0xC421, None
-
-        yield 0xFF00, ds
+    logger.info(f"Finished Processing N-EVENT-REPORT-RQ")
+    yield 0  # Number of suboperations remaining
+    yield 0  # Status.  If a rsp dataset of None is provided, the underlying handler and dimse primitive in pynetdicom raises an error
 
 
 def handle_nset(event, db_path, cli_config, logger):

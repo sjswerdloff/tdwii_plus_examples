@@ -67,7 +67,7 @@ def cmove_specific_input(
 
     ip_addr = get_ip_addr_for_ae_title(retrieve_ae_title)
     port = get_port_for_ae_title(retrieve_ae_title)
-    # Associate with peer AE at IP 127.0.0.1 and port 11112
+    # Associate with peer AE at to issue C-MOVE-RQ, e.g. qrscp with AE Title QRSCP, or MOSAIQ (tm) at IMS_IHERO_TMS1
     assoc = ae.associate(ip_addr, port)
 
     if assoc.is_established:
@@ -87,14 +87,14 @@ def cmove_specific_input(
         print("Association rejected, aborted or never connected")
 
 
-def cmove_inputs(path, local_store_ae_title):
+def cmove_inputs(ds, local_store_ae_title):
     """Given a particular UPS C-FIND-RSP, issue a C-MOVE-RQ for the inputs
 
     Args:
-        path (str | Path): path to a DICOM binary file containing a UPS-CFIND-RSP
+        ds: the UPS-CFIND-RSP
         local_store_ae_title (str): the destination for the C-MOVE to issue it's C-STORE where you want the RT (Ion) Plan and RTBDI to go
     """
-    ds = pydicom.dcmread(path, force=True)
+
     iis = ds.InputInformationSequence
     patient_id = ds.PatientID
     for iis_index in range(len(iis)):
@@ -129,8 +129,8 @@ def main(args=None):
     for ae in ae_config_list:
         known_ae_ipaddr[ae["AETitle"]] = ae["IPAddr"]
         known_ae_port[ae["AETitle"]] = ae["Port"]
-
-    cmove_inputs(path, local_store_ae_title)
+    ds = pydicom.dcmread(path, force=True)
+    cmove_inputs(ds, local_store_ae_title)
 
 
 if __name__ == "__main__":
