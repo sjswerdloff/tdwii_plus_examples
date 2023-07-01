@@ -45,29 +45,34 @@ python cmove_inputs.py PPVS_SCP ../../pynetdicom/pynetdicom/apps/findscu/rsp0000
 
 Note that the IP Address and Port information for a given Application Entity (e.g. PPVS_SCP as shown above) must be configured in the ApplicationEntities.json file.
 
-## A TMS Simulator (of very limited capability) is provided in upsscp.py:
+## A sample N-CREATE SCU that will read in a UPS Push SOP and transmit that to a UPS SCP (e.g. TMS Simulator)
+A previous response to findscu can be used for simulation purposes but the Procedure Step State must be SCHEDULED
+```console
+python ncreatescu.py addr port path
+```
+
+## A TMS Simulator (of limited capability) is provided in upsscp.py:
 in tdw-plus-examples/
 ```console
 python upsscp.py --debug
 
 ```
-The default configuration will specify a ups_instances directory that upsscp will read from to find responses it will provide to queries that match them.
+The default configuration will specify a ups_instances directory that upsscp will use to store UPS Push SOP instance it received from the ncreatescu and it will provide those in response to queries that match them.
 
 The default configuration listens on port 11114
 
-Matching/filtering is currently based only on Scheduled Station Name (machine name) and Procedure Step Status.
+Matching/filtering is currently based only on Scheduled Station Name (machine name), Procedure Step Status, Scheduled Workitem Code Sequence
+>Code Value
+and Scheduled Procedure Step Start DateTime.
 
-A sample response is in tdw-plus-examples/responses/dcm and it can be renamed and then copied in to ups_instances before starting upsscp
+A sample response is in tdw-plus-examples/responses/dcm and it can be renamed and then transmitted to upsscp via ncreatescu
 
 Alternative/additional sample responses can be constructed by using dcmdump on the provided sample response, editing the text, and using dump2dcm.
 
-For files to be found in ups_instances by upsscp, the response files must be named according to UPS_\<SOPInstanceUID\>.dcm
-
-There is a utility script rename_ups_response.py that takes the response file as input and creates as output a file whose name is in the format required.
 
 So one could test without having a real TMS:
 ```console
-python findscu.py --ups -f UPSCFind_TDWII_SCHEDULED_FX1.dcm 127.0.0.1 11114
+python findscu.py -w --ups -f UPSCFind_TDWII_SCHEDULED_FX1.dcm 127.0.0.1 11114
 
 ```
 
