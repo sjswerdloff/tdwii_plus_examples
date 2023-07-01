@@ -61,9 +61,15 @@ The default configuration will specify a ups_instances directory that upsscp wil
 
 The default configuration listens on port 11114
 
-Matching/filtering is currently based only on Scheduled Station Name (machine name), Procedure Step Status, Scheduled Workitem Code Sequence
->Code Value
+Matching/filtering is currently based only on Scheduled Station Name (machine name), Procedure Step State, Scheduled Workitem Code Sequence (the Code Value)
 and Scheduled Procedure Step Start DateTime.
+
+```python
+ds.ScheduledStationNameCodeSequence[0].CodeValue
+ds.ProcedureStepState
+ds.ScheduledProcedureStepStartDateTime
+ds.ScheduledWorkitemCodeSequence[0].CodeValue
+```
 
 A sample response is in tdw-plus-examples/responses/dcm and it can be renamed and then transmitted to upsscp via ncreatescu
 
