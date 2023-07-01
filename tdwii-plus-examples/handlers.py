@@ -4,15 +4,19 @@ from io import BytesIO
 from pathlib import Path
 
 from pydicom import Dataset, dcmread
+from pydicom.dataset import FileMetaDataset
 from pynetdicom.dimse_primitives import N_ACTION
 from pynetdicom.dsutils import encode
 from pynetdicom.sop_class import (
+    UnifiedProcedureStepPull,
+    UnifiedProcedureStepPush,
     UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
 from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from upsdb import Instance, InvalidIdentifier, add_instance, search
 
 # GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
 # NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
@@ -194,7 +198,7 @@ def handle_echo(event, cli_config, logger):
     return 0x0000
 
 
-def handle_find(event, instance_dir, cli_config, logger):
+def handle_find(event, instance_dir, db_path, cli_config, logger):
     """Handler for evt.EVT_C_FIND.
 
     Parameters
@@ -220,18 +224,18 @@ def handle_find(event, instance_dir, cli_config, logger):
     logger.info(f"Received C-FIND request from {addr}:{port} at {timestamp}")
 
     model = event.request.AffectedSOPClassUID
-    db_path = None
-    _reload_ups_instances(instance_dir, logger)
 
-    if model.keyword in ("UnifiedProcedureStepPull",):
-        query = (
-            event.identifier
-        )  # the identifier is not available through event multiple times.  so get it copied to a local variable
-        matches = _search_ups(query)
-        for response in matches:
-            yield 0xFF00, response
-        yield 0x0000, None
-    else:
+    _reload_ups_instances(instance_dir, logger)
+    logger.info(f"model: {model}")
+    if model in [UnifiedProcedureStepPull, UnifiedProcedureStepPush]:
+        #     query = (
+        #         event.identifier
+        #     )  # the identifier is not available through event multiple times.  so get it copied to a local variable
+        #     matches = _search_ups(query)
+        #     for response in matches:
+        #         yield 0xFF00, response
+        #     yield 0x0000, None
+        # else:
         engine = create_engine(db_path)
         with engine.connect() as conn:
             Session = sessionmaker(bind=engine)
@@ -262,7 +266,13 @@ def handle_find(event, instance_dir, cli_config, logger):
                 return
 
             try:
-                response = match.as_identifier(event.identifier, model)
+                logger.info(
+                    f"match: {match} with SOP Instance UID: {match.sop_instance_uid}"
+                )
+                response = dcmread(
+                    Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True
+                )
+                logger.info(f"response: {response}")
                 response.RetrieveAETitle = event.assoc.ae.ae_title
             except Exception as exc:
                 logger.error("Error creating response Identifier")
@@ -679,35 +689,60 @@ def handle_naction(event, db_path, cli_config, logger):
     action_type_id = naction_primitive.ActionTypeID
     action_information = dcmread(naction_primitive.ActionInformation, force=True)
 
-    if action_information is not None:
-        try:
-            logger.info(f"{action_information}")
-            subscribing_ae_title = action_information.ReceivingAE
-            deletion_lock = action_information.DeletionLock == "TRUE"
-        except AttributeError as exc:
-            logger.error(f"Error in decoding subscriber information: {exc}")
-        finally:
-            subscribing_ae_title = None
-            deletion_lock = False
+    if action_type_id != 1:
+        if action_information is not None:
+            try:
+                logger.info(f"{action_information}")
+                subscribing_ae_title = action_information.ReceivingAE
+                deletion_lock = action_information.DeletionLock == "TRUE"
+            except AttributeError as exc:
+                logger.error(f"Error in decoding subscriber information: {exc}")
+            finally:
+                subscribing_ae_title = None
+                deletion_lock = False
 
-    # TODO:  use action_type_id to determine if this is subscribe or unsubscribe
-    if naction_primitive.RequestedSOPInstanceUID == UPSGlobalSubscriptionInstance:
-        logger.info("Request was for Subscribing to (unfiltered) Global UPS")
-        if action_type_id == 3:
-            _add_global_subscriber(
-                subscribing_ae_title, deletion_lock=deletion_lock, logger=logger
-            )
-        elif action_type_id == 4:
-            _remove_global_subscriber(subscribing_ae_title, logger=logger)
-    elif (
-        naction_primitive.RequestedSOPInstanceUID
-        == UPSFilteredGlobalSubscriptionInstance
-    ):
-        logger.info("Request was for Subscribing to Filtered Global UPS")
-        if action_type_id == 3:
-            _add_filtered_subscriber(subscribing_ae_title, action_information)
-        elif action_type_id == 4:
-            _remove_filtered_subscriber(subscribing_ae_title)
+        # TODO:  use action_type_id to determine if this is subscribe or unsubscribe
+        if naction_primitive.RequestedSOPInstanceUID == UPSGlobalSubscriptionInstance:
+            logger.info("Request was for Subscribing to (unfiltered) Global UPS")
+            if action_type_id == 3:
+                _add_global_subscriber(
+                    subscribing_ae_title, deletion_lock=deletion_lock, logger=logger
+                )
+            elif action_type_id == 4:
+                _remove_global_subscriber(subscribing_ae_title, logger=logger)
+        elif (
+            naction_primitive.RequestedSOPInstanceUID
+            == UPSFilteredGlobalSubscriptionInstance
+        ):
+            logger.info("Request was for Subscribing to Filtered Global UPS")
+            if action_type_id == 3:
+                _add_filtered_subscriber(subscribing_ae_title, action_information)
+            elif action_type_id == 4:
+                _remove_filtered_subscriber(subscribing_ae_title)
+    else:
+        # This is a ProcedureStepState change request...
+        engine = create_engine(db_path)
+        with engine.connect() as conn:
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            # Search database using Identifier as the query
+            try:
+                matches = search(model, event.identifier, session)
+
+            except InvalidIdentifier as exc:
+                session.rollback()
+                logger.error("Invalid C-FIND Identifier received")
+                logger.error(str(exc))
+                yield 0xA900, None
+                return
+            except Exception as exc:
+                session.rollback()
+                logger.error("Exception occurred while querying database")
+                logger.exception(exc)
+                yield 0xC320, None
+                return
+            finally:
+                session.close()
 
     logger.info(f"Requested SOP Class UID: {naction_primitive.RequestedSOPClassUID}")
     logger.info(f"Request dump: {naction_primitive}")
@@ -896,3 +931,108 @@ def handle_nset(event, db_path, cli_config, logger):
             yield 0xC421, None
 
         yield 0xFF00, ds
+
+
+def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
+    """Handler for evt.EVT_N_CREATE.
+
+    Parameters
+    ----------
+    event : pynetdicom.events.Event
+        The N-CREATE request :class:`~pynetdicom.events.Event`.
+    storage_dir : str
+        The path to the directory where instances will be stored.
+    db_path : str
+        The database path to use with create_engine().
+    cli_config : dict
+        A :class:`dict` containing configuration settings passed via CLI.
+    logger : logging.Logger
+        The application's logger.
+
+    Returns
+    -------
+    int or pydicom.dataset.Dataset
+        The N-CREATE response's *Status*. If the creation operation is successful
+        but the dataset couldn't be added to the database then the *Status*
+        will still be ``0x0000`` (Success).
+    """
+    requestor = event.assoc.requestor
+    timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+    addr, port = requestor.address, requestor.port
+    logger.info(f"Received N-CREATE request from {addr}:{port} at {timestamp}")
+
+    try:
+        req = event.request
+        attr_list = event.attribute_list
+        ds = Dataset()
+
+        # Add the SOP Common module elements (Annex C.12.1)
+        ds.SOPClassUID = UnifiedProcedureStepPush
+        ds.SOPInstanceUID = req.AffectedSOPInstanceUID
+
+        # Update with the requested attributes
+        ds.update(attr_list)
+
+        # Remove any Group 0x0002 elements that may have been included
+        # ds = ds[0x00030000:]
+        sop_instance = ds.SOPInstanceUID
+    except Exception as exc:
+        logger.error("Unable to decode the dataset")
+        logger.exception(exc)
+        # Unable to decode dataset
+        return 0xC210
+
+    # Add the file meta information elements - must be before adding to DB
+    #   ds.file_meta = event.file_meta
+    # file_meta = FileMetaDataset()
+    # file_meta.ensure_file_meta()
+    # file_meta.is_implicit_VR = True
+    # file_meta.is_little_endian = True
+    # ds.file_meta = file_meta
+    ds.is_little_endian = True
+    ds.is_implicit_VR = True
+    logger.info(f"SOP Instance UID '{sop_instance}'")
+
+    # Try and add the instance to the database
+    #   If we fail then don't even try to store
+    fpath = os.path.join(storage_dir, sop_instance)
+
+    if os.path.exists(fpath):
+        logger.warning("Instance already exists in storage directory, overwriting")
+
+    try:
+        ds.save_as(fpath, write_like_original=True)
+    except Exception as exc:
+        logger.error("Failed writing instance to storage directory")
+        logger.exception(exc)
+        # Failed - Out of Resources
+        return 0xA700
+
+    logger.info("Instance written to storage directory")
+
+    # Dataset successfully written, try to add to/update database
+    engine = create_engine(db_path)
+    with engine.connect() as conn:
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        try:
+            # Path is relative to the database file
+            matches = (
+                session.query(Instance)
+                .filter(Instance.sop_instance_uid == ds.SOPInstanceUID)
+                .all()
+            )
+            add_instance(ds, session, os.path.abspath(fpath))
+            if not matches:
+                logger.info("Instance added to database")
+            else:
+                logger.info("Database entry for instance updated")
+        except Exception as exc:
+            session.rollback()
+            logger.error("Unable to add instance to the database")
+            logger.exception(exc)
+        finally:
+            session.close()
+
+    return 0x0000, ds
