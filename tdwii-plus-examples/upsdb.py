@@ -320,25 +320,25 @@ def build_query(identifier, session, query=None):
             elif vr in ["DA", "TM", "DT"] and "-" in val:
                 pass
             else:
-                print("Performing single value matching...")
+                print(f"Performing single value matching... {elem}")
                 query = _search_single_value(elem, session, query)
                 continue
 
         # Part 4, C.2.2.2.3 Universal Matching
         if val is None:
-            print("Performing universal matching...")
+            print(f"Performing universal matching...")
             query = _search_universal(elem, session, query)
             continue
 
         # Part 4, C.2.2.2.2 List of UID Matching
         if vr == "UI":
-            print("Performing list of UID matching...")
+            print(f"Performing list of UID matching...")
             query = _search_uid_list(elem, session, query)
             continue
 
         # Part 4, C.2.2.2.4 Wild Card Matching
         if vr in _text_vr and ("*" in val or "?" in val):
-            print("Performing wildcard matching...")
+            print(f"Performing wildcard matching...")
             query = _search_wildcard(elem, session, query)
             continue
 
@@ -495,8 +495,8 @@ def search(model, identifier, session):
     ValueError
         If the `identifier` is invalid.
     """
-    if model not in [UnifiedProcedureStepPull]:
-        raise ValueError(f"Unknown information model '{model.name}'")
+    if model not in [UnifiedProcedureStepPull, UnifiedProcedureStepPush]:
+        raise ValueError(f"Unknown information model '{model}'")
 
     # Remove all optional keys, after this only unique/required will remain
     for elem in identifier:

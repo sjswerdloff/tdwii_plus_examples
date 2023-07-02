@@ -3,7 +3,7 @@ import os
 from io import BytesIO
 from pathlib import Path
 
-from pydicom import Dataset, dcmread
+from pydicom import Dataset, dcmread, dcmwrite
 from pydicom.dataset import FileMetaDataset
 from pynetdicom.dimse_primitives import N_ACTION
 from pynetdicom.dsutils import encode
@@ -21,6 +21,32 @@ from upsdb import Instance, InvalidIdentifier, add_instance, search
 # GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
 # NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
 
+_SERVICE_STATUS = {
+    "SCHEDULED": {
+        "SCHEDULED": 0xC303,
+        "IN PROGRESS": 0x0000,
+        "CANCELED": 0xC310,
+        "COMPLETED": 0xC310,
+    },
+    "IN PROGRESS": {
+        "SCHEDULED": 0xC303,
+        "IN PROGRESS": 0xC302,
+        "CANCELED": 0x0000,
+        "COMPLETED": 0x0000,
+    },
+    "CANCELED": {
+        "SCHEDULED": 0xC303,
+        "IN PROGRESS": 0xC300,
+        "CANCELED": 0xB304,
+        "COMPLETED": 0xC300,
+    },
+    "COMPLETED": {
+        "SCHEDULED": 0xC303,
+        "IN PROGRESS": 0xC300,
+        "CANCELED": 0xC300,
+        "COMPLETED": 0xB306,
+    },
+}
 _ups_instances = dict()
 
 _global_subscribers = (
@@ -35,11 +61,13 @@ def _add_global_subscriber(
     if subscriber_ae_title not in _global_subscribers.keys():
         _global_subscribers[subscriber_ae_title] = deletion_lock
         if logger is not None:
-            logger.debug(f"Receiving AE Title {subscriber_ae_title} is now subscribed")
+            logger.debug(
+                f"Receiving AE Title {subscriber_ae_title} is now subscribed globally"
+            )
     else:
         if logger is not None:
             logger.info(
-                f"Receiving AE Title {subscriber_ae_title} is already subscribed"
+                f"Receiving AE Title {subscriber_ae_title} is already subscribed globally"
             )
     return
 
@@ -50,7 +78,9 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
             subscriber_ae_title
         ] = query  # and you can get the deletion lock from the query
         if logger is not None:
-            logger.debug(f"Receiving AE Title {subscriber_ae_title} is now subscribed")
+            logger.debug(
+                f"Receiving AE Title {subscriber_ae_title} is now subscribed using filter: {query}"
+            )
     else:
         if logger is not None:
             logger.info(
@@ -225,7 +255,7 @@ def handle_find(event, instance_dir, db_path, cli_config, logger):
 
     model = event.request.AffectedSOPClassUID
 
-    _reload_ups_instances(instance_dir, logger)
+    # _reload_ups_instances(instance_dir, logger)
     logger.info(f"model: {model}")
     if model in [UnifiedProcedureStepPull, UnifiedProcedureStepPush]:
         #     query = (
@@ -626,7 +656,7 @@ def handle_nget(event, db_path, cli_config, logger):
         yield 0xFF00, ds
 
 
-def handle_naction(event, db_path, cli_config, logger):
+def handle_naction(event, instance_dir, db_path, cli_config, logger):
     """Handler for evt.EVT_N_ACTION
 
     Parameters
@@ -688,18 +718,33 @@ def handle_naction(event, db_path, cli_config, logger):
     """
     action_type_id = naction_primitive.ActionTypeID
     action_information = dcmread(naction_primitive.ActionInformation, force=True)
+    service_status = 0x0000
+    sub_operations_remaining = 0
+    # in case things go wrong
+    error_response = Dataset()
+    error_response.is_little_endian = True
+    error_response.is_implicit_VR = True
+
+    happy_response = Dataset()
+    happy_response.Status = service_status  # change this if things go wrong
+    # happy_response.update(action_information) # apparently not all elements get to go back in a status dataset
 
     if action_type_id != 1:
+        subscribing_ae_title = None
+        deletion_lock = False
         if action_information is not None:
             try:
-                logger.info(f"{action_information}")
+                logger.info("Action Information:")
+
                 subscribing_ae_title = action_information.ReceivingAE
                 deletion_lock = action_information.DeletionLock == "TRUE"
+                logger.info(f"{action_information}")
             except AttributeError as exc:
                 logger.error(f"Error in decoding subscriber information: {exc}")
-            finally:
-                subscribing_ae_title = None
-                deletion_lock = False
+                # TODO... service_status = some error code
+        else:
+            logger.warn(f"No action information available!")
+            # TODO... service_status = some error code
 
         # TODO:  use action_type_id to determine if this is subscribe or unsubscribe
         if naction_primitive.RequestedSOPInstanceUID == UPSGlobalSubscriptionInstance:
@@ -719,78 +764,126 @@ def handle_naction(event, db_path, cli_config, logger):
                 _add_filtered_subscriber(subscribing_ae_title, action_information)
             elif action_type_id == 4:
                 _remove_filtered_subscriber(subscribing_ae_title)
+        yield happy_response
+        yield None
+        return
+    # yield action_information
     else:
         # This is a ProcedureStepState change request...
         engine = create_engine(db_path)
+        service_status = 0x0000
         with engine.connect() as conn:
             Session = sessionmaker(bind=engine)
             session = Session()
             # Search database using Identifier as the query
+            model = naction_primitive.RequestedSOPClassUID
+            if action_information is not None:
+                try:
+                    logger.info(f"{action_information}")
+                except Exception as exc:
+                    logger.info(f"Unable to decode action information")
+            else:
+                logger.info(f"No action information")
+
             try:
-                matches = search(model, event.identifier, session)
+                search_ds = Dataset()  # (action_information)
+                transaction_uid = action_information.TransactionUID
+                requested_step_state = action_information.ProcedureStepState
+                search_ds.SOPInstanceUID = action_information.RequestedSOPInstanceUID
+                # search_ds.SOPClassUID = action_information.RequestedSOPClassUID
+                matches = search(model, search_ds, session)
+                if matches is None or (len(matches) < 1):
+                    error_str = (
+                        f"No Matching SOP Instance UID: {search_ds.SOPInstanceUID}"
+                    )
+                    logger.error(error_str)
+                    session.close()
+                    error_response.ErrorComment = error_str[0:59] + " ..."
+                    error_response.Status = 0xC307
+                    yield error_response
+                    yield None
+                    return
+                if len(matches) > 1:
+                    logger.error(
+                        "Internal Error: More than one match for the given SOP Instance UID"
+                    )
+                match = matches[0]
+                current_step_state = match.procedure_step_state
+                stored_transaction_uid = match.transaction_uid
+                service_status = _SERVICE_STATUS[current_step_state][
+                    requested_step_state
+                ]
+
+                if (
+                    transaction_uid is None
+                    or len(transaction_uid) == 0
+                    or (
+                        current_step_state != "SCHEDULED"
+                        and transaction_uid != stored_transaction_uid
+                    )
+                ):
+                    service_status = 0xC301
+                    error_str = f"Transaction UID is missing, zero length, or not valid"
+                    error_response.ErrorComment = error_str[:63]
+                    logger.error(f"Service Status: 0x{service_status:X}")
+                    logger.error(error_str)
+                    error_response.Status = service_status
+                    # yield service_status
+                    yield error_response
+                    yield None
+                    return
+
+                if service_status != 0x0000:
+                    error_response.ErrorComment = f"Current Step State {current_step_state}, requested Step State {requested_step_state}"
+                    logger.error(f"Service Status: 0x{service_status:X}")
+                    error_response.Status = service_status
+                    # yield service_status
+                    yield error_response
+                    yield None
+                    return
+                logger.info(f"Matching instance: {match}")
+                logger.info(f"Stored Procedure Step State: {current_step_state}")
+                logger.info(f"Requested Procedure Step State: {requested_step_state}")
+                response = dcmread(
+                    Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True
+                )
+                response.ProcedureStepState = requested_step_state
+                response.is_little_endian = True
+                response.is_implicit_VR = True
+                # Updates to content of database below for next state change request
+                match.procedure_step_state = requested_step_state
+                match.transaction_uid = transaction_uid
+                session.commit()
+                # Update to the blob/dicom file.  Probably not as important here, but will be important for N-SET
+                dcmwrite(
+                    Path(instance_dir).joinpath(str(match.sop_instance_uid)),
+                    response,
+                    write_like_original=True,
+                )
+                yield sub_operations_remaining
+                yield service_status
 
             except InvalidIdentifier as exc:
                 session.rollback()
-                logger.error("Invalid C-FIND Identifier received")
+                logger.error("Invalid N-Action Identifier received")
                 logger.error(str(exc))
-                yield 0xA900, None
-                return
+                yield 0
+                yield 0xA900
+
             except Exception as exc:
                 session.rollback()
                 logger.error("Exception occurred while querying database")
                 logger.exception(exc)
-                yield 0xC320, None
-                return
+                yield 0
+                yield 0xC320
+
             finally:
                 session.close()
 
     logger.info(f"Requested SOP Class UID: {naction_primitive.RequestedSOPClassUID}")
     logger.info(f"Request dump: {naction_primitive}")
 
-    response = Dataset()
-    # rsp = N_ACTION()
-    # rsp.AffectedSOPClassUID = naction_primitive.RequestedSOPClassUID
-    # rsp.AffectedSOPInstanceUID = naction_primitive.RequestedSOPInstanceUID
-    # rsp.RequestedSOPClassUID = naction_primitive.RequestedSOPClassUID
-    # rsp.RequestedSOPInstanceUID = naction_primitive.RequestedSOPInstanceUID
-
-    response.AffectedSOPClassUID = naction_primitive.RequestedSOPClassUID
-    response.AffectedSOPInstanceUID = naction_primitive.RequestedSOPInstanceUID
-    response.RequestedSOPClassUID = naction_primitive.RequestedSOPClassUID
-    response.RequestedSOPInstanceUID = naction_primitive.RequestedSOPInstanceUID
-    response.action_type = event.action_type
-    response.action_information = None
-    response.action_reply = None
-    response.status = 0x0000
-    response.is_little_endian = True
-    response.is_implicit_VR = True
-    response.is_decompressed = False
-
-    # bytestream = encode(
-    #             rsp,
-    #             True,
-    #             True,
-    #             False
-    #         )
-    # response.action_reply = BytesIO(bytestream)
-
-    # matches = [response]
-    # yield len(matches)
-
-    # # Yield results
-    # for match in matches:
-    #     if event.is_cancelled:
-    #         yield 0xFE00, None
-    #         return
-
-    #     try:
-    #         ds = dcmread(match.filename)
-    #     except Exception as exc:
-    #         logger.error(f"Error reading file: {match.filename}")
-    #         logger.exception(exc)
-    #         yield 0xC421, None
-
-    return 0x0000, response
+    return
 
 
 def handle_nevent(event, db_path, cli_config, logger):
