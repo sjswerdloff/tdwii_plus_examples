@@ -3,6 +3,10 @@ Working python sample code for performing various transactions within the IHE-RO
 No claims are being made that any of the sample code is adherent to the profile,
 but the examples that are not UPS Watch/UPS Event should interact successfully within limits with valid TDW-II actors.
 
+While the command lines shown below are run via python as the command, they are now all executable scripts (chmod +x) so they can be run directly on *nix platforms (you still need to have python in your environment)
+
+The version of Python used for development is 3.10, but the examples should work on 3.8 and 3.9 as well.
+
 The sample queries and responses are not necessarily coordinated with an OST (yet), i.e. using an appropriate AE Title
 
 Application entity information now in a configuration file
@@ -43,7 +47,7 @@ The following will send the C-MOVE-RQ to the AE Title listed (in the C-FIND-RSP 
 python cmove_inputs.py PPVS_SCP ../../pynetdicom/pynetdicom/apps/findscu/rsp000001.dcm
 ```
 
-Note that the IP Address and Port information for a given Application Entity (e.g. PPVS_SCP as shown above) must be configured in the ApplicationEntities.json file.
+Note that the IP Address and Port information for a given Application Entity (e.g. PPVS_SCP as shown above) must be configured in the ApplicationEntities.json file (in the current working directory, so you will need to copy it from the top level and modify to have your AEs).
 
 ## A sample N-CREATE SCU that will read in a UPS Push SOP and transmit that to a UPS SCP (e.g. TMS Simulator)
 A previous response to findscu can be used for simulation purposes but the Procedure Step State must be SCHEDULED
@@ -91,6 +95,21 @@ python watchscu.py 127.0.0.1 11114
 the above will attempt to perform a Global Subscription to upsscp
 
 
+
+## A sample UPS NACTION SCU (for changing Procedure Step Status for UPS) is provided in nactionscu.py
+```console
+python nactionscu.py -T "1.2.826.0.1.3680043.8.498.23133079088775253446636289730969872574" -R "IN PROGRESS" 127.0.0.1 11114 1.2.840.113854.19.4.2017747596206021632.638223481578481915
+
+```
+the above will request that upsscp (listening at 11114) change the state using the Transaction UID (-T) of the UPS with the shown UID to "IN PROGRESS"
+
+While the Transaction UID argument is optional here (one will be generated internally), if you don't know the Transaction UID, you can't perform further changes.
+
+```console
+python nactionscu.py -T "1.2.826.0.1.3680043.8.498.23133079088775253446636289730969872574" -R "COMPLETED" 127.0.0.1 11114 1.2.840.113854.19.4.2017747596206021632.638223481578481915
+
+```
+the above will request that upsscp (listening at 11114) change the state using the Transaction UID (-T) of the UPS with the shown UID to "COMPLETED".  The Transaction UID here is not optional.
 
 ## A sample application for receiving notifications (N-EVENT-REPORT-RQ) is provided in neventscp.py
 ```console
