@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-"""watchscu
+"""neventscu
 
-Used for registering AE's with UPS Watch
-to subscribe for UPS Events
+Used for sending events to AE's who subscribes for UPS Events
+Currently at the toy level of functionality:
+Sends a series of Procedure Step State change notifications
 """
 
 import argparse
@@ -105,47 +106,15 @@ def send_ups_assigned():
     pass
 
 
-def send_global_watch_registration(
-    args: argparse.Namespace, assoc: Association, action_info: Dataset = None
-):
-    """_summary_
-
-    Args:
-        args (argparse.Namespace): _description_
-        assoc (Assocation): _description_
-        action_info (Dataset, optional): _description_. Defaults to None.
-
-    Returns:
-        _type_: _description_
-    """
-    print(f"args: {args}")
-    ds = action_info
-    if ds is None:
-        ds = Dataset()
-        ds.DeletionLock = "FALSE"
-        ds.RequestingAE = args.calling_aet
-        ds.ReceivingAE = args.receiver_aet
-        ds.RequestedSOPInstanceUID = UPSGlobalSubscriptionInstance
-        ds.RequestedSOPClassUID = UnifiedProcedureStepPush
-        # ds.RequestedSOPClassUID = UnifiedProcedureStepWatch
-    return send_action(
-        assoc=assoc,
-        class_uid=ds.RequestedSOPClassUID,
-        instance_uid=ds.RequestedSOPInstanceUID,
-        action_type=3,
-        action_info=ds,
-    )
-
-
 def _setup_argparser():
     """Setup the command line arguments"""
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The watchscu application implements a Service Class User "
-            "(SCU) for the UPS Watch Class. "
+            "The neventscu application implements a Service Class User "
+            "(SCU) for the UPS Event Class. "
         ),
-        usage="watchscu [options] addr port",
+        usage="neventscu [options] addr port",
     )
 
     # Parameters
@@ -347,11 +316,11 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"watchscu.py v{__version__}")
+        print(f"neventscu.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "watchscu")
-    APP_LOGGER.debug(f"watchscu.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "neventscu")
+    APP_LOGGER.debug(f"neventscu.py v{__version__}")
     APP_LOGGER.debug("")
 
     APP_LOGGER.debug("Using configuration from:")
