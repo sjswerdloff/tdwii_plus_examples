@@ -15,6 +15,7 @@ from pynetdicom.sop_class import (
 from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from upsdb import Instance, InvalidIdentifier, add_instance, search
 
 _ups_instances = dict()
 

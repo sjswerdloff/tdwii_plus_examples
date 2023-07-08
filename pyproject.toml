@@ -32,6 +32,8 @@ pytest-rerunfailures = { version = "*", optional = true } # groups = ["all", "te
 # ---------------- #
 pre-commit = { version = "*", optional = true }      # groups = ["dev", "all"]
 black = { version = "^22.3.0", optional = true }     # groups = ["dev", "all"]
+flake8 = { version = "*", optional = true }          # groups = ["dev", "tests", "all"]
+dill = { version = "*", optional = true }          # groups = ["dev", "tests", "all"]
 mypy = { version = "*", optional = true }            # groups = ["dev", "all"]
 rope = { version = "*", optional = true }            # groups = ["dev", "all"]
 doc8 = { version = "*", optional = true }            # groups = ["dev", "all"]
@@ -47,6 +49,8 @@ tests = [
     "pytest-rerunfailures",
     "pytest-sugar",
     "toml",
+    "flake8",
+    "dill",
 ]
 
 dev = [
@@ -56,6 +60,8 @@ dev = [
     "rope",
     "doc8",
     "toml",
+    "flake8",
+    "dill",
 ]
 
 all = [
@@ -69,7 +75,9 @@ all = [
     "rope",
     "doc8",
     "toml",
-    "tomlkit"
+    "tomlkit",
+    "flake8",
+    "dill",
 ]
 
 
