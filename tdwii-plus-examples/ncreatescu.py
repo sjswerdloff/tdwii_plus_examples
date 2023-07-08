@@ -1,109 +1,28 @@
 #!/usr/bin/env python
-"""neventscu
+"""A UPS N-CREATE SCU application.
 
-Used for sending events to AE's who subscribes for UPS Events
-Currently at the toy level of functionality:
-Sends a series of Procedure Step State change notifications
+Used for uploading DICOM UPS SOP Instances to a UPS SCP.
 """
 
 import argparse
 import os
 import sys
-from configparser import ConfigParser
 from pathlib import Path
-from typing import Optional, Tuple
 
-from pydicom import Dataset, dataset, dcmread
+from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 from pydicom.uid import (
-    UID,
+    DeflatedExplicitVRLittleEndian,
     ExplicitVRBigEndian,
     ExplicitVRLittleEndian,
     ImplicitVRLittleEndian,
 )
-from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
+from pynetdicom import AE, UnifiedProcedurePresentationContexts
 from pynetdicom._globals import DEFAULT_MAX_LENGTH
 from pynetdicom.apps.common import get_files, setup_logging
-from pynetdicom.sop_class import (
-    UnifiedProcedureStepPush,
-    UnifiedProcedureStepWatch,
-    UPSFilteredGlobalSubscriptionInstance,
-    UPSGlobalSubscriptionInstance,
-)
+from pynetdicom.sop_class import UnifiedProcedureStepPush
 
-# GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
-# NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
-
-__version__ = "0.1.0"
-
-
-def send_nevent(
-    assoc: Association,
-    class_uid: UID,
-    instance_uid: UID,
-    event_type=1,
-    event_info=None,
-) -> Tuple[Dataset, Optional[Dataset]]:
-    """Send an N-EVENT request via `assoc`
-
-    Parameters
-    ----------
-    assoc : association.Association
-        The association sending the request.
-    class_uid : pydicom.uid.UID
-        The *Requested SOP Class UID* to use.
-    instance_uid: pydicom.uid.UID
-        The *Requested SOP Instance UID* to use.
-    event_type : int, optional
-        The *Event Type ID* to use.  default 1, UPS State Report
-    event_info : None or pydicom.dataset.Dataset, optional
-        The *Event Information* to use.
-    """
-    return assoc.send_n_event_report(event_info, event_type, class_uid, instance_uid)
-
-
-def send_ups_state_report(
-    assoc: Association,
-    instance_uid: UID,
-    step_state: str,
-    input_readiness_state: str = "READY",
-    reason_for_cancellation: str = None,
-    discontinuation_reason_code_seq: Dataset = None,
-):
-    event_info = Dataset()
-    event_info.ProcedureStepState = step_state
-
-    event_info.InputReadinessState = input_readiness_state
-    if reason_for_cancellation:
-        event_info.ReasonForCancellation = reason_for_cancellation
-    if discontinuation_reason_code_seq:
-        event_info.ProcedureStepDiscontinuationReasonCodeSequence = (
-            discontinuation_reason_code_seq
-        )
-
-    return send_nevent(
-        assoc,
-        UnifiedProcedureStepPush,
-        instance_uid,
-        event_type=1,
-        event_info=event_info,
-    )
-
-
-def send_ups_cancel_requested():
-    pass
-
-
-def send_ups_progress_report():
-    pass
-
-
-def send_ups_scp_status_change():
-    pass
-
-
-def send_ups_assigned():
-    pass
+__version__ = "0.3.0"
 
 
 def _setup_argparser():
@@ -111,10 +30,12 @@ def _setup_argparser():
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The neventscu application implements a Service Class User "
-            "(SCU) for the UPS Event Class. "
+            "The ncreatescu application implements a Service Class User "
+            "(SCU) for the Unified Procedure Step Push Service Class. For each DICOM "
+            "file on the command line it sends a N-CREATE-RQ message to a "
+            "UPS Service Class Provider (SCP) and waits for a response."
         ),
-        usage="neventscu [options] addr port",
+        usage="ncreatescu [options] addr port path",
     )
 
     # Parameters
@@ -123,6 +44,13 @@ def _setup_argparser():
         "addr", help="TCP/IP address or hostname of DICOM peer", type=str
     )
     req_opts.add_argument("port", help="TCP/IP port number of peer", type=int)
+    req_opts.add_argument(
+        "path",
+        metavar="path",
+        nargs="+",
+        help="DICOM file or directory to be transmitted",
+        type=str,
+    )
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
@@ -163,15 +91,13 @@ def _setup_argparser():
         choices=["critical", "error", "warn", "info", "debug"],
     )
 
-    # Configuration file Options
-    fdir = os.path.abspath(os.path.dirname(__file__))
-    fpath = os.path.join(fdir, "default.ini")
-    gen_opts.add_argument(
-        "-c",
-        "--config",
-        metavar="[f]ilename",
-        help="use configuration file f",
-        default=fpath,
+    # Input Options
+    in_opts = parser.add_argument_group("Input Options")
+    in_opts.add_argument(
+        "-r",
+        "--recurse",
+        help="recursively search the given directory",
+        action="store_true",
     )
 
     # Network Options
@@ -180,25 +106,17 @@ def _setup_argparser():
         "-aet",
         "--calling-aet",
         metavar="[a]etitle",
-        help="set my calling AE title (default: WATCH_SCU)",
+        help="set my calling AE title (default: ncreatescu)",
         type=str,
-        default="WATCH_SCU",
+        default="ncreatescu",
     )
     net_opts.add_argument(
         "-aec",
         "--called-aet",
         metavar="[a]etitle",
-        help="set called AE title of peer (default: WATCH_SCP)",
+        help="set called AE title of peer (default: ANY-SCP)",
         type=str,
-        default="WATCH_SCP",
-    )
-    net_opts.add_argument(
-        "-aer",
-        "--receiver-aet",
-        metavar="[a]etitle",
-        help="set receiver AE title of peer (default: EVENT_SCP)",
-        type=str,
-        default="EVENT_SCP",
+        default="ANY-SCP",
     )
     net_opts.add_argument(
         "-ta",
@@ -260,6 +178,15 @@ def _setup_argparser():
 
     # Misc Options
     misc_opts = parser.add_argument_group("Miscellaneous Options")
+    misc_opts.add_argument(
+        "-cx",
+        "--required-contexts",
+        help=(
+            "only request the presentation contexts required for the "
+            "input DICOM file(s)"
+        ),
+        action="store_true",
+    )
 
     return parser.parse_args()
 
@@ -316,64 +243,87 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"neventscu.py v{__version__}")
+        print(f"ncreatescu.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "neventscu")
-    APP_LOGGER.debug(f"neventscu.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "ncreatescu")
+    APP_LOGGER.debug(f"ncreatescu.py v{__version__}")
     APP_LOGGER.debug("")
 
-    APP_LOGGER.debug("Using configuration from:")
-    APP_LOGGER.debug(f"  {args.config}")
-    APP_LOGGER.debug("")
-    config = ConfigParser()
-    config.read(args.config)
+    lfiles, badfiles = get_files(args.path, args.recurse)
+
+    for bad in badfiles:
+        APP_LOGGER.error(f"Cannot access path: {bad}")
 
     ae = AE(ae_title=args.calling_aet)
     ae.acse_timeout = args.acse_timeout
     ae.dimse_timeout = args.dimse_timeout
     ae.network_timeout = args.network_timeout
 
-    # Propose the default presentation contexts
-    if args.request_little:
-        transfer_syntax = [ExplicitVRLittleEndian]
-    elif args.request_big:
-        transfer_syntax = [ExplicitVRBigEndian]
-    elif args.request_implicit:
-        transfer_syntax = [ImplicitVRLittleEndian]
+    if args.required_contexts:
+        # Only propose required presentation contexts
+        lfiles, contexts = get_contexts(lfiles, APP_LOGGER)
+        try:
+            for abstract, transfer in contexts.items():
+                for tsyntax in transfer:
+                    ae.add_requested_context(abstract, tsyntax)
+        except ValueError:
+            raise ValueError(
+                "More than 128 presentation contexts required with "
+                "the '--required-contexts' flag, please try again "
+                "without it or with fewer files"
+            )
     else:
-        transfer_syntax = [
-            ExplicitVRLittleEndian,
-            ImplicitVRLittleEndian,
-            ExplicitVRBigEndian,
-        ]
+        # Propose the default presentation contexts
+        if args.request_little:
+            transfer_syntax = [ExplicitVRLittleEndian]
+        elif args.request_big:
+            transfer_syntax = [ExplicitVRBigEndian]
+        elif args.request_implicit:
+            transfer_syntax = [ImplicitVRLittleEndian]
+        else:
+            transfer_syntax = [
+                ExplicitVRLittleEndian,
+                ImplicitVRLittleEndian,
+                DeflatedExplicitVRLittleEndian,
+                ExplicitVRBigEndian,
+            ]
+
+        for cx in UnifiedProcedurePresentationContexts:
+            ae.add_requested_context(cx.abstract_syntax, transfer_syntax)
+
+    if not lfiles:
+        APP_LOGGER.warning("No suitable DICOM files found")
+        sys.exit()
 
     # Request association with remote
     assoc = ae.associate(
-        args.addr,
-        args.port,
-        contexts=UnifiedProcedurePresentationContexts,
-        ae_title=args.called_aet,
-        max_pdu=args.max_pdu,
+        args.addr, args.port, ae_title=args.called_aet, max_pdu=args.max_pdu
     )
     if assoc.is_established:
-        try:
-            status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "SCHEDULED")
-            APP_LOGGER.info(f"Status: {os.linesep}{status}")
-            APP_LOGGER.info(f"Response: {os.linesep}{response}")
-            status, response = send_ups_state_report(
-                assoc, UID("1.2.3.4"), "IN PROGRESS"
-            )
-            APP_LOGGER.info(f"Status: {os.linesep}{status}")
-            APP_LOGGER.info(f"Response: {os.linesep}{response}")
-            status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "COMPLETED")
-            APP_LOGGER.info(f"Status: {os.linesep}{status}")
-            APP_LOGGER.info(f"Response: {os.linesep}{response}")
-        except InvalidDicomError:
-            APP_LOGGER.error(f"Bad DICOM: ")
-        except Exception as exc:
-            APP_LOGGER.error(f"Watch Registration (N-ACTION-RQ) failed")
-            APP_LOGGER.exception(exc)
+        ii = 1
+        for fpath in lfiles:
+            APP_LOGGER.info(f"Sending file: {fpath}")
+            try:
+                ds = dcmread(fpath)
+                status = assoc.send_n_create(
+                    ds,
+                    UnifiedProcedureStepPush,
+                    ds.SOPInstanceUID,
+                    ii,
+                    meta_uid=UnifiedProcedureStepPush,
+                )
+                # dataset: Dataset,
+                # class_uid: Union[str, UID],
+                # instance_uid: Optional[Union[str, UID]] = None,
+                # msg_id: int = 1,
+                # meta_uid: Optional[Union[str, UID]] = None,
+                ii += 1
+            except InvalidDicomError:
+                APP_LOGGER.error(f"Bad DICOM file: {fpath}")
+            except Exception as exc:
+                APP_LOGGER.error(f"Store failed: {fpath}")
+                APP_LOGGER.exception(exc)
 
         assoc.release()
     else:

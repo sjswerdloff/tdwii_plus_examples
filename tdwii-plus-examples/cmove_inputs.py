@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+"""cmove_inputs:  iterates through the input information sequence of a UPS Push SOP (e.g. a C-FIND-RSP)
+and issues a C-MOVE-RQ for each input from it's specified storage AE
+Requires a configuration json file containing a list of AE Title/Address/Port
+"""
 import json
 import sys
 
@@ -31,7 +36,7 @@ def get_port_for_ae_title(retrieve_ae_title):
 def cmove_specific_input(
     retrieve_ae_title, dest_ae_title, patient_id, study_uid, series_uid, instance_uid
 ):
-    """Mockup of C-MOVE request for a specific instance
+    """C-MOVE request for a specific instance
 
     Args:
         retrieve_ae_title (_type_): _description_

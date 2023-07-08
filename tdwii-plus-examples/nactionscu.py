@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-"""neventscu
+"""watchscu
 
-Used for sending events to AE's who subscribes for UPS Events
-Currently at the toy level of functionality:
-Sends a series of Procedure Step State change notifications
+Used for registering AE's with UPS Watch
+to subscribe for UPS Events
 """
 
 import argparse
@@ -20,6 +19,7 @@ from pydicom.uid import (
     ExplicitVRBigEndian,
     ExplicitVRLittleEndian,
     ImplicitVRLittleEndian,
+    generate_uid,
 )
 from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 from pynetdicom._globals import DEFAULT_MAX_LENGTH
@@ -31,20 +31,17 @@ from pynetdicom.sop_class import (
     UPSGlobalSubscriptionInstance,
 )
 
-# GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
-# NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
-
 __version__ = "0.1.0"
 
 
-def send_nevent(
+def send_action(
     assoc: Association,
     class_uid: UID,
     instance_uid: UID,
-    event_type=1,
-    event_info=None,
+    action_type=3,
+    action_info=None,
 ) -> Tuple[Dataset, Optional[Dataset]]:
-    """Send an N-EVENT request via `assoc`
+    """Send an N-ACTION request via `assoc`
 
     Parameters
     ----------
@@ -54,56 +51,63 @@ def send_nevent(
         The *Requested SOP Class UID* to use.
     instance_uid: pydicom.uid.UID
         The *Requested SOP Instance UID* to use.
-    event_type : int, optional
-        The *Event Type ID* to use.  default 1, UPS State Report
-    event_info : None or pydicom.dataset.Dataset, optional
-        The *Event Information* to use.
+    action_type : int, optional
+        The *Action Type ID* to use.  default 3, global subscription
+    action_info : None or pydicom.dataset.Dataset, optional
+        The *Action Information* to use.
     """
-    return assoc.send_n_event_report(event_info, event_type, class_uid, instance_uid)
+    return assoc.send_n_action(action_info, action_type, class_uid, instance_uid)
 
 
-def send_ups_state_report(
-    assoc: Association,
-    instance_uid: UID,
-    step_state: str,
-    input_readiness_state: str = "READY",
-    reason_for_cancellation: str = None,
-    discontinuation_reason_code_seq: Dataset = None,
+def send_procedure_step_state_change(
+    assoc: Association, new_state: str, ups_uid: UID, transaction_uid: UID
 ):
-    event_info = Dataset()
-    event_info.ProcedureStepState = step_state
+    ds = Dataset()
+    ds.RequestedSOPInstanceUID = ups_uid
+    # .ds.RequestingAE = calling_ae
+    ds.RequestedSOPClassUID = UnifiedProcedureStepPush
+    ds.TransactionUID = transaction_uid
+    ds.ProcedureStepState = new_state
 
-    event_info.InputReadinessState = input_readiness_state
-    if reason_for_cancellation:
-        event_info.ReasonForCancellation = reason_for_cancellation
-    if discontinuation_reason_code_seq:
-        event_info.ProcedureStepDiscontinuationReasonCodeSequence = (
-            discontinuation_reason_code_seq
-        )
-
-    return send_nevent(
-        assoc,
-        UnifiedProcedureStepPush,
-        instance_uid,
-        event_type=1,
-        event_info=event_info,
+    return send_action(
+        assoc=assoc,
+        class_uid=ds.RequestedSOPClassUID,
+        instance_uid=ds.RequestedSOPInstanceUID,
+        action_type=1,
+        action_info=ds,
     )
 
 
-def send_ups_cancel_requested():
-    pass
+def send_global_watch_registration(
+    args: argparse.Namespace, assoc: Association, action_info: Dataset = None
+):
+    """_summary_
 
+    Args:
+        args (argparse.Namespace): _description_
+        assoc (Assocation): _description_
+        action_info (Dataset, optional): _description_. Defaults to None.
 
-def send_ups_progress_report():
-    pass
-
-
-def send_ups_scp_status_change():
-    pass
-
-
-def send_ups_assigned():
-    pass
+    Returns:
+        _type_: _description_
+    """
+    print(f"args: {args}")
+    ds = action_info
+    if ds is None:
+        ds = Dataset()
+        ds.DeletionLock = "FALSE"
+        ds.RequestingAE = args.calling_aet
+        ds.ReceivingAE = args.receiver_aet
+        ds.RequestedSOPInstanceUID = UPSGlobalSubscriptionInstance
+        ds.RequestedSOPClassUID = UnifiedProcedureStepPush
+        # ds.RequestedSOPClassUID = UnifiedProcedureStepWatch
+    return send_action(
+        assoc=assoc,
+        class_uid=ds.RequestedSOPClassUID,
+        instance_uid=ds.RequestedSOPInstanceUID,
+        action_type=3,
+        action_info=ds,
+    )
 
 
 def _setup_argparser():
@@ -111,10 +115,10 @@ def _setup_argparser():
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The neventscu application implements a Service Class User "
-            "(SCU) for the UPS Event Class. "
+            "The watchscu application implements a Service Class User "
+            "(SCU) for the UPS Watch Class. "
         ),
-        usage="neventscu [options] addr port",
+        usage="watchscu [options] addr port",
     )
 
     # Parameters
@@ -123,6 +127,7 @@ def _setup_argparser():
         "addr", help="TCP/IP address or hostname of DICOM peer", type=str
     )
     req_opts.add_argument("port", help="TCP/IP port number of peer", type=int)
+    req_opts.add_argument("ups_uid", help="SOP Instance UID of the UPS", type=str)
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
@@ -172,6 +177,24 @@ def _setup_argparser():
         metavar="[f]ilename",
         help="use configuration file f",
         default=fpath,
+    )
+
+    # transaction UID option
+    gen_opts.add_argument(
+        "-T",
+        "--transaction_uid",
+        metavar="[transaction_uid]",
+        help="use Transaction UID uid",
+        default=None,
+    )
+
+    # (Requested) Procedure Step State option
+    gen_opts.add_argument(
+        "-R",
+        "--requested_procedure_step_state",
+        metavar="[requested_procedure_step_state]",
+        help="'IN PROGRESS', 'CANCELED' or 'COMPLETED'",
+        default="IN PROGRESS",
     )
 
     # Network Options
@@ -316,11 +339,11 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"neventscu.py v{__version__}")
+        print(f"watchscu.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "neventscu")
-    APP_LOGGER.debug(f"neventscu.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "watchscu")
+    APP_LOGGER.debug(f"watchscu.py v{__version__}")
     APP_LOGGER.debug("")
 
     APP_LOGGER.debug("Using configuration from:")
@@ -358,17 +381,22 @@ def main(args=None):
     )
     if assoc.is_established:
         try:
-            status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "SCHEDULED")
-            APP_LOGGER.info(f"Status: {os.linesep}{status}")
-            APP_LOGGER.info(f"Response: {os.linesep}{response}")
-            status, response = send_ups_state_report(
-                assoc, UID("1.2.3.4"), "IN PROGRESS"
+            if args.transaction_uid is None:
+                transaction_uid = generate_uid()
+            else:
+                transaction_uid = args.transaction_uid
+            if args.requested_procedure_step_state is None:
+                requested_state = "IN PROGRESS"
+            else:
+                requested_state = args.requested_procedure_step_state
+
+            status_dataset, response = send_procedure_step_state_change(
+                assoc, requested_state, args.ups_uid, transaction_uid
             )
-            APP_LOGGER.info(f"Status: {os.linesep}{status}")
-            APP_LOGGER.info(f"Response: {os.linesep}{response}")
-            status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "COMPLETED")
-            APP_LOGGER.info(f"Status: {os.linesep}{status}")
-            APP_LOGGER.info(f"Response: {os.linesep}{response}")
+            print(f"Status Code: 0x{status_dataset.Status:X}")
+
+            print(f"Status Dataset:")
+            print(f"{status_dataset}")
         except InvalidDicomError:
             APP_LOGGER.error(f"Bad DICOM: ")
         except Exception as exc:
