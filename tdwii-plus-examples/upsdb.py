@@ -25,6 +25,7 @@ try:
 except ImportError:
     sys.exit("qrscp requires the sqlalchemy package")
 
+from pydicom import dcmread
 from pydicom.dataset import Dataset
 from pynetdicom import build_context
 from pynetdicom.sop_class import (
