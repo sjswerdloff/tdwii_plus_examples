@@ -14,10 +14,7 @@ files = [
 [package.dependencies]
 lazy-object-proxy = ">=1.4.0"
 typing-extensions = {version = ">=4.0.0", markers = "python_version < \"3.11\""}
-wrapt = [
-    {version = ">=1.11,<2", markers = "python_version < \"3.11\""},
-    {version = ">=1.14,<2", markers = "python_version >= \"3.11\""},
-]
+wrapt = {version = ">=1.11,<2", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "black"
@@ -503,10 +500,7 @@ files = [
 [package.dependencies]
 astroid = ">=2.15.4,<=2.17.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
-dill = [
-    {version = ">=0.2", markers = "python_version < \"3.11\""},
-    {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
-]
+dill = {version = ">=0.2", markers = "python_version < \"3.11\""}
 isort = ">=4.2.5,<6"
 mccabe = ">=0.6,<0.8"
 platformdirs = ">=2.2.0"
@@ -520,22 +514,25 @@ testutils = ["gitpython (>3)"]
 
 [[package]]
 name = "pynetdicom"
-version = "2.0.2"
-description = "A Python implementation of the DICOM networking protocol"
+version = "2.1.0-dev0"
+description = "A Python implementation of the DICOM networking protocol, originally based on (legacy) pynetdicom."
 optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pynetdicom-2.0.2-py3-none-any.whl", hash = "sha256:6726173d25a51f66f2a4557d816c0f93b3b2a8435ce3d319e6cdd8e48bf657d5"},
-    {file = "pynetdicom-2.0.2.tar.gz", hash = "sha256:231212e9b9c5e0debf2af4f17d8afa14ecd1b262a11cdb891b2b2b15f7ab5939"},
-]
-
-[package.dependencies]
-pydicom = ">=2.2.0"
+python-versions = ">=3.7,<3.11"
+files = []
+develop = false
 
 [package.extras]
-apps = ["sqlalchemy"]
-docs = ["numpydoc", "sphinx", "sphinx-copybutton", "sphinx-issues", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
-tests = ["pyfakefs", "pytest", "sqlalchemy"]
+all = ["Sphinx", "black (>=22.3.0)", "codespell", "coverage", "doc8", "flake8", "mypy", "pre-commit", "pydicom (>=2.3.0,<3.0.0)", "pylint", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "readme-renderer", "rope", "setuptools", "sphinx-argparse", "sphinx_copybutton", "sphinx_rtd_theme", "sqlalchemy (>=2.0)", "tabulate", "typing-extensions"]
+dev = ["black (>=22.3.0)", "codespell", "doc8", "flake8", "mypy", "pre-commit", "readme-renderer", "rope", "tabulate"]
+docs = ["Sphinx", "pydicom (>=2.3.0,<3.0.0)", "sphinx-argparse", "sphinx_copybutton", "sphinx_rtd_theme"]
+doctests = ["black (>=22.3.0)", "tabulate"]
+tests = ["coverage", "pylint", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar"]
+
+[package.source]
+type = "git"
+url = "https://github.com/sjswerdloff/pynetdicom.git"
+reference = "update_pyproject_poetry_lock"
+resolved_reference = "7ed8f48656caecb8d0a10d8f7ac210da99412d90"
 
 [[package]]
 name = "pytest"
@@ -895,5 +892,5 @@ tests = ["dill", "flake8", "pylint", "pytest", "pytest-rerunfailures", "pytest-s
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.9"
-content-hash = "8b7116b1f8764f72f78242872710f911f5823611817539de271ceb5fa48244fd"
+python-versions = ">=3.9, <3.11"
+content-hash = "1db2dd537b1550f4111fdc4711ddcd7faca146b258ab6a47cb0459af9415d3bc"
