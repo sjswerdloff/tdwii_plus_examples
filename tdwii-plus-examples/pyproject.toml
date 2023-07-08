@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "tdwii-plus-examples"
+version = "0.1.0"
+description = "A set of example programs that perform transactions with IHE-RO TDW-II, and also examples for supporting UPS Watch and UPS Event (event driven DICOM)"
+authors = ["Stuart Swerdloff <sjswerdloff@gmail.com>"]
+license = "Apache-2"
+readme = "README.md"
+packages = [{include = "tdwii_plus_examples"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pydicom = "^2.4.1"
+pynetdicom = "^2.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
