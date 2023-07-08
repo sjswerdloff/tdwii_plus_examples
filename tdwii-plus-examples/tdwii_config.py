@@ -1,6 +1,5 @@
 import json
 import sys
-from pathlib import Path
 
 known_ae_ipaddr = {}
 known_ae_port = {}

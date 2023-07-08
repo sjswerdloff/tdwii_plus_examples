@@ -13,26 +13,19 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Optional, Tuple
 
-from pydicom import Dataset, dataset, dcmread
+from pydicom import Dataset, dcmread
 from pydicom.errors import InvalidDicomError
-from pydicom.uid import (
-    UID,
-    ExplicitVRBigEndian,
-    ExplicitVRLittleEndian,
-    ImplicitVRLittleEndian,
-)
+from pydicom.uid import UID
 from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 from pynetdicom._globals import DEFAULT_MAX_LENGTH
-from pynetdicom.apps.common import get_files, setup_logging
-from pynetdicom.sop_class import (
-    UnifiedProcedureStepPush,
-    UnifiedProcedureStepWatch,
-    UPSFilteredGlobalSubscriptionInstance,
-    UPSGlobalSubscriptionInstance,
-)
+from pynetdicom.apps.common import setup_logging
+from pynetdicom.sop_class import UnifiedProcedureStepPush
 
-# GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
-# NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
+# Maybe add these back in as imports as part of generalizing this example
+# UnifiedProcedureStepWatch,
+# UPSFilteredGlobalSubscriptionInstance,
+# UPSGlobalSubscriptionInstance,
+
 
 __version__ = "0.1.0"
 
@@ -259,7 +252,7 @@ def _setup_argparser():
     )
 
     # Misc Options
-    misc_opts = parser.add_argument_group("Miscellaneous Options")
+    # misc_opts = parser.add_argument_group("Miscellaneous Options")
 
     return parser.parse_args()
 
@@ -285,14 +278,14 @@ def get_contexts(fpaths, app_logger):
         path = os.fspath(Path(fpath).resolve())
         try:
             ds = dcmread(path)
-        except Exception as exc:
+        except Exception:
             bad.append(("Bad DICOM file", path))
             continue
 
         try:
             sop_class = ds.SOPClassUID
             tsyntax = ds.file_meta.TransferSyntaxUID
-        except Exception as exc:
+        except Exception:
             bad.append(("Unknown SOP Class or Transfer Syntax UID", path))
             continue
 
@@ -335,18 +328,18 @@ def main(args=None):
     ae.network_timeout = args.network_timeout
 
     # Propose the default presentation contexts
-    if args.request_little:
-        transfer_syntax = [ExplicitVRLittleEndian]
-    elif args.request_big:
-        transfer_syntax = [ExplicitVRBigEndian]
-    elif args.request_implicit:
-        transfer_syntax = [ImplicitVRLittleEndian]
-    else:
-        transfer_syntax = [
-            ExplicitVRLittleEndian,
-            ImplicitVRLittleEndian,
-            ExplicitVRBigEndian,
-        ]
+    # if args.request_little:
+    #     transfer_syntax = [ExplicitVRLittleEndian]
+    # elif args.request_big:
+    #     transfer_syntax = [ExplicitVRBigEndian]
+    # elif args.request_implicit:
+    #     transfer_syntax = [ImplicitVRLittleEndian]
+    # else:
+    #     transfer_syntax = [
+    #         ExplicitVRLittleEndian,
+    #         ImplicitVRLittleEndian,
+    #         ExplicitVRBigEndian,
+    #     ]
 
     # Request association with remote
     assoc = ae.associate(
@@ -370,9 +363,11 @@ def main(args=None):
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
         except InvalidDicomError:
-            APP_LOGGER.error(f"Bad DICOM: ")
+            APP_LOGGER.error("Bad DICOM: ")
         except Exception as exc:
-            APP_LOGGER.error(f"Watch Registration (N-ACTION-RQ) failed")
+            APP_LOGGER.error(
+                "UPS State Report as Event Notification (N-EVENT-REPORT-RQ) failed"
+            )
             APP_LOGGER.exception(exc)
 
         assoc.release()

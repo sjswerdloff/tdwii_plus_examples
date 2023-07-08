@@ -7,26 +7,17 @@ import sys
 from configparser import ConfigParser
 
 import pydicom.config
-from neventscp_handlers import (  # handle_find,; handle_get,; handle_move,; handle_naction,; handle_nget,; handle_nset,; handle_store,
-    handle_echo,
-    handle_nevent,
-)
+from neventscp_handlers import handle_echo, handle_nevent
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
-    AllStoragePresentationContexts,
     UnifiedProcedurePresentationContexts,
     _config,
     _handlers,
     evt,
 )
 from pynetdicom.apps.common import setup_logging
-from pynetdicom.sop_class import (
-    StudyRootQueryRetrieveInformationModelMove,
-    UnifiedProcedureStepPull,
-    UnifiedProcedureStepPush,
-    Verification,
-)
+from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
 # from pynetdicom.apps.neventscp import db
@@ -216,11 +207,11 @@ def nevent_cb(**kwargs):
     if "logger" in kwargs.keys():
         logger = kwargs["logger"]
     if logger:
-        logger.info(f"nevent_cb invoked")
+        logger.info("nevent_cb invoked")
     event_type_id = 0  # not a valid type ID
     if logger:
         logger.info(
-            f"TODO: Invoke application response appropriate to content of N-EVENT-REPORT-RQ"
+            "TODO: Invoke application response appropriate to content of N-EVENT-REPORT-RQ"
         )
     if "type_id" in kwargs.keys():
         event_type_id = kwargs["type_id"]
@@ -229,33 +220,35 @@ def nevent_cb(**kwargs):
     if "information_ds" in kwargs.keys():
         information_ds = kwargs["information_ds"]
         if logger:
-            logger.info(f"Dataset in N-EVENT-REPORT-RQ: ")
+            logger.info("Dataset in N-EVENT-REPORT-RQ: ")
             logger.info(f"{information_ds}")
     # TODO: replace if/elif with dict of {event_type_id,application_response_functions}
     if event_type_id == 1:
         if logger:
-            logger.info(f"UPS State Report")
-            logger.info(f"Probably time to do a C-FIND-RQ")
+            logger.info("UPS State Report")
+            logger.info("Probably time to do a C-FIND-RQ")
     elif event_type_id == 2:
         if logger:
-            logger.info(f"UPS Cancel Request")
+            logger.info("UPS Cancel Request")
     elif event_type_id == 3:
         if logger:
-            logger.info(f"UPS Progress Report")
+            logger.info("UPS Progress Report")
             logger.info(
-                f"Probably time to see if the Beam (number) changed, or if adaptation is taking or took place"
+                "Probably time to see if the Beam (number) changed, or if adaptation is taking or took place"
             )
     elif event_type_id == 4:
         if logger:
-            logger.info(f"SCP Status Change")
+            logger.info("SCP Status Change")
             logger.info(
-                f"Probably a good time to check if this is a Cold Start and then re-subscribe for specific UPS instances if this application has/had instance specific subscriptions"
+                "Probably a good time to check if this is a Cold Start and then re-subscribe \
+                    for specific UPS instances if this application has/had instance specific subscriptions"
             )
     elif event_type_id == 5:
         if logger:
-            logger.info(f"UPS Assigned")
+            logger.info("UPS Assigned")
             logger.info(
-                f"Not too interesting for TDW-II, UPS are typically assigned at the time of scheduling, but a matching class of machines might make for a different approach"
+                "Not too interesting for TDW-II, UPS are typically assigned at the time of scheduling, \
+                    but a matching class of machines might make for a different approach"
             )
     else:
         if logger:
@@ -316,7 +309,7 @@ def main(args=None):
     # Use default or specified configuration file
     current_dir = os.path.abspath(os.path.dirname(__file__))
     instance_dir = os.path.join(current_dir, app_config["instance_location"])
-    db_path = os.path.join(current_dir, app_config["database_location"])
+    # db_path = os.path.join(current_dir, app_config["database_location"])
 
     # Clean up the database and storage directory
     if args.clean:
@@ -341,7 +334,7 @@ def main(args=None):
     ae.dimse_timeout = app_config.getfloat("dimse_timeout")
     ae.network_timeout = app_config.getfloat("network_timeout")
 
-    ## Add supported presentation contexts
+    # Add supported presentation contexts
     # Verification SCP
     ae.add_supported_context(Verification, ALL_TRANSFER_SYNTAXES)
 

@@ -1,6 +1,5 @@
 """Unit tests for ncreatescu.py"""
 
-import logging
 import os
 import subprocess
 import sys
@@ -17,9 +16,7 @@ from pydicom.uid import (
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
-    DEFAULT_TRANSFER_SYNTAXES,
     UnifiedProcedurePresentationContexts,
-    debug_logger,
     evt,
 )
 from pynetdicom.sop_class import UnifiedProcedureStepPush, Verification
@@ -50,7 +47,7 @@ def start_ncreatescu(args):
 
 def default_handle_ncreate(event):
     req = event.request
-    attr_list = event.attribute_list
+    # attr_list = event.attribute_list
     ds = Dataset()
 
     # Add the SOP Common module elements (Annex C.12.1)
@@ -119,7 +116,7 @@ class ncreatescuBase:
         assert (1, 1) == requestor.asynchronous_operations
         assert {} == requestor.sop_class_common_extended
         assert {} == requestor.sop_class_extended
-        assert requestor.user_identity == None
+        assert requestor.user_identity is None
         cxs = requestor.primitive.presentation_context_definition_list
         assert len(cxs) == 5
         cxs = {cx.abstract_syntax: cx for cx in cxs}

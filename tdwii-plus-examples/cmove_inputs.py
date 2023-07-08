@@ -9,10 +9,7 @@ import sys
 import pydicom
 from pydicom.dataset import Dataset
 from pynetdicom import AE, debug_logger
-from pynetdicom.sop_class import (
-    PatientRootQueryRetrieveInformationModelMove,
-    StudyRootQueryRetrieveInformationModelMove,
-)
+from pynetdicom.sop_class import StudyRootQueryRetrieveInformationModelMove
 
 # from pynetdicom.apps import movescu
 
@@ -47,7 +44,8 @@ def cmove_specific_input(
         instance_uid (_type_): _description_
     """
     print(
-        f"Move Study {study_uid}, Series {series_uid}, Instance {instance_uid} for Patient ID {patient_id} from {retrieve_ae_title} to {dest_ae_title}"
+        f"Move Study {study_uid}, Series {series_uid}, Instance {instance_uid} \
+        for Patient ID {patient_id} from {retrieve_ae_title} to {dest_ae_title}"
     )
 
     debug_logger()
@@ -97,7 +95,8 @@ def cmove_inputs(ds, local_store_ae_title):
 
     Args:
         ds: the UPS-CFIND-RSP
-        local_store_ae_title (str): the destination for the C-MOVE to issue it's C-STORE where you want the RT (Ion) Plan and RTBDI to go
+        local_store_ae_title (str): the destination for the C-MOVE to issue it's C-STORE where you want
+        the RT (Ion) Plan and RTBDI to go
     """
 
     iis = ds.InputInformationSequence
