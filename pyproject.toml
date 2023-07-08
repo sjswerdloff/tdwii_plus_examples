@@ -48,6 +48,7 @@ tests = [
     "pytest-rerunfailures",
     "pytest-sugar",
     "toml",
+    "flake8",
 ]
 
 dev = [
@@ -57,6 +58,7 @@ dev = [
     "rope",
     "doc8",
     "toml",
+    "flake8",
 ]
 
 all = [
@@ -70,7 +72,8 @@ all = [
     "rope",
     "doc8",
     "toml",
-    "tomlkit"
+    "tomlkit",
+    "flake8",
 ]
 
 
