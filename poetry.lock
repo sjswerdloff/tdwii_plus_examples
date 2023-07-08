@@ -889,11 +889,11 @@ files = [
 ]
 
 [extras]
-all = ["black", "doc8", "flake8", "mypy", "pre-commit", "pylint", "pytest", "pytest-rerunfailures", "pytest-sugar", "rope", "toml", "tomlkit"]
-dev = ["black", "doc8", "flake8", "mypy", "pre-commit", "rope", "toml"]
-tests = ["flake8", "pylint", "pytest", "pytest-rerunfailures", "pytest-sugar", "toml"]
+all = ["black", "dill", "doc8", "flake8", "mypy", "pre-commit", "pylint", "pytest", "pytest-rerunfailures", "pytest-sugar", "rope", "toml", "tomlkit"]
+dev = ["black", "dill", "doc8", "flake8", "mypy", "pre-commit", "rope", "toml"]
+tests = ["dill", "flake8", "pylint", "pytest", "pytest-rerunfailures", "pytest-sugar", "toml"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "70cc5f2326ff45f7495bbb46aaf4858d47de44c30ca60aa2f57904ab9a4ab42a"
+content-hash = "8b7116b1f8764f72f78242872710f911f5823611817539de271ceb5fa48244fd"
