@@ -212,14 +212,14 @@ def get_contexts(fpaths, app_logger):
         path = os.fspath(Path(fpath).resolve())
         try:
             ds = dcmread(path)
-        except Exception as exc:
+        except Exception:
             bad.append(("Bad DICOM file", path))
             continue
 
         try:
             sop_class = ds.SOPClassUID
             tsyntax = ds.file_meta.TransferSyntaxUID
-        except Exception as exc:
+        except Exception:
             bad.append(("Unknown SOP Class or Transfer Syntax UID", path))
             continue
 
@@ -313,6 +313,7 @@ def main(args=None):
                     ii,
                     meta_uid=UnifiedProcedureStepPush,
                 )
+                APP_LOGGER.debug(f"Status: {status}")
                 # dataset: Dataset,
                 # class_uid: Union[str, UID],
                 # instance_uid: Optional[Union[str, UID]] = None,

@@ -1,19 +1,24 @@
 """Event handlers for upsscp.py"""
 import os
-from io import BytesIO
+
+# from io import BytesIO
 from pathlib import Path
 
 from pydicom import Dataset, dcmread, dcmwrite
-from pydicom.dataset import FileMetaDataset
-from pynetdicom.dimse_primitives import N_ACTION
-from pynetdicom.dsutils import encode
+
+# from pydicom.dataset import FileMetaDataset
+from pydicom.errors import InvalidDicomError
+
+# from pynetdicom.dimse_primitives import N_ACTION
+# from pynetdicom.dsutils import encode
 from pynetdicom.sop_class import (
     UnifiedProcedureStepPull,
     UnifiedProcedureStepPush,
     UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
-from recursive_print_ds import print_ds
+
+# from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from upsdb import Instance, InvalidIdentifier, add_instance, search
@@ -84,7 +89,8 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
     else:
         if logger is not None:
             logger.info(
-                f"Receiving AE Title {subscriber_ae_title} is already subscribed, only supporting one kind of filter per receiving AE"
+                f"Receiving AE Title {subscriber_ae_title} is already subscribed, \
+                    only supporting one kind of filter per receiving AE"
             )
     return
 
@@ -267,7 +273,7 @@ def handle_find(event, instance_dir, db_path, cli_config, logger):
         #     yield 0x0000, None
         # else:
         engine = create_engine(db_path)
-        with engine.connect() as conn:
+        with engine.connect() as conn:  # noqa:  F841
             Session = sessionmaker(bind=engine)
             session = Session()
             # Search database using Identifier as the query
@@ -327,7 +333,7 @@ def _reload_ups_instances(instance_dir, logger):
                 ups = dcmread(filename, force=True)
                 ups_instance_list.append(ups)
                 logger.info(f"Loaded UPS from {filename}")
-        except:
+        except (FileNotFoundError, InvalidDicomError, TypeError):
             logger.warn(f"Unable to load UPS from {filename}")
 
     for ups in ups_instance_list:
@@ -365,7 +371,7 @@ def handle_get(event, db_path, cli_config, logger):
     model = event.request.AffectedSOPClassUID
 
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -450,7 +456,7 @@ def handle_move(event, destinations, db_path, cli_config, logger):
 
     model = event.request.AffectedSOPClassUID
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -560,7 +566,7 @@ def handle_store(event, storage_dir, db_path, cli_config, logger):
 
     # Dataset successfully written, try to add to/update database
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -616,7 +622,7 @@ def handle_nget(event, db_path, cli_config, logger):
     model = event.request.AffectedSOPClassUID
 
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -695,25 +701,25 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
     +------------------------------------------+---------+----------+
     | Parameter                                | Req/ind | Rsp/conf |
     +==========================================+=========+==========+
-    | Message ID                               | M       | \-       |
+    | Message ID                               | M       | \-       | # noqa: W605
     +------------------------------------------+---------+----------+
-    | Message ID Being Responded To            | \-      | M        |
+    | Message ID Being Responded To            | \-      | M        | # noqa: W605
     +------------------------------------------+---------+----------+
-    | Requested SOP Class UID                  | M       | \-       |
+    | Requested SOP Class UID                  | M       | \-       | # noqa: W605
     +------------------------------------------+---------+----------+
-    | Requested SOP Instance UID               | M       | \-       |
+    | Requested SOP Instance UID               | M       | \-       | # noqa: W605
     +------------------------------------------+---------+----------+
     | Action Type ID                           | M       | C(=)     |
     +------------------------------------------+---------+----------+
-    | Action Information                       | U       | \-       |
+    | Action Information                       | U       | \-       | # noqa: W605
     +------------------------------------------+---------+----------+
-    | Affected SOP Class UID                   | \-      | U        |
+    | Affected SOP Class UID                   | \-      | U        | # noqa: W605
     +------------------------------------------+---------+----------+
-    | Affected SOP Instance UID                | \-      | U        |
+    | Affected SOP Instance UID                | \-      | U        | # noqa: W605
     +------------------------------------------+---------+----------+
-    | Action Reply                             | \-      | C        |
+    | Action Reply                             | \-      | C        | # noqa: W605
     +------------------------------------------+---------+----------+
-    | Status                                   | \-      | M        |
+    | Status                                   | \-      | M        | # noqa: W605
     +------------------------------------------+---------+----------+
     """
     action_type_id = naction_primitive.ActionTypeID
@@ -743,7 +749,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 logger.error(f"Error in decoding subscriber information: {exc}")
                 # TODO... service_status = some error code
         else:
-            logger.warn(f"No action information available!")
+            logger.warn("No action information available!")
             # TODO... service_status = some error code
 
         # TODO:  use action_type_id to determine if this is subscribe or unsubscribe
@@ -772,7 +778,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
         # This is a ProcedureStepState change request...
         engine = create_engine(db_path)
         service_status = 0x0000
-        with engine.connect() as conn:
+        with engine.connect() as conn:  # noqa:  F841
             Session = sessionmaker(bind=engine)
             session = Session()
             # Search database using Identifier as the query
@@ -781,9 +787,9 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 try:
                     logger.info(f"{action_information}")
                 except Exception as exc:
-                    logger.info(f"Unable to decode action information")
+                    logger.info(f"Unable to decode action information: {exc}")
             else:
-                logger.info(f"No action information")
+                logger.info("No action information")
 
             try:
                 search_ds = Dataset()  # (action_information)
@@ -815,15 +821,15 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 ]
 
                 if (
-                    transaction_uid is None
-                    or len(transaction_uid) == 0
+                    (transaction_uid is None)
+                    or (len(transaction_uid) == 0)  # noqa: W503,W504
                     or (
                         current_step_state != "SCHEDULED"
                         and transaction_uid != stored_transaction_uid
-                    )
+                    )  # noqa: W503,W504
                 ):
                     service_status = 0xC301
-                    error_str = f"Transaction UID is missing, zero length, or not valid"
+                    error_str = "Transaction UID is missing, zero length, or not valid"
                     error_response.ErrorComment = error_str[:63]
                     logger.error(f"Service Status: 0x{service_status:X}")
                     logger.error(error_str)
@@ -834,7 +840,8 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                     return
 
                 if service_status != 0x0000:
-                    error_response.ErrorComment = f"Current Step State {current_step_state}, requested Step State {requested_step_state}"
+                    error_response.ErrorComment = f"Current Step State {current_step_state}, \
+                        requested Step State {requested_step_state}"
                     logger.error(f"Service Status: 0x{service_status:X}")
                     error_response.Status = service_status
                     # yield service_status
@@ -916,7 +923,7 @@ def handle_nevent(event, db_path, cli_config, logger):
     model = event.request.AffectedSOPClassUID
 
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -986,7 +993,7 @@ def handle_nset(event, db_path, cli_config, logger):
     model = event.request.AffectedSOPClassUID
 
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -1105,7 +1112,7 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
 
     # Dataset successfully written, try to add to/update database
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
 

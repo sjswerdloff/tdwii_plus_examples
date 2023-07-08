@@ -2,9 +2,7 @@
 
 import sys
 
-from pydicom import dataset, dcmread
-from pydicom.dataelem import DataElement
-from pydicom.tag import Tag
+from pydicom import dcmread
 
 
 def print_ds(ds, indent_level=0):

@@ -1,21 +1,20 @@
 """Event handlers for neventscp.py"""
 import os
-from io import BytesIO
 from pathlib import Path
 
 from pydicom import Dataset, dcmread
-from pynetdicom.dimse_primitives import N_ACTION
-from pynetdicom.dsutils import encode
+from pydicom.errors import InvalidDicomError
 from pynetdicom.sop_class import (
-    UnifiedProcedureStepPull,
-    UnifiedProcedureStepPush,
     UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
-from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from upsdb import Instance, InvalidIdentifier, add_instance, search
+
+# and maybe import UnifiedProcedureStepPush
+# might want to actually check which SOP Class is involved when receiving the N-EVENT-RQ
+
 
 _ups_instances = dict()
 
@@ -50,7 +49,8 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
     else:
         if logger is not None:
             logger.info(
-                f"Receiving AE Title {subscriber_ae_title} is already subscribed, only supporting one kind of filter per receiving AE"
+                f"Receiving AE Title {subscriber_ae_title} is already subscribed, \
+                    only supporting one kind of filter per receiving AE"
             )
     return
 
@@ -233,7 +233,7 @@ def handle_find(event, instance_dir, cli_config, logger):
         yield 0x0000, None
     else:
         engine = create_engine(db_path)
-        with engine.connect() as conn:
+        with engine.connect() as conn:  # noqa: F841
             Session = sessionmaker(bind=engine)
             session = Session()
             # Search database using Identifier as the query
@@ -287,7 +287,7 @@ def _reload_ups_instances(instance_dir, logger):
                 ups = dcmread(filename, force=True)
                 ups_instance_list.append(ups)
                 logger.info(f"Loaded UPS from {filename}")
-        except:
+        except (FileNotFoundError, InvalidDicomError, TypeError):
             logger.warn(f"Unable to load UPS from {filename}")
 
     for ups in ups_instance_list:
@@ -325,7 +325,7 @@ def handle_get(event, db_path, cli_config, logger):
     model = event.request.AffectedSOPClassUID
 
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa: F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -410,7 +410,7 @@ def handle_move(event, destinations, db_path, cli_config, logger):
 
     model = event.request.AffectedSOPClassUID
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa: F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -520,7 +520,7 @@ def handle_store(event, storage_dir, db_path, cli_config, logger):
 
     # Dataset successfully written, try to add to/update database
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa: F841
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -576,7 +576,7 @@ def handle_nget(event, db_path, cli_config, logger):
     model = event.request.AffectedSOPClassUID
 
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa: F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query
@@ -655,25 +655,25 @@ def handle_naction(event, db_path, cli_config, logger):
     +------------------------------------------+---------+----------+
     | Parameter                                | Req/ind | Rsp/conf |
     +==========================================+=========+==========+
-    | Message ID                               | M       | \-       |
+    | Message ID                               | M       | \-       |  # noqa: W605
     +------------------------------------------+---------+----------+
-    | Message ID Being Responded To            | \-      | M        |
+    | Message ID Being Responded To            | \-      | M        |  # noqa: W605
     +------------------------------------------+---------+----------+
-    | Requested SOP Class UID                  | M       | \-       |
+    | Requested SOP Class UID                  | M       | \-       |  # noqa: W605
     +------------------------------------------+---------+----------+
-    | Requested SOP Instance UID               | M       | \-       |
+    | Requested SOP Instance UID               | M       | \-       |  # noqa: W605
     +------------------------------------------+---------+----------+
     | Action Type ID                           | M       | C(=)     |
     +------------------------------------------+---------+----------+
-    | Action Information                       | U       | \-       |
+    | Action Information                       | U       | \-       |  # noqa: W605
     +------------------------------------------+---------+----------+
-    | Affected SOP Class UID                   | \-      | U        |
+    | Affected SOP Class UID                   | \-      | U        |  # noqa: W605
     +------------------------------------------+---------+----------+
-    | Affected SOP Instance UID                | \-      | U        |
+    | Affected SOP Instance UID                | \-      | U        |  # noqa: W605
     +------------------------------------------+---------+----------+
-    | Action Reply                             | \-      | C        |
+    | Action Reply                             | \-      | C        |  # noqa: W605
     +------------------------------------------+---------+----------+
-    | Status                                   | \-      | M        |
+    | Status                                   | \-      | M        |  # noqa: W605
     +------------------------------------------+---------+----------+
     """
     action_type_id = naction_primitive.ActionTypeID
@@ -850,11 +850,12 @@ def handle_nevent(event, event_response_cb, cli_config, logger):
         logger.warning(
             f"Received model.keyword = {model.keyword} with AffectedSOPClassUID = {model}"
         )
-        logger.warning(f"Not a UPS Event")
+        logger.warning("Not a UPS Event")
 
-    logger.info(f"Finished Processing N-EVENT-REPORT-RQ")
+    logger.info("Finished Processing N-EVENT-REPORT-RQ")
     yield 0  # Number of suboperations remaining
-    yield 0  # Status.  If a rsp dataset of None is provided, the underlying handler and dimse primitive in pynetdicom raises an error
+    #  If a rsp dataset of None is provided below, the underlying handler and dimse primitive in pynetdicom raises an error
+    yield 0  # Status
 
 
 def handle_nset(event, db_path, cli_config, logger):
@@ -887,7 +888,7 @@ def handle_nset(event, db_path, cli_config, logger):
     model = event.request.AffectedSOPClassUID
 
     engine = create_engine(db_path)
-    with engine.connect() as conn:
+    with engine.connect() as conn:  # noqa: F841
         Session = sessionmaker(bind=engine)
         session = Session()
         # Search database using Identifier as the query

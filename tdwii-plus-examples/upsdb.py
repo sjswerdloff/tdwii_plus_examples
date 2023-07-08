@@ -271,7 +271,7 @@ def add_instance(ds, session, fpath=None):
         if tsyntax:
             assert len(tsyntax) < 64
             instance.transfer_syntax_uid = tsyntax
-    except (AttributeError, AssertionError) as exc:
+    except (AttributeError, AssertionError):
         pass
 
     # SOP Class UID
@@ -327,19 +327,19 @@ def build_query(identifier, session, query=None):
 
         # Part 4, C.2.2.2.3 Universal Matching
         if val is None:
-            print(f"Performing universal matching...")
+            print("Performing universal matching...")
             query = _search_universal(elem, session, query)
             continue
 
         # Part 4, C.2.2.2.2 List of UID Matching
         if vr == "UI":
-            print(f"Performing list of UID matching...")
+            print("Performing list of UID matching...")
             query = _search_uid_list(elem, session, query)
             continue
 
         # Part 4, C.2.2.2.4 Wild Card Matching
         if vr in _text_vr and ("*" in val or "?" in val):
-            print(f"Performing wildcard matching...")
+            print("Performing wildcard matching...")
             query = _search_wildcard(elem, session, query)
             continue
 
@@ -351,7 +351,7 @@ def build_query(identifier, session, query=None):
         # Part 4, C.2.2.2.6 Sequence Matching
         #   UPS has code sequences
         if vr == "SQ":
-            print(f"Sequence Matching only partially supported")
+            print("Sequence Matching only partially supported")
             print(f"Sequence: {elem}")
             query = _search_sequence(elem, session, query)
             continue
@@ -739,11 +739,22 @@ def _search_wildcard(elem, session, query=None):
 def _search_sequence(elem, session, query=None):
     """Perform a search using sequence matching.
 
-    If a Key Attribute in the Identifier of a C-FIND request needs to be matched against an Attribute structured as a Sequence of Items (VR of SQ), the Key Attribute shall be structured as a Sequence of Items with a single Item. This Item may contain zero or more Item Key Attributes. Each Item Key Attribute matching shall be performed on an Item by Item basis. The types of matching defined in Section C.2.2.2 shall be used: Single Value Matching, List of UID Matching, Universal Matching, Wild Card Matching, Range Matching and Sequence Matching (recursive Sequence matching).
-    If all the Item Key Attributes match, for at least one of the Items of the Attribute against which the match is performed, a successful match is generated. A sequence of matching Items containing only the requested Attributes is returned in the corresponding C-FIND responses.
-    If the Key Attribute in the Identifier of a C-FIND request contains no Key Item Attribute (zero-length Item Tag), then all entities shall match this Attribute. This provides a Universal Matching like mechanism to request that the selected Key Attribute Value (the entire Sequence of Items) be returned in corresponding C-FIND responses.
+    If a Key Attribute in the Identifier of a C-FIND request needs to be matched against an Attribute
+    structured as a Sequence of Items (VR of SQ), the Key Attribute shall be structured as a Sequence of Items
+    with a single Item. This Item may contain zero or more Item Key Attributes. Each Item Key Attribute matching
+    shall be performed on an Item by Item basis.
+    The types of matching defined in Section C.2.2.2 shall be used: Single Value Matching, List of UID Matching,
+    Universal Matching, Wild Card Matching, Range Matching and Sequence Matching (recursive Sequence matching).
+    If all the Item Key Attributes match, for at least one of the Items of the Attribute against which the match
+    is performed, a successful match is generated. A sequence of matching Items containing only the requested
+    Attributes is returned in the corresponding C-FIND responses.
+    If the Key Attribute in the Identifier of a C-FIND request contains no Key Item Attribute (zero-length Item Tag),
+    then all entities shall match this Attribute. This provides a Universal Matching like mechanism to request that the
+    selected Key Attribute Value (the entire Sequence of Items) be returned in corresponding C-FIND responses.
 
-    This search as initially implemented is currently woefully inadequate in meeting the expectations of the Standard.  Single value matching is being performed on only a specific element in the Sequence, the CodeValue, and it is assuming the search sequence is a Code Sequence.
+    This search as initially implemented is currently woefully inadequate in meeting the expectations of the Standard.
+    Single value matching is being performed on only a specific element in the Sequence, the CodeValue, and it is assuming
+    the search sequence is a Code Sequence.
 
 
     Parameters
@@ -774,15 +785,17 @@ def _search_sequence(elem, session, query=None):
                 # namely Scheduled Station Name Code Sequence
                 # Workitem Code Sequence
                 value = elem[0].CodeValue
-            except Exception as exc:
+            except Exception:
                 pass
 
             try:
                 # for IHE-RO, only expect SEQUENCES in queries that are CodeSequence
                 # namely Scheduled Station Name Code Sequence should have 99IHERO2008 for the designator
                 # and Workitem Code Sequence should have DCM for the designator
-                designator = elem[0].CodingSchemeDesignator
-            except Exception as exc:
+                # haven't figured out quite how to add the designator to the query yet.
+                # maybe specify that attr as well and call query.filter(designator_attr == designator)?
+                designator = elem[0].CodingSchemeDesignator  # noqa: F841
+            except Exception:
                 pass
     else:
         raise ValueError(elem.VR)

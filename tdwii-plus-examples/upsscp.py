@@ -11,40 +11,23 @@ import upsdb
 from handlers import (
     handle_echo,
     handle_find,
-    handle_get,
-    handle_move,
     handle_naction,
     handle_ncreate,
     handle_nevent,
     handle_nget,
     handle_nset,
-    handle_store,
 )
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
-    AllStoragePresentationContexts,
     UnifiedProcedurePresentationContexts,
     _config,
     _handlers,
     evt,
 )
 from pynetdicom.apps.common import setup_logging
-from pynetdicom.sop_class import (
-    ModalityWorklistInformationFind,
-    PatientRootQueryRetrieveInformationModelFind,
-    PatientRootQueryRetrieveInformationModelGet,
-    PatientRootQueryRetrieveInformationModelMove,
-    StudyRootQueryRetrieveInformationModelFind,
-    StudyRootQueryRetrieveInformationModelGet,
-    StudyRootQueryRetrieveInformationModelMove,
-    UnifiedProcedureStepPull,
-    UnifiedProcedureStepPush,
-    Verification,
-)
+from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 # from pynetdicom.apps.upsscp import db
 
@@ -310,7 +293,7 @@ def main(args=None):
     ae.dimse_timeout = app_config.getfloat("dimse_timeout")
     ae.network_timeout = app_config.getfloat("network_timeout")
 
-    ## Add supported presentation contexts
+    # Add supported presentation contexts
     # Verification SCP
     ae.add_supported_context(Verification, ALL_TRANSFER_SYNTAXES)
 

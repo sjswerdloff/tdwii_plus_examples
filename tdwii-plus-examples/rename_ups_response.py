@@ -4,7 +4,7 @@
 import os
 import sys
 
-from pydicom import Dataset, dcmread, dcmwrite
+from pydicom import dcmread, dcmwrite
 
 
 def main(args):

@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-"""watchscu
+"""nactionscu
 
-Used for registering AE's with UPS Watch
-to subscribe for UPS Events
+Used for changing the Procedure Step State, could be made more general to register for UPS Watch
 """
 
 import argparse
@@ -12,22 +11,14 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Optional, Tuple
 
-from pydicom import Dataset, dataset, dcmread
+from pydicom import Dataset, dcmread
 from pydicom.errors import InvalidDicomError
-from pydicom.uid import (
-    UID,
-    ExplicitVRBigEndian,
-    ExplicitVRLittleEndian,
-    ImplicitVRLittleEndian,
-    generate_uid,
-)
+from pydicom.uid import UID, generate_uid
 from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 from pynetdicom._globals import DEFAULT_MAX_LENGTH
-from pynetdicom.apps.common import get_files, setup_logging
-from pynetdicom.sop_class import (
+from pynetdicom.apps.common import setup_logging
+from pynetdicom.sop_class import (  # UnifiedProcedureStepWatch,; UPSFilteredGlobalSubscriptionInstance,
     UnifiedProcedureStepPush,
-    UnifiedProcedureStepWatch,
-    UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
 
@@ -115,10 +106,10 @@ def _setup_argparser():
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The watchscu application implements a Service Class User "
-            "(SCU) for the UPS Watch Class. "
+            "The nactionscu application implements a Service Class User "
+            "(SCU) for the UPS Push SOP Class. "
         ),
-        usage="watchscu [options] addr port",
+        usage="nactionscu [options] addr port",
     )
 
     # Parameters
@@ -282,7 +273,7 @@ def _setup_argparser():
     )
 
     # Misc Options
-    misc_opts = parser.add_argument_group("Miscellaneous Options")
+    # misc_opts = parser.add_argument_group("Miscellaneous Options")
 
     return parser.parse_args()
 
@@ -308,14 +299,14 @@ def get_contexts(fpaths, app_logger):
         path = os.fspath(Path(fpath).resolve())
         try:
             ds = dcmread(path)
-        except Exception as exc:
+        except Exception:
             bad.append(("Bad DICOM file", path))
             continue
 
         try:
             sop_class = ds.SOPClassUID
             tsyntax = ds.file_meta.TransferSyntaxUID
-        except Exception as exc:
+        except Exception:
             bad.append(("Unknown SOP Class or Transfer Syntax UID", path))
             continue
 
@@ -339,11 +330,11 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"watchscu.py v{__version__}")
+        print(f"nactionscu.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "watchscu")
-    APP_LOGGER.debug(f"watchscu.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "nactionscu")
+    APP_LOGGER.debug(f"nactionscu.py v{__version__}")
     APP_LOGGER.debug("")
 
     APP_LOGGER.debug("Using configuration from:")
@@ -358,18 +349,18 @@ def main(args=None):
     ae.network_timeout = args.network_timeout
 
     # Propose the default presentation contexts
-    if args.request_little:
-        transfer_syntax = [ExplicitVRLittleEndian]
-    elif args.request_big:
-        transfer_syntax = [ExplicitVRBigEndian]
-    elif args.request_implicit:
-        transfer_syntax = [ImplicitVRLittleEndian]
-    else:
-        transfer_syntax = [
-            ExplicitVRLittleEndian,
-            ImplicitVRLittleEndian,
-            ExplicitVRBigEndian,
-        ]
+    # if args.request_little:
+    #     transfer_syntax = [ExplicitVRLittleEndian]
+    # elif args.request_big:
+    #     transfer_syntax = [ExplicitVRBigEndian]
+    # elif args.request_implicit:
+    #     transfer_syntax = [ImplicitVRLittleEndian]
+    # else:
+    #     transfer_syntax = [
+    #         ExplicitVRLittleEndian,
+    #         ImplicitVRLittleEndian,
+    #         ExplicitVRBigEndian,
+    #     ]
 
     # Request association with remote
     assoc = ae.associate(
@@ -395,12 +386,14 @@ def main(args=None):
             )
             print(f"Status Code: 0x{status_dataset.Status:X}")
 
-            print(f"Status Dataset:")
+            print("Status Dataset:")
             print(f"{status_dataset}")
         except InvalidDicomError:
-            APP_LOGGER.error(f"Bad DICOM: ")
+            APP_LOGGER.error("Bad DICOM: ")
         except Exception as exc:
-            APP_LOGGER.error(f"Watch Registration (N-ACTION-RQ) failed")
+            APP_LOGGER.error(
+                "Request to change UPS Procedure Step State (N-ACTION-RQ) failed"
+            )
             APP_LOGGER.exception(exc)
 
         assoc.release()
