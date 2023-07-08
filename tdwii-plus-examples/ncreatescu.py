@@ -322,7 +322,7 @@ def main(args=None):
             except InvalidDicomError:
                 APP_LOGGER.error(f"Bad DICOM file: {fpath}")
             except Exception as exc:
-                APP_LOGGER.error(f"Store failed: {fpath}")
+                APP_LOGGER.error(f"Create failed: {fpath}")
                 APP_LOGGER.exception(exc)
 
         assoc.release()
