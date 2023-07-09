@@ -7,13 +7,14 @@ import sys
 from configparser import ConfigParser
 
 import pydicom.config
+
+# from neventscp_handlers import handle_nevent
 import upsdb
 from handlers import (
     handle_echo,
     handle_find,
     handle_naction,
     handle_ncreate,
-    handle_nevent,
     handle_nget,
     handle_nset,
 )
@@ -98,9 +99,7 @@ def _setup_argparser():
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument(
-        "--version", help="print version information and exit", action="store_true"
-    )
+    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -201,10 +200,7 @@ def _setup_argparser():
     )
     db_opts.add_argument(
         "--clean",
-        help=(
-            "remove all entries from the database and delete the "
-            "corresponding stored instances"
-        ),
+        help=("remove all entries from the database and delete the " "corresponding stored instances"),
         action="store_true",
     )
 
@@ -313,9 +309,7 @@ def main(args=None):
 
     # Unified Procedure Step SCP
     for cx in UnifiedProcedurePresentationContexts:
-        ae.add_supported_context(
-            cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False
-        )
+        ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     APP_LOGGER.info(f"Configured for instance_dir = {instance_dir}")
     # Set our handler bindings
@@ -328,14 +322,12 @@ def main(args=None):
         (evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]),
         (evt.EVT_N_ACTION, handle_naction, [instance_dir, db_path, args, APP_LOGGER]),
         (evt.EVT_N_CREATE, handle_ncreate, [instance_dir, db_path, args, APP_LOGGER]),
-        (evt.EVT_N_EVENT_REPORT, handle_nevent, [db_path, args, APP_LOGGER]),
+        # (evt.EVT_N_EVENT_REPORT, handle_nevent, [db_path, args, APP_LOGGER]),
         (evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]),
     ]
 
     # Listen for incoming association requests
-    ae.start_server(
-        (app_config["bind_address"], app_config.getint("port")), evt_handlers=handlers
-    )
+    ae.start_server((app_config["bind_address"], app_config.getint("port")), evt_handlers=handlers)
 
 
 if __name__ == "__main__":
