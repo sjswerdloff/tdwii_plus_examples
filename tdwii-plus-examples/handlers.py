@@ -23,9 +23,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from upsdb import Instance, InvalidIdentifier, add_instance, search
 
-# GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5"
-# NON_GLOBAL_SUBSCRIPTION_UID = "1.2.840.10008.5.1.4.34.5.1"
-
 _SERVICE_STATUS = {
     "SCHEDULED": {
         "SCHEDULED": 0xC303,
@@ -54,38 +51,26 @@ _SERVICE_STATUS = {
 }
 _ups_instances = dict()
 
-_global_subscribers = (
-    dict()
-)  # AE Title and delection lock boolean "TRUE" or "FALSE" is the text representation
+_global_subscribers = dict()  # AE Title and delection lock boolean "TRUE" or "FALSE" is the text representation
 _filtered_subscribers = dict()  # AE Title and the Dataset acting as the query filter
 
 
-def _add_global_subscriber(
-    subscriber_ae_title: str, deletion_lock: bool = False, logger=None
-):
+def _add_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False, logger=None):
     if subscriber_ae_title not in _global_subscribers.keys():
         _global_subscribers[subscriber_ae_title] = deletion_lock
         if logger is not None:
-            logger.debug(
-                f"Receiving AE Title {subscriber_ae_title} is now subscribed globally"
-            )
+            logger.debug(f"Receiving AE Title {subscriber_ae_title} is now subscribed globally")
     else:
         if logger is not None:
-            logger.info(
-                f"Receiving AE Title {subscriber_ae_title} is already subscribed globally"
-            )
+            logger.info(f"Receiving AE Title {subscriber_ae_title} is already subscribed globally")
     return
 
 
 def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=None):
     if subscriber_ae_title not in _filtered_subscribers.keys():
-        _filtered_subscribers[
-            subscriber_ae_title
-        ] = query  # and you can get the deletion lock from the query
+        _filtered_subscribers[subscriber_ae_title] = query  # and you can get the deletion lock from the query
         if logger is not None:
-            logger.debug(
-                f"Receiving AE Title {subscriber_ae_title} is now subscribed using filter: {query}"
-            )
+            logger.debug(f"Receiving AE Title {subscriber_ae_title} is now subscribed using filter: {query}")
     else:
         if logger is not None:
             logger.info(
@@ -95,9 +80,7 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
     return
 
 
-def _remove_global_subscriber(
-    subscriber_ae_title: str, deletion_lock: bool = False, logger=None
-):
+def _remove_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False, logger=None):
     if subscriber_ae_title in _global_subscribers.keys():
         del _global_subscribers[subscriber_ae_title]
     else:
@@ -106,9 +89,7 @@ def _remove_global_subscriber(
     return
 
 
-def _remove_filtered_subscriber(
-    subscriber_ae_title: str, query: Dataset = None, logger=None
-):
+def _remove_filtered_subscriber(subscriber_ae_title: str, query: Dataset = None, logger=None):
     if subscriber_ae_title in _filtered_subscribers.keys():
         del _filtered_subscribers[subscriber_ae_title]
     else:
@@ -302,12 +283,8 @@ def handle_find(event, instance_dir, db_path, cli_config, logger):
                 return
 
             try:
-                logger.info(
-                    f"match: {match} with SOP Instance UID: {match.sop_instance_uid}"
-                )
-                response = dcmread(
-                    Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True
-                )
+                logger.info(f"match: {match} with SOP Instance UID: {match.sop_instance_uid}")
+                response = dcmread(Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True)
                 logger.info(f"response: {response}")
                 response.RetrieveAETitle = event.assoc.ae.ae_title
             except Exception as exc:
@@ -341,264 +318,13 @@ def _reload_ups_instances(instance_dir, logger):
     logger.info(f"# UPS Instances loaded from {instance_dir} = {len(_ups_instances)}")
 
 
-def handle_get(event, db_path, cli_config, logger):
-    """Handler for evt.EVT_C_GET.
-
-    Parameters
-    ----------
-    event : pynetdicom.events.Event
-        The C-GET request :class:`~pynetdicom.events.Event`.
-    db_path : str
-        The database path to use with create_engine().
-    cli_config : dict
-        A :class:`dict` containing configuration settings passed via CLI.
-    logger : logging.Logger
-        The application's logger.
-
-    Yields
-    ------
-    int
-        The number of sub-operations required to complete the request.
-    int or pydicom.dataset.Dataset, pydicom.dataset.Dataset or None
-        The C-GET response's *Status* and if the *Status* is pending then
-        the dataset to be sent, otherwise ``None``.
-    """
-    requestor = event.assoc.requestor
-    timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    addr, port = requestor.address, requestor.port
-    logger.info(f"Received C-GET request from {addr}:{port} at {timestamp}")
-
-    model = event.request.AffectedSOPClassUID
-
-    engine = create_engine(db_path)
-    with engine.connect() as conn:  # noqa:  F841
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        # Search database using Identifier as the query
-        try:
-            matches = search(model, event.identifier, session)
-        except InvalidIdentifier as exc:
-            session.rollback()
-            logger.error("Invalid C-GET Identifier received")
-            logger.error(str(exc))
-            yield 0xA900, None
-            return
-        except Exception as exc:
-            session.rollback()
-            logger.error("Exception occurred while querying database")
-            logger.exception(exc)
-            yield 0xC420, None
-            return
-        finally:
-            session.close()
-
-    # Yield number of sub-operations
-    yield len(matches)
-
-    # Yield results
-    for match in matches:
-        if event.is_cancelled:
-            yield 0xFE00, None
-            return
-
-        try:
-            ds = dcmread(match.filename)
-        except Exception as exc:
-            logger.error(f"Error reading file: {match.filename}")
-            logger.exception(exc)
-            yield 0xC421, None
-
-        yield 0xFF00, ds
-
-
-def handle_move(event, destinations, db_path, cli_config, logger):
-    """Handler for evt.EVT_C_MOVE.
-
-    Parameters
-    ----------
-    event : pynetdicom.events.Event
-        The C-MOVE request :class:`~pynetdicom.events.Event`.
-    destinations : dict
-        A :class:`dict` containing know move destinations as
-        ``{b'AE_TITLE: (addr, port)}``
-    db_path : str
-        The database path to use with create_engine().
-    cli_config : dict
-        A :class:`dict` containing configuration settings passed via CLI.
-    logger : logging.Logger
-        The application's logger.
-
-    Yields
-    ------
-    (str, int) or (None, None)
-        The (IP address, port) of the *Move Destination* (if known).
-    int
-        The number of sub-operations required to complete the request.
-    int or pydicom.dataset.Dataset, pydicom.dataset.Dataset or None
-        The C-MOVE response's *Status* and if the *Status* is pending then
-        the dataset to be sent, otherwise ``None``.
-    """
-    requestor = event.assoc.requestor
-    timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    addr, port = requestor.address, requestor.port
-    logger.info(
-        f"Received C-MOVE request from {addr}:{port} at {timestamp} "
-        f"with move destination {event.move_destination}"
-    )
-
-    # Unknown `Move Destination`
-    try:
-        addr, port = destinations[event.move_destination]
-    except KeyError:
-        logger.info("No matching move destination in the configuration")
-        yield None, None
-        return
-
-    model = event.request.AffectedSOPClassUID
-    engine = create_engine(db_path)
-    with engine.connect() as conn:  # noqa:  F841
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        # Search database using Identifier as the query
-        try:
-            matches = search(model, event.identifier, session)
-        except InvalidIdentifier as exc:
-            session.rollback()
-            logger.error("Invalid C-MOVE Identifier received")
-            logger.error(str(exc))
-            yield 0xA900, None
-            return
-        except Exception as exc:
-            session.rollback()
-            logger.error("Exception occurred while querying database")
-            logger.exception(exc)
-            yield 0xC520, None
-            return
-        finally:
-            session.close()
-
-    # Yield `Move Destination` IP and port, plus required contexts
-    # We should be able to reduce the number of contexts by using the
-    # implicit context conversion between:
-    #   implicit VR <-> explicit VR <-> deflated transfer syntaxes
-    contexts = list(set([ii.context for ii in matches]))
-    yield addr, port, {"contexts": contexts[:128]}
-
-    # Yield number of sub-operations
-    yield len(matches)
-
-    # Yield results
-    for match in matches:
-        if event.is_cancelled:
-            yield 0xFE00, None
-            return
-
-        try:
-            ds = dcmread(match.filename)
-        except Exception as exc:
-            logger.error(f"Error reading file: {match.filename}")
-            logger.exception(exc)
-            yield 0xC521, None
-
-        yield 0xFF00, ds
-
-
-def handle_store(event, storage_dir, db_path, cli_config, logger):
-    """Handler for evt.EVT_C_STORE.
-
-    Parameters
-    ----------
-    event : pynetdicom.events.Event
-        The C-STORE request :class:`~pynetdicom.events.Event`.
-    storage_dir : str
-        The path to the directory where instances will be stored.
-    db_path : str
-        The database path to use with create_engine().
-    cli_config : dict
-        A :class:`dict` containing configuration settings passed via CLI.
-    logger : logging.Logger
-        The application's logger.
-
-    Returns
-    -------
-    int or pydicom.dataset.Dataset
-        The C-STORE response's *Status*. If the storage operation is successful
-        but the dataset couldn't be added to the database then the *Status*
-        will still be ``0x0000`` (Success).
-    """
-    requestor = event.assoc.requestor
-    timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    addr, port = requestor.address, requestor.port
-    logger.info(f"Received C-STORE request from {addr}:{port} at {timestamp}")
-
-    try:
-        ds = event.dataset
-        # Remove any Group 0x0002 elements that may have been included
-        ds = ds[0x00030000:]
-        sop_instance = ds.SOPInstanceUID
-    except Exception as exc:
-        logger.error("Unable to decode the dataset")
-        logger.exception(exc)
-        # Unable to decode dataset
-        return 0xC210
-
-    # Add the file meta information elements - must be before adding to DB
-    ds.file_meta = event.file_meta
-
-    logger.info(f"SOP Instance UID '{sop_instance}'")
-
-    # Try and add the instance to the database
-    #   If we fail then don't even try to store
-    fpath = os.path.join(storage_dir, sop_instance)
-
-    if os.path.exists(fpath):
-        logger.warning("Instance already exists in storage directory, overwriting")
-
-    try:
-        ds.save_as(fpath, write_like_original=False)
-    except Exception as exc:
-        logger.error("Failed writing instance to storage directory")
-        logger.exception(exc)
-        # Failed - Out of Resources
-        return 0xA700
-
-    logger.info("Instance written to storage directory")
-
-    # Dataset successfully written, try to add to/update database
-    engine = create_engine(db_path)
-    with engine.connect() as conn:  # noqa:  F841
-        Session = sessionmaker(bind=engine)
-        session = Session()
-
-        try:
-            # Path is relative to the database file
-            matches = (
-                session.query(Instance)
-                .filter(Instance.sop_instance_uid == ds.SOPInstanceUID)
-                .all()
-            )
-            add_instance(ds, session, os.path.abspath(fpath))
-            if not matches:
-                logger.info("Instance added to database")
-            else:
-                logger.info("Database entry for instance updated")
-        except Exception as exc:
-            session.rollback()
-            logger.error("Unable to add instance to the database")
-            logger.exception(exc)
-        finally:
-            session.close()
-
-    return 0x0000
-
-
 def handle_nget(event, db_path, cli_config, logger):
-    """Handler for evt.EVT_C_GET.
-
+    """Handler for evt.EVT_N_GET.
+    #TODO This is just copied from C-GET and is probably very wrong
     Parameters
     ----------
     event : pynetdicom.events.Event
-        The C-GET request :class:`~pynetdicom.events.Event`.
+        The N-GET request :class:`~pynetdicom.events.Event`.
     db_path : str
         The database path to use with create_engine().
     cli_config : dict
@@ -611,13 +337,13 @@ def handle_nget(event, db_path, cli_config, logger):
     int
         The number of sub-operations required to complete the request.
     int or pydicom.dataset.Dataset, pydicom.dataset.Dataset or None
-        The C-GET response's *Status* and if the *Status* is pending then
+        The N-GET response's *Status* and if the *Status* is pending then
         the dataset to be sent, otherwise ``None``.
     """
     requestor = event.assoc.requestor
     timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
     addr, port = requestor.address, requestor.port
-    logger.info(f"Received C-GET request from {addr}:{port} at {timestamp}")
+    logger.info(f"Received N-GET request from {addr}:{port} at {timestamp}")
 
     model = event.request.AffectedSOPClassUID
 
@@ -697,7 +423,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
 
     naction_primitive = event.request
     # pynetdicom.dimse_primitives.N_ACTION
-    """"
+    r"""
     +------------------------------------------+---------+----------+
     | Parameter                                | Req/ind | Rsp/conf |
     +==========================================+=========+==========+
@@ -756,15 +482,10 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
         if naction_primitive.RequestedSOPInstanceUID == UPSGlobalSubscriptionInstance:
             logger.info("Request was for Subscribing to (unfiltered) Global UPS")
             if action_type_id == 3:
-                _add_global_subscriber(
-                    subscribing_ae_title, deletion_lock=deletion_lock, logger=logger
-                )
+                _add_global_subscriber(subscribing_ae_title, deletion_lock=deletion_lock, logger=logger)
             elif action_type_id == 4:
                 _remove_global_subscriber(subscribing_ae_title, logger=logger)
-        elif (
-            naction_primitive.RequestedSOPInstanceUID
-            == UPSFilteredGlobalSubscriptionInstance
-        ):
+        elif naction_primitive.RequestedSOPInstanceUID == UPSFilteredGlobalSubscriptionInstance:
             logger.info("Request was for Subscribing to Filtered Global UPS")
             if action_type_id == 3:
                 _add_filtered_subscriber(subscribing_ae_title, action_information)
@@ -799,9 +520,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 # search_ds.SOPClassUID = action_information.RequestedSOPClassUID
                 matches = search(model, search_ds, session)
                 if matches is None or (len(matches) < 1):
-                    error_str = (
-                        f"No Matching SOP Instance UID: {search_ds.SOPInstanceUID}"
-                    )
+                    error_str = f"No Matching SOP Instance UID: {search_ds.SOPInstanceUID}"
                     logger.error(error_str)
                     session.close()
                     error_response.ErrorComment = error_str[0:59] + " ..."
@@ -810,23 +529,16 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                     yield None
                     return
                 if len(matches) > 1:
-                    logger.error(
-                        "Internal Error: More than one match for the given SOP Instance UID"
-                    )
+                    logger.error("Internal Error: More than one match for the given SOP Instance UID")
                 match = matches[0]
                 current_step_state = match.procedure_step_state
                 stored_transaction_uid = match.transaction_uid
-                service_status = _SERVICE_STATUS[current_step_state][
-                    requested_step_state
-                ]
+                service_status = _SERVICE_STATUS[current_step_state][requested_step_state]
 
                 if (
                     (transaction_uid is None)
                     or (len(transaction_uid) == 0)  # noqa: W503,W504
-                    or (
-                        current_step_state != "SCHEDULED"
-                        and transaction_uid != stored_transaction_uid
-                    )  # noqa: W503,W504
+                    or (current_step_state != "SCHEDULED" and transaction_uid != stored_transaction_uid)  # noqa: W503,W504
                 ):
                     service_status = 0xC301
                     error_str = "Transaction UID is missing, zero length, or not valid"
@@ -851,9 +563,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 logger.info(f"Matching instance: {match}")
                 logger.info(f"Stored Procedure Step State: {current_step_state}")
                 logger.info(f"Requested Procedure Step State: {requested_step_state}")
-                response = dcmread(
-                    Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True
-                )
+                response = dcmread(Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True)
                 response.ProcedureStepState = requested_step_state
                 response.is_little_endian = True
                 response.is_implicit_VR = True
@@ -891,76 +601,6 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
     logger.info(f"Request dump: {naction_primitive}")
 
     return
-
-
-def handle_nevent(event, db_path, cli_config, logger):
-    """Handler for evt.EVT_C_GET.
-
-    Parameters
-    ----------
-    event : pynetdicom.events.Event
-        The C-GET request :class:`~pynetdicom.events.Event`.
-    db_path : str
-        The database path to use with create_engine().
-    cli_config : dict
-        A :class:`dict` containing configuration settings passed via CLI.
-    logger : logging.Logger
-        The application's logger.
-
-    Yields
-    ------
-    int
-        The number of sub-operations required to complete the request.
-    int or pydicom.dataset.Dataset, pydicom.dataset.Dataset or None
-        The C-GET response's *Status* and if the *Status* is pending then
-        the dataset to be sent, otherwise ``None``.
-    """
-    requestor = event.assoc.requestor
-    timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    addr, port = requestor.address, requestor.port
-    logger.info(f"Received C-GET request from {addr}:{port} at {timestamp}")
-
-    model = event.request.AffectedSOPClassUID
-
-    engine = create_engine(db_path)
-    with engine.connect() as conn:  # noqa:  F841
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        # Search database using Identifier as the query
-        try:
-            matches = search(model, event.identifier, session)
-        except InvalidIdentifier as exc:
-            session.rollback()
-            logger.error("Invalid C-GET Identifier received")
-            logger.error(str(exc))
-            yield 0xA900, None
-            return
-        except Exception as exc:
-            session.rollback()
-            logger.error("Exception occurred while querying database")
-            logger.exception(exc)
-            yield 0xC420, None
-            return
-        finally:
-            session.close()
-
-    # Yield number of sub-operations
-    yield len(matches)
-
-    # Yield results
-    for match in matches:
-        if event.is_cancelled:
-            yield 0xFE00, None
-            return
-
-        try:
-            ds = dcmread(match.filename)
-        except Exception as exc:
-            logger.error(f"Error reading file: {match.filename}")
-            logger.exception(exc)
-            yield 0xC421, None
-
-        yield 0xFF00, ds
 
 
 def handle_nset(event, db_path, cli_config, logger):
@@ -1118,11 +758,7 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
 
         try:
             # Path is relative to the database file
-            matches = (
-                session.query(Instance)
-                .filter(Instance.sop_instance_uid == ds.SOPInstanceUID)
-                .all()
-            )
+            matches = session.query(Instance).filter(Instance.sop_instance_uid == ds.SOPInstanceUID).all()
             add_instance(ds, session, os.path.abspath(fpath))
             if not matches:
                 logger.info("Instance added to database")
