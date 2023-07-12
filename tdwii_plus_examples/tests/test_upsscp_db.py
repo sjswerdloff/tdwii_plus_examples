@@ -25,9 +25,8 @@ from pydicom.dataset import Dataset
 from pydicom.tag import Tag
 from pynetdicom.sop_class import UnifiedProcedureStepPush
 
-tdwii_plus_examples = importlib.import_module("tdwii-plus-examples")
 if HAVE_SQLALCHEMY:
-    db = importlib.import_module("upsdb", "tdwii-plus-examples")
+    from tdwii_plus_examples import upsdb as db
 
 
 TEST_DIR = Path(__file__).parent
@@ -40,13 +39,12 @@ DATASETS = {
         "procedure_step_state": "SCHEDULED",
         "start_date_time": None,
         "station_name": "FX1",
-        "study_id": None,
         "transaction_uid": None,
         "work_item_code_value": "121726",
         "work_item_scheme_designator": "DCM",
         "work_item_meaning": "RT Treatment with Internal Verification",
         "sop_instance_uid": "1.2.840.113854.19.4.2017747596206021632.638223481578481915",
-        "transfer_syntax_uid": None,
+        "transfer_syntax_uid": "1.2.840.10008.1.2.1",
         "sop_class_uid": "1.2.840.10008.5.1.4.34.6.1",
     },
 }
@@ -154,10 +152,8 @@ class TestAddInstance:
 
         rest = [
             "patient_name",
-            "procredure_step_state",
             "start_date_time",
             "station_name",
-            "study_id",
             "work_item_code_value",
             "work_item_scheme_designator",
             "work_item_meaning",
@@ -227,14 +223,14 @@ class TestAddInstance:
 
         result = self.session.query(db.Instance).all()
         assert 1 == len(result)
-        assert None == result[0].modality
-
-        self.minimal.Modality = "CT"
+        assert None == result[0].transaction_uid
+        self.minimal.TransactionUID = "1.2.3.4.5.6.7"
 
         db.add_instance(self.minimal, self.session)
+        self.session.commit()
         result = self.session.query(db.Instance).all()
         assert 1 == len(result)
-        assert "CT" == result[0].modality
+        assert "1.2.3.4.5.6.7" == result[0].transaction_uid
 
 
 @pytest.mark.skipif(not HAVE_SQLALCHEMY, reason="Requires sqlalchemy")
@@ -301,7 +297,7 @@ class TestClear:
 
     def test_clear(self):
         """Test removing if exists in database."""
-        assert 5 == len(self.session.query(db.Instance).all())
+        assert 1 == len(self.session.query(db.Instance).all())
 
         db.clear(self.session)
         assert not self.session.query(db.Instance).all()
