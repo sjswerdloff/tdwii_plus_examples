@@ -64,4 +64,4 @@ jobs:
         # poetry run flake8 tdwii-plus-examples --count --exit-zero --max-complexity=10 --statistics
     - name: Test with pytest
       run: |
-        poetry run pytest tdwii-plus-examples/tests
+        poetry run pytest tdwii_plus_examples/tests
