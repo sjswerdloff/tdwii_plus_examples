@@ -60,8 +60,8 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         # --extend-ignore=203 because black puts in a space before a slicing :
         # while flake8 complains (this warning is not PEP 8 compliant), If W503 pops up, that should be disabled also
-        poetry run flake8 tdwii-plus-examples --count --exit-zero --extend-ignore=E203 --max-line-length=127 --statistics
-        # poetry run flake8 tdwii-plus-examples --count --exit-zero --max-complexity=10 --statistics
+        poetry run flake8 tdwii_plus_examples --count --exit-zero --extend-ignore=E203 --max-line-length=127 --statistics
+        # poetry run flake8 tdwii_plus_examples --count --exit-zero --max-complexity=10 --statistics
     - name: Test with pytest
       run: |
         poetry run pytest tdwii_plus_examples/tests
