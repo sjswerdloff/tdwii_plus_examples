@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "tdwii-plus-examples"
+name = "tdwii_plus_examples"
 version = "0.1.0"
 description = "Working sample code for implementing some tdw-ii transactions and some extensions such as UPSWatch and UPSWEvent based subscriptions for activities of interest in a treatment room"
 authors = ["Stuart Swerdloff <sjswerdloff@gmail.com>"]
 license = "Apache 2.0"
 readme = "README.md"
-packages = [{include = "tdwii-plus-examples"}]
+packages = [{include = "tdwii_plus_examples"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.11"

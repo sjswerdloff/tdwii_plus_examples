@@ -1,4 +1,4 @@
-"""Database interface for the qrscp application.
+"""Database interface for the upsscp application.
 
 Unique Keys
 -----------
