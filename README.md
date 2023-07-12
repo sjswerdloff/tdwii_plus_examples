@@ -1,4 +1,4 @@
-# tdwii-plus-examples
+# tdwii_plus_examples
 Working python sample code for performing various transactions within the IHE-RO TDW-II profile, as well as extensions based on UPS Watch and UPS Event
 No claims are being made that any of the sample code is adherent to the profile,
 but the examples that are not UPS Watch/UPS Event should interact successfully within limits with valid TDW-II actors.
@@ -56,7 +56,7 @@ python ncreatescu.py addr port path
 ```
 
 ## A TMS Simulator (of limited capability) is provided in upsscp.py:
-in tdw-plus-examples/
+in tdwii_plus_examples/
 ```console
 python upsscp.py --debug
 
@@ -75,7 +75,7 @@ ds.ScheduledProcedureStepStartDateTime
 ds.ScheduledWorkitemCodeSequence[0].CodeValue
 ```
 
-A sample response is in tdw-plus-examples/responses/dcm and it can be renamed and then transmitted to upsscp via ncreatescu
+A sample response is in tdwii_plus_examples/responses/dcm and it can be renamed and then transmitted to upsscp via ncreatescu
 
 Alternative/additional sample responses can be constructed by using dcmdump on the provided sample response, editing the text, and using dump2dcm.
 
