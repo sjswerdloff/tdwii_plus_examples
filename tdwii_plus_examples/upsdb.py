@@ -1,4 +1,4 @@
-"""Database interface for the qrscp application.
+"""Database interface for the upsscp application.
 
 Unique Keys
 -----------
@@ -38,7 +38,7 @@ from pynetdicom.sop_class import (
     UnifiedProcedureStepPull,
     UnifiedProcedureStepPush,
 )
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 
 class InvalidIdentifier(Exception):
