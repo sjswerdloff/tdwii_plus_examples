@@ -8,9 +8,10 @@ readme = "README.md"
 packages = [{include = "tdwii_plus_examples"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9, <3.11"
+python = ">=3.10, <3.11"
 pydicom = "^2.4.0"
 pynetdicom = {git = "https://github.com/sjswerdloff/pynetdicom.git", rev = "update_pyproject_poetry_lock"}
+sqlalchemy = { version = "^2.0"}
 
 tomlkit = { version = "*", optional = true }    # groups = ["all", "dev"]
 toml = { version = "*", optional = true }       # groups = ["all", "dev"]
