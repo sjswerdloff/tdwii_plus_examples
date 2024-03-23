@@ -5,7 +5,7 @@ but the examples that are not UPS Watch/UPS Event should interact successfully w
 
 While the command lines shown below are run via python as the command, they are now all executable scripts (chmod +x) so they can be run directly on *nix platforms (you still need to have python in your environment)
 
-The version of Python used for development is 3.10, but the examples should work on 3.8 and 3.9 as well.
+The version of Python used for development is 3.10 
 
 The sample queries and responses are not necessarily coordinated with an OST (yet), i.e. using an appropriate AE Title
 
