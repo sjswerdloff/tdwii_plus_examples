@@ -41,6 +41,7 @@ doc8 = { version = "*", optional = true }            # groups = ["dev", "all"]
 # readme-renderer = { version = "*", optional = true } # groups = ["dev", "all"]
 # tabulate = { version = "*", optional = true }        # groups = ["dev", "all", "doctests"]
 # pyoxidizer = { version = "*", optional = true }      # groups = ["dev", "all", "build"]
+pyside6 = "^6.6.0"
 
 [tool.poetry.extras]
 

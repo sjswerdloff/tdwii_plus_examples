@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainBDIWidget</class>
+ <widget class="QWidget" name="MainBDIWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>RT Beams Delivery Instruction and UPS Creator</string>
+  </property>
+  <property name="toolTip">
+   <string extracomment="tool tip comment"/>
+  </property>
+  <widget class="QGroupBox" name="group_box_bdi_variables">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>110</y>
+     <width>491</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>BDI Customization</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="1">
+     <widget class="QDoubleSpinBox" name="double_spin_box_fraction_number">
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="decimals">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_fraction_number">
+      <property name="text">
+       <string>Fraction #</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QListView" name="list_view_treatment_records"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="push_button_load_treatment_records">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Simulate a partially treated session.&lt;/p&gt;&lt;p&gt;The treatment records selected must reference the RT (Ion) Plan selected, and the Current Fraction Number in the RT (Ion) Beams Session records must match the Fraction # specified&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Treatment Records</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="group_box_plan_selection">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>581</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Plan Selection</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_4">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_plan_selector">
+      <property name="text">
+       <string>RT (Ion) Plan</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="lineedit_plan_selector"/>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="push_button_plan_finder">
+      <property name="text">
+       <string>Find Plan</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="group_box_bdi_output">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>230</y>
+     <width>591</width>
+     <height>193</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>BDI Output</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_bdi_output_dir">
+      <property name="text">
+       <string>BDI Output Dir</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QLineEdit" name="lineedit_bdidir_selector"/>
+    </item>
+    <item row="0" column="3">
+     <widget class="QPushButton" name="push_button_bdi_dir_finder">
+      <property name="text">
+       <string>Choose BDI Dir</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QCheckBox" name="checkbox_custom_bdi_filename">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, the value entered will be used for the RT Beams Delivery Instruction file name.&lt;/p&gt;&lt;p&gt;If left unchecked, the file name for the RT Beams Delivery Instruction will be of the format RB_&amp;lt;SOP Instance UID&amp;gt;.dcm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Custom BDI filename</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLineEdit" name="line_edit_bdi_filename"/>
+    </item>
+    <item row="3" column="3">
+     <widget class="QPushButton" name="push_button_export_bdi">
+      <property name="text">
+       <string>Export BDI</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="group_box_ups">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>430</y>
+     <width>359</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>UPS Customization</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_start_datetime">
+      <property name="text">
+       <string>Scheduled DateTime</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QDateTimeEdit" name="datetime_edit_scheduled_datetime">
+      <property name="dateTime">
+       <datetime>
+        <hour>0</hour>
+        <minute>0</minute>
+        <second>0</second>
+        <year>2023</year>
+        <month>9</month>
+        <day>1</day>
+       </datetime>
+      </property>
+      <property name="displayFormat">
+       <string>dd/MM/yyyy h:mm AP</string>
+      </property>
+      <property name="calendarPopup">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_move_ae_title">
+      <property name="text">
+       <string>Move/Retrieve AE Title</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="line_edit_move_scp_ae_title">
+      <property name="clearButtonEnabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="push_button_export_ups">
+      <property name="text">
+       <string>Export UPS</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
