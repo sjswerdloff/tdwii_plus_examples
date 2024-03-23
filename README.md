@@ -150,8 +150,14 @@ python neventscu.py 127.0.0.1 11115
 cd rtbdi_creator
 python mainbdiwidget.py 
 ```
+## A Qt/PySide6 based example of a Patient Position Verification System that subscribes to UPS Events and responds by querying for the UPS information, requesting (C-MOVE) the referenced information objects, etc.
+```console
+cd TDWII_PPVS_Subscriber
+python ppvs_subscriber_widget.py 
+```
+
 ## The OST can be simulated using the pynetdicom qrscp application.
 
-The intent is to eventually integrate the various functionality as appropriate in to a TMS Simulator and a PPVS Simulator (and perhaps eventually a TDS Simulator).
+The remaining intent (now that a PPVS Simulator is included) is to eventually integrate the various functionality as appropriate in to a TMS Simulator (and perhaps eventually a TDS Simulator).
 
 But the purpose of the examples is to provide working sample code for individual TDW-II Transactions and for UPW Watch/UPS Event capabilities that can be used to extend a TDW-II environment so that it is event aware/event driven.
