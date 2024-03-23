@@ -3,9 +3,27 @@ Working python sample code for performing various transactions within the IHE-RO
 No claims are being made that any of the sample code is adherent to the profile,
 but the examples that are not UPS Watch/UPS Event should interact successfully within limits with valid TDW-II actors.
 
-While the command lines shown below are run via python as the command, they are now all executable scripts (chmod +x) so they can be run directly on *nix platforms (you still need to have python in your environment)
+While the command lines shown below are run via python as the command, they are now all executable scripts (chmod +x) so they can be run directly on *nix platforms (you still need to have python in your environment).
+The samples are in the tdwii_plus_examples subdirectory.
 
 The version of Python used for development is 3.10 
+
+# Installation
+poetry is used for package management
+assuming you have already cloned the repository (or downloaded a compressed archive of it) and are in the top level directory for the project
+```console
+poetry install
+```
+To confirm the required packages are installed
+```console
+python -m pip list
+```
+If the required packages are not shown (e.g. pydicom, pynetdicom), you may have an interaction issue between poetry and pyenv.
+Try:
+```console
+export VIRTUAL_ENV=$(pyenv virtualenv-prefix)/envs/$(pyenv version | cut -f1 -d ' ')
+``` 
+
 
 The sample queries and responses are not necessarily coordinated with an OST (yet), i.e. using an appropriate AE Title
 
@@ -127,7 +145,11 @@ The application does not take specific actions when receiving an N-EVENT-REPORT 
 python neventscu.py 127.0.0.1 11115
 
 ```
-
+## A Qt/PySide6 based utility for generating RT Beams Delivery Instructions and Unified Procedure Step content
+```console
+cd rtbdi_creator
+python mainbdiwidget.py 
+```
 ## The OST can be simulated using the pynetdicom qrscp application.
 
 The intent is to eventually integrate the various functionality as appropriate in to a TMS Simulator and a PPVS Simulator (and perhaps eventually a TDS Simulator).
