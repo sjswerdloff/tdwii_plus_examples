@@ -1,0 +1,6 @@
+{
+    "files": [
+        "tdwii_ppvs_subscriber.ui",
+        "ppvs_subscriber_widget.py"
+    ]
+}
