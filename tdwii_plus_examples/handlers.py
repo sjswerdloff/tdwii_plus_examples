@@ -723,6 +723,24 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
         # Unable to decode dataset
         return 0xC210
 
+    # Check attributes satisfy CC.2.5.1.3 UPS Attribute Service Requirements
+    if not (('ProcedureStepState' in ds) and ('InputReadinessState' in ds)):
+        logger.error("UPS is missing required attributes")
+        return 0x0120, None # Missing Attribute
+    elif not ds.ProcedureStepState == 'SCHEDULED':
+        logger.error("UPS State not SCHEDULED")
+        return 0xC309, None # The provided value of UPS State was not "SCHEDULED"
+    elif not ds.InputReadinessState in ('INCOMPLETE', 'UNAVAILABLE', 'READY'):
+        logger.error("Input Readiness State not valid")
+        return 0x0106, None # Invalid Attribute Value
+    # More requirements need check from Table CC.2.5-3 and TDW-II
+    #  Transaction UID present and empty
+    #  Scheduled Procedure Step Priority present and not empty
+    #  Procedure Step Label present and not empty
+    #  Worklist Label present and assign default value if empty
+    #  Scheduled Processing Parameters Sequence present
+    # ...
+
     # Add the file meta information elements - must be before adding to DB
     #   ds.file_meta = event.file_meta
     # file_meta = FileMetaDataset()
@@ -772,13 +790,35 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
         finally:
             session.close()
 
-    # Database successfully updated, notify any globally subscriber
+    # Database successfully updated, notify any globally subscribed AE
+    # Get AET of UPS Event SCP (which is the AET of the UPS Watch SCP)
+    acceptor =  event.assoc.acceptor
+    
+    # Set event information and type
+    event_info = Dataset()
+    event_info.ProcedureStepState = ds.ProcedureStepState
+    event_info.InputReadinessState = ds.InputReadinessState
+    
+    # UPS Assigned when Scheduled Station Name or Scheduled Human Performers is defined
+    # Only Scheduled Station Name is relevant for assignment to TDD in TDW-II
+    # As the SCP may choose to not send duplicate messages to an AE, only UPS State Report events 
+    # could maybe be sent and properly documented in conformance statement
+    if ('ScheduledStationNameCodeSequence' in ds):
+        event_type = 5
+        event_info.ScheduledStationNameCodeSequence = ds.ScheduledStationNameCodeSequence
+        if ('ScheduledHumanPerformersSequence' in ds):
+            event_info.ScheduledHumanPerformersSequence = ds.ScheduledHumanPerformersSequence
+        if ('HumanPerformerOrganization' in ds):
+            event_info.HumanPerformerOrganization = ds.HumanPerformerOrganization
+        logger.info(f"Send UPS Assigned event from {acceptor.ae_title} to subscribed AEs "
+                    f"(assigned to {ds.ScheduledStationNameCodeSequence[0].CodeValue})")
+    else:
+    # UPS State Report otherwise 
+        event_type = 1
+        logger.info(f"Send UPS State Report event from {acceptor.ae_title} to subscribed AEs")
+
     for globalsubscriber in _global_subscribers:
         # Request association with subscriber
-        # get AET of UPS Event SCP (which is the AET if UPS Watch SCP)
-        acceptor =  event.assoc.acceptor
-        logger.info(f"UPS Event SCP AET: {acceptor.ae_title}")
-        
         ae = AE(ae_title=acceptor.ae_title)
         # hard code for the moment, deal with configuration of AE's soon
         assoc = ae.associate(
@@ -792,14 +832,8 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
         if assoc.is_established:
             try:
                 logger.info(f"Send UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
-                event_info = Dataset()
-                event_info.ProcedureStepState = ds.ProcedureStepState
-                event_info.InputReadinessState = ds.InputReadinessState
-
-                assoc.send_n_event_report(event_info, 1, UnifiedProcedureStepPush, ds.SOPInstanceUID)
-
+                assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID)
                 logger.info(f"Notified global subscriber: {globalsubscriber}")
-
             except InvalidDicomError:
                 logger.error("Bad DICOM: ")
             except Exception as exc:
