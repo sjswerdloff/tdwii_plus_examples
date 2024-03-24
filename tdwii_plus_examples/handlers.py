@@ -17,6 +17,7 @@ from pynetdicom.sop_class import (
     UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
+from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 
 # from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
@@ -770,5 +771,46 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
             logger.exception(exc)
         finally:
             session.close()
+
+    # Database successfully updated, notify any globally subscriber
+    for globalsubscriber in _global_subscribers:
+        # Request association with subscriber
+        # get AET of UPS Event SCP (which is the AET if UPS Watch SCP)
+        acceptor =  event.assoc.acceptor
+        logger.info(f"UPS Event SCP AET: {acceptor.ae_title}")
+        
+        ae = AE(ae_title=acceptor.ae_title)
+        # hard code for the moment, deal with configuration of AE's soon
+        assoc = ae.associate(
+            "127.0.0.1",
+            11112,
+            contexts=UnifiedProcedurePresentationContexts,
+            ae_title=globalsubscriber,
+            max_pdu=16382,
+        )
+        
+        if assoc.is_established:
+            try:
+                logger.info(f"Send UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
+                event_info = Dataset()
+                event_info.ProcedureStepState = ds.ProcedureStepState
+                event_info.InputReadinessState = ds.InputReadinessState
+
+                assoc.send_n_event_report(event_info, 1, UnifiedProcedureStepPush, ds.SOPInstanceUID)
+
+                logger.info(f"Notified global subscriber: {globalsubscriber}")
+
+            except InvalidDicomError:
+                logger.error("Bad DICOM: ")
+            except Exception as exc:
+                logger.error(
+                    "UPS State Report as Event Notification (N-EVENT-REPORT-RQ) failed"
+                )
+                logger.exception(exc)
+
+            assoc.release()
+
+        else:
+            logger.error(f"Failed to establish assocation with subscriber: {globalsubscriber}")            
 
     return 0x0000, ds

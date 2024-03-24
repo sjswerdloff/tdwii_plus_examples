@@ -62,7 +62,7 @@ class PPVS_SubscriberWidget(QWidget):
         self.ppvs_scp.run()
         self.watch_scu = WatchSCU(self.ui.ppvs_ae_line_edit.text())
         ip_addr = "127.0.0.1"
-        port = 11113
+        port = 11114
         self.watch_scu.set_subscription_ae(self.ui.ups_ae_line_edit.text(), ip_addr=ip_addr,port=port)
 
 
@@ -78,7 +78,7 @@ class PPVS_SubscriberWidget(QWidget):
             watch_scu = WatchSCU(my_ae_title)
         # hard code for the moment, deal with configuration of AE's soon
             ip_addr = "127.0.0.1"
-            port = 11113
+            port = 11114
             upsscp_ae_title = self.ui.ups_ae_line_edit.text()
             watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr,port=port)
         else:
@@ -101,7 +101,7 @@ class PPVS_SubscriberWidget(QWidget):
             watch_scu = WatchSCU(my_ae_title)
         # hard code for the moment, deal with configuration of AE's soon
             ip_addr = "127.0.0.1"
-            port = 11113
+            port = 11114
             upsscp_ae_title = self.ui.ups_ae_line_edit.text()
             watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr,port=port)
         else:
