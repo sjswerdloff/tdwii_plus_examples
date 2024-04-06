@@ -1,0 +1,32 @@
+[
+  {
+    "AETitle": "OST",
+    "IPAddr": "127.0.0.1",
+    "Port": 11112
+  },
+  {
+    "AETitle": "QRSCP",
+    "IPAddr": "127.0.0.1",
+    "Port": 11112
+  },
+  {
+    "AETitle": "TMS",
+    "IPAddr": "127.0.0.1",
+    "Port": 11114
+  },
+  {
+    "AETitle": "UPSSCP",
+    "IPAddr": "127.0.0.1",
+    "Port": 11114
+  },
+  {
+    "AETitle": "PPVS_SCP",
+    "IPAddr": "127.0.0.1",
+    "Port": 11115
+  },
+  {
+    "AETitle": "TDD",
+    "IPAddr": "127.0.0.1",
+    "Port": 11113
+  }
+]
