@@ -22,6 +22,7 @@ If the required packages are not shown (e.g. pydicom, pynetdicom), you may have 
 Try:
 ```console
 export VIRTUAL_ENV=$(pyenv virtualenv-prefix)/envs/$(pyenv version | cut -f1 -d ' ')
+poetry install
 ``` 
 
 
