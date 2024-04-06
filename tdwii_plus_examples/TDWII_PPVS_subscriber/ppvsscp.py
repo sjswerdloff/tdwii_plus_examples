@@ -23,10 +23,10 @@ from pynetdicom.utils import set_ae
 
 from basescp import BaseSCP
 from echoscp import EchoSCP
-from neventscp import NEventSCP
+from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver import NEventReceiver
 from storescp import StoreSCP
 
-class PPVS_SCP(NEventSCP,StoreSCP):
+class PPVS_SCP(NEventReceiver,StoreSCP):
     def __init__(self,
                  ae_title:str="PPVS_SCP",
                  port:int=11112,
@@ -50,7 +50,7 @@ class PPVS_SCP(NEventSCP,StoreSCP):
                          storage_presentation_contexts=storage_presentation_contexts,
                          transfer_syntaxes=transfer_syntaxes,
                          store_directory=store_directory)
-        NEventSCP.__init__(self,
+        NEventReceiver.__init__(self,
                            nevent_callback=nevent_callback,
                            ae_title=ae_title,
                            port=port,
@@ -61,7 +61,7 @@ class PPVS_SCP(NEventSCP,StoreSCP):
               
     def _add_contexts(self):
         StoreSCP._add_contexts(self)
-        NEventSCP._add_contexts(self)
+        NEventReceiver._add_contexts(self)
 
         
         
@@ -69,7 +69,7 @@ class PPVS_SCP(NEventSCP,StoreSCP):
 
     def _add_handlers(self):
        StoreSCP._add_handlers(self)
-       NEventSCP._add_handlers(self)
+       NEventReceiver._add_handlers(self)
 
     def run(self):
         # Listen for incoming association requests

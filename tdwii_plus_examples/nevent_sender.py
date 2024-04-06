@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""neventscu
+"""nevent_sender
 
 Used for sending events to AE's who subscribes for UPS Events
 Currently at the toy level of functionality:
@@ -104,10 +104,12 @@ def _setup_argparser():
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The neventscu application implements a Service Class User "
+            "The nevent_sender application implements a Service Class User "
             "(SCU) for the UPS Event Class. "
+            "Real world applications will often embed the nevent_sender functionality in an SCP"
+            "With the nevent_sender acting under role reversal (i.e.) as an SCU within the SCP"
         ),
-        usage="neventscu [options] addr port",
+        usage="nevent_sender [options] addr port",
     )
 
     # Parameters
@@ -309,11 +311,11 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"neventscu.py v{__version__}")
+        print(f"nevent_sender.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "neventscu")
-    APP_LOGGER.debug(f"neventscu.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "nevent_sender")
+    APP_LOGGER.debug(f"nevent_sender.py v{__version__}")
     APP_LOGGER.debug("")
 
     APP_LOGGER.debug("Using configuration from:")

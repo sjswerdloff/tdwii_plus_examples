@@ -23,7 +23,7 @@ from collections import OrderedDict
 try:
     from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 except ImportError:
-    sys.exit("qrscp requires the sqlalchemy package")
+    sys.exit("upsdb.py requires the sqlalchemy package")
 
 from pydicom import dcmread
 from pydicom.dataset import Dataset

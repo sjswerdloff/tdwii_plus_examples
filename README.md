@@ -130,9 +130,9 @@ python nactionscu.py -T "1.2.826.0.1.3680043.8.498.23133079088775253446636289730
 ```
 the above will request that upsscp (listening at 11114) change the state using the Transaction UID (-T) of the UPS with the shown UID to "COMPLETED".  The Transaction UID here is not optional.
 
-## A sample application for receiving notifications (N-EVENT-REPORT-RQ) is provided in neventscp.py
+## A sample application for receiving notifications (N-EVENT-REPORT-RQ) is provided in nevent_receiver.py
 ```console
-python neventscp.py --debug
+python nevent_receiver.py --debug
 
 ```
 which listens on port 11115 by default,
@@ -141,9 +141,9 @@ The application does not take specific actions when receiving an N-EVENT-REPORT 
 
 
 
-## A sample application for sending notifications is provided in neventscu.py (which can be run against neventscp.py mentioned above)
+## A sample application for sending notifications is provided in nevent_sender.py (which can be run against nevent_receiver.py mentioned above)
 ```console
-python neventscu.py 127.0.0.1 11115
+python nevent_sender.py 127.0.0.1 11115
 
 ```
 ## A Qt/PySide6 based utility for generating RT Beams Delivery Instructions and Unified Procedure Step content

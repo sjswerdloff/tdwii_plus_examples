@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Tuple
 from time import sleep
 import pydicom.config
-from neventscp_handlers import handle_echo
+from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import handle_echo
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
