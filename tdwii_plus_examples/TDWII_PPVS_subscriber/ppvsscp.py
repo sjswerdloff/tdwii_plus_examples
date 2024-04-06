@@ -29,7 +29,7 @@ from storescp import StoreSCP
 class PPVS_SCP(NEventReceiver,StoreSCP):
     def __init__(self,
                  ae_title:str="PPVS_SCP",
-                 port:int=11112,
+                 port:int=11115,
                  logger=None,
                  bind_address:str="",
                  storage_presentation_contexts=AllStoragePresentationContexts,
