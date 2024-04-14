@@ -91,7 +91,7 @@ def _setup_argparser():
     parser = argparse.ArgumentParser(
         description=(
             "The upsscp application implements a Service Class Provider (SCP) "
-            "for the Verification, Storage and Query/Retrieve (QR) Service "
+            "for the Verification and Unified Procedure Step (UPS) Service "
             "Classes."
         ),
         usage="upsscp [options]",

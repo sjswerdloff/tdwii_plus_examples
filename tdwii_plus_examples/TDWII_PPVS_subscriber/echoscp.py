@@ -20,7 +20,7 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
-from basescp import BaseSCP
+from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
 
 class EchoSCP:
     def __init__(self,

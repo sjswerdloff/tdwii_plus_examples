@@ -20,8 +20,8 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
-from basescp import BaseSCP
-from echoscp import EchoSCP
+from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
+from tdwii_plus_examples.TDWII_PPVS_subscriber.echoscp import EchoSCP
 
 def nevent_cb(**kwargs):
     logger = None
@@ -78,7 +78,7 @@ def nevent_cb(**kwargs):
 class NEventReceiver(EchoSCP):
     def __init__(self,
                  nevent_callback=None,
-                 ae_title:str="NEVENT_SCP",
+                 ae_title:str="NEVENT_RECEIVER",
                  port:int=11115,
                  logger=None,
                  bind_address:str=""

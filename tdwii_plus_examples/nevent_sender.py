@@ -175,25 +175,25 @@ def _setup_argparser():
         "-aet",
         "--calling-aet",
         metavar="[a]etitle",
-        help="set my calling AE title (default: WATCH_SCU)",
+        help="set my calling AE title (default: NEVENT_SENDER)",
         type=str,
-        default="WATCH_SCU",
+        default="NEVENT_SENDER",
     )
     net_opts.add_argument(
         "-aec",
         "--called-aet",
         metavar="[a]etitle",
-        help="set called AE title of peer (default: WATCH_SCP)",
+        help="set called AE title of peer (default: NEVENT_RECEIVER)",
         type=str,
-        default="WATCH_SCP",
+        default="NEVENT_RECEIVER",
     )
     net_opts.add_argument(
         "-aer",
         "--receiver-aet",
         metavar="[a]etitle",
-        help="set receiver AE title of peer (default: EVENT_SCP)",
+        help="set receiver AE title of peer (default: NEVENT_RECEIVER)",
         type=str,
-        default="EVENT_SCP",
+        default="NEVENT_RECEIVER",
     )
     net_opts.add_argument(
         "-ta",
@@ -356,11 +356,13 @@ def main(args=None):
             status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "SCHEDULED")
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
+            
             status, response = send_ups_state_report(
                 assoc, UID("1.2.3.4"), "IN PROGRESS"
             )
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
+            
             status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "COMPLETED")
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
@@ -374,6 +376,7 @@ def main(args=None):
 
         assoc.release()
     else:
+        APP_LOGGER.error("Unable to form association with " + args.called_aet)
         sys.exit(1)
 
 

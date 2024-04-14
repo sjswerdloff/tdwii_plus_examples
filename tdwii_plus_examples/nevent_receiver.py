@@ -80,7 +80,7 @@ def _setup_argparser():
     parser = argparse.ArgumentParser(
         description=(
             "The nevent_receiver application implements a Service Class Provider (SCP) "
-            "for the Verification, Storage and Query/Retrieve (QR) Service "
+            "for the Verification and Unified Procedure Step Service "
             "Classes."
         ),
         usage="nevent_receiver [options]",
@@ -251,7 +251,7 @@ def nevent_cb(**kwargs):
             )
     else:
         if logger:
-            logger.warning(f"Unkown Event Type ID: {event_type_id}")
+            logger.warning(f"Unknown Event Type ID: {event_type_id}")
 
 
 def main(args=None):

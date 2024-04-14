@@ -23,6 +23,7 @@ from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from upsdb import Instance, InvalidIdentifier, add_instance, search
+import tdwii_config
 
 _SERVICE_STATUS = {
     "SCHEDULED": {
@@ -55,6 +56,8 @@ _ups_instances = dict()
 _global_subscribers = dict()  # AE Title and delection lock boolean "TRUE" or "FALSE" is the text representation
 _filtered_subscribers = dict()  # AE Title and the Dataset acting as the query filter
 
+REMOTE_AE_CONFIG_FILE = "ApplicationEntities.json"
+tdwii_config.load_ae_config(REMOTE_AE_CONFIG_FILE)
 
 def _add_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False, logger=None):
     if subscriber_ae_title not in _global_subscribers.keys():
@@ -610,7 +613,7 @@ def handle_nset(event, db_path, cli_config, logger):
     Parameters
     ----------
     event : pynetdicom.events.Event
-        The C-GET request :class:`~pynetdicom.events.Event`.
+        The N-SET request :class:`~pynetdicom.events.Event`.
     db_path : str
         The database path to use with create_engine().
     cli_config : dict
@@ -623,13 +626,13 @@ def handle_nset(event, db_path, cli_config, logger):
     int
         The number of sub-operations required to complete the request.
     int or pydicom.dataset.Dataset, pydicom.dataset.Dataset or None
-        The C-GET response's *Status* and if the *Status* is pending then
+        The N-SET response's *Status* and if the *Status* is pending then
         the dataset to be sent, otherwise ``None``.
     """
     requestor = event.assoc.requestor
     timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
     addr, port = requestor.address, requestor.port
-    logger.info(f"Received C-GET request from {addr}:{port} at {timestamp}")
+    logger.info(f"Received N-SET request from {addr}:{port} at {timestamp}")
 
     model = event.request.AffectedSOPClassUID
 
@@ -642,7 +645,7 @@ def handle_nset(event, db_path, cli_config, logger):
             matches = search(model, event.identifier, session)
         except InvalidIdentifier as exc:
             session.rollback()
-            logger.error("Invalid C-GET Identifier received")
+            logger.error("Invalid N-SET Identifier received")
             logger.error(str(exc))
             yield 0xA900, None
             return
@@ -820,19 +823,42 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     for globalsubscriber in _global_subscribers:
         # Request association with subscriber
         ae = AE(ae_title=acceptor.ae_title)
-        # hard code for the moment, deal with configuration of AE's soon
+        if (not globalsubscriber in tdwii_config.known_ae_ipaddr):
+            logger.error(f"{globalsubscriber} missing IP Address configuration in {REMOTE_AE_CONFIG_FILE}")
+            continue
+
+        if (not globalsubscriber in tdwii_config.known_ae_port):
+            logger.error(f"{globalsubscriber} missing Port configuration in {REMOTE_AE_CONFIG_FILE}")
+            continue
+
+        subscriber_ip_addr = tdwii_config.known_ae_ipaddr[globalsubscriber]
+        subscriber_port = tdwii_config.known_ae_port[globalsubscriber]
         assoc = ae.associate(
-            "127.0.0.1",
-            11112,
+            subscriber_ip_addr,
+            subscriber_port,
             contexts=UnifiedProcedurePresentationContexts,
             ae_title=globalsubscriber,
             max_pdu=16382,
         )
         
         if assoc.is_established:
+            message_id=0
             try:
-                logger.info(f"Send UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
-                assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID)
+                if (event_type==1):
+                    logger.info(f"Sending UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")                  
+                    message_id +=1
+                    assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
+                elif (event_type==5):  # The assignment took place at the time of creation
+                    # notify of creation first, i.e. event type == 1 
+                    logger.info(f"Sending UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
+                    message_id +=1                  
+                    assoc.send_n_event_report(event_info, 1, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
+                    # if the assignment happened after the creation (e.g. via N-SET or internal change in a TMS)
+                    # then *only* send an N-EVENT-REPORT regarding the UPS Assignment
+                    logger.info(f"Sending UPS Assignment: {ds.ScheduledStationNameCodeSequence}")
+                    message_id +=1  
+                    assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
+
                 logger.info(f"Notified global subscriber: {globalsubscriber}")
             except InvalidDicomError:
                 logger.error("Bad DICOM: ")
@@ -845,6 +871,6 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
             assoc.release()
 
         else:
-            logger.error(f"Failed to establish assocation with subscriber: {globalsubscriber}")            
+            logger.error(f"Failed to establish association with subscriber: {globalsubscriber}")            
 
     return 0x0000, ds
