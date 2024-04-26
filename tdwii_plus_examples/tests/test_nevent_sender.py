@@ -23,7 +23,7 @@ from pynetdicom import (
 from pynetdicom.sop_class import UnifiedProcedureStepPush, Verification
 
 # from nevent_receiver_handlers import handle_nevent
-from TDWII_PPVS_subscriber.nevent_receiver import NEventReceiver
+from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver import NEventReceiver
 
 # debug_logger()
 
