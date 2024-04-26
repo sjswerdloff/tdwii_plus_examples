@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>group_box_aes_and_machine_name</string>
+    <string>Remote System Configuration</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -68,7 +68,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>ppvs_scp_group_box</string>
+    <string>PPVS Configuration</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="1" column="0">
@@ -131,7 +131,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>group_box_cfind_request_and_response</string>
+    <string>UPS Query Specification</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
@@ -210,7 +210,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>group_box_get_reference_data</string>
+    <string>Reference Data Retrieval</string>
    </property>
    <widget class="QPushButton" name="get_listed_inputs_push_button">
     <property name="geometry">
