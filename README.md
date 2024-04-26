@@ -46,8 +46,7 @@ To generate .dcm files needed by ups enabled findscu
 dump2dcm queryfile.dcmdump.txt queryfile.dcm
 ```
 
-## A sample C-FIND SCU is available from pynetdicom (it has been enhanced with support for UPS): clone from https://github.com/pydicom/pynetdicom/pynetdicom.git
-
+## A sample C-FIND SCU is available from pynetdicom (it has been enhanced with support for UPS): clone from https://github.com/pydicom/pynetdicom
 then use findscu to query the TMS (Treatment Management System):
 
 in pynetdicom/apps
