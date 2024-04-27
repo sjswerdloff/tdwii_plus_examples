@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Tuple
 from time import sleep
 import pydicom.config
-from neventscp_handlers import handle_echo, handle_nevent
+from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import handle_echo, handle_nevent
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
@@ -20,8 +20,8 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
-from basescp import BaseSCP
-from echoscp import EchoSCP
+from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
+from tdwii_plus_examples.TDWII_PPVS_subscriber.echoscp import EchoSCP
 
 def nevent_cb(**kwargs):
     logger = None
@@ -75,10 +75,10 @@ def nevent_cb(**kwargs):
         if logger:
             logger.warning(f"Unknown Event Type ID: {event_type_id}")
 
-class NEventSCP(EchoSCP):
+class NEventReceiver(EchoSCP):
     def __init__(self,
                  nevent_callback=None,
-                 ae_title:str="NEVENT_SCP",
+                 ae_title:str="NEVENT_RECEIVER",
                  port:int=11115,
                  logger=None,
                  bind_address:str=""
@@ -104,6 +104,6 @@ class NEventSCP(EchoSCP):
         BaseSCP.run(self)
 
 if __name__ == '__main__':
-    my_scp = NEventSCP()
+    my_scp = NEventReceiver()
     my_scp.run()
     while True: sleep(100) # sleep forever 

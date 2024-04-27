@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""neventscu
+"""nevent_sender
 
 Used for sending events to AE's who subscribes for UPS Events
 Currently at the toy level of functionality:
@@ -104,10 +104,12 @@ def _setup_argparser():
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The neventscu application implements a Service Class User "
+            "The nevent_sender application implements a Service Class User "
             "(SCU) for the UPS Event Class. "
+            "Real world applications will often embed the nevent_sender functionality in an SCP"
+            "With the nevent_sender acting under role reversal (i.e.) as an SCU within the SCP"
         ),
-        usage="neventscu [options] addr port",
+        usage="nevent_sender [options] addr port",
     )
 
     # Parameters
@@ -173,25 +175,25 @@ def _setup_argparser():
         "-aet",
         "--calling-aet",
         metavar="[a]etitle",
-        help="set my calling AE title (default: WATCH_SCU)",
+        help="set my calling AE title (default: NEVENT_SENDER)",
         type=str,
-        default="WATCH_SCU",
+        default="NEVENT_SENDER",
     )
     net_opts.add_argument(
         "-aec",
         "--called-aet",
         metavar="[a]etitle",
-        help="set called AE title of peer (default: WATCH_SCP)",
+        help="set called AE title of peer (default: NEVENT_RECEIVER)",
         type=str,
-        default="WATCH_SCP",
+        default="NEVENT_RECEIVER",
     )
     net_opts.add_argument(
         "-aer",
         "--receiver-aet",
         metavar="[a]etitle",
-        help="set receiver AE title of peer (default: EVENT_SCP)",
+        help="set receiver AE title of peer (default: NEVENT_RECEIVER)",
         type=str,
-        default="EVENT_SCP",
+        default="NEVENT_RECEIVER",
     )
     net_opts.add_argument(
         "-ta",
@@ -309,11 +311,11 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"neventscu.py v{__version__}")
+        print(f"nevent_sender.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "neventscu")
-    APP_LOGGER.debug(f"neventscu.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "nevent_sender")
+    APP_LOGGER.debug(f"nevent_sender.py v{__version__}")
     APP_LOGGER.debug("")
 
     APP_LOGGER.debug("Using configuration from:")
@@ -354,11 +356,13 @@ def main(args=None):
             status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "SCHEDULED")
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
+            
             status, response = send_ups_state_report(
                 assoc, UID("1.2.3.4"), "IN PROGRESS"
             )
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
+            
             status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "COMPLETED")
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
@@ -372,6 +376,7 @@ def main(args=None):
 
         assoc.release()
     else:
+        APP_LOGGER.error("Unable to form association with " + args.called_aet)
         sys.exit(1)
 
 

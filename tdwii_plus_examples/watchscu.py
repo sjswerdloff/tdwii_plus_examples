@@ -162,17 +162,17 @@ def _setup_argparser():
         "-aec",
         "--called-aet",
         metavar="[a]etitle",
-        help="set called AE title of peer (default: WATCH_SCP)",
+        help="set called AE title of peer (default: UPSSCP)",
         type=str,
-        default="WATCH_SCP",
+        default="UPSSCP",
     )
     net_opts.add_argument(
         "-aer",
         "--receiver-aet",
         metavar="[a]etitle",
-        help="set receiver AE title of peer (default: EVENT_SCP)",
+        help="set receiver AE title of peer (default: NEVENT_RECEIVER)",
         type=str,
-        default="EVENT_SCP",
+        default="NEVENT_RECEIVER"
     )
     net_opts.add_argument(
         "-ta",

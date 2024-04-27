@@ -1,4 +1,4 @@
-"""Event handlers for neventscp.py"""
+"""Event handlers for nevent_receiver.py"""
 
 from pydicom import dcmread
 

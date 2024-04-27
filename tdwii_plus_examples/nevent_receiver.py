@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""A Verification and N_EVENT_REPORT SCP application."""
+"""A Verification SCP and N_EVENT_REPORT receiver application."""
 
 import argparse
 import os
@@ -7,7 +7,7 @@ import sys
 from configparser import ConfigParser
 
 import pydicom.config
-from neventscp_handlers import handle_echo, handle_nevent
+from nevent_receiver_handlers import handle_echo, handle_nevent
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
@@ -20,7 +20,6 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
-# from pynetdicom.apps.neventscp import db
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True
@@ -80,11 +79,11 @@ def _setup_argparser():
     # Description
     parser = argparse.ArgumentParser(
         description=(
-            "The neventscp application implements a Service Class Provider (SCP) "
-            "for the Verification, Storage and Query/Retrieve (QR) Service "
+            "The nevent_receiver application implements a Service Class Provider (SCP) "
+            "for the Verification and Unified Procedure Step Service "
             "Classes."
         ),
-        usage="neventscp [options]",
+        usage="nevent_receiver [options]",
     )
 
     # General Options
@@ -126,7 +125,7 @@ def _setup_argparser():
         choices=["critical", "error", "warn", "info", "debug"],
     )
     fdir = os.path.abspath(os.path.dirname(__file__))
-    fpath = os.path.join(fdir, "neventscp_default.ini")
+    fpath = os.path.join(fdir, "nevent_receiver_default.ini")
     gen_opts.add_argument(
         "-c",
         "--config",
@@ -252,7 +251,7 @@ def nevent_cb(**kwargs):
             )
     else:
         if logger:
-            logger.warning(f"Unkown Event Type ID: {event_type_id}")
+            logger.warning(f"Unknown Event Type ID: {event_type_id}")
 
 
 def main(args=None):
@@ -263,11 +262,11 @@ def main(args=None):
     args = _setup_argparser()
 
     if args.version:
-        print(f"neventscp.py v{__version__}")
+        print(f"nevent_receiver.py v{__version__}")
         sys.exit()
 
-    APP_LOGGER = setup_logging(args, "neventscp")
-    APP_LOGGER.debug(f"neventscp.py v{__version__}")
+    APP_LOGGER = setup_logging(args, "nevent_receiver")
+    APP_LOGGER.debug(f"nevent_receiver.py v{__version__}")
     APP_LOGGER.debug("")
 
     APP_LOGGER.debug("Using configuration from:")
