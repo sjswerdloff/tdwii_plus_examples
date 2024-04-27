@@ -8,7 +8,6 @@ from configparser import ConfigParser
 
 import pydicom.config
 
-# from neventscp_handlers import handle_nevent
 import upsdb
 from handlers import (
     handle_echo,
@@ -30,7 +29,6 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
-# from pynetdicom.apps.upsscp import db
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True
