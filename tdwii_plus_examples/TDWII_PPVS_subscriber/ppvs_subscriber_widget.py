@@ -6,7 +6,7 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication, QWidget, QFileDialog
 from PySide6.QtCore import Qt, Slot, QDateTime # pylint: disable=no-name-in-module
 
-
+import tdwii_config
 from ppvsscp import PPVS_SCP
 from watchscu import WatchSCU
 
@@ -62,9 +62,10 @@ class PPVS_SubscriberWidget(QWidget):
                                      )
         self.ppvs_scp.run()
         self.watch_scu = WatchSCU(self.ui.ppvs_ae_line_edit.text())
-        ip_addr = "127.0.0.1"
-        port = 11114
-        self.watch_scu.set_subscription_ae(self.ui.ups_ae_line_edit.text(), ip_addr=ip_addr,port=port)
+        upsscp_ae_title = self.ui.ups_ae_line_edit.text()
+        ip_addr = tdwii_config.known_ae_ipaddr[upsscp_ae_title]
+        port = tdwii_config.known_ae_port[upsscp_ae_title]
+        self.watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr,port=port)
 
 
     @Slot()
@@ -77,10 +78,9 @@ class PPVS_SubscriberWidget(QWidget):
         if self.watch_scu is None:
             my_ae_title = self.ui.ppvs_ae_line_edit.text()
             watch_scu = WatchSCU(my_ae_title)
-        # hard code for the moment, deal with configuration of AE's soon
-            ip_addr = "127.0.0.1"
-            port = 11114
             upsscp_ae_title = self.ui.ups_ae_line_edit.text()
+            ip_addr = tdwii_config.known_ae_ipaddr[upsscp_ae_title]
+            port = tdwii_config.known_ae_port[upsscp_ae_title]           
             watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr,port=port)
         else:
             watch_scu = self.watch_scu
@@ -100,10 +100,10 @@ class PPVS_SubscriberWidget(QWidget):
         if self.watch_scu is None:
             my_ae_title = self.ui.ppvs_ae_line_edit.text()
             watch_scu = WatchSCU(my_ae_title)
-        # hard code for the moment, deal with configuration of AE's soon
-            ip_addr = "127.0.0.1"
-            port = 11114
             upsscp_ae_title = self.ui.ups_ae_line_edit.text()
+            ip_addr = tdwii_config.known_ae_ipaddr[upsscp_ae_title]
+            port = tdwii_config.known_ae_port[upsscp_ae_title]           
+            
             watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr,port=port)
         else:
             watch_scu = self.watch_scu
@@ -188,6 +188,7 @@ def restart_ppvs_scp(ae_title:str, output_dir:Path=None) -> str:
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    tdwii_config.load_ae_config()
     widget = PPVS_SubscriberWidget()
     widget.show()
     sys.exit(app.exec())
