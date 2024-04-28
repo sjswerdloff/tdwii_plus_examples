@@ -193,11 +193,7 @@ def add_instance(ds, session, fpath=None):
         to the database file.
     """
     # Check if instance is already in the database
-    result = (
-        session.query(Instance)
-        .filter(Instance.sop_instance_uid == ds.SOPInstanceUID)
-        .all()
-    )
+    result = session.query(Instance).filter(Instance.sop_instance_uid == ds.SOPInstanceUID).all()
     if result:
         instance = result[0]
     else:
@@ -246,9 +242,7 @@ def add_instance(ds, session, fpath=None):
                     if value is None:
                         value = "SCHEDULED"
                     elif value != "SCHEDULED":
-                        raise InvalidIdentifier(
-                            f"ProcedureStepState via N-CREATE must be SCHEDULED, received {value}"
-                        )
+                        raise InvalidIdentifier(f"ProcedureStepState via N-CREATE must be SCHEDULED, received {value}")
 
         if value is not None:
             # All supported attributes have VM 1
@@ -377,9 +371,7 @@ def _check_identifier(identifier, model):
     # Part 4, C.4.1.1.3.1, C.4.2.1.4 and C.4.3.1.3.1:
     #   (0008,0052) Query Retrieve Level is required in the Identifier
     if "QueryRetrieveLevel" not in identifier:
-        raise InvalidIdentifier(
-            "The Identifier contains no Query Retrieve Level element"
-        )
+        raise InvalidIdentifier("The Identifier contains no Query Retrieve Level element")
 
     if model in _PATIENT_ROOT:
         attr = _PATIENT_ROOT[model]
@@ -388,9 +380,7 @@ def _check_identifier(identifier, model):
 
     levels = list(attr.keys())
     if identifier.QueryRetrieveLevel not in levels:
-        raise InvalidIdentifier(
-            "The Identifier's Query Retrieve Level value is invalid"
-        )
+        raise InvalidIdentifier("The Identifier's Query Retrieve Level value is invalid")
 
     if len(identifier) == 1:
         raise InvalidIdentifier("The Identifier contains no keys")
@@ -401,8 +391,7 @@ def _check_identifier(identifier, model):
             for sublevel in levels[ii + 1 :]:
                 if any([kw in identifier for kw in attr[sublevel]]):
                     raise InvalidIdentifier(
-                        "The Identifier contains keys below the level "
-                        "specified by the Query Retrieve Level"
+                        "The Identifier contains keys below the level " "specified by the Query Retrieve Level"
                     )
 
             # The level is the same as that in the identifier so we're OK
@@ -411,9 +400,7 @@ def _check_identifier(identifier, model):
         # The level is above that in the identifier so make sure the unique
         #   keyword is present
         if attr[level][0] not in identifier:
-            raise InvalidIdentifier(
-                f"The Identifier is missing a unique key for " f"the '{level}' level"
-            )
+            raise InvalidIdentifier(f"The Identifier is missing a unique key for " f"the '{level}' level")
 
 
 def clear(session):
@@ -459,9 +446,7 @@ def remove_instance(instance_uid, session):
     session : sqlalchemy.orm.session.Session
         The session to use when querying the database for the instance.
     """
-    matches = (
-        session.query(Instance).filter(Instance.sop_instance_uid == instance_uid).all()
-    )
+    matches = session.query(Instance).filter(Instance.sop_instance_uid == instance_uid).all()
     if matches:
         session.delete(matches[0])
         session.commit()
@@ -832,12 +817,8 @@ class Instance(Base):
     transaction_uid = Column(String(64))
 
     station_name = Column(String(64))
-    work_item_code_value = Column(
-        String(64)
-    )  # needs to be matched in conjunction with the  scheme designator
-    work_item_scheme_designator = Column(
-        String(64)
-    )  # typically DCM, but could be 99IHERO2008 or other "private" schema
+    work_item_code_value = Column(String(64))  # needs to be matched in conjunction with the  scheme designator
+    work_item_scheme_designator = Column(String(64))  # typically DCM, but could be 99IHERO2008 or other "private" schema
     work_item_meaning = Column(String(64))
     start_date_time = Column(String(64))
     procedure_step_state = Column(String(16))
@@ -915,10 +896,7 @@ class Instance(Base):
             available for the Instance.
         """
         if None in [self.sop_class_uid, self.transfer_syntax_uid]:
-            raise ValueError(
-                "Cannot determine which presentation context is required for "
-                "for the SOP Instance"
-            )
+            raise ValueError("Cannot determine which presentation context is required for " "for the SOP Instance")
 
         return build_context(self.sop_class_uid, self.transfer_syntax_uid)
 

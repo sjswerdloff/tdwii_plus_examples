@@ -7,16 +7,6 @@ import sys
 from configparser import ConfigParser
 
 import pydicom.config
-
-import upsdb
-from handlers import (
-    handle_echo,
-    handle_find,
-    handle_naction,
-    handle_ncreate,
-    handle_nget,
-    handle_nset,
-)
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
@@ -29,6 +19,15 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
+import upsdb
+from handlers import (
+    handle_echo,
+    handle_find,
+    handle_naction,
+    handle_ncreate,
+    handle_nget,
+    handle_nset,
+)
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True

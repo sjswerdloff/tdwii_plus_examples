@@ -4,10 +4,10 @@ import sys
 from argparse import Namespace
 from configparser import ConfigParser
 from datetime import datetime
-from typing import Tuple
 from time import sleep
+from typing import Tuple
+
 import pydicom.config
-from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import handle_echo, handle_nevent
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
@@ -22,6 +22,11 @@ from pynetdicom.utils import set_ae
 
 from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.echoscp import EchoSCP
+from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import (
+    handle_echo,
+    handle_nevent,
+)
+
 
 def nevent_cb(**kwargs):
     logger = None
@@ -31,9 +36,7 @@ def nevent_cb(**kwargs):
         logger.info("nevent_cb invoked")
     event_type_id = 0  # not a valid type ID
     if logger:
-        logger.info(
-            "TODO: Invoke application response appropriate to content of N-EVENT-REPORT-RQ"
-        )
+        logger.info("TODO: Invoke application response appropriate to content of N-EVENT-REPORT-RQ")
     if "type_id" in kwargs.keys():
         event_type_id = kwargs["type_id"]
         if logger:
@@ -54,9 +57,7 @@ def nevent_cb(**kwargs):
     elif event_type_id == 3:
         if logger:
             logger.info("UPS Progress Report")
-            logger.info(
-                "Probably time to see if the Beam (number) changed, or if adaptation is taking or took place"
-            )
+            logger.info("Probably time to see if the Beam (number) changed, or if adaptation is taking or took place")
     elif event_type_id == 4:
         if logger:
             logger.info("SCP Status Change")
@@ -75,26 +76,21 @@ def nevent_cb(**kwargs):
         if logger:
             logger.warning(f"Unknown Event Type ID: {event_type_id}")
 
+
 class NEventReceiver(EchoSCP):
-    def __init__(self,
-                 nevent_callback=None,
-                 ae_title:str="NEVENT_RECEIVER",
-                 port:int=11115,
-                 logger=None,
-                 bind_address:str=""
-                 ):
+    def __init__(
+        self, nevent_callback=None, ae_title: str = "NEVENT_RECEIVER", port: int = 11115, logger=None, bind_address: str = ""
+    ):
         if nevent_callback is None:
             self.nevent_callback = nevent_cb  # fallback to something that just logs incoming events
         else:
             self.nevent_callback = nevent_callback
-        EchoSCP.__init__(self,ae_title=ae_title,port=port,logger=logger,bind_address=bind_address)
+        EchoSCP.__init__(self, ae_title=ae_title, port=port, logger=logger, bind_address=bind_address)
 
     def _add_contexts(self):
         EchoSCP._add_contexts(self)
         for cx in UnifiedProcedurePresentationContexts:
-            self.ae.add_supported_context(
-            cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False
-            )
+            self.ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     def _add_handlers(self):
         EchoSCP._add_handlers(self)
@@ -103,7 +99,9 @@ class NEventReceiver(EchoSCP):
     def run(self):
         BaseSCP.run(self)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     my_scp = NEventReceiver()
     my_scp.run()
-    while True: sleep(100) # sleep forever 
+    while True:
+        sleep(100)  # sleep forever

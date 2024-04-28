@@ -70,9 +70,7 @@ def send_ups_state_report(
     if reason_for_cancellation:
         event_info.ReasonForCancellation = reason_for_cancellation
     if discontinuation_reason_code_seq:
-        event_info.ProcedureStepDiscontinuationReasonCodeSequence = (
-            discontinuation_reason_code_seq
-        )
+        event_info.ProcedureStepDiscontinuationReasonCodeSequence = discontinuation_reason_code_seq
 
     return send_nevent(
         assoc,
@@ -114,16 +112,12 @@ def _setup_argparser():
 
     # Parameters
     req_opts = parser.add_argument_group("Parameters")
-    req_opts.add_argument(
-        "addr", help="TCP/IP address or hostname of DICOM peer", type=str
-    )
+    req_opts.add_argument("addr", help="TCP/IP address or hostname of DICOM peer", type=str)
     req_opts.add_argument("port", help="TCP/IP port number of peer", type=int)
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument(
-        "--version", help="print version information and exit", action="store_true"
-    )
+    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -223,10 +217,7 @@ def _setup_argparser():
         "-pdu",
         "--max-pdu",
         metavar="[n]umber of bytes",
-        help=(
-            f"set max receive pdu to n bytes (0 for unlimited, "
-            f"default: {DEFAULT_MAX_LENGTH})"
-        ),
+        help=(f"set max receive pdu to n bytes (0 for unlimited, " f"default: {DEFAULT_MAX_LENGTH})"),
         type=int,
         default=DEFAULT_MAX_LENGTH,
     )
@@ -356,22 +347,18 @@ def main(args=None):
             status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "SCHEDULED")
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
-            
-            status, response = send_ups_state_report(
-                assoc, UID("1.2.3.4"), "IN PROGRESS"
-            )
+
+            status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "IN PROGRESS")
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
-            
+
             status, response = send_ups_state_report(assoc, UID("1.2.3.4"), "COMPLETED")
             APP_LOGGER.info(f"Status: {os.linesep}{status}")
             APP_LOGGER.info(f"Response: {os.linesep}{response}")
         except InvalidDicomError:
             APP_LOGGER.error("Bad DICOM: ")
         except Exception as exc:
-            APP_LOGGER.error(
-                "UPS State Report as Event Notification (N-EVENT-REPORT-RQ) failed"
-            )
+            APP_LOGGER.error("UPS State Report as Event Notification (N-EVENT-REPORT-RQ) failed")
             APP_LOGGER.exception(exc)
 
         assoc.release()

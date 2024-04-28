@@ -1,10 +1,10 @@
 """Unit tests for nevent_sender.py"""
 
-from time import sleep
 import os
 import subprocess
 import sys
 import time
+from time import sleep
 
 import pytest
 from pydicom import Dataset, dcmread
@@ -95,16 +95,13 @@ class neventsenderBase:
         ae.network_timeout = 5
         ae.add_supported_context(UnifiedProcedureStepPush)
         scp = ae.start_server(("localhost", 11115), block=False, evt_handlers=handlers)
-  
 
         p = self.func(["127.0.0.1", "11115"])
         p.wait()
         assert p.returncode == 0
         # sleep(1.0)
         scp.shutdown()
-        
 
-        
         assert events[0].event == evt.EVT_N_EVENT_REPORT
         current_event = events[0]
         nevent_primitive = current_event.request
@@ -136,7 +133,7 @@ class neventsenderBase:
         assert nevent_information.ProcedureStepState == "COMPLETED"
 
         assert events[3].event == evt.EVT_RELEASED
-        
+
     # def test_no_peer(self, capfd):
     #     """Test trying to connect to non-existent host."""
     #     p = self.func([DATASET_FILE])
@@ -145,7 +142,6 @@ class neventsenderBase:
     #     out, err = capfd.readouterr()
     #     assert "Association request failed: unable to connect to remote" in err
     #     assert "TCP Initialisation Error" in err
-
 
     # def test_bad_input(self, capfd):
     #     """Test being unable to read the input file."""
@@ -157,7 +153,6 @@ class neventsenderBase:
     #     assert "No suitable DICOM files found" in err
     #     assert "Cannot access path: no-such-file.dcm" in err
 
-    
 
 class Testneventsender(neventsenderBase):
     """Tests for nevent_sender.py"""

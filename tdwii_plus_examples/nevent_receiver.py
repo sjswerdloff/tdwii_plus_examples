@@ -7,7 +7,6 @@ import sys
 from configparser import ConfigParser
 
 import pydicom.config
-from nevent_receiver_handlers import handle_echo, handle_nevent
 from pynetdicom import (
     AE,
     ALL_TRANSFER_SYNTAXES,
@@ -20,6 +19,7 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 
+from nevent_receiver_handlers import handle_echo, handle_nevent
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True
@@ -88,9 +88,7 @@ def _setup_argparser():
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument(
-        "--version", help="print version information and exit", action="store_true"
-    )
+    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -191,10 +189,7 @@ def _setup_argparser():
     )
     db_opts.add_argument(
         "--clean",
-        help=(
-            "remove all entries from the database and delete the "
-            "corresponding stored instances"
-        ),
+        help=("remove all entries from the database and delete the " "corresponding stored instances"),
         action="store_true",
     )
 
@@ -209,9 +204,7 @@ def nevent_cb(**kwargs):
         logger.info("nevent_cb invoked")
     event_type_id = 0  # not a valid type ID
     if logger:
-        logger.info(
-            "TODO: Invoke application response appropriate to content of N-EVENT-REPORT-RQ"
-        )
+        logger.info("TODO: Invoke application response appropriate to content of N-EVENT-REPORT-RQ")
     if "type_id" in kwargs.keys():
         event_type_id = kwargs["type_id"]
         if logger:
@@ -232,9 +225,7 @@ def nevent_cb(**kwargs):
     elif event_type_id == 3:
         if logger:
             logger.info("UPS Progress Report")
-            logger.info(
-                "Probably time to see if the Beam (number) changed, or if adaptation is taking or took place"
-            )
+            logger.info("Probably time to see if the Beam (number) changed, or if adaptation is taking or took place")
     elif event_type_id == 4:
         if logger:
             logger.info("SCP Status Change")
@@ -353,9 +344,7 @@ def main(args=None):
 
     # Unified Procedure Step SCP
     for cx in UnifiedProcedurePresentationContexts:
-        ae.add_supported_context(
-            cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False
-        )
+        ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     APP_LOGGER.info(f"Configured for instance_dir = {instance_dir}")
     # Set our handler bindings
@@ -372,9 +361,7 @@ def main(args=None):
     ]
 
     # Listen for incoming association requests
-    ae.start_server(
-        (app_config["bind_address"], app_config.getint("port")), evt_handlers=handlers
-    )
+    ae.start_server((app_config["bind_address"], app_config.getint("port")), evt_handlers=handlers)
 
 
 if __name__ == "__main__":

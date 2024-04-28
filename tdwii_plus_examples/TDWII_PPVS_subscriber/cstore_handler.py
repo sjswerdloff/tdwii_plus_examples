@@ -5,12 +5,11 @@ import os
 from struct import pack
 
 from pydicom import dcmread
-from pydicom.datadict import tag_for_keyword, repeater_has_keyword, get_entry
+from pydicom.datadict import get_entry, repeater_has_keyword, tag_for_keyword
 from pydicom.dataset import Dataset
 from pydicom.filewriter import write_file_meta_info
 from pydicom.tag import Tag
 from pydicom.uid import DeflatedExplicitVRLittleEndian
-
 from pynetdicom.dsutils import encode
 
 
@@ -56,8 +55,7 @@ def handle_store(event, args, app_logger):
         sop_instance = ds.SOPInstanceUID
     except Exception as exc:
         app_logger.error(
-            "Unable to decode the received dataset or missing 'SOP Class "
-            "UID' and/or 'SOP Instance UID' elements"
+            "Unable to decode the received dataset or missing 'SOP Class " "UID' and/or 'SOP Instance UID' elements"
         )
         app_logger.exception(exc)
         # Unable to decode dataset

@@ -1,14 +1,26 @@
 #!/usr/bin/env python
 # This Python file uses the following encoding: utf-8
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import List
-import sys
-from PySide6.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox  # pylint: disable=no-name-in-module
-from PySide6.QtCore import Qt, Slot, QDateTime # pylint: disable=no-name-in-module
 
-from rtbdi_factory import (create_rtbdi_from_rtion_plan, create_ups_from_plan_and_bdi, load_plan, write_rtbdi,
-                           is_tx_record_for_bdi, is_tx_record_for_plan, load_treatment_records, write_ups
+from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import (  # pylint: disable=no-name-in-module
+    QApplication,
+    QFileDialog,
+    QMessageBox,
+    QWidget,
+)
+from rtbdi_factory import (
+    create_rtbdi_from_rtion_plan,
+    create_ups_from_plan_and_bdi,
+    is_tx_record_for_bdi,
+    is_tx_record_for_plan,
+    load_plan,
+    load_treatment_records,
+    write_rtbdi,
+    write_ups,
 )
 
 # Important:
@@ -16,6 +28,7 @@ from rtbdi_factory import (create_rtbdi_from_rtion_plan, create_ups_from_plan_an
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from ui_form import Ui_MainBDIWidget
+
 
 class MainBDIWidget(QWidget):
     """Main UI for Creating an RT BDI based on an RT (Ion) Plan
@@ -28,6 +41,7 @@ class MainBDIWidget(QWidget):
     Args:
         QWidget (_type_): description
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_MainBDIWidget()
@@ -40,24 +54,22 @@ class MainBDIWidget(QWidget):
         self.ui.push_button_export_ups.clicked.connect(self._export_ups_button_clicked)
         self.plan = None
         self.rtbdi = None
-        self.export_path = Path("~/") # home for a default isn't the worst choice
+        self.export_path = Path("~/")  # home for a default isn't the worst choice
         self.fraction_number = 1
         self.retrieve_ae_title = ""
         self.scheduled_datetime = datetime.now
 
     @Slot()
     def _plan_button_clicked(self):
-        file_name, ok = QFileDialog.getOpenFileName(self,
-            "Open Plan", "~/", "Image Files (*.dcm)")
+        file_name, ok = QFileDialog.getOpenFileName(self, "Open Plan", "~/", "Image Files (*.dcm)")
         if file_name:
             path = Path(file_name)
         self.ui.lineedit_plan_selector.insert(str(path))
         # print("Plan Button Clicked")
 
-
     @Slot()
     def _bdidir_button_clicked(self):
-        dialog = QFileDialog(self,"BDI Export Dir")
+        dialog = QFileDialog(self, "BDI Export Dir")
         dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setOption(QFileDialog.ShowDirsOnly, True)
@@ -67,51 +79,41 @@ class MainBDIWidget(QWidget):
         if file_name:
             path = Path(file_name)
         self.ui.lineedit_bdidir_selector.insert(str(path))
-#     fraction_number = round(self.ui.double_spin_box_fraction_number.value())
+
+    #     fraction_number = round(self.ui.double_spin_box_fraction_number.value())
 
     @Slot()
     def _bdi_export_button_clicked(self):
         fraction_number = round(self.ui.double_spin_box_fraction_number.value())
         scheduled_date = self.ui.datetime_edit_scheduled_datetime.date()
         scheduled_time = self.ui.datetime_edit_scheduled_datetime.time()
-        print(f"Fraction Number: {fraction_number} "\
-              f"Scheduled Date: {scheduled_date} "\
-                f"Scheduled Time: {scheduled_time}")
+        print(f"Fraction Number: {fraction_number} " f"Scheduled Date: {scheduled_date} " f"Scheduled Time: {scheduled_time}")
         plan = load_plan(self.ui.lineedit_plan_selector.text())
         self.plan = plan
         fraction_number = round(self.ui.double_spin_box_fraction_number.value())
         self.fraction_number = fraction_number
         treatment_record_list = self._get_treatment_record_paths()
-        rtbdi = create_rtbdi_from_rtion_plan(plan,
-                                             fraction_number=fraction_number
-                                             )
+        rtbdi = create_rtbdi_from_rtion_plan(plan, fraction_number=fraction_number)
         self.rtbdi = rtbdi
-        bdi_path = Path(self.ui.lineedit_bdidir_selector.text(), 
-                        self.ui.line_edit_bdi_filename.text()
-                        )
+        bdi_path = Path(self.ui.lineedit_bdidir_selector.text(), self.ui.line_edit_bdi_filename.text())
         write_rtbdi(rtbdi, bdi_path)
         self.export_path = bdi_path
-
 
     @Slot()
     def _export_ups_button_clicked(self):
         self.retrieve_ae_title = self.ui.line_edit_move_scp_ae_title.text()
         self.scheduled_datetime = self.ui.datetime_edit_scheduled_datetime.dateTime().toPython()
-        
+
         treatment_record_paths = self._get_treatment_record_paths()
         treatment_record_ds_list = load_treatment_records(treatment_record_paths)
         self._validate_treatment_records(treatment_record_ds_list)
         if self.rtbdi is None:
             self._bdi_export_button_clicked()
-        
-        ups = create_ups_from_plan_and_bdi(self.plan,
-                                     self.rtbdi,
-                                     self.retrieve_ae_title,
-                                     self.scheduled_datetime,
-                                     treatment_record_ds_list
-                                     )
-        write_ups(ups,Path(self.ui.lineedit_bdidir_selector.text()))
 
+        ups = create_ups_from_plan_and_bdi(
+            self.plan, self.rtbdi, self.retrieve_ae_title, self.scheduled_datetime, treatment_record_ds_list
+        )
+        write_ups(ups, Path(self.ui.lineedit_bdidir_selector.text()))
 
     def _validate_treatment_records(self, treatment_record_ds_list):
         """Confirms that the treatment records reference the plan
@@ -132,16 +134,15 @@ class MainBDIWidget(QWidget):
                     if not is_tx_record_for_bdi(tx_record_ds, self.rtbdi):
                         treatment_record_ds_list.remove(tx_record_ds)
                         mismatched_records.append(tx_record_ds.SOPInstanceUID)
-        
+
         if len(mismatched_records) != 0:
-            QMessageBox.show('<br>'.join(mismatched_records))
+            QMessageBox.show("<br>".join(mismatched_records))
         return
 
-
-    def _get_treatment_record_paths(self)-> List[Path]:
+    def _get_treatment_record_paths(self) -> List[Path]:
         treatment_record_paths = []
         model = self.ui.list_view_treatment_records.model()
-        if (model is not None):
+        if model is not None:
             for row in range(model.rowCount()):
                 index = model.index(row, 0)
                 item = model.data(index, Qt.ItemDataRole.DisplayRole)

@@ -10,28 +10,30 @@ from pynetdicom._globals import DEFAULT_MAX_LENGTH
 from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import UnifiedProcedureStepPush, UPSGlobalSubscriptionInstance
 
-class WatchSCU():
 
-    def __init__(self, calling_ae_title:str,
-                 receiving_ae_title:str=None,
-                 ):
+class WatchSCU:
+    def __init__(
+        self,
+        calling_ae_title: str,
+        receiving_ae_title: str = None,
+    ):
         self.calling_ae_title = calling_ae_title
         if receiving_ae_title is None:
             self.receiving_ae_title = self.calling_ae_title
         else:
             self.receiving_ae_title = receiving_ae_title
 
-    def create_action_info(self, match_on_beam_number:bool=False,
-                       match_on_step_state:bool=False)->Dataset:
-        return create_action_info(match_on_beam_number=match_on_beam_number,
-                           match_on_step_state=match_on_step_state)
-        
-    def set_subscription_ae(self, watched_ae_title:str, ip_addr:str=None, port:int=None):
+    def create_action_info(self, match_on_beam_number: bool = False, match_on_step_state: bool = False) -> Dataset:
+        return create_action_info(match_on_beam_number=match_on_beam_number, match_on_step_state=match_on_step_state)
+
+    def set_subscription_ae(self, watched_ae_title: str, ip_addr: str = None, port: int = None):
         self.watched_ae_title = watched_ae_title
         self.ip_addr = ip_addr
         self.port = port
 
-    def subscribe(self, watched_ae_title:str=None, ip_addr:str=None, port:int=None, matching_keys:Dataset=None)->bool:
+    def subscribe(
+        self, watched_ae_title: str = None, ip_addr: str = None, port: int = None, matching_keys: Dataset = None
+    ) -> bool:
         success = True
         watched_ip_addr = ip_addr
         if watched_ip_addr is None:
@@ -51,9 +53,12 @@ class WatchSCU():
         )
         if assoc.is_established:
             try:
-                status, response = send_global_watch_registration(calling_ae_title=self.calling_ae_title,
-                                                                    receiving_ae_title=self.receiving_ae_title,
-                                                                    assoc=assoc,action_info=matching_keys)
+                status, response = send_global_watch_registration(
+                    calling_ae_title=self.calling_ae_title,
+                    receiving_ae_title=self.receiving_ae_title,
+                    assoc=assoc,
+                    action_info=matching_keys,
+                )
                 dbg_message = f"Status: {status}  response {response}"
                 logging.getLogger().debug(dbg_message)
             except InvalidDicomError:
@@ -70,49 +75,53 @@ class WatchSCU():
             success = False
 
         return success
-            
-    def unsubscribe(self, watched_ae_title:str=None, ip_addr:str=None, port:int=None, matching_keys:Dataset=None)->bool:
-            success = True
-            watched_ip_addr = ip_addr
-            if watched_ip_addr is None:
-                watched_ip_addr = self.ip_addr
-            watched_port = port
-            if watched_port is None:
-                watched_port = self.port
-            if watched_ae_title is None:
-                watched_ae_title = self.watched_ae_title
 
+    def unsubscribe(
+        self, watched_ae_title: str = None, ip_addr: str = None, port: int = None, matching_keys: Dataset = None
+    ) -> bool:
+        success = True
+        watched_ip_addr = ip_addr
+        if watched_ip_addr is None:
+            watched_ip_addr = self.ip_addr
+        watched_port = port
+        if watched_port is None:
+            watched_port = self.port
+        if watched_ae_title is None:
+            watched_ae_title = self.watched_ae_title
 
-            ae = AE(ae_title=self.calling_ae_title)
-            assoc = ae.associate(
-                watched_ip_addr,
-                watched_port,
-                contexts=UnifiedProcedurePresentationContexts,
-                ae_title=watched_ae_title,
-            )
-            if assoc.is_established:
-                try:
-                    status, response = send_global_watch_delete_registration(calling_ae_title=self.calling_ae_title,
-                                                                        receiving_ae_title=self.receiving_ae_title,
-                                                                        assoc=assoc,action_info=matching_keys)
-                    dbg_message = f"Status: {status}  response {response}"
-                    logging.getLogger().debug(dbg_message)
-                except InvalidDicomError:
-                    logging.getLogger().error("Bad DICOM: ")
-                    success = False
-                except Exception as exc:
-                    logging.getLogger().error("Watch Delete Registration (N-ACTION-RQ) failed")
-                    logging.getLogger().exception(exc)
-                    success = False
-
-                assoc.release()
-            else:
-                logging.getLogger().error("Watch Delete Registration failed to make Association")
+        ae = AE(ae_title=self.calling_ae_title)
+        assoc = ae.associate(
+            watched_ip_addr,
+            watched_port,
+            contexts=UnifiedProcedurePresentationContexts,
+            ae_title=watched_ae_title,
+        )
+        if assoc.is_established:
+            try:
+                status, response = send_global_watch_delete_registration(
+                    calling_ae_title=self.calling_ae_title,
+                    receiving_ae_title=self.receiving_ae_title,
+                    assoc=assoc,
+                    action_info=matching_keys,
+                )
+                dbg_message = f"Status: {status}  response {response}"
+                logging.getLogger().debug(dbg_message)
+            except InvalidDicomError:
+                logging.getLogger().error("Bad DICOM: ")
+                success = False
+            except Exception as exc:
+                logging.getLogger().error("Watch Delete Registration (N-ACTION-RQ) failed")
+                logging.getLogger().exception(exc)
                 success = False
 
-            return success
-        
-        
+            assoc.release()
+        else:
+            logging.getLogger().error("Watch Delete Registration failed to make Association")
+            success = False
+
+        return success
+
+
 def send_action(
     assoc: Association,
     class_uid: UID,
@@ -138,8 +147,9 @@ def send_action(
     return assoc.send_n_action(action_info, action_type, class_uid, instance_uid)
 
 
-def send_global_watch_registration( calling_ae_title:str, receiving_ae_title:str,
-                                   assoc: Association, action_info: Dataset = None):
+def send_global_watch_registration(
+    calling_ae_title: str, receiving_ae_title: str, assoc: Association, action_info: Dataset = None
+):
     """_summary_
 
     Args:
@@ -164,13 +174,14 @@ def send_global_watch_registration( calling_ae_title:str, receiving_ae_title:str
         assoc=assoc,
         class_uid=ds.RequestedSOPClassUID,
         instance_uid=ds.RequestedSOPInstanceUID,
-        action_type=3, #  subscribe
+        action_type=3,  #  subscribe
         action_info=ds,
     )
 
 
-def send_global_watch_delete_registration( calling_ae_title:str, receiving_ae_title:str,
-                                   assoc: Association, action_info: Dataset = None):
+def send_global_watch_delete_registration(
+    calling_ae_title: str, receiving_ae_title: str, assoc: Association, action_info: Dataset = None
+):
     """_summary_
 
     Args:
@@ -195,13 +206,12 @@ def send_global_watch_delete_registration( calling_ae_title:str, receiving_ae_ti
         assoc=assoc,
         class_uid=ds.RequestedSOPClassUID,
         instance_uid=ds.RequestedSOPInstanceUID,
-        action_type=4, # unsubscribe
+        action_type=4,  # unsubscribe
         action_info=ds,
     )
 
 
-def create_action_info(match_on_beam_number:bool=False,
-                       match_on_step_state:bool=False)->Dataset:
+def create_action_info(match_on_beam_number: bool = False, match_on_step_state: bool = False) -> Dataset:
     if not (match_on_beam_number or match_on_step_state):
         return None
     else:
@@ -209,4 +219,3 @@ def create_action_info(match_on_beam_number:bool=False,
         # populate with the sequence and elements
         logging.getLogger().error("Matching Keys for WatchSCU Not Implemented")
         return ds
-    
