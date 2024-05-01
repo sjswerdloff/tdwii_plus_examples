@@ -9,6 +9,60 @@ The samples are in the `tdwii_plus_examples` subdirectory.
 > [!NOTE]
 > The version of Python used for development is 3.10 
 
+# Basic Process Flow in TDW-II Profile
+> This diagram is based on: https://www.ihe.net/uploadedFiles/Documents/Radiation_Oncology/IHE_RO_Suppl_TDW_II.pdf <br>
+> IHE Radiation Oncology Technical Framework Supplement<br>
+> Treatment Delivery Workflow-II (TDW-II)<br>
+> Rev. 1.1 – Trial Implementation
+
+```mermaid
+sequenceDiagram
+    participant TDD as Treatment Delivery Device<br>(TDD)
+    participant TMS as Treatment Management System<br>(TMS)
+    participant OST as Object Storage<br>(OST)
+
+    TDD->>TMS: Worklist Query for Treatment Delivery [RO-58]
+    activate TDD
+    deactivate TDD
+
+    activate TMS
+    deactivate TMS
+    TDD->>OST: Retrieve Static Treatment Delivery Input Instances from OST [RO-59]
+    activate OST
+    deactivate OST
+
+    activate TDD
+    activate TMS
+    alt either
+        TDD->>TMS: Treatment Delivery in Progress [RO-60]
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery 
+        TDD->>TMS: Input Instances from TMS [RO-61]
+    else or
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery 
+        TDD->>TMS: Input Instances from TMS [RO-61] 
+        TDD->>TMS: Treatment Delivery in Progress [RO-60]
+    end
+    loop one or more times
+        TDD->>TDD: Deliver treatment
+        TDD->>TMS: Treatment Delivery Progress Update [RO-62]
+    end
+    deactivate TMS
+
+    TDD->>OST: Store Treatment Delivery Results to OST [RO-63]
+    activate OST
+    deactivate OST
+
+    TDD->>TMS: Treatment Delivery Final Update [RO-64]
+    activate TMS
+    deactivate TMS
+
+    TDD->>TMS: Treatment Delivery Completed/Canceled [RO-65]
+    activate TMS
+    deactivate TMS
+    deactivate TDD
+```
+
+
 # Installation
 Poetry (https://python-poetry.org/) is used for package management.
 
