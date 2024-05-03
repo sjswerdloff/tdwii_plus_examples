@@ -9,6 +9,60 @@ The samples are in the `tdwii_plus_examples` subdirectory.
 > [!NOTE]
 > The version of Python used for development is 3.10 
 
+# Basic Process Flow in TDW-II Profile
+> This diagram is based on: https://www.ihe.net/uploadedFiles/Documents/Radiation_Oncology/IHE_RO_Suppl_TDW_II.pdf <br>
+> IHE Radiation Oncology Technical Framework Supplement<br>
+> Treatment Delivery Workflow-II (TDW-II)<br>
+> Rev. 1.1 – Trial Implementation
+
+```mermaid
+sequenceDiagram
+    participant TDD as Treatment Delivery Device<br>(TDD)
+    participant TMS as Treatment Management System<br>(TMS)
+    participant OST as Object Storage<br>(OST)
+
+    TDD->>TMS: Worklist Query for Treatment Delivery [RO-58]
+    activate TDD
+    deactivate TDD
+
+    activate TMS
+    deactivate TMS
+    TDD->>OST: Retrieve Static Treatment Delivery Input Instances from OST [RO-59]
+    activate OST
+    deactivate OST
+
+    activate TDD
+    activate TMS
+    alt either
+        TDD->>TMS: Treatment Delivery in Progress [RO-60]
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery 
+        TDD->>TMS: Input Instances from TMS [RO-61]
+    else or
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery 
+        TDD->>TMS: Input Instances from TMS [RO-61] 
+        TDD->>TMS: Treatment Delivery in Progress [RO-60]
+    end
+    loop one or more times
+        TDD->>TDD: Deliver treatment
+        TDD->>TMS: Treatment Delivery Progress Update [RO-62]
+    end
+    deactivate TMS
+
+    TDD->>OST: Store Treatment Delivery Results to OST [RO-63]
+    activate OST
+    deactivate OST
+
+    TDD->>TMS: Treatment Delivery Final Update [RO-64]
+    activate TMS
+    deactivate TMS
+
+    TDD->>TMS: Treatment Delivery Completed/Canceled [RO-65]
+    activate TMS
+    deactivate TMS
+    deactivate TDD
+```
+
+
 # Installation
 Poetry (https://python-poetry.org/) is used for package management.
 
@@ -54,8 +108,22 @@ dump2dcm queryfile.dcmdump.txt queryfile.dcm
 ```
 
 
-## A sample C-FIND SCU is available from pynetdicom (it has been enhanced with support for UPS)
-clone **pynetdicom** from https://github.com/pydicom/pynetdicom ,
+## [RO-58] A sample C-FIND SCU is available from pynetdicom (it has been enhanced with support for UPS)
+
+```mermaid
+sequenceDiagram
+    participant TDD as Treatment Delivery Device (TDD)
+    participant TMS as Treatment Management System (TMS)
+
+    TDD->>TMS: Query Scheduled UPS Worklist (C-FIND)
+    activate TDD
+    activate TMS
+    TMS-)TDD: Receive Scheduled UPS Worklist
+    deactivate TDD
+    deactivate TMS
+```
+
+clone latest **pynetdicom** (it supports argument `--ups`) from https://github.com/pydicom/pynetdicom ,
 
 then use `findscu` to query the TMS (Treatment Management System):
 
@@ -76,7 +144,21 @@ Assuming the TMS has a session scheduled for machine **FX1**, this should result
 use that response to drive a C-MOVE-RQ in the following section:
 
 
-## A script that will issue a C-MOVE-RQ for the referenced inputs in the previous response
+## [RO-59] A script that will issue a C-MOVE-RQ for the referenced inputs in the previous response
+
+```mermaid
+sequenceDiagram
+    participant OST as Object Storage (OST)
+    participant TDD as Treatment Delivery Device (TDD)
+
+    TDD->>OST: Retrieve Objects (C-MOVE)
+    activate TDD
+    activate OST
+    OST->>TDD: Store Objects (C-STORE)
+    deactivate TDD
+    deactivate OST
+```
+
 The following will send the C-MOVE-RQ to the AE Title listed (in the C-FIND-RSP e.g. in the rsp000001.dcm file above) for a given input information sequence item and specify PPVS_SCP as the destination for the move
 ```shell
 python cmove_inputs.py PPVS_SCP ../../pynetdicom/pynetdicom/apps/findscu/rsp000001.dcm
@@ -136,6 +218,20 @@ the above will attempt to perform a Global Subscription to upsscp (e.g. TMS)
 
 
 ## A sample UPS NACTION SCU (for changing Procedure Step Status for UPS) is provided in nactionscu.py
+
+```mermaid
+sequenceDiagram
+    participant TDD as Treatment Delivery Device (TDD)
+    participant TMS as Treatment Management System (TMS)
+
+    TDD->>TMS: UPS in Progress (N-ACTION)
+    activate TDD
+    activate TMS
+
+    deactivate TDD
+    deactivate TMS
+```
+
 ```shell
 python nactionscu.py -T "1.2.826.0.1.3680043.8.498.23133079088775253446636289730969872574" -R "IN PROGRESS" 127.0.0.1 11114 1.2.840.113854.19.4.2017747596206021632.638223481578481915
 ```
