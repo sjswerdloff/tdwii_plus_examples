@@ -3,29 +3,13 @@
 import os
 import subprocess
 import sys
-import time
-from time import sleep
 
-import pytest
+
 from pydicom import Dataset, dcmread
-from pydicom.uid import (
-    DeflatedExplicitVRLittleEndian,
-    ExplicitVRBigEndian,
-    ExplicitVRLittleEndian,
-    ImplicitVRLittleEndian,
-)
-from pynetdicom import (
-    AE,
-    ALL_TRANSFER_SYNTAXES,
-    UnifiedProcedurePresentationContexts,
-    evt,
-)
-from pynetdicom.sop_class import UnifiedProcedureStepPush, Verification
 
-# from nevent_receiver_handlers import handle_nevent
-from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver import NEventReceiver
+from pynetdicom import AE, evt
 
-# debug_logger()
+from pynetdicom.sop_class import UnifiedProcedureStepPush
 
 
 APP_DIR = os.path.join(os.path.dirname(__file__), "../")

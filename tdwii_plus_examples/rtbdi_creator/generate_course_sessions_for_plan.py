@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 from sys import argv
-from time import strftime
+
 
 from rtbdi_factory import gen_one_session, load_plan
 

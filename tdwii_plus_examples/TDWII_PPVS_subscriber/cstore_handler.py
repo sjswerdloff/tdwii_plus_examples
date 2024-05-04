@@ -1,14 +1,13 @@
 """Utility classes and functions for the apps."""
 
-import logging
 import os
-from struct import pack
 
-from pydicom import dcmread
-from pydicom.datadict import get_entry, repeater_has_keyword, tag_for_keyword
+
+# from pydicom import dcmread
+# from pydicom.datadict import get_entry, repeater_has_keyword, tag_for_keyword
 from pydicom.dataset import Dataset
 from pydicom.filewriter import write_file_meta_info
-from pydicom.tag import Tag
+# from pydicom.tag import Tag
 from pydicom.uid import DeflatedExplicitVRLittleEndian
 from pynetdicom.dsutils import encode
 

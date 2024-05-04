@@ -2,12 +2,10 @@
 import logging
 from typing import Optional, Tuple
 
-from pydicom import Dataset, dcmread
+from pydicom import Dataset
 from pydicom.errors import InvalidDicomError
 from pydicom.uid import UID
 from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
-from pynetdicom._globals import DEFAULT_MAX_LENGTH
-from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import UnifiedProcedureStepPush, UPSGlobalSubscriptionInstance
 
 
@@ -174,7 +172,7 @@ def send_global_watch_registration(
         assoc=assoc,
         class_uid=ds.RequestedSOPClassUID,
         instance_uid=ds.RequestedSOPInstanceUID,
-        action_type=3,  #  subscribe
+        action_type=3,  # subscribe
         action_info=ds,
     )
 

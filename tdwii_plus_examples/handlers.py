@@ -8,7 +8,7 @@ from pydicom import Dataset, dcmread, dcmwrite
 
 # from pydicom.dataset import FileMetaDataset
 from pydicom.errors import InvalidDicomError
-from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
+from pynetdicom import AE, UnifiedProcedurePresentationContexts
 
 # from pynetdicom.dimse_primitives import N_ACTION
 # from pynetdicom.dsutils import encode
@@ -735,7 +735,7 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     elif not ds.ProcedureStepState == "SCHEDULED":
         logger.error("UPS State not SCHEDULED")
         return 0xC309, None  # The provided value of UPS State was not "SCHEDULED"
-    elif not ds.InputReadinessState in ("INCOMPLETE", "UNAVAILABLE", "READY"):
+    elif ds.InputReadinessState not in ("INCOMPLETE", "UNAVAILABLE", "READY"):
         logger.error("Input Readiness State not valid")
         return 0x0106, None  # Invalid Attribute Value
     # More requirements need check from Table CC.2.5-3 and TDW-II
@@ -827,11 +827,11 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     for globalsubscriber in _global_subscribers:
         # Request association with subscriber
         ae = AE(ae_title=acceptor.ae_title)
-        if not globalsubscriber in tdwii_config.known_ae_ipaddr:
+        if globalsubscriber not in tdwii_config.known_ae_ipaddr:
             logger.error(f"{globalsubscriber} missing IP Address configuration in {REMOTE_AE_CONFIG_FILE}")
             continue
 
-        if not globalsubscriber in tdwii_config.known_ae_port:
+        if globalsubscriber not in tdwii_config.known_ae_port:
             logger.error(f"{globalsubscriber} missing Port configuration in {REMOTE_AE_CONFIG_FILE}")
             continue
 

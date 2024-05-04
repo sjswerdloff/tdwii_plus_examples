@@ -1,27 +1,7 @@
-import logging
-import os
-import sys
+
 from argparse import Namespace
-from configparser import ConfigParser
-from datetime import datetime
-from typing import Tuple
-
-import pydicom.config
-from pynetdicom import (
-    AE,
-    ALL_TRANSFER_SYNTAXES,
-    UnifiedProcedurePresentationContexts,
-    _config,
-    _handlers,
-    evt,
-)
+from pynetdicom import AE
 from pynetdicom.apps.common import setup_logging
-from pynetdicom.sop_class import Verification
-from pynetdicom.utils import set_ae
-
-from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import (
-    handle_echo,
-)
 
 
 class BaseSCP:

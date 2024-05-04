@@ -1,12 +1,12 @@
 """ RT Beams Delivery Instruction factory
 """
-import datetime
+
 from copy import deepcopy
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from sys import argv
-from time import mktime, strftime, strptime
+from time import mktime, strptime
 from typing import List
 
 import pydicom
@@ -42,13 +42,13 @@ def is_tx_record_for_plan(tx_rec_ds: Dataset, plan: Dataset) -> bool:
             planned_beam_numbers = [x.BeamNumber for x in plan.IonBeamSequence]
             for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
                 referenced_beam_number = tx_session.ReferencedBeamNumber
-                if not referenced_beam_number in planned_beam_numbers:
+                if referenced_beam_number not in planned_beam_numbers:
                     return False
         else:
             planned_beam_numbers = [x.BeamNumber for x in plan.BeamSequence]
             for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
                 referenced_beam_number = tx_session.ReferencedBeamNumber
-                if not referenced_beam_number in planned_beam_numbers:
+                if referenced_beam_number not in planned_beam_numbers:
                     return False
     return True
 
@@ -59,12 +59,12 @@ def is_tx_record_for_bdi(tx_rec_ds: Dataset, bdi: Dataset) -> bool:
     if is_ion:
         for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
             current_fraction_number = tx_session.CurrentFractionNumber
-            if not current_fraction_number in bdi_current_fraction_list:
+            if current_fraction_number not in bdi_current_fraction_list:
                 return False
     else:
         for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
             current_fraction_number = tx_session.CurrentFractionNumber
-            if not current_fraction_number in bdi_current_fraction_list:
+            if current_fraction_number not in bdi_current_fraction_list:
                 return False
     return True
 
@@ -265,7 +265,8 @@ def create_ups_from_plan_and_bdi(
     ups_ds.ScheduledProcedureStepStartDateTime = scheduled_datetime
     scheduled_processing_parameters_list = []
     treatment_delivery_concept = _create_code_seq_item("121740", "DCM", "Treatment Delivery Type")
-    treatment_param_item = _create_ups_content_item("TEXT", "TREATMENT", treatment_delivery_concept)
+    # maybe should be using treatment_delivery_type variable instead of "TREATMENT" hardcoded constant
+    treatment_param_item = _create_ups_content_item("TEXT", treatment_delivery_type, treatment_delivery_concept)
 
     scheduled_processing_parameters_list.append(treatment_param_item)
 
@@ -417,7 +418,8 @@ def gen_one_session(plan: Dataset, fraction_number: int, scheduled_date_time: da
 if __name__ == "__main__":
     if len(argv) < 2:
         print(
-            'Usage: python {argv[0]} plan_file <fraction number> <retrieve_ae_title> <ScheduleDateTime "YYYYmmddHHMM"> <treatment_record1 treatment_record2 ...>'
+            'Usage: python {argv[0]} plan_file <fraction number> <retrieve_ae_title> <ScheduleDateTime "YYYYmmddHHMM"> '
+            '<treatment_record1 treatment_record2 ...>'
         )
         print(
             "Defaults to fraction_number=1, retrieve_ae_title=TDWII_MOVE_SCP,"

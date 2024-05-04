@@ -1,28 +1,15 @@
-import logging
 import os
-import sys
 from argparse import Namespace
-from configparser import ConfigParser
-from datetime import datetime
-from pathlib import Path
 from time import sleep
-from typing import Tuple
 
-import pydicom.config
 from basescp import BaseSCP
 from cstore_handler import handle_store
 from echoscp import EchoSCP
 from pynetdicom import (
-    AE,
     ALL_TRANSFER_SYNTAXES,
     AllStoragePresentationContexts,
-    _config,
-    _handlers,
     evt,
 )
-from pynetdicom.apps.common import setup_logging
-from pynetdicom.sop_class import Verification
-from pynetdicom.utils import set_ae
 
 
 class StoreSCP(EchoSCP):
