@@ -45,6 +45,4 @@ if __name__ == "__main__":
     print(machine_ae_map)
     for key in machine_ae_map:
         value = machine_ae_map[key]
-        print(
-            f"Machine Name:{key} AE Title:{value} IPAddr:{known_ae_ipaddr[value]} Port:{known_ae_port[value]}"
-        )
+        print(f"Machine Name:{key} AE Title:{value} IPAddr:{known_ae_ipaddr[value]} Port:{known_ae_port[value]}")

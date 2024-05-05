@@ -40,9 +40,7 @@ def _setup_argparser():
 
     # Parameters
     req_opts = parser.add_argument_group("Parameters")
-    req_opts.add_argument(
-        "addr", help="TCP/IP address or hostname of DICOM peer", type=str
-    )
+    req_opts.add_argument("addr", help="TCP/IP address or hostname of DICOM peer", type=str)
     req_opts.add_argument("port", help="TCP/IP port number of peer", type=int)
     req_opts.add_argument(
         "path",
@@ -54,9 +52,7 @@ def _setup_argparser():
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument(
-        "--version", help="print version information and exit", action="store_true"
-    )
+    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -146,10 +142,7 @@ def _setup_argparser():
         "-pdu",
         "--max-pdu",
         metavar="[n]umber of bytes",
-        help=(
-            f"set max receive pdu to n bytes (0 for unlimited, "
-            f"default: {DEFAULT_MAX_LENGTH})"
-        ),
+        help=(f"set max receive pdu to n bytes (0 for unlimited, " f"default: {DEFAULT_MAX_LENGTH})"),
         type=int,
         default=DEFAULT_MAX_LENGTH,
     )
@@ -181,10 +174,7 @@ def _setup_argparser():
     misc_opts.add_argument(
         "-cx",
         "--required-contexts",
-        help=(
-            "only request the presentation contexts required for the "
-            "input DICOM file(s)"
-        ),
+        help=("only request the presentation contexts required for the " "input DICOM file(s)"),
         action="store_true",
     )
 
@@ -297,9 +287,7 @@ def main(args=None):
         sys.exit()
 
     # Request association with remote
-    assoc = ae.associate(
-        args.addr, args.port, ae_title=args.called_aet, max_pdu=args.max_pdu
-    )
+    assoc = ae.associate(args.addr, args.port, ae_title=args.called_aet, max_pdu=args.max_pdu)
     if assoc.is_established:
         ii = 1
         for fpath in lfiles:

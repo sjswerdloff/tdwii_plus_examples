@@ -48,9 +48,7 @@ def send_action(
     return assoc.send_n_action(action_info, action_type, class_uid, instance_uid)
 
 
-def send_global_watch_registration(
-    args: argparse.Namespace, assoc: Association, action_info: Dataset = None
-):
+def send_global_watch_registration(args: argparse.Namespace, assoc: Association, action_info: Dataset = None):
     """_summary_
 
     Args:
@@ -84,25 +82,18 @@ def _setup_argparser():
     """Setup the command line arguments"""
     # Description
     parser = argparse.ArgumentParser(
-        description=(
-            "The watchscu application implements a Service Class User "
-            "(SCU) for the UPS Watch Class. "
-        ),
+        description=("The watchscu application implements a Service Class User " "(SCU) for the UPS Watch Class. "),
         usage="watchscu [options] addr port",
     )
 
     # Parameters
     req_opts = parser.add_argument_group("Parameters")
-    req_opts.add_argument(
-        "addr", help="TCP/IP address or hostname of DICOM peer", type=str
-    )
+    req_opts.add_argument("addr", help="TCP/IP address or hostname of DICOM peer", type=str)
     req_opts.add_argument("port", help="TCP/IP port number of peer", type=int)
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument(
-        "--version", help="print version information and exit", action="store_true"
-    )
+    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -172,7 +163,7 @@ def _setup_argparser():
         metavar="[a]etitle",
         help="set receiver AE title of peer (default: NEVENT_RECEIVER)",
         type=str,
-        default="NEVENT_RECEIVER"
+        default="NEVENT_RECEIVER",
     )
     net_opts.add_argument(
         "-ta",
@@ -202,10 +193,7 @@ def _setup_argparser():
         "-pdu",
         "--max-pdu",
         metavar="[n]umber of bytes",
-        help=(
-            f"set max receive pdu to n bytes (0 for unlimited, "
-            f"default: {DEFAULT_MAX_LENGTH})"
-        ),
+        help=(f"set max receive pdu to n bytes (0 for unlimited, " f"default: {DEFAULT_MAX_LENGTH})"),
         type=int,
         default=DEFAULT_MAX_LENGTH,
     )

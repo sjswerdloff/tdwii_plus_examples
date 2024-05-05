@@ -8,6 +8,7 @@ from pydicom import Dataset, dcmread, dcmwrite
 
 # from pydicom.dataset import FileMetaDataset
 from pydicom.errors import InvalidDicomError
+from pynetdicom import AE, UnifiedProcedurePresentationContexts
 
 # from pynetdicom.dimse_primitives import N_ACTION
 # from pynetdicom.dsutils import encode
@@ -17,13 +18,13 @@ from pynetdicom.sop_class import (
     UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
-from pynetdicom import AE, Association, UnifiedProcedurePresentationContexts
 
 # from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from upsdb import Instance, InvalidIdentifier, add_instance, search
+
 import tdwii_config
+from upsdb import Instance, InvalidIdentifier, add_instance, search
 
 _SERVICE_STATUS = {
     "SCHEDULED": {
@@ -58,6 +59,7 @@ _filtered_subscribers = dict()  # AE Title and the Dataset acting as the query f
 
 REMOTE_AE_CONFIG_FILE = "ApplicationEntities.json"
 tdwii_config.load_ae_config(REMOTE_AE_CONFIG_FILE)
+
 
 def _add_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False, logger=None):
     if subscriber_ae_title not in _global_subscribers.keys():
@@ -727,15 +729,15 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
         return 0xC210
 
     # Check attributes satisfy CC.2.5.1.3 UPS Attribute Service Requirements
-    if not (('ProcedureStepState' in ds) and ('InputReadinessState' in ds)):
+    if not (("ProcedureStepState" in ds) and ("InputReadinessState" in ds)):
         logger.error("UPS is missing required attributes")
-        return 0x0120, None # Missing Attribute
-    elif not ds.ProcedureStepState == 'SCHEDULED':
+        return 0x0120, None  # Missing Attribute
+    elif not ds.ProcedureStepState == "SCHEDULED":
         logger.error("UPS State not SCHEDULED")
-        return 0xC309, None # The provided value of UPS State was not "SCHEDULED"
-    elif not ds.InputReadinessState in ('INCOMPLETE', 'UNAVAILABLE', 'READY'):
+        return 0xC309, None  # The provided value of UPS State was not "SCHEDULED"
+    elif ds.InputReadinessState not in ("INCOMPLETE", "UNAVAILABLE", "READY"):
         logger.error("Input Readiness State not valid")
-        return 0x0106, None # Invalid Attribute Value
+        return 0x0106, None  # Invalid Attribute Value
     # More requirements need check from Table CC.2.5-3 and TDW-II
     #  Transaction UID present and empty
     #  Scheduled Procedure Step Priority present and not empty
@@ -795,39 +797,41 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
 
     # Database successfully updated, notify any globally subscribed AE
     # Get AET of UPS Event SCP (which is the AET of the UPS Watch SCP)
-    acceptor =  event.assoc.acceptor
-    
+    acceptor = event.assoc.acceptor
+
     # Set event information and type
     event_info = Dataset()
     event_info.ProcedureStepState = ds.ProcedureStepState
     event_info.InputReadinessState = ds.InputReadinessState
-    
+
     # UPS Assigned when Scheduled Station Name or Scheduled Human Performers is defined
     # Only Scheduled Station Name is relevant for assignment to TDD in TDW-II
-    # As the SCP may choose to not send duplicate messages to an AE, only UPS State Report events 
+    # As the SCP may choose to not send duplicate messages to an AE, only UPS State Report events
     # could maybe be sent and properly documented in conformance statement
-    if ('ScheduledStationNameCodeSequence' in ds):
+    if "ScheduledStationNameCodeSequence" in ds:
         event_type = 5
         event_info.ScheduledStationNameCodeSequence = ds.ScheduledStationNameCodeSequence
-        if ('ScheduledHumanPerformersSequence' in ds):
+        if "ScheduledHumanPerformersSequence" in ds:
             event_info.ScheduledHumanPerformersSequence = ds.ScheduledHumanPerformersSequence
-        if ('HumanPerformerOrganization' in ds):
+        if "HumanPerformerOrganization" in ds:
             event_info.HumanPerformerOrganization = ds.HumanPerformerOrganization
-        logger.info(f"Send UPS Assigned event from {acceptor.ae_title} to subscribed AEs "
-                    f"(assigned to {ds.ScheduledStationNameCodeSequence[0].CodeValue})")
+        logger.info(
+            f"Send UPS Assigned event from {acceptor.ae_title} to subscribed AEs "
+            f"(assigned to {ds.ScheduledStationNameCodeSequence[0].CodeValue})"
+        )
     else:
-    # UPS State Report otherwise 
+        # UPS State Report otherwise
         event_type = 1
         logger.info(f"Send UPS State Report event from {acceptor.ae_title} to subscribed AEs")
 
     for globalsubscriber in _global_subscribers:
         # Request association with subscriber
         ae = AE(ae_title=acceptor.ae_title)
-        if (not globalsubscriber in tdwii_config.known_ae_ipaddr):
+        if globalsubscriber not in tdwii_config.known_ae_ipaddr:
             logger.error(f"{globalsubscriber} missing IP Address configuration in {REMOTE_AE_CONFIG_FILE}")
             continue
 
-        if (not globalsubscriber in tdwii_config.known_ae_port):
+        if globalsubscriber not in tdwii_config.known_ae_port:
             logger.error(f"{globalsubscriber} missing Port configuration in {REMOTE_AE_CONFIG_FILE}")
             continue
 
@@ -840,37 +844,35 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
             ae_title=globalsubscriber,
             max_pdu=16382,
         )
-        
+
         if assoc.is_established:
-            message_id=0
+            message_id = 0
             try:
-                if (event_type==1):
-                    logger.info(f"Sending UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")                  
-                    message_id +=1
-                    assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
-                elif (event_type==5):  # The assignment took place at the time of creation
-                    # notify of creation first, i.e. event type == 1 
+                if event_type == 1:
                     logger.info(f"Sending UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
-                    message_id +=1                  
+                    message_id += 1
+                    assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
+                elif event_type == 5:  # The assignment took place at the time of creation
+                    # notify of creation first, i.e. event type == 1
+                    logger.info(f"Sending UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
+                    message_id += 1
                     assoc.send_n_event_report(event_info, 1, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
                     # if the assignment happened after the creation (e.g. via N-SET or internal change in a TMS)
                     # then *only* send an N-EVENT-REPORT regarding the UPS Assignment
                     logger.info(f"Sending UPS Assignment: {ds.ScheduledStationNameCodeSequence}")
-                    message_id +=1  
+                    message_id += 1
                     assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
 
                 logger.info(f"Notified global subscriber: {globalsubscriber}")
             except InvalidDicomError:
                 logger.error("Bad DICOM: ")
             except Exception as exc:
-                logger.error(
-                    "UPS State Report as Event Notification (N-EVENT-REPORT-RQ) failed"
-                )
+                logger.error("UPS State Report as Event Notification (N-EVENT-REPORT-RQ) failed")
                 logger.exception(exc)
 
             assoc.release()
 
         else:
-            logger.error(f"Failed to establish association with subscriber: {globalsubscriber}")            
+            logger.error(f"Failed to establish association with subscriber: {globalsubscriber}")
 
     return 0x0000, ds

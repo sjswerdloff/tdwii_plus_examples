@@ -30,9 +30,7 @@ def get_port_for_ae_title(retrieve_ae_title):
     return known_ae_port[retrieve_ae_title]
 
 
-def cmove_specific_input(
-    retrieve_ae_title, dest_ae_title, patient_id, study_uid, series_uid, instance_uid
-):
+def cmove_specific_input(retrieve_ae_title, dest_ae_title, patient_id, study_uid, series_uid, instance_uid):
     """C-MOVE request for a specific instance
 
     Args:
@@ -75,9 +73,7 @@ def cmove_specific_input(
 
     if assoc.is_established:
         # Use the C-MOVE service to send the identifier
-        responses = assoc.send_c_move(
-            ds, dest_ae_title, StudyRootQueryRetrieveInformationModelMove
-        )
+        responses = assoc.send_c_move(ds, dest_ae_title, StudyRootQueryRetrieveInformationModelMove)
         for status, identifier in responses:
             if status:
                 print("C-MOVE query status: 0x{0:04x}".format(status.Status))

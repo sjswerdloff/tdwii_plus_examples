@@ -50,9 +50,7 @@ def send_action(
     return assoc.send_n_action(action_info, action_type, class_uid, instance_uid)
 
 
-def send_procedure_step_state_change(
-    assoc: Association, new_state: str, ups_uid: UID, transaction_uid: UID
-):
+def send_procedure_step_state_change(assoc: Association, new_state: str, ups_uid: UID, transaction_uid: UID):
     ds = Dataset()
     ds.RequestedSOPInstanceUID = ups_uid
     # .ds.RequestingAE = calling_ae
@@ -69,9 +67,7 @@ def send_procedure_step_state_change(
     )
 
 
-def send_global_watch_registration(
-    args: argparse.Namespace, assoc: Association, action_info: Dataset = None
-):
+def send_global_watch_registration(args: argparse.Namespace, assoc: Association, action_info: Dataset = None):
     """_summary_
 
     Args:
@@ -105,26 +101,19 @@ def _setup_argparser():
     """Setup the command line arguments"""
     # Description
     parser = argparse.ArgumentParser(
-        description=(
-            "The nactionscu application implements a Service Class User "
-            "(SCU) for the UPS Push SOP Class. "
-        ),
+        description=("The nactionscu application implements a Service Class User " "(SCU) for the UPS Push SOP Class. "),
         usage="nactionscu [options] addr port",
     )
 
     # Parameters
     req_opts = parser.add_argument_group("Parameters")
-    req_opts.add_argument(
-        "addr", help="TCP/IP address or hostname of DICOM peer", type=str
-    )
+    req_opts.add_argument("addr", help="TCP/IP address or hostname of DICOM peer", type=str)
     req_opts.add_argument("port", help="TCP/IP port number of peer", type=int)
     req_opts.add_argument("ups_uid", help="SOP Instance UID of the UPS", type=str)
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument(
-        "--version", help="print version information and exit", action="store_true"
-    )
+    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -242,10 +231,7 @@ def _setup_argparser():
         "-pdu",
         "--max-pdu",
         metavar="[n]umber of bytes",
-        help=(
-            f"set max receive pdu to n bytes (0 for unlimited, "
-            f"default: {DEFAULT_MAX_LENGTH})"
-        ),
+        help=(f"set max receive pdu to n bytes (0 for unlimited, " f"default: {DEFAULT_MAX_LENGTH})"),
         type=int,
         default=DEFAULT_MAX_LENGTH,
     )
@@ -381,9 +367,7 @@ def main(args=None):
             else:
                 requested_state = args.requested_procedure_step_state
 
-            status_dataset, response = send_procedure_step_state_change(
-                assoc, requested_state, args.ups_uid, transaction_uid
-            )
+            status_dataset, response = send_procedure_step_state_change(assoc, requested_state, args.ups_uid, transaction_uid)
             print(f"Status Code: 0x{status_dataset.Status:X}")
 
             print("Status Dataset:")
@@ -391,9 +375,7 @@ def main(args=None):
         except InvalidDicomError:
             APP_LOGGER.error("Bad DICOM: ")
         except Exception as exc:
-            APP_LOGGER.error(
-                "Request to change UPS Procedure Step State (N-ACTION-RQ) failed"
-            )
+            APP_LOGGER.error("Request to change UPS Procedure Step State (N-ACTION-RQ) failed")
             APP_LOGGER.exception(exc)
 
         assoc.release()
