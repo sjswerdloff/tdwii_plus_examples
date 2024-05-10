@@ -35,11 +35,11 @@ def load_treatment_records(treatment_record_paths: List[Path]) -> List[Dataset]:
 
 def is_tx_record_for_plan(tx_rec_ds: Dataset, plan: Dataset) -> bool:
     try:
-        is_ion = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
+        is_ion_tx_rec = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
         if tx_rec_ds.ReferencedRTPlanSequence[0].ReferencedSOPInstanceUID != plan.SOPInstanceUID:
             return False
         else:
-            if is_ion:
+            if is_ion_tx_rec:
                 if plan.SOPClassUID != uid.RTIonPlanStorage:
                     return False
                 planned_beam_numbers = [x.BeamNumber for x in plan.IonBeamSequence]
@@ -63,9 +63,9 @@ def is_tx_record_for_plan(tx_rec_ds: Dataset, plan: Dataset) -> bool:
 
 def is_tx_record_for_bdi(tx_rec_ds: Dataset, bdi: Dataset) -> bool:
     try:
-        is_ion = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
+        is_ion_tx_rec = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
         bdi_current_fraction_list = [x.CurrentFractionNumber for x in bdi.BeamTaskSequence]
-        if is_ion:
+        if is_ion_tx_rec:
             for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
                 current_fraction_number = tx_session.CurrentFractionNumber
                 if current_fraction_number not in bdi_current_fraction_list:
