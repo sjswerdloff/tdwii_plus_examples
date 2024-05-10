@@ -93,8 +93,9 @@ class MainBDIWidget(QWidget):
         fraction_number = round(self.ui.double_spin_box_fraction_number.value())
         self.fraction_number = fraction_number
         treatment_record_list = self._get_treatment_record_paths()
-        rtbdi = create_rtbdi_from_rtion_plan(plan, fraction_number=fraction_number,
-                                             treatment_record_list=treatment_record_list)
+        rtbdi = create_rtbdi_from_rtion_plan(
+            plan, fraction_number=fraction_number, treatment_record_list=treatment_record_list
+        )
         self.rtbdi = rtbdi
         bdi_path = Path(self.ui.lineedit_bdidir_selector.text(), self.ui.line_edit_bdi_filename.text())
         write_rtbdi(rtbdi, bdi_path)

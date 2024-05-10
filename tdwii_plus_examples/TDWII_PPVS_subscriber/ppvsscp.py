@@ -1,15 +1,8 @@
-
 import os
 from time import sleep
 
 from basescp import BaseSCP
-
-from pynetdicom import (
-    ALL_TRANSFER_SYNTAXES,
-    AllStoragePresentationContexts,
-
-)
-
+from pynetdicom import ALL_TRANSFER_SYNTAXES, AllStoragePresentationContexts
 from storescp import StoreSCP
 
 from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver import NEventReceiver

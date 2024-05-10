@@ -5,11 +5,7 @@ from time import sleep
 from basescp import BaseSCP
 from cstore_handler import handle_store
 from echoscp import EchoSCP
-from pynetdicom import (
-    ALL_TRANSFER_SYNTAXES,
-    AllStoragePresentationContexts,
-    evt,
-)
+from pynetdicom import ALL_TRANSFER_SYNTAXES, AllStoragePresentationContexts, evt
 
 
 class StoreSCP(EchoSCP):

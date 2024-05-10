@@ -7,7 +7,7 @@ While the command lines shown below are run via python as the command, they are 
 The samples are in the `tdwii_plus_examples` subdirectory.
 
 > [!NOTE]
-> The version of Python used for development is 3.10 
+> The version of Python used for development is 3.10
 
 # Basic Process Flow in TDW-II Profile
 > This diagram is based on: https://www.ihe.net/uploadedFiles/Documents/Radiation_Oncology/IHE_RO_Suppl_TDW_II.pdf <br>
@@ -35,11 +35,11 @@ sequenceDiagram
     activate TMS
     alt either
         TDD->>TMS: Treatment Delivery in Progress [RO-60]
-        TDD->>TMS: Retrieve Dynamic Treatment Delivery 
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery
         TDD->>TMS: Input Instances from TMS [RO-61]
     else or
-        TDD->>TMS: Retrieve Dynamic Treatment Delivery 
-        TDD->>TMS: Input Instances from TMS [RO-61] 
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery
+        TDD->>TMS: Input Instances from TMS [RO-61]
         TDD->>TMS: Treatment Delivery in Progress [RO-60]
     end
     loop one or more times
@@ -80,7 +80,7 @@ python -m pip list
 > ```shell
 > export VIRTUAL_ENV=$(pyenv virtualenv-prefix)/envs/$(pyenv version | cut -f1 -d ' ')
 > poetry install
-> ``` 
+> ```
 
 
 # Usage & Sample Workflow
@@ -262,13 +262,13 @@ python nevent_sender.py 127.0.0.1 11115
 ## A Qt/PySide6 based utility for generating RT Beams Delivery Instructions and Unified Procedure Step content
 ```shell
 cd rtbdi_creator
-python mainbdiwidget.py 
+python mainbdiwidget.py
 ```
 
 ## A Qt/PySide6 based example of a Patient Position Verification System that subscribes to UPS Events and responds by querying for the UPS information, requesting (C-MOVE) the referenced information objects, etc.
 ```shell
 cd TDWII_PPVS_Subscriber
-python ppvs_subscriber_widget.py 
+python ppvs_subscriber_widget.py
 ```
 
 ## The OST can be simulated using the pynetdicom qrscp application.

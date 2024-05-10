@@ -4,6 +4,7 @@ import os
 # from io import BytesIO
 from pathlib import Path
 
+import tdwii_config
 from pydicom import Dataset, dcmread, dcmwrite
 
 # from pydicom.dataset import FileMetaDataset
@@ -22,8 +23,6 @@ from pynetdicom.sop_class import (
 # from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-import tdwii_config
 from upsdb import Instance, InvalidIdentifier, add_instance, search
 
 _SERVICE_STATUS = {

@@ -1,12 +1,11 @@
-
 from argparse import Namespace
+
 from pynetdicom import AE
 from pynetdicom.apps.common import setup_logging
 
 
 class BaseSCP:
     def __init__(self, ae_title: str = "BASE_SCP", port: int = 11112, logger=None, bind_address: str = ""):
-
         self.ae_title = ae_title
         self.port = port
         if logger is None:

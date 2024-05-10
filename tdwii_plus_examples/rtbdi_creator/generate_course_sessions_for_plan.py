@@ -3,7 +3,6 @@
 from datetime import datetime, timedelta
 from sys import argv
 
-
 from rtbdi_factory import gen_one_session, load_plan
 
 if __name__ == "__main__":
