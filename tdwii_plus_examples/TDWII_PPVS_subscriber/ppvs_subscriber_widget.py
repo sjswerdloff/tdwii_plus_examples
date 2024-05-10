@@ -3,6 +3,7 @@
 import sys
 from pathlib import Path
 
+import tdwii_config
 from ppvsscp import PPVS_SCP
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import QApplication, QFileDialog, QWidget
@@ -12,8 +13,6 @@ from PySide6.QtWidgets import QApplication, QFileDialog, QWidget
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from ui_tdwii_ppvs_subscriber import Ui_MainPPVSSubscriberWidget
-
-import tdwii_config
 from watchscu import WatchSCU
 
 

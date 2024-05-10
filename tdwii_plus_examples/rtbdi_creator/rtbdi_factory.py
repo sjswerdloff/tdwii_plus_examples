@@ -419,7 +419,7 @@ if __name__ == "__main__":
     if len(argv) < 2:
         print(
             'Usage: python {argv[0]} plan_file <fraction number> <retrieve_ae_title> <ScheduleDateTime "YYYYmmddHHMM"> '
-            '<treatment_record1 treatment_record2 ...>'
+            "<treatment_record1 treatment_record2 ...>"
         )
         print(
             "Defaults to fraction_number=1, retrieve_ae_title=TDWII_MOVE_SCP,"

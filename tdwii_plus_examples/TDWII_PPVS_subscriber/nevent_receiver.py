@@ -1,10 +1,6 @@
-
 from time import sleep
-from pynetdicom import (
-    ALL_TRANSFER_SYNTAXES,
-    UnifiedProcedurePresentationContexts,
-    evt,
-)
+
+from pynetdicom import ALL_TRANSFER_SYNTAXES, UnifiedProcedurePresentationContexts, evt
 
 from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.echoscp import EchoSCP

@@ -4,13 +4,9 @@ import os
 import subprocess
 import sys
 
-
 from pydicom import Dataset, dcmread
-
 from pynetdicom import AE, evt
-
 from pynetdicom.sop_class import UnifiedProcedureStepPush
-
 
 APP_DIR = os.path.join(os.path.dirname(__file__), "../")
 APP_FILE = os.path.join(APP_DIR, "./", "nevent_sender.py")

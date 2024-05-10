@@ -1,12 +1,7 @@
-
 from time import sleep
 
-from pynetdicom import (
-    ALL_TRANSFER_SYNTAXES,
-    evt,
-)
+from pynetdicom import ALL_TRANSFER_SYNTAXES, evt
 from pynetdicom.sop_class import Verification
-
 
 from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import (
@@ -16,7 +11,6 @@ from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import (
 
 class EchoSCP:
     def __init__(self, ae_title: str = "ECHO_SCP", port: int = 11112, logger=None, bind_address: str = ""):
-
         BaseSCP.__init__(self, ae_title=ae_title, port=port, logger=logger, bind_address=bind_address)
 
     def _add_contexts(self):
