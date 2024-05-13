@@ -34,39 +34,51 @@ def load_treatment_records(treatment_record_paths: List[Path]) -> List[Dataset]:
 
 
 def is_tx_record_for_plan(tx_rec_ds: Dataset, plan: Dataset) -> bool:
-    is_ion = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
-    if tx_rec_ds.ReferencedRTPlanSequence[0].ReferencedSOPInstanceUID != plan.SOPInstanceUID:
-        return False
-    else:
-        if is_ion:
-            planned_beam_numbers = [x.BeamNumber for x in plan.IonBeamSequence]
-            for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
-                referenced_beam_number = tx_session.ReferencedBeamNumber
-                if referenced_beam_number not in planned_beam_numbers:
-                    return False
+    try:
+        is_ion_tx_rec = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
+        if tx_rec_ds.ReferencedRTPlanSequence[0].ReferencedSOPInstanceUID != plan.SOPInstanceUID:
+            return False
         else:
-            planned_beam_numbers = [x.BeamNumber for x in plan.BeamSequence]
-            for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
-                referenced_beam_number = tx_session.ReferencedBeamNumber
-                if referenced_beam_number not in planned_beam_numbers:
+            if is_ion_tx_rec:
+                if plan.SOPClassUID != uid.RTIonPlanStorage:
                     return False
-    return True
+                planned_beam_numbers = [x.BeamNumber for x in plan.IonBeamSequence]
+                for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
+                    referenced_beam_number = tx_session.ReferencedBeamNumber
+                    if referenced_beam_number not in planned_beam_numbers:
+                        return False
+            else:
+                if plan.SOPClassUID != uid.RTPlanStorage:
+                    return False
+                planned_beam_numbers = [x.BeamNumber for x in plan.BeamSequence]
+                for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
+                    referenced_beam_number = tx_session.ReferencedBeamNumber
+                    if referenced_beam_number not in planned_beam_numbers:
+                        return False
+        return True
+    except Exception as error:
+        print(error)
+        return False
 
 
 def is_tx_record_for_bdi(tx_rec_ds: Dataset, bdi: Dataset) -> bool:
-    is_ion = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
-    bdi_current_fraction_list = [x.CurrentFractionNumber for x in bdi.BeamTaskSequence]
-    if is_ion:
-        for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
-            current_fraction_number = tx_session.CurrentFractionNumber
-            if current_fraction_number not in bdi_current_fraction_list:
-                return False
-    else:
-        for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
-            current_fraction_number = tx_session.CurrentFractionNumber
-            if current_fraction_number not in bdi_current_fraction_list:
-                return False
-    return True
+    try:
+        is_ion_tx_rec = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
+        bdi_current_fraction_list = [x.CurrentFractionNumber for x in bdi.BeamTaskSequence]
+        if is_ion_tx_rec:
+            for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
+                current_fraction_number = tx_session.CurrentFractionNumber
+                if current_fraction_number not in bdi_current_fraction_list:
+                    return False
+        else:
+            for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
+                current_fraction_number = tx_session.CurrentFractionNumber
+                if current_fraction_number not in bdi_current_fraction_list:
+                    return False
+        return True
+    except Exception as error:
+        print(error)
+        return False
 
 
 def write_rtbdi(bdi: Dataset, filename: Path):
