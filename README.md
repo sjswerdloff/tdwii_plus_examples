@@ -1,5 +1,6 @@
 # tdwii_plus_examples
-Working Python sample code for performing various transactions within the IHE-RO TDW-II profile, as well as extensions based on UPS Watch and UPS Event
+Working Python sample code for performing various transactions within the IHE-RO TDW-II profile, as well as extensions based on UPS Watch and UPS Event.
+
 No claims are being made that any of the sample code is adherent to the profile,
 but the examples that are not UPS Watch/UPS Event should interact successfully within limits with valid TDW-II actors.
 
@@ -35,11 +36,9 @@ sequenceDiagram
     activate TMS
     alt either
         TDD->>TMS: Treatment Delivery in Progress [RO-60]
-        TDD->>TMS: Retrieve Dynamic Treatment Delivery
-        TDD->>TMS: Input Instances from TMS [RO-61]
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery Input Instances from TMS [RO-61]
     else or
-        TDD->>TMS: Retrieve Dynamic Treatment Delivery
-        TDD->>TMS: Input Instances from TMS [RO-61]
+        TDD->>TMS: Retrieve Dynamic Treatment Delivery Input Instances from TMS [RO-61]
         TDD->>TMS: Treatment Delivery in Progress [RO-60]
     end
     loop one or more times
@@ -277,6 +276,78 @@ The remaining intent (now that a PPVS Simulator is included) is to eventually in
 
 But the purpose of the examples is to provide working sample code for individual TDW-II Transactions and for UPW Watch/UPS Event capabilities that can be used to extend a TDW-II environment so that it is event aware/event driven.
 
+# Cookbook for PPVS: Creating a sample TDW-II environment with the tools described or mentioned above
+The following assumes you have at least one RT Ion Plan or RT Plan (that is accessible via the file system),
+and you are in the top level directory of this project (directory specifications are *nix switch from / to \ for MS Windows and pushd and popd are availabe in PowerShell or just change directories explicitly)
+The example below assumes you are doing everything in one terminal/shell window, but it can certainly be done in separate windows for easier tracking of console logging from the various programs.
+
+```shell
+cd tdwii_plus_examples
+```
+
+Start the TMS simulator (assuming you are already in the tdwii_plus_example subdirectory):
+```shell
+python upsscp.py &
+```
+Start the OST simulator (assuming you have cloned pynetdicom parallel to tdwii_plus_examples)
+```shell
+pushd ../../pynetdicom/pynetdicom/apps/qrscp
+python qrscp.py &
+```
+Start the RTBDI creator
+```shell
+popd
+python rtbdi_creator/mainbdiwidget.py &
+```
+Using the RTBDI creator, find the plan you want to use as the basis for the UPS and RTBDI
+(take note of which plan you chose and what directory it is in, you should be able to copy to your clipboard)
+Specify 1 as the fraction number
+Select a directory for where the RTBDI and UPS will be placed.  (you might want to create a separate directory for this ahead of time... or right now)
+click on the 'Export BDI' button
+Type in 'QRSCP' for the Move/Retrieve AE Title
+Unless you want to specify a date other than today, you don't need to adjust the scheduled DateTime
+click on the 'Export UPS' button
+
+Send the plan and the RTBDI to the OST (QRSCP)
+Use your preferred cstore scu, or you can use the app provided in pynetdicom:
+```python
+python ../../pynetdicom/pynetdicom/apps/storescu/storescu.py 127.0.0.1 11112 "full path to dicom plan file"
+```
+
+change directory to the BDI Output Dir you specified earlier
+
+```python
+python ../../pynetdicom/pynetdicom/apps/storescu/storescu.py 127.0.0.1 11112 RB*.dcm
+```
+
+change back to the tdwii_plus_examples subdirectory of this project
+start the PPVS Emulator:
+```python
+python TDWII_PPVS_subscriber/ppvs_subscriber_widget.py &
+```
+In the PPVS Emulator:
+
+Set the UPS AE to "TMS" (without the quotes)
+
+Set the QRSCP AE to "OST" (without the quotes)
+
+Set the Machine Name to... the name of the machine in the RT (Ion) Plan you provided (typical values can be TR1 or G1, but it's whatever is in the plan)
+
+Set the Event and Store SCP AE Title to "PPVS_SCP" (without the quotes)
+
+Choose a staging directory (where you want the the retrieved plan and RTBDI to go... mostly as proof that the C-MOVE worked)
+
+check the Subscribe to UPS checkbox, check the Auto Download checkbox, and click the 'Restart SCP' button.
+
+The PPVS Emulator is now ready to be notified of any newly scheduled UPS (after checking those checkboxes, there isn't a need to manually query the TMS ("Get UPS") or manually retrieve from the OST ("Get Listed Inputs" and "Get RTSS and CT"))
+
+Scheduling the UPS:
+
+```python
+python ncreatescu.py 127.0.0.1 11114 "full path to the UPS you exported"
+```
+
+This will schedule the UPS in the TMS, and that will trigger the TMS Emulator to notify the PPVS Emulator that a UPS is ready, and the PPVS Emulator will query for the UPS content from the TMS Emulator and then retrieve the plan and the RTBDI that are referenced in the UPS from the OST Emulator (the QRSCP from pynetdicom).
 
 # Abbreviations
 | Abbr. | Description |
@@ -289,6 +360,8 @@ But the purpose of the examples is to provide working sample code for individual
 | IPDW  | Integrated Positioning and Delivery Workflow |
 | PPVS  | Patient Position Verification System |
 | OST   | Object Storage |
+| RTBDI | RT Beams Delivery Instruction |
+| QRSCP | Query Retrieve Service Class Provider |
 
 ## Developers
 ```shell
