@@ -260,14 +260,12 @@ python nevent_sender.py 127.0.0.1 11115
 
 ## A Qt/PySide6 based utility for generating RT Beams Delivery Instructions and Unified Procedure Step content
 ```shell
-cd rtbdi_creator
-python mainbdiwidget.py
+python rtbdi_creator/mainbdiwidget.py
 ```
 
 ## A Qt/PySide6 based example of a Patient Position Verification System that subscribes to UPS Events and responds by querying for the UPS information, requesting (C-MOVE) the referenced information objects, etc.
 ```shell
-cd TDWII_PPVS_Subscriber
-python ppvs_subscriber_widget.py
+python TDWII_PPVS_Subscriber/ppvs_subscriber_widget.py
 ```
 
 ## The OST can be simulated using the pynetdicom qrscp application.
