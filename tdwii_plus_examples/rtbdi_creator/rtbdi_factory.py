@@ -230,10 +230,11 @@ def create_ups_from_plan_and_bdi(
     """Build up the UPS
 
     Args:
-        plan (Dataset): _description_
-        bdi (Dataset): _description_
-        retrieve_ae_title (str): _description_
-        scheduled_datetime (datetime): _description_
+        plan (Dataset): The RT Plan or RT Ion Plan that the UPS is based on
+        bdi (Dataset): The RT Beams Delivery Instruction that the UPS is based on
+        retrieve_ae_title (str): The AE Title of the OST (from which references will be retrieved)
+        scheduled_datetime (datetime): The datetime to schedule the UPS for
+        treatment_records (List):   list of datasets representing the treatment records previously delivered for the fraction
     """
     ups_ds = pydicom.Dataset()
     for elem in plan:
@@ -254,13 +255,34 @@ def create_ups_from_plan_and_bdi(
     ups_ds.ScheduledWorkitemCodeSequence = scheduled_work_item_code_sequence
     plan_reference_item = _create_referenced_instances_and_access_item(plan, retrieve_ae_title)
     bdi_reference_item = _create_referenced_instances_and_access_item(bdi, retrieve_ae_title)
+
+    patient_photo_reference_items = []
+    if "ReferencedPatientPhotoSequence" in plan:
+        for patient_photo_seq_item in plan.ReferencedPatientPhotoSequence:
+            patient_photo_reference_item = _create_referenced_instances_and_access_item(patient_photo_seq_item)
+            patient_photo_reference_items.append(patient_photo_reference_item)
+
+    patient_setup_image_items = []
+    if "ReferencedPatientSetupImageSequence" in plan.PatientSetupSequence[0]:
+        for setup_image_seq_item in plan.PatientSetupSequence[0]:
+            setup_image_reference_item = _create_referenced_instances_and_access_item(setup_image_seq_item)
+            patient_setup_image_items.append(setup_image_reference_item)
+
     treatment_record_reference_items = []
     for treatment_rec in treatment_records:
         treatment_rec_ref_item = _create_referenced_instances_and_access_item(treatment_rec, retrieve_ae_title)
         treatment_record_reference_items.append(treatment_rec_ref_item)
+
     list_of_reference_items = []
     list_of_reference_items.append(plan_reference_item)
     list_of_reference_items.append(bdi_reference_item)
+
+    if len(patient_photo_reference_items) > 0:
+        list_of_reference_items += patient_photo_reference_items
+
+    if len(patient_setup_image_items) > 0:
+        list_of_reference_items += patient_setup_image_items
+
     treatment_delivery_type = "TREATMENT"
     if len(treatment_record_reference_items) > 0:
         list_of_reference_items += treatment_record_reference_items
@@ -353,8 +375,15 @@ def _create_referenced_instances_and_access_item(input_ds: Dataset, retrieve_ae_
     ref_instance_seq_item.StudyInstanceUID = input_ds.StudyInstanceUID
     ref_instance_seq_item.SeriesInstanceUID = input_ds.SeriesInstanceUID
     ref_sop_seq_item = pydicom.Dataset()
-    ref_sop_seq_item.ReferencedSOPClassUID = input_ds.SOPClassUID
-    ref_sop_seq_item.ReferencedSOPInstanceUID = input_ds.SOPInstanceUID
+    if "SOPClassUID" in input_ds:
+        ref_sop_seq_item.ReferencedSOPClassUID = input_ds.SOPClassUID
+        ref_sop_seq_item.ReferencedSOPInstanceUID = input_ds.SOPInstanceUID
+    elif "ReferencedSOPClassUID" in input_ds:  # a referenced SOP sequence was passed in, e.g. for Patient Photo
+        ref_sop_seq_item.ReferencedSOPClassUID = input_ds.ReferencedSOPClassUID
+        ref_sop_seq_item.ReferencedSOPInstanceUID = input_ds.ReferencedSOPInstanceUID
+    else:
+        raise KeyError("Neither SOPClassUID nor ReferencedSOPClassUID are present in input dataset")
+
     ref_instance_seq_item.ReferencedSOPSequence = pydicom.Sequence([ref_sop_seq_item])
     dicom_retrieval_seq_item = pydicom.Dataset()
     dicom_retrieval_seq_item.RetrieveAETitle = retrieve_ae_title
