@@ -241,8 +241,10 @@ def create_ups_from_plan_and_bdi(
         retrieve_ae_title (str): The AE Title of the OST (from which references will be retrieved)
         scheduled_datetime (datetime): The datetime to schedule the UPS for
         treatment_records (List):   list of datasets representing the treatment records previously delivered for the fraction
-        enable_photo_ref (bool): whether to include a reference to a patient photo in the InputInformation Sequence if that is present in the plan
-        enable_setup_image_ref: whether to include references to setup images (photos) in the InputInformationSequence if they are present in the plan
+        enable_photo_ref (bool): whether to include a reference to a patient photo in the InputInformation Sequence
+            if that is present in the plan
+        enable_setup_image_ref: whether to include references to setup images (photos) in the InputInformationSequence
+            if they are present in the plan
 
     """
     ups_ds = pydicom.Dataset()
