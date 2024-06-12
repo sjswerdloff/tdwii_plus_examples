@@ -279,18 +279,23 @@ def create_ups_from_plan_and_bdi(
             )
             patient_photo_reference_items.append(patient_photo_reference_item)
 
-    # This makes the assumption that the Study and Series Instance UIDs for the Setup images are the same as the plan
-    # That's not necessarily a safe assumption.  It would be better to load the Setup images and pass those in.
+    # Search for the Study and Series Instance UIDs for the Setup images in the Common Instance Reference module
+    # If they are available, build up the reference for later inclusion in the InputInformationSequence
+    # If not... don't attempt to include them.
     patient_setup_image_items = []
     if enable_setup_image_ref and "ReferencedSetupImageSequence" in plan.PatientSetupSequence[0]:
         for setup_image_seq_item in plan.PatientSetupSequence[0].ReferencedSetupImageSequence:
-            setup_image_reference_item = _create_referenced_instances_and_access_item(
-                setup_image_seq_item,
-                retrieve_ae_title,
-                study_instance_uid=plan.StudyInstanceUID,
-                series_instance_uid=plan.SeriesInstanceUID,
+            ref_study_uid, ref_series_uid = _get_study_and_series_for_referenced_instance(
+                plan, setup_image_seq_item.ReferencedSOPInstanceUID
             )
-            patient_setup_image_items.append(setup_image_reference_item)
+            if ref_study_uid is not None and ref_series_uid is not None:
+                setup_image_reference_item = _create_referenced_instances_and_access_item(
+                    setup_image_seq_item,
+                    retrieve_ae_title,
+                    study_instance_uid=ref_study_uid,
+                    series_instance_uid=ref_series_uid,
+                )
+                patient_setup_image_items.append(setup_image_reference_item)
 
     treatment_record_reference_items = []
     for treatment_rec in treatment_records:
@@ -449,6 +454,49 @@ def _create_scheduled_station_name_code_sequence_item(plan: Dataset) -> Dataset:
     code_seq_item.CodeValue = machine_name
     code_seq_item.CodeMeaning = machine_name
     return code_seq_item
+
+
+def _get_study_and_series_for_referenced_instance(plan: Dataset, instance_uid: str) -> tuple[str, str]:
+    """Searches Common Instance Reference Module for matching instance_uid
+
+    Args:
+        plan (Dataset): The plan containing the instance reference, e.g. setup images/photos, DRRs
+        instance_uid (str): The string representation of the SOP Instance UID whose Study and Series UID are desired
+
+    Returns:
+        tuple[str, str]: Study UID and Series UID as a tuple, with individual entries set to None if not found
+    """
+    study_series_tuple = (None, None)
+    series_uid = None
+    study_uid = None
+    if "ReferencedSeriesSequence" in plan:
+        for series_seq_item in plan.ReferencedSeriesSequence:
+            for ref_instance_seq_item in series_seq_item:
+                if str(ref_instance_seq_item.ReferencedSOPInstanceUID) == instance_uid:
+                    series_uid = str(series_seq_item.SeriesInstanceUID)
+                    break
+                #
+            #
+        #
+    if series_uid is not None:
+        study_uid = plan.StudyInstanceUID
+    else:
+        # it's not in the same study as the plan.
+        if "StudiesContainingOtherReferencedInstancesSequence" in plan:
+            for study_seq_item in plan.StudiesContainingOtherReferencedInstancesSequence:
+                for series_seq_item in plan.ReferencedSeriesSequence:
+                    for ref_instance_seq_item in series_seq_item:
+                        if str(ref_instance_seq_item.ReferencedSOPInstanceUID) == instance_uid:
+                            series_uid = str(series_seq_item.SeriesInstanceUID)
+                            study_uid = str(study_seq_item.StudyInstanceUID)
+                            break
+                        #
+                    #
+                #
+            #
+    study_series_tuple = (study_uid, series_uid)
+
+    return study_series_tuple
 
 
 def main(args):

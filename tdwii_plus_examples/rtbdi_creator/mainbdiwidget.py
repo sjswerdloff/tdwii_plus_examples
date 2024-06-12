@@ -74,7 +74,7 @@ class MainBDIWidget(QWidget):
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setOption(QFileDialog.ShowDirsOnly, True)
         dialog.setLabelText(QFileDialog.Accept, "Select")
-        if dialog.exec_() == QFileDialog.Accepted:
+        if dialog.exec() == QFileDialog.Accepted:
             file_name = dialog.selectedFiles()[0]
         if file_name:
             path = Path(file_name)

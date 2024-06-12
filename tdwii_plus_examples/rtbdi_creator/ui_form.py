@@ -183,6 +183,7 @@ class Ui_MainBDIWidget(object):
 
         self.checkbox_setup_photos = QCheckBox(self.group_box_ups)
         self.checkbox_setup_photos.setObjectName("checkbox_setup_photos")
+        self.checkbox_setup_photos.setEnabled(True)
 
         self.gridLayout.addWidget(self.checkbox_setup_photos, 1, 2, 1, 1)
 

@@ -215,6 +215,9 @@
     </item>
     <item row="1" column="2">
      <widget class="QCheckBox" name="checkbox_setup_photos">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="text">
        <string>Setup Photos</string>
       </property>
