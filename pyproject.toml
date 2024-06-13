@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tdwii_plus_examples"
-version = "0.1.0"
+version = "0.2.0"
 description = "Working sample code for implementing some tdw-ii transactions and some extensions such as UPSWatch and UPSWEvent based subscriptions for activities of interest in a treatment room"
 authors = ["Stuart Swerdloff <sjswerdloff@gmail.com>"]
 license = "Apache 2.0"
@@ -10,7 +10,7 @@ packages = [{include = "tdwii_plus_examples"}]
 [tool.poetry.dependencies]
 python = ">=3.10, <3.11"
 pydicom = "^2.4.0"
-pynetdicom = {git = "https://github.com/sjswerdloff/pynetdicom.git", rev = "update_pyproject_poetry_lock"}
+pynetdicom = "^2.1.0"
 sqlalchemy = { version = "^2.0"}
 
 tomlkit = { version = "*", optional = true }    # groups = ["all", "dev"]
@@ -42,6 +42,7 @@ doc8 = { version = "*", optional = true }            # groups = ["dev", "all"]
 # tabulate = { version = "*", optional = true }        # groups = ["dev", "all", "doctests"]
 # pyoxidizer = { version = "*", optional = true }      # groups = ["dev", "all", "build"]
 pyside6 = "^6.6.0"
+
 
 [tool.poetry.extras]
 
