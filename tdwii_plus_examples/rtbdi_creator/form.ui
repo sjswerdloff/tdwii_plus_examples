@@ -150,7 +150,7 @@
     <rect>
      <x>40</x>
      <y>430</y>
-     <width>359</width>
+     <width>491</width>
      <height>151</height>
     </rect>
    </property>
@@ -158,6 +158,27 @@
     <string>UPS Customization</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="1">
+     <widget class="QPushButton" name="push_button_export_ups">
+      <property name="text">
+       <string>Export UPS</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="line_edit_move_scp_ae_title">
+      <property name="clearButtonEnabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_move_ae_title">
+      <property name="text">
+       <string>Move/Retrieve AE Title</string>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_start_datetime">
       <property name="text">
@@ -185,24 +206,20 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_move_ae_title">
+    <item row="0" column="2">
+     <widget class="QCheckBox" name="checkbox_patient_photo">
       <property name="text">
-       <string>Move/Retrieve AE Title</string>
+       <string>Patient Photo</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="line_edit_move_scp_ae_title">
-      <property name="clearButtonEnabled">
-       <bool>false</bool>
+    <item row="1" column="2">
+     <widget class="QCheckBox" name="checkbox_setup_photos">
+      <property name="enabled">
+       <bool>true</bool>
       </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="push_button_export_ups">
       <property name="text">
-       <string>Export UPS</string>
+       <string>Setup Photos</string>
       </property>
      </widget>
     </item>

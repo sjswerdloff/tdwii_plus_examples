@@ -74,7 +74,7 @@ class MainBDIWidget(QWidget):
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setOption(QFileDialog.ShowDirsOnly, True)
         dialog.setLabelText(QFileDialog.Accept, "Select")
-        if dialog.exec_() == QFileDialog.Accepted:
+        if dialog.exec() == QFileDialog.Accepted:
             file_name = dialog.selectedFiles()[0]
         if file_name:
             path = Path(file_name)
@@ -113,7 +113,13 @@ class MainBDIWidget(QWidget):
             self._bdi_export_button_clicked()
 
         ups = create_ups_from_plan_and_bdi(
-            self.plan, self.rtbdi, self.retrieve_ae_title, self.scheduled_datetime, treatment_record_ds_list
+            self.plan,
+            self.rtbdi,
+            self.retrieve_ae_title,
+            self.scheduled_datetime,
+            treatment_record_ds_list,
+            enable_photo_ref=self.ui.checkbox_patient_photo.isChecked(),
+            enable_setup_image_ref=self.ui.checkbox_setup_photos.isChecked(),
         )
         write_ups(ups, Path(self.ui.lineedit_bdidir_selector.text()))
 

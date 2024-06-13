@@ -225,17 +225,31 @@ def _delete_excess_plan_elements_from_ups(ups_ds: Dataset):
 
 
 def create_ups_from_plan_and_bdi(
-    plan: Dataset, bdi: Dataset, retrieve_ae_title: str, scheduled_datetime: datetime, treatment_records: List[Dataset]
+    plan: Dataset,
+    bdi: Dataset,
+    retrieve_ae_title: str,
+    scheduled_datetime: datetime,
+    treatment_records: List[Dataset],
+    enable_photo_ref=True,
+    enable_setup_image_ref=True,
 ) -> Dataset:
     """Build up the UPS
 
     Args:
-        plan (Dataset): _description_
-        bdi (Dataset): _description_
-        retrieve_ae_title (str): _description_
-        scheduled_datetime (datetime): _description_
+        plan (Dataset): The RT Plan or RT Ion Plan that the UPS is based on
+        bdi (Dataset): The RT Beams Delivery Instruction that the UPS is based on
+        retrieve_ae_title (str): The AE Title of the OST (from which references will be retrieved)
+        scheduled_datetime (datetime): The datetime to schedule the UPS for
+        treatment_records (List):   list of datasets representing the treatment records previously delivered for the fraction
+        enable_photo_ref (bool): whether to include a reference to a patient photo in the InputInformation Sequence
+            if that is present in the plan
+        enable_setup_image_ref: whether to include references to setup images (photos) in the InputInformationSequence
+            if they are present in the plan
+
     """
     ups_ds = pydicom.Dataset()
+    # enable_photo_ref = True;
+    # enable_setup_image_ref = True;
     for elem in plan:
         if elem.tag < 0x0010FFFF:
             ups_ds[elem.tag] = deepcopy(elem)
@@ -254,13 +268,50 @@ def create_ups_from_plan_and_bdi(
     ups_ds.ScheduledWorkitemCodeSequence = scheduled_work_item_code_sequence
     plan_reference_item = _create_referenced_instances_and_access_item(plan, retrieve_ae_title)
     bdi_reference_item = _create_referenced_instances_and_access_item(bdi, retrieve_ae_title)
+
+    # because the Reference Patient Photo Sequence already contains Study and Series UID information... it isn't
+    # necessary to load the patient photo to get that information.
+    patient_photo_reference_items = []
+    if enable_photo_ref and "ReferencedPatientPhotoSequence" in plan:
+        for patient_photo_seq_item in plan.ReferencedPatientPhotoSequence:
+            patient_photo_reference_item = _create_referenced_instances_and_access_item(
+                patient_photo_seq_item, retrieve_ae_title
+            )
+            patient_photo_reference_items.append(patient_photo_reference_item)
+
+    # Search for the Study and Series Instance UIDs for the Setup images in the Common Instance Reference module
+    # If they are available, build up the reference for later inclusion in the InputInformationSequence
+    # If not... don't attempt to include them.
+    patient_setup_image_items = []
+    if enable_setup_image_ref and "ReferencedSetupImageSequence" in plan.PatientSetupSequence[0]:
+        for setup_image_seq_item in plan.PatientSetupSequence[0].ReferencedSetupImageSequence:
+            ref_study_uid, ref_series_uid = _get_study_and_series_for_referenced_instance(
+                plan, setup_image_seq_item.ReferencedSOPInstanceUID
+            )
+            if ref_study_uid is not None and ref_series_uid is not None:
+                setup_image_reference_item = _create_referenced_instances_and_access_item(
+                    setup_image_seq_item,
+                    retrieve_ae_title,
+                    study_instance_uid=ref_study_uid,
+                    series_instance_uid=ref_series_uid,
+                )
+                patient_setup_image_items.append(setup_image_reference_item)
+
     treatment_record_reference_items = []
     for treatment_rec in treatment_records:
         treatment_rec_ref_item = _create_referenced_instances_and_access_item(treatment_rec, retrieve_ae_title)
         treatment_record_reference_items.append(treatment_rec_ref_item)
+
     list_of_reference_items = []
     list_of_reference_items.append(plan_reference_item)
     list_of_reference_items.append(bdi_reference_item)
+
+    if len(patient_photo_reference_items) > 0:
+        list_of_reference_items += patient_photo_reference_items
+
+    if len(patient_setup_image_items) > 0:
+        list_of_reference_items += patient_setup_image_items
+
     treatment_delivery_type = "TREATMENT"
     if len(treatment_record_reference_items) > 0:
         list_of_reference_items += treatment_record_reference_items
@@ -347,14 +398,38 @@ def _datetime_to_dicom_time(dt: datetime) -> str:
     return dicom_time
 
 
-def _create_referenced_instances_and_access_item(input_ds: Dataset, retrieve_ae_title: str) -> Dataset:
+def _create_referenced_instances_and_access_item(
+    input_ds: Dataset, retrieve_ae_title: str, study_instance_uid: str = "", series_instance_uid: str = ""
+) -> Dataset:
     ref_instance_seq_item = pydicom.Dataset()
     ref_instance_seq_item.TypeOfInstances = "DICOM"
-    ref_instance_seq_item.StudyInstanceUID = input_ds.StudyInstanceUID
-    ref_instance_seq_item.SeriesInstanceUID = input_ds.SeriesInstanceUID
+    if "StudyInstanceUID" in input_ds:
+        ref_instance_seq_item.StudyInstanceUID = input_ds.StudyInstanceUID
+    elif len(study_instance_uid) > 0:
+        ref_instance_seq_item.StudyInstanceUID = study_instance_uid
+    else:
+        raise KeyError("Missing Study Instance UID")
+
+    if "SeriesInstanceUID" in input_ds:
+        ref_instance_seq_item.SeriesInstanceUID = input_ds.SeriesInstanceUID
+    elif len(series_instance_uid) > 0:
+        ref_instance_seq_item.SeriesInstanceUID = series_instance_uid
+    else:
+        raise KeyError("Missing Series Instance UID")
+
     ref_sop_seq_item = pydicom.Dataset()
-    ref_sop_seq_item.ReferencedSOPClassUID = input_ds.SOPClassUID
-    ref_sop_seq_item.ReferencedSOPInstanceUID = input_ds.SOPInstanceUID
+    if "SOPClassUID" in input_ds:
+        ref_sop_seq_item.ReferencedSOPClassUID = input_ds.SOPClassUID
+        ref_sop_seq_item.ReferencedSOPInstanceUID = input_ds.SOPInstanceUID
+    elif "ReferencedSOPSequence" in input_ds:  # a referenced Photo sequence was passed in, e.g. for Patient Photo
+        ref_sop_seq_item.ReferencedSOPClassUID = input_ds.ReferencedSOPSequence[0].ReferencedSOPClassUID
+        ref_sop_seq_item.ReferencedSOPInstanceUID = input_ds.ReferencedSOPSequence[0].ReferencedSOPInstanceUID
+    elif "ReferencedSOPClassUID" in input_ds:  # a bare referenced SOP Sequence was passed in, e.g. for Setup images
+        ref_sop_seq_item.ReferencedSOPClassUID = input_ds.ReferencedSOPClassUID
+        ref_sop_seq_item.ReferencedSOPInstanceUID = input_ds.ReferencedSOPInstanceUID
+    else:
+        raise KeyError("Neither SOPClassUID, ReferencedSOPClassUID, nor ReferencedSOPSequence are present in input dataset")
+
     ref_instance_seq_item.ReferencedSOPSequence = pydicom.Sequence([ref_sop_seq_item])
     dicom_retrieval_seq_item = pydicom.Dataset()
     dicom_retrieval_seq_item.RetrieveAETitle = retrieve_ae_title
@@ -379,6 +454,49 @@ def _create_scheduled_station_name_code_sequence_item(plan: Dataset) -> Dataset:
     code_seq_item.CodeValue = machine_name
     code_seq_item.CodeMeaning = machine_name
     return code_seq_item
+
+
+def _get_study_and_series_for_referenced_instance(plan: Dataset, instance_uid: str) -> tuple[str, str]:
+    """Searches Common Instance Reference Module for matching instance_uid
+
+    Args:
+        plan (Dataset): The plan containing the instance reference, e.g. setup images/photos, DRRs
+        instance_uid (str): The string representation of the SOP Instance UID whose Study and Series UID are desired
+
+    Returns:
+        tuple[str, str]: Study UID and Series UID as a tuple, with individual entries set to None if not found
+    """
+    study_series_tuple = (None, None)
+    series_uid = None
+    study_uid = None
+    if "ReferencedSeriesSequence" in plan:
+        for series_seq_item in plan.ReferencedSeriesSequence:
+            for ref_instance_seq_item in series_seq_item:
+                if str(ref_instance_seq_item.ReferencedSOPInstanceUID) == instance_uid:
+                    series_uid = str(series_seq_item.SeriesInstanceUID)
+                    break
+                #
+            #
+        #
+    if series_uid is not None:
+        study_uid = plan.StudyInstanceUID
+    else:
+        # it's not in the same study as the plan.
+        if "StudiesContainingOtherReferencedInstancesSequence" in plan:
+            for study_seq_item in plan.StudiesContainingOtherReferencedInstancesSequence:
+                for series_seq_item in plan.ReferencedSeriesSequence:
+                    for ref_instance_seq_item in series_seq_item:
+                        if str(ref_instance_seq_item.ReferencedSOPInstanceUID) == instance_uid:
+                            series_uid = str(series_seq_item.SeriesInstanceUID)
+                            study_uid = str(study_seq_item.StudyInstanceUID)
+                            break
+                        #
+                    #
+                #
+            #
+    study_series_tuple = (study_uid, series_uid)
+
+    return study_series_tuple
 
 
 def main(args):

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -145,9 +145,25 @@ class Ui_MainBDIWidget(object):
 
         self.group_box_ups = QGroupBox(MainBDIWidget)
         self.group_box_ups.setObjectName("group_box_ups")
-        self.group_box_ups.setGeometry(QRect(40, 430, 359, 151))
+        self.group_box_ups.setGeometry(QRect(40, 430, 491, 151))
         self.gridLayout = QGridLayout(self.group_box_ups)
         self.gridLayout.setObjectName("gridLayout")
+        self.push_button_export_ups = QPushButton(self.group_box_ups)
+        self.push_button_export_ups.setObjectName("push_button_export_ups")
+
+        self.gridLayout.addWidget(self.push_button_export_ups, 2, 1, 1, 1)
+
+        self.line_edit_move_scp_ae_title = QLineEdit(self.group_box_ups)
+        self.line_edit_move_scp_ae_title.setObjectName("line_edit_move_scp_ae_title")
+        self.line_edit_move_scp_ae_title.setClearButtonEnabled(False)
+
+        self.gridLayout.addWidget(self.line_edit_move_scp_ae_title, 0, 1, 1, 1)
+
+        self.label_move_ae_title = QLabel(self.group_box_ups)
+        self.label_move_ae_title.setObjectName("label_move_ae_title")
+
+        self.gridLayout.addWidget(self.label_move_ae_title, 0, 0, 1, 1)
+
         self.label_start_datetime = QLabel(self.group_box_ups)
         self.label_start_datetime.setObjectName("label_start_datetime")
 
@@ -160,21 +176,16 @@ class Ui_MainBDIWidget(object):
 
         self.gridLayout.addWidget(self.datetime_edit_scheduled_datetime, 1, 1, 1, 1)
 
-        self.label_move_ae_title = QLabel(self.group_box_ups)
-        self.label_move_ae_title.setObjectName("label_move_ae_title")
+        self.checkbox_patient_photo = QCheckBox(self.group_box_ups)
+        self.checkbox_patient_photo.setObjectName("checkbox_patient_photo")
 
-        self.gridLayout.addWidget(self.label_move_ae_title, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.checkbox_patient_photo, 0, 2, 1, 1)
 
-        self.line_edit_move_scp_ae_title = QLineEdit(self.group_box_ups)
-        self.line_edit_move_scp_ae_title.setObjectName("line_edit_move_scp_ae_title")
-        self.line_edit_move_scp_ae_title.setClearButtonEnabled(False)
+        self.checkbox_setup_photos = QCheckBox(self.group_box_ups)
+        self.checkbox_setup_photos.setObjectName("checkbox_setup_photos")
+        self.checkbox_setup_photos.setEnabled(True)
 
-        self.gridLayout.addWidget(self.line_edit_move_scp_ae_title, 0, 1, 1, 1)
-
-        self.push_button_export_ups = QPushButton(self.group_box_ups)
-        self.push_button_export_ups.setObjectName("push_button_export_ups")
-
-        self.gridLayout.addWidget(self.push_button_export_ups, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.checkbox_setup_photos, 1, 2, 1, 1)
 
         self.retranslateUi(MainBDIWidget)
 
@@ -219,11 +230,13 @@ class Ui_MainBDIWidget(object):
         self.checkbox_custom_bdi_filename.setText(QCoreApplication.translate("MainBDIWidget", "Custom BDI filename", None))
         self.push_button_export_bdi.setText(QCoreApplication.translate("MainBDIWidget", "Export BDI", None))
         self.group_box_ups.setTitle(QCoreApplication.translate("MainBDIWidget", "UPS Customization", None))
+        self.push_button_export_ups.setText(QCoreApplication.translate("MainBDIWidget", "Export UPS", None))
+        self.label_move_ae_title.setText(QCoreApplication.translate("MainBDIWidget", "Move/Retrieve AE Title", None))
         self.label_start_datetime.setText(QCoreApplication.translate("MainBDIWidget", "Scheduled DateTime", None))
         self.datetime_edit_scheduled_datetime.setDisplayFormat(
             QCoreApplication.translate("MainBDIWidget", "dd/MM/yyyy h:mm AP", None)
         )
-        self.label_move_ae_title.setText(QCoreApplication.translate("MainBDIWidget", "Move/Retrieve AE Title", None))
-        self.push_button_export_ups.setText(QCoreApplication.translate("MainBDIWidget", "Export UPS", None))
+        self.checkbox_patient_photo.setText(QCoreApplication.translate("MainBDIWidget", "Patient Photo", None))
+        self.checkbox_setup_photos.setText(QCoreApplication.translate("MainBDIWidget", "Setup Photos", None))
 
     # retranslateUi
