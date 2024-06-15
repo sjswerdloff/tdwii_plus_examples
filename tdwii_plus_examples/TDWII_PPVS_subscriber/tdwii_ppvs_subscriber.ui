@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Widget</string>
+   <string>Patient Position Verification and Motion Management Emulator</string>
   </property>
   <widget class="QGroupBox" name="group_box_aes_and_machine">
    <property name="geometry">
@@ -143,6 +143,9 @@
     </item>
     <item row="0" column="1" rowspan="7">
      <widget class="QTreeWidget" name="ups_response_tree_widget">
+      <attribute name="headerStretchLastSection">
+       <bool>true</bool>
+      </attribute>
       <column>
        <property name="text">
         <string notr="true">1</string>

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tdwii_ppvs_subscriber.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.7.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -158,6 +158,7 @@ class Ui_MainPPVSSubscriberWidget(object):
         __qtreewidgetitem.setText(0, "1")
         self.ups_response_tree_widget.setHeaderItem(__qtreewidgetitem)
         self.ups_response_tree_widget.setObjectName("ups_response_tree_widget")
+        self.ups_response_tree_widget.header().setStretchLastSection(True)
 
         self.gridLayout_3.addWidget(self.ups_response_tree_widget, 0, 1, 7, 1)
 
@@ -213,14 +214,18 @@ class Ui_MainPPVSSubscriberWidget(object):
     # setupUi
 
     def retranslateUi(self, MainPPVSSubscriberWidget):
-        MainPPVSSubscriberWidget.setWindowTitle(QCoreApplication.translate("MainPPVSSubscriberWidget", "Widget", None))
+        MainPPVSSubscriberWidget.setWindowTitle(
+            QCoreApplication.translate(
+                "MainPPVSSubscriberWidget", "Patient Position Verification and Motion Management Emulator", None
+            )
+        )
         self.group_box_aes_and_machine.setTitle(
-            QCoreApplication.translate("MainPPVSSubscriberWidget", "group_box_aes_and_machine_name", None)
+            QCoreApplication.translate("MainPPVSSubscriberWidget", "Remote System Configuration", None)
         )
         self.ups_ae_label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "UPS AE", None))
         self.qr_ae_label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "QR AE", None))
         self.machine_name_label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Machine Name", None))
-        self.group_box_ppvs_scp.setTitle(QCoreApplication.translate("MainPPVSSubscriberWidget", "ppvs_scp_group_box", None))
+        self.group_box_ppvs_scp.setTitle(QCoreApplication.translate("MainPPVSSubscriberWidget", "PPVS Configuration", None))
         self.label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Import Staging Directory:", None))
         self.ppvs_ae_label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Event and Store SCP AE", None))
         self.ppvs_restart_push_button.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Restart SCP", None))
@@ -230,13 +235,13 @@ class Ui_MainPPVSSubscriberWidget(object):
         self.subscribe_ups_checkbox.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Subscribe to UPS", None))
         self.auto_download_checkbox.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Auto Download", None))
         self.group_box_cfind_request_and_response.setTitle(
-            QCoreApplication.translate("MainPPVSSubscriberWidget", "group_box_cfind_request_and_response", None)
+            QCoreApplication.translate("MainPPVSSubscriberWidget", "UPS Query Specification", None)
         )
         self.scheduled_date_label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "scheduled date range", None))
         self.schedule_to_label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "to", None))
         self.step_status_label.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Procedure Step Status", None))
         self.push_button_get_ups.setText(QCoreApplication.translate("MainPPVSSubscriberWidget", "Get UPS", None))
-        self.groupBox.setTitle(QCoreApplication.translate("MainPPVSSubscriberWidget", "group_box_get_reference_data", None))
+        self.groupBox.setTitle(QCoreApplication.translate("MainPPVSSubscriberWidget", "Reference Data Retrieval", None))
         self.get_listed_inputs_push_button.setText(
             QCoreApplication.translate("MainPPVSSubscriberWidget", "Get Listed Inputs", None)
         )
