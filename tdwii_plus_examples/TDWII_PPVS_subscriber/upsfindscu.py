@@ -21,16 +21,16 @@ def _create_code_seq_item(value: str | int, designator: str, meaning: str) -> Da
 
 
 def _unpack_code_seq_item(code_seq_item: Dataset) -> tuple[str, str, str]:
-    CodeValue = ""
-    CodingSchemeDesignator = ""
-    CodeMeaning = ""
+    code_value = ""
+    coding_scheme_designator = ""
+    code_meaning = ""
     if "CodeValue" in code_seq_item:
-        CodeValue = code_seq_item.CodeValue
+        code_value = code_seq_item.CodeValue
     if "CodingSchemeDesignator" in code_seq_item:
-        CodingSchemeDesignator = code_seq_item.CodingSchemeDesignator
+        coding_scheme_designator = code_seq_item.CodingSchemeDesignator
     if "CodeMeaning" in code_seq_item:
-        CodeMeaning = code_seq_item.CodeMeaning
-    return CodeValue, CodingSchemeDesignator, CodeMeaning
+        code_meaning = code_seq_item.CodeMeaning
+    return code_value, coding_scheme_designator, code_meaning
 
 
 def get_ups(ds_query: pydicom.Dataset, scu_ae_title: str, scp_ae_title: str) -> Iterator[tuple[Dataset, Dataset | None]]:

@@ -6,6 +6,7 @@ from configparser import ConfigParser
 from pathlib import Path
 
 from ppvsscp import PPVS_SCP
+from pydicom.valuerep import VR
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import (
     QApplication,
@@ -122,12 +123,28 @@ class PPVS_SubscriberWidget(QWidget):
             displayable_responses = response_content_to_dict(response_content)
             print(displayable_responses)
             ups_item.setText(0, response_content.SOPInstanceUID)
-            for elemName in ["PatientName", "PatientID"]:
-                if elemName in response_content:
+            for key, value in displayable_responses.items():
+                if key in response_content:
+                    tag_label = str(response_content[key].tag)
+                else:
+                    tag_label = ""
+                ups_child_item = QTreeWidgetItem(ups_item)
+                ups_child_item.setText(0, tag_label)
+                ups_child_item.setText(1, key)
+                ups_child_item.setText(2, value)
+            for elem in response_content:
+                if elem.VR != VR.SQ and elem.name not in displayable_responses.keys():
                     ups_child_item = QTreeWidgetItem(ups_item)
-                    ups_child_item.setText(0, str(response_content[elemName].tag))
-                    ups_child_item.setText(1, response_content[elemName].name)
-                    ups_child_item.setText(2, response_content[elemName].repval)
+                    ups_child_item.setText(0, str(elem.tag))
+                    ups_child_item.setText(1, elem.name)
+                    ups_child_item.setText(2, elem.repval)
+
+            # for elemName in ["PatientName", "PatientID"]:
+            #     if elemName in response_content:
+            #         ups_child_item = QTreeWidgetItem(ups_item)
+            #         ups_child_item.setText(0, str(response_content[elemName].tag))
+            #         ups_child_item.setText(1, response_content[elemName].name)
+            #         ups_child_item.setText(2, response_content[elemName].repval)
 
         return
 
