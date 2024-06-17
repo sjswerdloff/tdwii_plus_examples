@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.2
+## Created by: Qt User Interface Compiler version 6.7.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -61,6 +61,9 @@ class Ui_MainBDIWidget(object):
         if not MainBDIWidget.objectName():
             MainBDIWidget.setObjectName("MainBDIWidget")
         MainBDIWidget.resize(800, 600)
+        font = QFont()
+        font.setFamilies([".AppleSystemUIFont"])
+        MainBDIWidget.setFont(font)
         self.group_box_bdi_variables = QGroupBox(MainBDIWidget)
         self.group_box_bdi_variables.setObjectName("group_box_bdi_variables")
         self.group_box_bdi_variables.setGeometry(QRect(40, 110, 491, 121))
@@ -70,6 +73,7 @@ class Ui_MainBDIWidget(object):
         self.double_spin_box_fraction_number.setObjectName("double_spin_box_fraction_number")
         self.double_spin_box_fraction_number.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
         self.double_spin_box_fraction_number.setDecimals(0)
+        self.double_spin_box_fraction_number.setValue(1.000000000000000)
 
         self.gridLayout_3.addWidget(self.double_spin_box_fraction_number, 0, 1, 1, 1)
 
