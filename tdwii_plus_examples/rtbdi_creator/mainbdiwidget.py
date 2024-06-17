@@ -83,7 +83,7 @@ class MainBDIWidget(QWidget):
                 logging.warning("No [DEFAULT] section in toml config file")
 
         except OSError as config_file_error:
-            logging.exception("Problem parsing config file: " + config_file)
+            logging.exception("Problem parsing config file: " + config_file_error)
 
     @Slot()
     def _plan_button_clicked(self):
