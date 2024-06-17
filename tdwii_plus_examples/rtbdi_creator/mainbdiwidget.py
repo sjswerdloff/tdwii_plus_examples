@@ -88,7 +88,7 @@ class MainBDIWidget(QWidget):
     @Slot()
     def _plan_button_clicked(self):
         previous_path = self.plan_path
-        file_name, ok = QFileDialog.getOpenFileName(self, "Open Plan", str(previous_path), "Image Files (*.dcm)")
+        file_name, ok = QFileDialog.getOpenFileName(self, "Open Plan", str(previous_path), "DICOM Plan Files (*.dcm)")
         if file_name:
             path = Path(file_name)
             self.ui.lineedit_plan_selector.setText(str(path))
