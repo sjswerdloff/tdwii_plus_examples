@@ -10,6 +10,11 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>.AppleSystemUIFont</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>RT Beams Delivery Instruction and UPS Creator</string>
   </property>
@@ -36,6 +41,9 @@
       </property>
       <property name="decimals">
        <number>0</number>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
       </property>
      </widget>
     </item>

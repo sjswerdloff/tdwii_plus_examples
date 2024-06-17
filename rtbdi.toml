@@ -1,0 +1,9 @@
+# Default configuration file for scheduling tool
+
+## Application settings
+[DEFAULT]
+# qr_ae_title =  "OST"
+# Our AE Title
+ae_title =  "TMS"
+export_staging_directory =  "~/BDIFolder"
+plan_path = "~/SamplePlanFolder"
