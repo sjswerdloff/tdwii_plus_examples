@@ -1,0 +1,12 @@
+# Default configuration file for ppvs
+
+## Application settings
+[DEFAULT]
+    ups_ae_title = "TMS"
+    qr_ae_title = "OST"
+    # Our AE Title
+    ae_title = "PPVS_SCP"
+    # Our listen port
+    #   This directory contains the QR service's managed SOP Instances
+    import_staging_directory = "~/ppvs_import_staging"
+    machine = "CGTR"

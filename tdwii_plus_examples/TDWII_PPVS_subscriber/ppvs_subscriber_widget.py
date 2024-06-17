@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # This Python file uses the following encoding: utf-8
+import logging
 import sys
 from pathlib import Path
 
+import tomli
 from ppvsscp import PPVS_SCP
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import QApplication, QFileDialog, QWidget
@@ -30,6 +32,35 @@ class PPVS_SubscriberWidget(QWidget):
         self.ui.step_status_combo_box.addItems(["SCHEDULED", "IN PROGRESS", "CANCELED", "COMPLETED", "ANY"])
         self.ui.subscribe_ups_checkbox.toggled.connect(self._toggle_subscription)
         self.watch_scu = None
+        config_file = "ppvs.toml"
+        # TODO: command line argument specifying a different config file
+        try:
+            with open(config_file, "rb") as f:
+                toml_dict = tomli.load(f)
+            if "DEFAULT" in toml_dict:
+                default_dict = toml_dict["DEFAULT"]
+
+            try:
+                if "ups_ae_title" in default_dict:
+                    self.ui.ups_ae_line_edit.setText(default_dict["ups_ae_title"])
+                    logging.debug("parsed ups_ae_title")
+                if "qr_ae_title" in default_dict:
+                    self.ui.qr_ae_line_edit.setText(default_dict["qr_ae_title"])
+                if "ae_title" in default_dict:
+                    self.ui.ppvs_ae_line_edit.setText(default_dict["ae_title"])
+                if "import_staging_directory" in default_dict:
+                    raw_staging_dir = default_dict["import_staging_directory"]
+                    expanded_staging_dir = str(Path(raw_staging_dir).expanduser())
+                    self.ui.import_staging_dir_line_edit.setText(expanded_staging_dir)
+                if "machine" in default_dict:
+                    machine_name = default_dict["machine"]
+                    self.ui.machine_name_line_edit.setText(machine_name)
+                logging.warning("Completed Parsing of " + config_file)
+            except Exception:
+                warning_msg = f"Difficulty parsing config file {config_file}"
+                logging.warning(warning_msg)
+        except OSError as config_file_error:
+            logging.exception("Problem parsing config file: " + config_file_error)
 
     @Slot()
     def _import_staging_dir_clicked(self):
@@ -42,7 +73,7 @@ class PPVS_SubscriberWidget(QWidget):
             file_name = dialog.selectedFiles()[0]
         if file_name:
             path = Path(file_name)
-        self.ui.import_staging_dir_line_edit.insert(str(path))
+        self.ui.import_staging_dir_line_edit.setText(str(path))
 
     @Slot()
     def _toggle_subscription(self):
