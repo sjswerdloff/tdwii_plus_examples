@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # This Python file uses the following encoding: utf-8
+import logging
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import List
 
+import tomli
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import (  # pylint: disable=no-name-in-module
     QApplication,
@@ -52,19 +54,45 @@ class MainBDIWidget(QWidget):
         self.ui.push_button_bdi_dir_finder.clicked.connect(self._bdidir_button_clicked)
         self.ui.push_button_export_bdi.clicked.connect(self._bdi_export_button_clicked)
         self.ui.push_button_export_ups.clicked.connect(self._export_ups_button_clicked)
+
         self.plan = None
+        self.plan_path = Path("~/").expanduser()
         self.rtbdi = None
-        self.export_path = Path("~/")  # home for a default isn't the worst choice
+        self.export_path = Path("~/").expanduser()  # home for a default isn't the worst choice
         self.fraction_number = 1
         self.retrieve_ae_title = ""
         self.scheduled_datetime = datetime.now
+        self.ae_title = "TMS"
+        config_file = "rtbdi.toml"
+        # TODO: command line argument specifying a different config file
+        try:
+            with open(config_file, "rb") as f:
+                toml_dict = tomli.load(f)
+            if "DEFAULT" in toml_dict:
+                default_dict = toml_dict["DEFAULT"]
+                if "export_staging_directory" in default_dict:
+                    export_staging_directory = Path(default_dict["export_staging_directory"]).expanduser()
+                    self.ui.lineedit_bdidir_selector.setText(str(export_staging_directory))
+                if "qr_ae_title" in default_dict:
+                    self.ui.line_edit_move_scp_ae_title.setText(toml_dict["DEFAULT"]["qr_ae_title"])
+                if "ae_title" in default_dict:
+                    self.ae_title = default_dict["ae_title"]
+                if "plan_path" in default_dict:
+                    self.plan_path = str(Path(default_dict["plan_path"]).expanduser())
+            else:
+                logging.warning("No [DEFAULT] section in toml config file")
+
+        except OSError as config_file_error:
+            logging.exception("Problem parsing config file: " + config_file)
 
     @Slot()
     def _plan_button_clicked(self):
-        file_name, ok = QFileDialog.getOpenFileName(self, "Open Plan", "~/", "Image Files (*.dcm)")
+        previous_path = self.plan_path
+        file_name, ok = QFileDialog.getOpenFileName(self, "Open Plan", str(previous_path), "Image Files (*.dcm)")
         if file_name:
             path = Path(file_name)
-        self.ui.lineedit_plan_selector.insert(str(path))
+            self.ui.lineedit_plan_selector.setText(str(path))
+            self.plan_path = path.parent
         # print("Plan Button Clicked")
 
     @Slot()
@@ -78,7 +106,7 @@ class MainBDIWidget(QWidget):
             file_name = dialog.selectedFiles()[0]
         if file_name:
             path = Path(file_name)
-        self.ui.lineedit_bdidir_selector.insert(str(path))
+        self.ui.lineedit_bdidir_selector.setText(str(path))
 
     #     fraction_number = round(self.ui.double_spin_box_fraction_number.value())
 
