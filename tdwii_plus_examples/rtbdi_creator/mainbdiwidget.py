@@ -119,7 +119,7 @@ class MainBDIWidget(QWidget):
             dlg = QMessageBox(self)
             dlg.setIcon(QMessageBox.Information)
             dlg.setText("C-STORE succeeded")
-        button = dlg.exec()
+        dlg.exec()
         app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, False)
 
         return
