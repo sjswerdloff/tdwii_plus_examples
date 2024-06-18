@@ -33,7 +33,7 @@ def _unpack_code_seq_item(code_seq_item: Dataset) -> tuple[str, str, str]:
 
 
 def get_ups(ds_query: pydicom.Dataset, scu_ae_title: str, scp_ae_title: str) -> Iterator[tuple[Dataset, Dataset | None]]:
-    """_summary_
+    """Perform UPS C-FIND-RQ and return responses that have UPS content
 
     Args:
         ds_query (pydicom.Dataset): query content/request
@@ -72,7 +72,7 @@ def create_ups_query(
     scheduled_no_sooner_than: str = None,
     scheduled_no_later_than: str = None,
 ) -> Dataset:
-    """Query for the UPS per RO-58, or directly if the UPS UID is already known e.g. via UPS Event
+    """Construct query for the UPS per RO-58, or directly if the UPS UID is already known e.g. via UPS Event
     Args:
         ups_uid (str): The SOP Instance UID for the specific Unified Procedure Step. Empty default
         machine_name (str): The name of the treatment machine as specified in the RT (Ion) Plan.
