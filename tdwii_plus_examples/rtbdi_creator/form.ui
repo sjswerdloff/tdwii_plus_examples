@@ -25,7 +25,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>110</y>
+     <y>130</y>
      <width>491</width>
      <height>121</height>
     </rect>
@@ -73,7 +73,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>20</y>
+     <y>50</y>
      <width>581</width>
      <height>70</height>
     </rect>
@@ -82,6 +82,9 @@
     <string>Plan Selection</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_4">
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="lineedit_plan_selector"/>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label_plan_selector">
       <property name="text">
@@ -89,13 +92,17 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="lineedit_plan_selector"/>
-    </item>
     <item row="0" column="2">
      <widget class="QPushButton" name="push_button_plan_finder">
       <property name="text">
        <string>Find Plan</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QPushButton" name="push_button_send_plan">
+      <property name="text">
+       <string>Store Plan</string>
       </property>
      </widget>
     </item>
@@ -105,7 +112,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>230</y>
+     <y>250</y>
      <width>591</width>
      <height>193</height>
     </rect>
@@ -157,33 +164,19 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>430</y>
+     <y>450</y>
      <width>491</width>
-     <height>151</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="title">
     <string>UPS Customization</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="1">
+    <item row="3" column="1">
      <widget class="QPushButton" name="push_button_export_ups">
       <property name="text">
        <string>Export UPS</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="line_edit_move_scp_ae_title">
-      <property name="clearButtonEnabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_move_ae_title">
-      <property name="text">
-       <string>Move/Retrieve AE Title</string>
       </property>
      </widget>
     </item>
@@ -191,6 +184,13 @@
      <widget class="QLabel" name="label_start_datetime">
       <property name="text">
        <string>Scheduled DateTime</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QCheckBox" name="checkbox_patient_photo">
+      <property name="text">
+       <string>Patient Photo</string>
       </property>
      </widget>
     </item>
@@ -214,14 +214,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QCheckBox" name="checkbox_patient_photo">
-      <property name="text">
-       <string>Patient Photo</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
+    <item row="2" column="2">
      <widget class="QCheckBox" name="checkbox_setup_photos">
       <property name="enabled">
        <bool>true</bool>
@@ -232,6 +225,32 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QLineEdit" name="line_edit_move_scp_ae_title">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>20</y>
+     <width>203</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="clearButtonEnabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_move_ae_title">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>135</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Move/Retrieve AE Title</string>
+   </property>
   </widget>
  </widget>
  <resources/>

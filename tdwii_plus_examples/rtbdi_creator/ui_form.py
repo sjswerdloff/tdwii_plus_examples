@@ -66,7 +66,7 @@ class Ui_MainBDIWidget(object):
         MainBDIWidget.setFont(font)
         self.group_box_bdi_variables = QGroupBox(MainBDIWidget)
         self.group_box_bdi_variables.setObjectName("group_box_bdi_variables")
-        self.group_box_bdi_variables.setGeometry(QRect(40, 110, 491, 121))
+        self.group_box_bdi_variables.setGeometry(QRect(40, 130, 491, 121))
         self.gridLayout_3 = QGridLayout(self.group_box_bdi_variables)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.double_spin_box_fraction_number = QDoubleSpinBox(self.group_box_bdi_variables)
@@ -94,27 +94,32 @@ class Ui_MainBDIWidget(object):
 
         self.group_box_plan_selection = QGroupBox(MainBDIWidget)
         self.group_box_plan_selection.setObjectName("group_box_plan_selection")
-        self.group_box_plan_selection.setGeometry(QRect(40, 20, 581, 70))
+        self.group_box_plan_selection.setGeometry(QRect(40, 50, 581, 70))
         self.gridLayout_4 = QGridLayout(self.group_box_plan_selection)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.label_plan_selector = QLabel(self.group_box_plan_selection)
-        self.label_plan_selector.setObjectName("label_plan_selector")
-
-        self.gridLayout_4.addWidget(self.label_plan_selector, 0, 0, 1, 1)
-
         self.lineedit_plan_selector = QLineEdit(self.group_box_plan_selection)
         self.lineedit_plan_selector.setObjectName("lineedit_plan_selector")
 
         self.gridLayout_4.addWidget(self.lineedit_plan_selector, 0, 1, 1, 1)
+
+        self.label_plan_selector = QLabel(self.group_box_plan_selection)
+        self.label_plan_selector.setObjectName("label_plan_selector")
+
+        self.gridLayout_4.addWidget(self.label_plan_selector, 0, 0, 1, 1)
 
         self.push_button_plan_finder = QPushButton(self.group_box_plan_selection)
         self.push_button_plan_finder.setObjectName("push_button_plan_finder")
 
         self.gridLayout_4.addWidget(self.push_button_plan_finder, 0, 2, 1, 1)
 
+        self.push_button_send_plan = QPushButton(self.group_box_plan_selection)
+        self.push_button_send_plan.setObjectName("push_button_send_plan")
+
+        self.gridLayout_4.addWidget(self.push_button_send_plan, 0, 3, 1, 1)
+
         self.group_box_bdi_output = QGroupBox(MainBDIWidget)
         self.group_box_bdi_output.setObjectName("group_box_bdi_output")
-        self.group_box_bdi_output.setGeometry(QRect(40, 230, 591, 193))
+        self.group_box_bdi_output.setGeometry(QRect(40, 250, 591, 193))
         self.gridLayout_2 = QGridLayout(self.group_box_bdi_output)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.label_bdi_output_dir = QLabel(self.group_box_bdi_output)
@@ -149,29 +154,23 @@ class Ui_MainBDIWidget(object):
 
         self.group_box_ups = QGroupBox(MainBDIWidget)
         self.group_box_ups.setObjectName("group_box_ups")
-        self.group_box_ups.setGeometry(QRect(40, 430, 491, 151))
+        self.group_box_ups.setGeometry(QRect(40, 450, 491, 131))
         self.gridLayout = QGridLayout(self.group_box_ups)
         self.gridLayout.setObjectName("gridLayout")
         self.push_button_export_ups = QPushButton(self.group_box_ups)
         self.push_button_export_ups.setObjectName("push_button_export_ups")
 
-        self.gridLayout.addWidget(self.push_button_export_ups, 2, 1, 1, 1)
-
-        self.line_edit_move_scp_ae_title = QLineEdit(self.group_box_ups)
-        self.line_edit_move_scp_ae_title.setObjectName("line_edit_move_scp_ae_title")
-        self.line_edit_move_scp_ae_title.setClearButtonEnabled(False)
-
-        self.gridLayout.addWidget(self.line_edit_move_scp_ae_title, 0, 1, 1, 1)
-
-        self.label_move_ae_title = QLabel(self.group_box_ups)
-        self.label_move_ae_title.setObjectName("label_move_ae_title")
-
-        self.gridLayout.addWidget(self.label_move_ae_title, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.push_button_export_ups, 3, 1, 1, 1)
 
         self.label_start_datetime = QLabel(self.group_box_ups)
         self.label_start_datetime.setObjectName("label_start_datetime")
 
         self.gridLayout.addWidget(self.label_start_datetime, 1, 0, 1, 1)
+
+        self.checkbox_patient_photo = QCheckBox(self.group_box_ups)
+        self.checkbox_patient_photo.setObjectName("checkbox_patient_photo")
+
+        self.gridLayout.addWidget(self.checkbox_patient_photo, 1, 2, 1, 1)
 
         self.datetime_edit_scheduled_datetime = QDateTimeEdit(self.group_box_ups)
         self.datetime_edit_scheduled_datetime.setObjectName("datetime_edit_scheduled_datetime")
@@ -180,16 +179,19 @@ class Ui_MainBDIWidget(object):
 
         self.gridLayout.addWidget(self.datetime_edit_scheduled_datetime, 1, 1, 1, 1)
 
-        self.checkbox_patient_photo = QCheckBox(self.group_box_ups)
-        self.checkbox_patient_photo.setObjectName("checkbox_patient_photo")
-
-        self.gridLayout.addWidget(self.checkbox_patient_photo, 0, 2, 1, 1)
-
         self.checkbox_setup_photos = QCheckBox(self.group_box_ups)
         self.checkbox_setup_photos.setObjectName("checkbox_setup_photos")
         self.checkbox_setup_photos.setEnabled(True)
 
-        self.gridLayout.addWidget(self.checkbox_setup_photos, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.checkbox_setup_photos, 2, 2, 1, 1)
+
+        self.line_edit_move_scp_ae_title = QLineEdit(MainBDIWidget)
+        self.line_edit_move_scp_ae_title.setObjectName("line_edit_move_scp_ae_title")
+        self.line_edit_move_scp_ae_title.setGeometry(QRect(220, 20, 203, 21))
+        self.line_edit_move_scp_ae_title.setClearButtonEnabled(False)
+        self.label_move_ae_title = QLabel(MainBDIWidget)
+        self.label_move_ae_title.setObjectName("label_move_ae_title")
+        self.label_move_ae_title.setGeometry(QRect(40, 20, 135, 16))
 
         self.retranslateUi(MainBDIWidget)
 
@@ -219,6 +221,7 @@ class Ui_MainBDIWidget(object):
         self.group_box_plan_selection.setTitle(QCoreApplication.translate("MainBDIWidget", "Plan Selection", None))
         self.label_plan_selector.setText(QCoreApplication.translate("MainBDIWidget", "RT (Ion) Plan", None))
         self.push_button_plan_finder.setText(QCoreApplication.translate("MainBDIWidget", "Find Plan", None))
+        self.push_button_send_plan.setText(QCoreApplication.translate("MainBDIWidget", "Store Plan", None))
         self.group_box_bdi_output.setTitle(QCoreApplication.translate("MainBDIWidget", "BDI Output", None))
         self.label_bdi_output_dir.setText(QCoreApplication.translate("MainBDIWidget", "BDI Output Dir", None))
         self.push_button_bdi_dir_finder.setText(QCoreApplication.translate("MainBDIWidget", "Choose BDI Dir", None))
@@ -235,12 +238,12 @@ class Ui_MainBDIWidget(object):
         self.push_button_export_bdi.setText(QCoreApplication.translate("MainBDIWidget", "Export BDI", None))
         self.group_box_ups.setTitle(QCoreApplication.translate("MainBDIWidget", "UPS Customization", None))
         self.push_button_export_ups.setText(QCoreApplication.translate("MainBDIWidget", "Export UPS", None))
-        self.label_move_ae_title.setText(QCoreApplication.translate("MainBDIWidget", "Move/Retrieve AE Title", None))
         self.label_start_datetime.setText(QCoreApplication.translate("MainBDIWidget", "Scheduled DateTime", None))
+        self.checkbox_patient_photo.setText(QCoreApplication.translate("MainBDIWidget", "Patient Photo", None))
         self.datetime_edit_scheduled_datetime.setDisplayFormat(
             QCoreApplication.translate("MainBDIWidget", "dd/MM/yyyy h:mm AP", None)
         )
-        self.checkbox_patient_photo.setText(QCoreApplication.translate("MainBDIWidget", "Patient Photo", None))
         self.checkbox_setup_photos.setText(QCoreApplication.translate("MainBDIWidget", "Setup Photos", None))
+        self.label_move_ae_title.setText(QCoreApplication.translate("MainBDIWidget", "Move/Retrieve AE Title", None))
 
     # retranslateUi
