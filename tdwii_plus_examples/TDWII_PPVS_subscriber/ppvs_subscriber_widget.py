@@ -6,14 +6,22 @@ from pathlib import Path
 
 import tomli
 from ppvsscp import PPVS_SCP
+from pydicom.valuerep import VR
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
-from PySide6.QtWidgets import QApplication, QFileDialog, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QWidget,
+)
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from ui_tdwii_ppvs_subscriber import Ui_MainPPVSSubscriberWidget
+from upsfindscu import create_ups_query, get_ups, response_content_to_dict
 from watchscu import WatchSCU
 
 from tdwii_plus_examples import tdwii_config
@@ -26,6 +34,8 @@ class PPVS_SubscriberWidget(QWidget):
         self.ui.setupUi(self)
         self.ui.import_staging_directory_push_button.clicked.connect(self._import_staging_dir_clicked)
         self.ui.ppvs_restart_push_button.clicked.connect(self._restart_scp)
+        self.ui.push_button_get_ups.clicked.connect(self._get_ups)
+        self.ui.ups_response_tree_widget.setColumnCount(3)
         self.ppvs_scp = None
         self.ui.soonest_date_time_edit.setDateTime(QDateTime.currentDateTime().addSecs(-3600))
         self.ui.latest_date_time_edit.setDateTime(QDateTime.currentDateTime().addSecs(3600))
@@ -100,10 +110,52 @@ class PPVS_SubscriberWidget(QWidget):
         self.watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr, port=port)
 
     @Slot()
-    def _get_ups(self):
+    def _get_ups(self, ups_uid: str = ""):
         # do C-FIND-RQ
+        ups_responses = list()
+        my_ae_title = self.ui.ppvs_ae_line_edit.text()
+        upsscp_ae_title = self.ui.ups_ae_line_edit.text()
+        machine_name = self.ui.machine_name_line_edit.text()
+        soonest_datetime_widget = self.ui.soonest_date_time_edit
 
-        pass
+        query_ds = create_ups_query(
+            ups_uid=ups_uid,
+            machine_name=machine_name,
+            scheduled_no_sooner_than=soonest_datetime_widget.dateTime().toString("yyyyMMddhhmm"),
+            scheduled_no_later_than=self.ui.latest_date_time_edit.dateTime().toString("yyyyMMddhhmm"),
+        )
+        responses = get_ups(query_ds, my_ae_title, upsscp_ae_title)
+
+        self.ui.ups_response_tree_widget.clear()
+        for response_content in responses:
+            ups_item = QTreeWidgetItem(self.ui.ups_response_tree_widget)
+            displayable_responses = response_content_to_dict(response_content)
+            print(displayable_responses)
+            ups_item.setText(0, response_content.SOPInstanceUID)
+            for key, value in displayable_responses.items():
+                if key in response_content:
+                    tag_label = str(response_content[key].tag)
+                else:
+                    tag_label = ""
+                ups_child_item = QTreeWidgetItem(ups_item)
+                ups_child_item.setText(0, tag_label)
+                ups_child_item.setText(1, key)
+                ups_child_item.setText(2, value)
+            for elem in response_content:
+                if elem.VR != VR.SQ and elem.name not in displayable_responses.keys():
+                    ups_child_item = QTreeWidgetItem(ups_item)
+                    ups_child_item.setText(0, str(elem.tag))
+                    ups_child_item.setText(1, elem.name)
+                    ups_child_item.setText(2, elem.repval)
+
+            # for elemName in ["PatientName", "PatientID"]:
+            #     if elemName in response_content:
+            #         ups_child_item = QTreeWidgetItem(ups_item)
+            #         ups_child_item.setText(0, str(response_content[elemName].tag))
+            #         ups_child_item.setText(1, response_content[elemName].name)
+            #         ups_child_item.setText(2, response_content[elemName].repval)
+
+        return
 
     def _subscribe_to_ups(self, match_on_step_state=False, match_on_beam_number=False) -> bool:
         if self.watch_scu is None:
@@ -146,6 +198,7 @@ class PPVS_SubscriberWidget(QWidget):
 
     def _nevent_callback(self, **kwargs):
         logger = None
+        ups_uid = ""
         if "logger" in kwargs.keys():
             logger = kwargs["logger"]
         if logger:
@@ -162,12 +215,14 @@ class PPVS_SubscriberWidget(QWidget):
             if logger:
                 logger.info("Dataset in N-EVENT-REPORT-RQ: ")
                 logger.info(f"{information_ds}")
+            if "SOPInstanceUID" in information_ds:
+                ups_uid = information_ds.SOPInstanceUID
         # TODO: replace if/elif with dict of {event_type_id,application_response_functions}
         if event_type_id == 1:
             if logger:
                 logger.info("UPS State Report")
                 logger.info("Probably time to do a C-FIND-RQ")
-                self._get_ups()
+                self._get_ups(ups_uid=str(ups_uid))
         elif event_type_id == 2:
             if logger:
                 logger.info("UPS Cancel Request")
@@ -176,7 +231,7 @@ class PPVS_SubscriberWidget(QWidget):
             if logger:
                 logger.info("UPS Progress Report")
                 logger.info("Probably time to see if the Beam (number) changed, or if adaptation is taking or took place")
-                self._get_ups()
+                self._get_ups(ups_uid=str(ups_uid))
         elif event_type_id == 4:
             if logger:
                 logger.info("SCP Status Change")
