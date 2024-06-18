@@ -72,8 +72,7 @@ def create_ups_query(
     scheduled_no_sooner_than: str = None,
     scheduled_no_later_than: str = None,
 ) -> Dataset:
-    """Used when the UPS UID is already known, e.g. when received from a UPS Event notification
-
+    """Query for the UPS per RO-58, or directly if the UPS UID is already known e.g. via UPS Event
     Args:
         ups_uid (str): The SOP Instance UID for the specific Unified Procedure Step. Empty default
         machine_name (str): The name of the treatment machine as specified in the RT (Ion) Plan.
