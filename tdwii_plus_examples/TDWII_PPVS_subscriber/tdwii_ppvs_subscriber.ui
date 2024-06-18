@@ -6,239 +6,272 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>659</height>
+    <width>786</width>
+    <height>642</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Widget</string>
+   <string>Patient Position Verification and Motion Management Emulator</string>
   </property>
-  <widget class="QGroupBox" name="group_box_aes_and_machine">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>30</y>
-     <width>622</width>
-     <height>70</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Remote System Configuration</string>
-   </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="ups_ae_label">
-      <property name="text">
-       <string>UPS AE</string>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="group_box_aes_and_machine">
+     <property name="title">
+      <string>Remote System Configuration</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="4">
+       <widget class="QLabel" name="machine_name_label">
+        <property name="text">
+         <string>Machine Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLineEdit" name="machine_name_line_edit"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="qr_ae_label">
+        <property name="text">
+         <string>QR AE</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="qr_ae_line_edit"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="ups_ae_line_edit"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="ups_ae_label">
+        <property name="text">
+         <string>UPS AE</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="group_box_ppvs_scp">
+     <property name="title">
+      <string>PPVS Configuration</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Import Staging Directory:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="ppvs_ae_line_edit"/>
+      </item>
+      <item row="2" column="0" colspan="4">
+       <widget class="QLineEdit" name="import_staging_dir_line_edit"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="ppvs_ae_label">
+        <property name="text">
+         <string>Event and Store SCP AE</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QPushButton" name="ppvs_restart_push_button">
+        <property name="text">
+         <string>Restart SCP</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="import_staging_directory_push_button">
+        <property name="text">
+         <string>Choose Staging Directory</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="subscribe_ups_checkbox">
+        <property name="text">
+         <string>Subscribe to UPS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QCheckBox" name="auto_download_checkbox">
+        <property name="text">
+         <string>Auto Download</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="group_box_cfind_request_and_response">
+     <property name="title">
+      <string>UPS Query Specification</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="scheduled_date_label">
+        <property name="text">
+         <string>scheduled date range</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QDateTimeEdit" name="soonest_date_time_edit">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QDateTimeEdit" name="latest_date_time_edit">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QPushButton" name="push_button_get_ups">
+        <property name="text">
+         <string>Get UPS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QComboBox" name="step_status_combo_box">
+        <property name="maxVisibleItems">
+         <number>6</number>
+        </property>
+        <property name="maxCount">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="step_status_label">
+        <property name="text">
+         <string>Procedure Step Status</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="schedule_to_label">
+        <property name="text">
+         <string>to</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="minimumSize">
+      <size>
+       <width>500</width>
+       <height>300</height>
+      </size>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContents</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>538</width>
+        <height>306</height>
+       </rect>
       </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QTreeWidget" name="ups_response_tree_widget">
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="wordWrap">
+          <bool>false</bool>
+         </property>
+         <property name="columnCount">
+          <number>3</number>
+         </property>
+         <attribute name="headerShowSortIndicator" stdset="0">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="headerStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <column>
+          <property name="text">
+           <string notr="true">Tag</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
      </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="ups_ae_line_edit"/>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="qr_ae_label">
-      <property name="text">
-       <string>QR AE</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QLineEdit" name="qr_ae_line_edit"/>
-    </item>
-    <item row="0" column="4">
-     <widget class="QLabel" name="machine_name_label">
-      <property name="text">
-       <string>Machine Name</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QLineEdit" name="machine_name_line_edit"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QGroupBox" name="group_box_ppvs_scp">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>120</y>
-     <width>496</width>
-     <height>171</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>PPVS Configuration</string>
-   </property>
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Import Staging Directory:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLineEdit" name="ppvs_ae_line_edit"/>
-    </item>
-    <item row="2" column="0" colspan="4">
-     <widget class="QLineEdit" name="import_staging_dir_line_edit"/>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="ppvs_ae_label">
-      <property name="text">
-       <string>Event and Store SCP AE</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="3">
-     <widget class="QPushButton" name="ppvs_restart_push_button">
-      <property name="text">
-       <string>Restart SCP</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
-     <widget class="QPushButton" name="import_staging_directory_push_button">
-      <property name="text">
-       <string>Choose Staging Directory</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QCheckBox" name="subscribe_ups_checkbox">
-      <property name="text">
-       <string>Subscribe to UPS</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1" colspan="2">
-     <widget class="QCheckBox" name="auto_download_checkbox">
-      <property name="text">
-       <string>Auto Download</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QGroupBox" name="group_box_cfind_request_and_response">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>300</y>
-     <width>751</width>
-     <height>243</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>UPS Query Specification</string>
-   </property>
-   <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0">
-     <widget class="QLabel" name="scheduled_date_label">
-      <property name="text">
-       <string>scheduled date range</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1" rowspan="7">
-     <widget class="QTreeWidget" name="ups_response_tree_widget">
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QDateTimeEdit" name="soonest_date_time_edit">
-      <property name="calendarPopup">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="schedule_to_label">
-      <property name="text">
-       <string>to</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QDateTimeEdit" name="latest_date_time_edit">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="calendarPopup">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="step_status_label">
-      <property name="text">
-       <string>Procedure Step Status</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QComboBox" name="step_status_combo_box">
-      <property name="maxVisibleItems">
-       <number>6</number>
-      </property>
-      <property name="maxCount">
-       <number>6</number>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QPushButton" name="push_button_get_ups">
-      <property name="text">
-       <string>Get UPS</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QGroupBox" name="groupBox">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>550</y>
-     <width>361</width>
-     <height>80</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Reference Data Retrieval</string>
-   </property>
-   <widget class="QPushButton" name="get_listed_inputs_push_button">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>131</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Get Listed Inputs</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="get_rtss_and_ct_push_button">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>30</y>
-      <width>161</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Get RTSS and CT</string>
-    </property>
-   </widget>
-  </widget>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Reference Data Retrieval</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="get_listed_inputs_push_button">
+        <property name="text">
+         <string>Get Listed Inputs</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="get_rtss_and_ct_push_button">
+        <property name="text">
+         <string>Get RTSS and CT</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
