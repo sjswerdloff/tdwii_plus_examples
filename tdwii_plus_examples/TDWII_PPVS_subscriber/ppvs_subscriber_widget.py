@@ -8,13 +8,7 @@ import tomli
 from ppvsscp import PPVS_SCP
 from pydicom.valuerep import VR
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
-from PySide6.QtWidgets import (
-    QApplication,
-    QFileDialog,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QWidget,
-)
+from PySide6.QtWidgets import QApplication, QFileDialog, QTreeWidgetItem, QWidget
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -112,7 +106,6 @@ class PPVS_SubscriberWidget(QWidget):
     @Slot()
     def _get_ups(self, ups_uid: str = ""):
         # do C-FIND-RQ
-        ups_responses = list()
         my_ae_title = self.ui.ppvs_ae_line_edit.text()
         upsscp_ae_title = self.ui.ups_ae_line_edit.text()
         machine_name = self.ui.machine_name_line_edit.text()

@@ -1,12 +1,11 @@
 import logging
-from datetime import datetime
 from typing import Iterator
 
 import pydicom
 import pynetdicom
 from pydicom import DataElement, Dataset
 from pydicom.valuerep import VR
-from pynetdicom import AE, UnifiedProcedurePresentationContexts
+from pynetdicom import UnifiedProcedurePresentationContexts
 from pynetdicom.sop_class import UnifiedProcedureStepPull
 
 import tdwii_plus_examples.tdwii_config as ae_config
@@ -77,7 +76,8 @@ def create_ups_query(
 
     Args:
         ups_uid (str): The SOP Instance UID for the specific Unified Procedure Step. Empty default
-        machine_name (str): The name of the treatment machine as specified in the RT (Ion) Plan. Empty default but should be populated.
+        machine_name (str): The name of the treatment machine as specified in the RT (Ion) Plan.
+            Empty default but should be populated.
         procedure_step_state (str): SCHEDULED/IN PROGRESS/COMPLETED/CANCELED, "SCHEDULED" default
         scheduled_no_sooner_than (datetime):  earliest possible matching start datetime. Empty default
         scheduled_no_later_than (datetime): latest possible matching start datetime. Empty default
