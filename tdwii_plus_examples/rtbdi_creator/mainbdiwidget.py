@@ -24,6 +24,7 @@ from rtbdi_factory import (
     write_rtbdi,
     write_ups,
 )
+from storescu import StoreSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -54,6 +55,7 @@ class MainBDIWidget(QWidget):
         self.ui.push_button_bdi_dir_finder.clicked.connect(self._bdidir_button_clicked)
         self.ui.push_button_export_bdi.clicked.connect(self._bdi_export_button_clicked)
         self.ui.push_button_export_ups.clicked.connect(self._export_ups_button_clicked)
+        self.ui.push_button_send_plan.clicked.connect(self._store_plan_button_clicked)
 
         self.plan = None
         self.plan_path = Path("~/").expanduser()
@@ -94,6 +96,33 @@ class MainBDIWidget(QWidget):
             self.ui.lineedit_plan_selector.setText(str(path))
             self.plan_path = path.parent
         # print("Plan Button Clicked")
+
+    @Slot()
+    def _store_plan_button_clicked(self):
+        store_scu = StoreSCU(self.ae_title, self.ui.line_edit_move_scp_ae_title.text())
+        # always re-load.  Not performant, but safe choice.
+        # a more performant approach would be to force a re-load every time a plan is selected.
+        # that's not really necessary unless the plan has to be (C-)stored
+        plan = load_plan(self.ui.lineedit_plan_selector.text())
+        iods = list()
+        iods.append(plan)
+        success = store_scu.store(iods=iods)
+
+        # apparently a known defect, see:
+        # https://stackoverflow.com/questions/76869543/why-cant-i-change-the-window-icon-on-a-qmessagebox-with-seticon-in-pyside6
+        app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
+        if not success:
+            dlg = QMessageBox(self)
+            dlg.setIcon(QMessageBox.Warning)
+            dlg.setText("C-STORE failed. Please check log for more information")
+        else:
+            dlg = QMessageBox(self)
+            dlg.setIcon(QMessageBox.Information)
+            dlg.setText("C-STORE succeeded")
+        button = dlg.exec()
+        app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, False)
+
+        return
 
     @Slot()
     def _bdidir_button_clicked(self):
