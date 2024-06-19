@@ -66,6 +66,7 @@ class MainBDIWidget(QWidget):
         self.scheduled_datetime = datetime.now
         self.ae_title = "TMS"
         config_file = "rtbdi.toml"
+
         # TODO: command line argument specifying a different config file
         try:
             with open(config_file, "rb") as f:
@@ -107,7 +108,11 @@ class MainBDIWidget(QWidget):
         iods = list()
         iods.append(plan)
         success = store_scu.store(iods=iods)
+        self._store_outcome_message(success=success)
 
+        return
+
+    def _store_outcome_message(self, success: bool, text: str = None):
         # apparently a known defect, see:
         # https://stackoverflow.com/questions/76869543/why-cant-i-change-the-window-icon-on-a-qmessagebox-with-seticon-in-pyside6
         app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
@@ -121,8 +126,6 @@ class MainBDIWidget(QWidget):
             dlg.setText("C-STORE succeeded")
         dlg.exec()
         app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, False)
-
-        return
 
     @Slot()
     def _bdidir_button_clicked(self):
@@ -157,6 +160,11 @@ class MainBDIWidget(QWidget):
         bdi_path = Path(self.ui.lineedit_bdidir_selector.text(), self.ui.line_edit_bdi_filename.text())
         write_rtbdi(rtbdi, bdi_path)
         self.export_path = bdi_path
+
+        store_scu = StoreSCU(self.ae_title, self.ui.line_edit_move_scp_ae_title.text())
+        iods = [rtbdi]
+        success = store_scu.store(iods=iods)
+        self._store_outcome_message(success=success)
 
     @Slot()
     def _export_ups_button_clicked(self):
