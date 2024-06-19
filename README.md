@@ -1,5 +1,5 @@
 # tdwii_plus_examples
-Working Python sample code for performing various transactions within the IHE-RO TDW-II profile, as well as extensions based on UPS Watch and UPS Event.
+Working Python sample code (Not For Clinical Use) for performing various transactions within the IHE-RO TDW-II profile, as well as extensions based on UPS Watch and UPS Event.
 
 No claims are being made that any of the sample code is adherent to the profile,
 but the examples that are not UPS Watch/UPS Event should interact successfully within limits with valid TDW-II actors.
