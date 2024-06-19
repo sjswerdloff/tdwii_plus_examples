@@ -368,5 +368,5 @@ poetry run pre-commit install
 ```
 and until it's added to the pre-commit, please run the following before committing/pushing
 ```shell
-        poetry run flake8 --count --exit-zero --extend-ignore=E203 --max-line-length=127 --statistics --per-file-ignores="tdwii_plus_examples/rtbdi_creator/ui_form.py:E266,F401,E501 tdwii_plus_examples/TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber.py:E266,F401,E501" tdwii_plus_examples
+poetry run flake8 --count --exit-zero --extend-ignore=E203 --max-line-length=127 --statistics --exclude="tdwii_plus_examples/rtbdi_creator/ui_form.py tdwii_plus_examples/TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber.py" tdwii_plus_examples
 ```
