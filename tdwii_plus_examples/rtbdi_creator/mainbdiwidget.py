@@ -112,24 +112,7 @@ class MainBDIWidget(QWidget):
         iods = list()
         iods.append(plan)
         success = store_scu.store(iods=iods)
-        self._store_outcome_message(success=success)
-
-        return
-
-    def _store_outcome_message(self, success: bool, text: str = None):
-        # apparently a known defect, see:
-        # https://stackoverflow.com/questions/76869543/why-cant-i-change-the-window-icon-on-a-qmessagebox-with-seticon-in-pyside6
-        app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
-        if not success:
-            dlg = QMessageBox(self)
-            dlg.setIcon(QMessageBox.Warning)
-            dlg.setText("C-STORE failed. Please check log for more information")
-        else:
-            dlg = QMessageBox(self)
-            dlg.setIcon(QMessageBox.Information)
-            dlg.setText("C-STORE succeeded")
-        dlg.exec()
-        app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, False)
+        self._command_outcome_message(success=success, command_name="C-STORE")
 
         return
 
@@ -170,7 +153,7 @@ class MainBDIWidget(QWidget):
         store_scu = StoreSCU(self.ae_title, self.ui.line_edit_move_scp_ae_title.text())
         iods = [rtbdi]
         success = store_scu.store(iods=iods)
-        self._store_outcome_message(success=success)
+        self._command_outcome_message(success=success, command_name="C-STORE")
 
     @Slot()
     def _export_ups_button_clicked(self):
