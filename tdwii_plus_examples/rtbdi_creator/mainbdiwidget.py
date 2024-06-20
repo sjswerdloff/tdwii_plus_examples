@@ -24,13 +24,15 @@ from rtbdi_factory import (
     write_rtbdi,
     write_ups,
 )
-from storescu import StoreSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from ui_form import Ui_MainBDIWidget
+
+from tdwii_plus_examples.rtbdi_creator.ncreatescu import NCreateSCU
+from tdwii_plus_examples.rtbdi_creator.storescu import StoreSCU
 
 
 class MainBDIWidget(QWidget):
@@ -64,9 +66,8 @@ class MainBDIWidget(QWidget):
         self.fraction_number = 1
         self.retrieve_ae_title = ""
         self.scheduled_datetime = datetime.now
-        self.ae_title = "TMS"
+        self.ae_title = "TMS"  # as an SCU... maybe should use a different AE Title?
         config_file = "rtbdi.toml"
-
         # TODO: command line argument specifying a different config file
         try:
             with open(config_file, "rb") as f:
@@ -77,11 +78,14 @@ class MainBDIWidget(QWidget):
                     export_staging_directory = Path(default_dict["export_staging_directory"]).expanduser()
                     self.ui.lineedit_bdidir_selector.setText(str(export_staging_directory))
                 if "qr_ae_title" in default_dict:
-                    self.ui.line_edit_move_scp_ae_title.setText(toml_dict["DEFAULT"]["qr_ae_title"])
+                    self.ui.line_edit_move_scp_ae_title.setText(default_dict["qr_ae_title"])
                 if "ae_title" in default_dict:
                     self.ae_title = default_dict["ae_title"]
                 if "plan_path" in default_dict:
                     self.plan_path = str(Path(default_dict["plan_path"]).expanduser())
+                if "ups_scp_ae_title" in default_dict:
+                    self.ui.line_edit_tms_scp_ae_title.setText(default_dict["ups_scp_ae_title"])
+
             else:
                 logging.warning("No [DEFAULT] section in toml config file")
 
@@ -108,11 +112,7 @@ class MainBDIWidget(QWidget):
         iods = list()
         iods.append(plan)
         success = store_scu.store(iods=iods)
-        self._store_outcome_message(success=success)
 
-        return
-
-    def _store_outcome_message(self, success: bool, text: str = None):
         # apparently a known defect, see:
         # https://stackoverflow.com/questions/76869543/why-cant-i-change-the-window-icon-on-a-qmessagebox-with-seticon-in-pyside6
         app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
@@ -126,6 +126,8 @@ class MainBDIWidget(QWidget):
             dlg.setText("C-STORE succeeded")
         dlg.exec()
         app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, False)
+
+        return
 
     @Slot()
     def _bdidir_button_clicked(self):
@@ -161,11 +163,6 @@ class MainBDIWidget(QWidget):
         write_rtbdi(rtbdi, bdi_path)
         self.export_path = bdi_path
 
-        store_scu = StoreSCU(self.ae_title, self.ui.line_edit_move_scp_ae_title.text())
-        iods = [rtbdi]
-        success = store_scu.store(iods=iods)
-        self._store_outcome_message(success=success)
-
     @Slot()
     def _export_ups_button_clicked(self):
         self.retrieve_ae_title = self.ui.line_edit_move_scp_ae_title.text()
@@ -187,6 +184,38 @@ class MainBDIWidget(QWidget):
             enable_setup_image_ref=self.ui.checkbox_setup_photos.isChecked(),
         )
         write_ups(ups, Path(self.ui.lineedit_bdidir_selector.text()))
+        tms_ae_title = self.ui.line_edit_tms_scp_ae_title.text()
+        if tms_ae_title is None or str(tms_ae_title.strip()) == 0:
+            logging.warning("No TMS AE Title specified, will not attempt an N-CREATE")
+        else:
+            ncreate_scu = NCreateSCU(self.ae_title, tms_ae_title.strip())
+            ups_list = list()
+            ups_list.append(ups)
+            success = ncreate_scu.create_ups(iods=ups_list)
+            self._command_outcome_message(success=success, command_name="N-CREATE")
+
+    def _command_outcome_message(self, success: bool, command_name: str, text: str = None):
+        # apparently a known defect, see:
+        # https://stackoverflow.com/questions/76869543/why-cant-i-change-the-window-icon-on-a-qmessagebox-with-seticon-in-pyside6
+        app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
+        if not success:
+            dlg = QMessageBox(self)
+            dlg.setIcon(QMessageBox.Warning)
+            if text is None:
+                msg_text = " failed. Please check log for more information"
+            else:
+                msg_text = text
+            dlg.setText(command_name + msg_text)
+        else:
+            dlg = QMessageBox(self)
+            dlg.setIcon(QMessageBox.Information)
+            if text is None:
+                msg_text = " succeeded"
+            else:
+                msg_text = text
+            dlg.setText(command_name + msg_text)
+        dlg.exec()
+        app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, False)
 
     def _validate_treatment_records(self, treatment_record_ds_list):
         """Confirms that the treatment records reference the plan
