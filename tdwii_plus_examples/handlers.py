@@ -1,18 +1,22 @@
 """Event handlers for upsscp.py"""
+import logging
 import os
 
 # from io import BytesIO
 from pathlib import Path
 
-import tdwii_config
+import pynetdicom
+
+# from pynetdicom.dimse_primitives import N_ACTION
+# from pynetdicom.dsutils import encode
+import pynetdicom.events
 from pydicom import Dataset, dcmread, dcmwrite
 
 # from pydicom.dataset import FileMetaDataset
 from pydicom.errors import InvalidDicomError
 from pynetdicom import AE, UnifiedProcedurePresentationContexts
-
-# from pynetdicom.dimse_primitives import N_ACTION
-# from pynetdicom.dsutils import encode
+from pynetdicom.dsutils import decode
+from pynetdicom.events import Event
 from pynetdicom.sop_class import (
     UnifiedProcedureStepPull,
     UnifiedProcedureStepPush,
@@ -23,7 +27,9 @@ from pynetdicom.sop_class import (
 # from recursive_print_ds import print_ds
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from upsdb import Instance, InvalidIdentifier, add_instance, search
+
+from tdwii_plus_examples import tdwii_config
+from tdwii_plus_examples.upsdb import Instance, InvalidIdentifier, add_instance, search
 
 _SERVICE_STATUS = {
     "SCHEDULED": {
@@ -608,8 +614,8 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
     return
 
 
-def handle_nset(event, db_path, cli_config, logger):
-    """Handler for evt.EVT_C_GET.
+def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config, logger: logging.Logger):
+    """Handler for evt.EVT_N_SET.
 
     Parameters
     ----------
@@ -635,15 +641,46 @@ def handle_nset(event, db_path, cli_config, logger):
     addr, port = requestor.address, requestor.port
     logger.info(f"Received N-SET request from {addr}:{port} at {timestamp}")
 
-    model = event.request.AffectedSOPClassUID
+    # need to manipulate the content of the request
+    # also need to validate the content and reject if it's not DICOM conformant and IHE-RO
+    # TDW-II profile adherent
+    ds_from_request = decode(event.request.ModificationList, True, True)
+    model = ds_from_request.AffectedSOPClassUID
+    logger.info(str(ds_from_request))
+
+    # identifier = event.request.Identifier
+    # if identifier is not None:
+    #     logger.info(str(identifier))
+    # else:
+    #     logger.warning("No Identifier in N-SET-REQUEST")
+
+    if "TransactionUID" not in ds_from_request:
+        logger.warning("TransactionUID is missing")
+        yield 0xC301, None
+    elif "SOPInstanceUID" in ds_from_request:
+        # the SCU isn't supposed to specify the SOP Instance UID, it's supposed to identify the Affected one
+        logger.warning("SOP Instance UID is not supposed to be in N-SET, use Affected SOP Instance UID")
+        yield 0xC3FF, None
+        return
+    elif "PatientID" in ds_from_request:
+        logger.warning("Patient ID is not supposed to be in N-SET-RQ")
+        yield 0xC3FE, None
+        return
+    elif "PatientName" in ds_from_request:
+        logger.warning("Patient Name is not supposed to be in N-SET-RQ")
+        yield 0x3CFD, None
+        return
+    else:
+        # the internal search needs to match on SOP Instance UID
+        ds_from_request.SOPInstanceUID = ds_from_request.AffectedSOPInstanceUID
 
     engine = create_engine(db_path)
     with engine.connect() as conn:  # noqa:  F841
         Session = sessionmaker(bind=engine)
         session = Session()
-        # Search database using Identifier as the query
+        # Search database using subset of ds in the N-SET-RQ as the query
         try:
-            matches = search(model, event.identifier, session)
+            matches = search(model, ds_from_request, session)
         except InvalidIdentifier as exc:
             session.rollback()
             logger.error("Invalid N-SET Identifier received")
@@ -659,8 +696,13 @@ def handle_nset(event, db_path, cli_config, logger):
         finally:
             session.close()
 
-    # Yield number of sub-operations
-    yield len(matches)
+    if len(matches) == 0:
+        # no SOP Instance UID that matches the Affected SOP Instance UID in the request
+        yield 0xC307, None
+        return
+
+    if len(matches) > 1:
+        logger.error(f"More than one matching UPS entry for {ds_from_request.AffectedSOPInstanceUID}")
 
     # Yield results
     for match in matches:
@@ -669,13 +711,30 @@ def handle_nset(event, db_path, cli_config, logger):
             return
 
         try:
-            ds = dcmread(match.filename)
-        except Exception as exc:
+            ds = dcmread(match.filename, force=True)
+            if "ProcedureStepState" not in ds or ds["ProcedureStepState"].value != "IN PROGRESS":
+                logger.warning("Procedure Step State is not IN PROGRESS")
+                yield 0x3C10
+                yield None
+                return
+
+            # clear out elements that we shouldn't use to *update* the UPS.  They probably match already.
+            ds_from_request.pop("SOPInstanceUID", None)
+            ds_from_request.pop("TransactionUID", None)
+            ds_from_request.pop("SOPClassUID", None)
+            ds_from_request.pop("AffectedSOPClassUID", None)
+            ds.update(ds_from_request)
+            dcmwrite(match.filename, ds, write_like_original=True)
+        except InvalidDicomError or TypeError as exc:
             logger.error(f"Error reading file: {match.filename}")
             logger.exception(exc)
             yield 0xC421, None
+        except AttributeError or ValueError as write_error:
+            logger.error(f"Error updating file: {match.filename}")
+            logger.exception(write_error)
+            yield 0xC421, None
 
-        yield 0xFF00, ds
+        return 0x00, ds
 
 
 def handle_ncreate(event, storage_dir, db_path, cli_config, logger):

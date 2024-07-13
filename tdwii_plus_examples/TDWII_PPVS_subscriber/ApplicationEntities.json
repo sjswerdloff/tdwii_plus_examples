@@ -33,10 +33,5 @@
     "AETitle": "TDD",
     "IPAddr": "127.0.0.1",
     "Port": 11113
-  },
-  {
-	"AETitle": "IHERO_SCP",
-	"IPAddr": "10.211.55.8",
-	"Port":	10401
   }
 ]

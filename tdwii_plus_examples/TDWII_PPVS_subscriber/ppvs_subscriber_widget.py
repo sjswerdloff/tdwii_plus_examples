@@ -120,6 +120,9 @@ class PPVS_SubscriberWidget(QWidget):
         responses = get_ups(query_ds, my_ae_title, upsscp_ae_title)
 
         self.ui.ups_response_tree_widget.clear()
+        if responses is None:
+            logging.warning("No responses, nothing matched query")
+            return
         for response_content in responses:
             ups_item = QTreeWidgetItem(self.ui.ups_response_tree_widget)
             displayable_responses = response_content_to_dict(response_content)
