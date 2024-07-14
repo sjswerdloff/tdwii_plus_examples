@@ -9,16 +9,16 @@ from ppvsscp import PPVS_SCP
 from pydicom.valuerep import VR
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import QApplication, QFileDialog, QTreeWidgetItem, QWidget
+from upsfindscu import create_ups_query, get_ups, response_content_to_dict
+from watchscu import WatchSCU
+
+from tdwii_plus_examples import tdwii_config
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-from ui_tdwii_ppvs_subscriber import Ui_MainPPVSSubscriberWidget
-from upsfindscu import create_ups_query, get_ups, response_content_to_dict
-from watchscu import WatchSCU
-
-from tdwii_plus_examples import tdwii_config
+from tdwii_plus_examples.ui_tdwii_ppvs_subscriber import Ui_MainPPVSSubscriberWidget
 
 
 class PPVS_SubscriberWidget(QWidget):
