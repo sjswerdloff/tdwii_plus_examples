@@ -1,0 +1,23 @@
+{
+    "cSpell.words": [
+        "basescp",
+        "dsutils",
+        "echoscp",
+        "globalsubscriber",
+        "naction",
+        "ncreate",
+        "ncreatescu",
+        "nget",
+        "nset",
+        "PPVS",
+        "ppvsscp",
+        "sessionmaker",
+        "storescp",
+        "storescu",
+        "upsdb",
+        "upsfindscu",
+        "valuerep",
+        "watchscu"
+    ],
+    "python.REPL.enableREPLSmartSend": false
+}
