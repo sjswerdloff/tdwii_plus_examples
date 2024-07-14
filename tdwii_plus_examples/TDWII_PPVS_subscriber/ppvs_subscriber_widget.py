@@ -116,10 +116,14 @@ class PPVS_SubscriberWidget(QWidget):
         upsscp_ae_title = self.ui.ups_ae_line_edit.text()
         machine_name = self.ui.machine_name_line_edit.text()
         soonest_datetime_widget = self.ui.soonest_date_time_edit
+        procedure_step_state = self.ui.step_status_combo_box.currentText()
+        if procedure_step_state == "ANY":
+            procedure_step_state = ""
 
         query_ds = create_ups_query(
             ups_uid=ups_uid,
             machine_name=machine_name,
+            procedure_step_state=procedure_step_state,
             scheduled_no_sooner_than=soonest_datetime_widget.dateTime().toString("yyyyMMddhhmm"),
             scheduled_no_later_than=self.ui.latest_date_time_edit.dateTime().toString("yyyyMMddhhmm"),
         )
@@ -144,7 +148,7 @@ class PPVS_SubscriberWidget(QWidget):
                 ups_child_item.setText(1, key)
                 ups_child_item.setText(2, value)
             for elem in response_content:
-                if elem.VR != VR.SQ and elem.name not in displayable_responses.keys():
+                if elem.VR != VR.SQ and elem.keyword not in displayable_responses.keys():
                     ups_child_item = QTreeWidgetItem(ups_item)
                     ups_child_item.setText(0, str(elem.tag))
                     ups_child_item.setText(1, elem.name)

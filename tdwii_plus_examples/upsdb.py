@@ -308,6 +308,7 @@ def build_query(identifier, session, query=None):
         if vr == "PN" and val:
             val = str(val)
 
+        print(f"Searching based on element: {elem}")
         # Part 4, C.2.2.2.1 Single Value Matching
         if vr != "SQ" and val is not None:
             if vr in _text_vr and ("*" in val or "?" in val):
@@ -764,12 +765,14 @@ def _search_sequence(elem, session, query=None):
     if elem.VR == "SQ":
         # this should always be VR of SQ for sequence matching
         print(f"Search sequence element: {elem}")
+        print(f"{elem.keyword} maps to {attr}")
         if elem is not None:
             try:
                 # for IHE-RO, only expect SEQUENCES in queries that are CodeSequence
                 # namely Scheduled Station Name Code Sequence
                 # Workitem Code Sequence
                 value = elem[0].CodeValue
+                print(f"Found code value: {value}")
             except Exception:
                 pass
 
@@ -780,6 +783,8 @@ def _search_sequence(elem, session, query=None):
                 # haven't figured out quite how to add the designator to the query yet.
                 # maybe specify that attr as well and call query.filter(designator_attr == designator)?
                 designator = elem[0].CodingSchemeDesignator  # noqa: F841
+                print(f"Found coding scheme designator {designator}")
+
             except Exception:
                 pass
     else:
@@ -787,10 +792,13 @@ def _search_sequence(elem, session, query=None):
 
     if not query:
         query = session.query(Instance)
+        print("Creating new Query")
 
     if value is None:
+        print("value was none, not modifying query")
         return query
 
+    print(f"Updating query to include {attr} == {value}")
     return query.filter(attr == value)
 
 

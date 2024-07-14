@@ -11,6 +11,7 @@
         "nset",
         "PPVS",
         "ppvsscp",
+        "repval",
         "sessionmaker",
         "storescp",
         "storescu",
