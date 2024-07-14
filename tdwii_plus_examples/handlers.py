@@ -513,8 +513,20 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
         with engine.connect() as conn:  # noqa:  F841
             Session = sessionmaker(bind=engine)
             session = Session()
+            model = None
             # Search database using Identifier as the query
-            model = naction_primitive.RequestedSOPClassUID
+            print(f"naction_primitive = {naction_primitive}")
+            print(f"action information = {action_information}")
+
+            if model is None:
+                try:
+                    model = naction_primitive.RequestedSOPClassUID
+                except AttributeError:
+                    try:
+                        model = naction_primitive.AffectedSOPClassUID
+                    except AttributeError:
+                        raise
+
             if action_information is not None:
                 try:
                     logger.info(f"{action_information}")
@@ -527,7 +539,10 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 search_ds = Dataset()  # (action_information)
                 transaction_uid = action_information.TransactionUID
                 requested_step_state = action_information.ProcedureStepState
-                search_ds.SOPInstanceUID = action_information.RequestedSOPInstanceUID
+                if "RequestedSOPInstanceUID" in action_information:
+                    search_ds.SOPInstanceUID = action_information.RequestedSOPInstanceUID
+                else:
+                    search_ds.SOPInstanceUID = naction_primitive.RequestedSOPInstanceUID
                 # search_ds.SOPClassUID = action_information.RequestedSOPClassUID
                 matches = search(model, search_ds, session)
                 if matches is None or (len(matches) < 1):
@@ -588,8 +603,11 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                     response,
                     write_like_original=True,
                 )
-                yield sub_operations_remaining
+                response.TransactionUID = transaction_uid
+                response.Status = service_status
+                print(f"response content: {response}")
                 yield service_status
+                yield response
 
             except InvalidIdentifier as exc:
                 session.rollback()
