@@ -323,8 +323,15 @@ def create_ups_from_plan_and_bdi(
     ups_ds.InputReadinessState = "READY"
     ups_ds.ProcedureStepState = "SCHEDULED"
     ups_ds.ScheduledProcedureStepPriority = "MEDIUM"
-    ups_ds.WorklistLabel = "Worklist label for " + plan.RTPlanLabel
-    ups_ds.ProcedureStepLabel = "Treatment Step for " + plan.RTPlanName
+    plan_label = "no plan label"
+    plan_name = "no plan name"
+    if "RTPlanLabel" in plan:
+        plan_label = plan.RTPlanLabel
+    if "RTPlanName" in plan:
+        plan_name = plan.RTPlanName
+
+    ups_ds.WorklistLabel = "Worklist label for " + plan_label
+    ups_ds.ProcedureStepLabel = "Treatment Step for " + plan_name
     ups_ds.ScheduledProcedureStepStartDateTime = scheduled_datetime
     scheduled_processing_parameters_list = []
     treatment_delivery_concept = _create_code_seq_item("121740", "DCM", "Treatment Delivery Type")
