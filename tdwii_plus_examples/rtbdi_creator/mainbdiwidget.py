@@ -14,7 +14,9 @@ from PySide6.QtWidgets import (  # pylint: disable=no-name-in-module
     QMessageBox,
     QWidget,
 )
-from rtbdi_factory import (
+
+from tdwii_plus_examples.rtbdi_creator.ncreatescu import NCreateSCU
+from tdwii_plus_examples.rtbdi_creator.rtbdi_factory import (
     create_rtbdi_from_rtion_plan,
     create_ups_from_plan_and_bdi,
     is_tx_record_for_bdi,
@@ -24,15 +26,13 @@ from rtbdi_factory import (
     write_rtbdi,
     write_ups,
 )
+from tdwii_plus_examples.rtbdi_creator.storescu import StoreSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-from ui_form import Ui_MainBDIWidget
-
-from tdwii_plus_examples.rtbdi_creator.ncreatescu import NCreateSCU
-from tdwii_plus_examples.rtbdi_creator.storescu import StoreSCU
+from tdwii_plus_examples.rtbdi_creator.ui_form import Ui_MainBDIWidget
 
 
 class MainBDIWidget(QWidget):

@@ -95,7 +95,6 @@ def create_ups_query(
             # is a value that makes it uninteresting, i.e. if they only wanted it if it was still scheduled.
             procedure_step_state = ""
 
-    procedure_step_state = ""  # Typically SCHEDULED or IN PROGRESS, but for known UPS, match anything
     # Request that the patient name and patient id be populated in the response
     ds.add(DataElement("PatientName", VR.PN, ""))
     ds.add(DataElement("PatientID", VR.LO, ""))
@@ -118,7 +117,7 @@ def create_ups_query(
     # For a query that is specific to a unique UPS, an empty value for the machine name means match any
     # but because it's already a unique UPS, the use or lack of filtering isn't an issue either way.
     # could use designator of 99IHERO2008 or 99IHERO2018, but leaving that empty to allow match to either
-    scheduled_station_name_item = _create_code_seq_item("", "", machine_name)
+    scheduled_station_name_item = _create_code_seq_item(machine_name, "99IHERO2008", machine_name)
     ds.add(DataElement("ScheduledStationNameCodeSequence", VR.SQ, pydicom.Sequence([scheduled_station_name_item])))
 
     ds.add(DataElement("ProcedureStepState", VR.SH, procedure_step_state))
@@ -185,5 +184,9 @@ def response_content_to_dict(response_content: Dataset) -> dict[str, str]:
         displayable["ProcedureStepState"] = response_content.ProcedureStepState
     if "ScheduledProcedureStepStartDateTime" in response_content:
         displayable["ScheduledDateTime"] = response_content.ScheduledProcedureStepStartDateTime
-
+    if "ScheduledStationNameCodeSequence" in response_content:
+        for item in response_content["ScheduledStationNameCodeSequence"]:
+            code_value, coding_scheme, _ = _unpack_code_seq_item(item)
+            if coding_scheme == "99IHERO2008":
+                displayable["Machine"] = code_value
     return displayable

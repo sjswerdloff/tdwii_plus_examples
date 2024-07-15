@@ -6,5 +6,9 @@
   {
     "machine": "FX2",
     "AETitle": "TDWII_SCP"
+  },
+  {
+    "machine": "ProNova SC360 GR",
+    "AETitle": "TDWII_SCP"
   }
 ]

@@ -5,20 +5,26 @@ import sys
 from pathlib import Path
 
 import tomli
-from ppvsscp import PPVS_SCP
 from pydicom.valuerep import VR
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import QApplication, QFileDialog, QTreeWidgetItem, QWidget
+
+from tdwii_plus_examples import tdwii_config
+from tdwii_plus_examples.TDWII_PPVS_subscriber.ppvsscp import PPVS_SCP
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
-from ui_tdwii_ppvs_subscriber import Ui_MainPPVSSubscriberWidget
-from upsfindscu import create_ups_query, get_ups, response_content_to_dict
-from watchscu import WatchSCU
-
-from tdwii_plus_examples import tdwii_config
+from tdwii_plus_examples.TDWII_PPVS_subscriber.ui_tdwii_ppvs_subscriber import (
+    Ui_MainPPVSSubscriberWidget,
+)
+from tdwii_plus_examples.TDWII_PPVS_subscriber.upsfindscu import (
+    create_ups_query,
+    get_ups,
+    response_content_to_dict,
+)
+from tdwii_plus_examples.TDWII_PPVS_subscriber.watchscu import WatchSCU
 
 
 class PPVS_SubscriberWidget(QWidget):
@@ -110,16 +116,23 @@ class PPVS_SubscriberWidget(QWidget):
         upsscp_ae_title = self.ui.ups_ae_line_edit.text()
         machine_name = self.ui.machine_name_line_edit.text()
         soonest_datetime_widget = self.ui.soonest_date_time_edit
+        procedure_step_state = self.ui.step_status_combo_box.currentText()
+        if procedure_step_state == "ANY":
+            procedure_step_state = ""
 
         query_ds = create_ups_query(
             ups_uid=ups_uid,
             machine_name=machine_name,
+            procedure_step_state=procedure_step_state,
             scheduled_no_sooner_than=soonest_datetime_widget.dateTime().toString("yyyyMMddhhmm"),
             scheduled_no_later_than=self.ui.latest_date_time_edit.dateTime().toString("yyyyMMddhhmm"),
         )
         responses = get_ups(query_ds, my_ae_title, upsscp_ae_title)
 
         self.ui.ups_response_tree_widget.clear()
+        if responses is None:
+            logging.warning("No responses, nothing matched query")
+            return
         for response_content in responses:
             ups_item = QTreeWidgetItem(self.ui.ups_response_tree_widget)
             displayable_responses = response_content_to_dict(response_content)
@@ -135,7 +148,7 @@ class PPVS_SubscriberWidget(QWidget):
                 ups_child_item.setText(1, key)
                 ups_child_item.setText(2, value)
             for elem in response_content:
-                if elem.VR != VR.SQ and elem.name not in displayable_responses.keys():
+                if elem.VR != VR.SQ and elem.keyword not in displayable_responses.keys():
                     ups_child_item = QTreeWidgetItem(ups_item)
                     ups_child_item.setText(0, str(elem.tag))
                     ups_child_item.setText(1, elem.name)
