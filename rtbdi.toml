@@ -7,3 +7,5 @@ qr_ae_title =  "OST"
 ae_title =  "TMS"
 export_staging_directory =  "~/BDIFolder"
 plan_path = "~/SamplePlanFolder"
+# The AE Title for the ups scp that will respond to UPS C-FIND requests
+ups_scp_ae_title = "TMS"
