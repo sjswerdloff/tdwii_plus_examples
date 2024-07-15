@@ -16,7 +16,6 @@ from pydicom import Dataset, dcmread, dcmwrite
 from pydicom.errors import InvalidDicomError
 from pynetdicom import AE, UnifiedProcedurePresentationContexts
 from pynetdicom.dsutils import decode
-from pynetdicom.events import Event
 from pynetdicom.sop_class import (
     UnifiedProcedureStepPull,
     UnifiedProcedureStepPush,
@@ -462,7 +461,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
     action_type_id = naction_primitive.ActionTypeID
     action_information = dcmread(naction_primitive.ActionInformation, force=True)
     service_status = 0x0000
-    sub_operations_remaining = 0
+    # sub_operations_remaining = 0
     # in case things go wrong
     error_response = Dataset()
     error_response.is_little_endian = True
@@ -690,7 +689,8 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
         ups_performed_procedure_sequence = ds_from_request.UnifiedProcedureStepPerformedProcedureSequence
     except AttributeError:
         print(
-            "Could not access either ProcedureStepProgressInformationSequence or UnifiedProcedureStepPerformedProcedureSequence"
+            "Could not access either ProcedureStepProgressInformationSequence \
+                or UnifiedProcedureStepPerformedProcedureSequence"
         )
     # identifier = event.request.Identifier
     # if identifier is not None:
