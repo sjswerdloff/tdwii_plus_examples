@@ -103,7 +103,7 @@ class NSetSCU:
             for status in responses:
                 if status and status.Status in [0xFF00, 0xFF01]:
                     success = True
-                elif status is None or status == 0x0000 and success == True:
+                elif status is None or status == 0x0000 and success:
                     continue
                 elif status is None or status.Status != 0x0000:
                     success = False
