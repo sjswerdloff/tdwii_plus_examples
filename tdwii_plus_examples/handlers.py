@@ -1,4 +1,5 @@
 """Event handlers for upsscp.py"""
+import copy
 import logging
 import os
 
@@ -657,11 +658,12 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
     timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
     addr, port = requestor.address, requestor.port
     logger.info(f"Received N-SET request from {addr}:{port} at {timestamp}")
-
+    response_ds = None
     # need to manipulate the content of the request
     # also need to validate the content and reject if it's not DICOM conformant and IHE-RO
     # TDW-II profile adherent
     ds_from_request = decode(event.request.ModificationList, True, True)
+    deep_copy_of_request = copy.deepcopy(ds_from_request)
     model = None
     try:
         model = event.request.AffectedSOPClassUID
@@ -676,10 +678,22 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
             error_message = "Unable to get AffectedSOPClassUID from Modification List"
             print(error_message)
             logger.error(error_message)
-    print(f"model={model}")
+    print(f"model={model} when looking at AffectedSOPClassUID")
+
+    if model is None:
+        try:
+            model = event.request.RequestedSOPClassUID
+        except AttributeError:
+            error_message = "Unable to get RequestedSOPClass from request (pynetdicom event.request)"
+            print(error_message)
+            logger.error(error_message)
+
+    print(f"model={model} when looking at RequestedSOPClassUID")
+
     if model is None:
         model = UnifiedProcedureStepPush
         print(f"Forcing model to {UnifiedProcedureStepPush}")
+
     logger.info(str(ds_from_request))
     progress_info_seq = None
     ups_performed_procedure_sequence = None
@@ -763,9 +777,9 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
                 return
 
             if "UnifiedProcedureStepPerformedProcedureSequence" not in ds:
-                if "UnifiedProcedureStepPerformedProcedureSequence" in ds_from_request:
+                if "UnifiedProcedureStepPerformedProcedureSequence" in deep_copy_of_request:
                     ds.UnifiedProcedureStepPerformedProcedureSequence = (
-                        ds_from_request.UnifiedProcedureStepPerformedProcedureSequence
+                        deep_copy_of_request.UnifiedProcedureStepPerformedProcedureSequence
                     )
                 else:
                     print("UnifiedProcedureStepPerformedProcedureSequence not found in the N-SET-RQ or stored UPS")
@@ -773,8 +787,8 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
                         print("But earlier access found it")
                         ds.UnifiedProcedureStepPerformedProcedureSequence = ups_performed_procedure_sequence
             else:
-                if "UnifiedProcedureStepPerformedProcedureSequence" in ds_from_request:
-                    for item in ds_from_request.UnifiedProcedureStepPerformedProcedureSequence:
+                if "UnifiedProcedureStepPerformedProcedureSequence" in deep_copy_of_request:
+                    for item in deep_copy_of_request.UnifiedProcedureStepPerformedProcedureSequence:
                         ds.UnifiedProcedureStepPerformedProcedureSequence.append(item)
                 else:
                     print("UnifiedProcedureStepPerformedProcedureSequence not found in the N-SET-RQ")
@@ -783,8 +797,8 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
                         for item in ups_performed_procedure_sequence:
                             ds.UnifiedProcedureStepPerformedProcedureSequence.append(item)
 
-            if "ProcedureStepProgressInformationSequence" in ds_from_request:
-                ds.ProcedureStepProgressInformationSequence = ds_from_request.ProcedureStepProgressInformationSequence
+            if "ProcedureStepProgressInformationSequence" in deep_copy_of_request:
+                ds.ProcedureStepProgressInformationSequence = deep_copy_of_request.ProcedureStepProgressInformationSequence
             else:
                 print("ProcedureStepProgressInformationSequence not found in the N-SET-RQ")
                 if progress_info_seq is not None:
@@ -792,13 +806,13 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
                     ds.ProcedureStepProgressInformationSequence = progress_info_seq
 
             # clear out elements that we shouldn't use to *update* the UPS.  They probably match already.
-            ds_from_request.pop("SOPInstanceUID", None)
-            ds_from_request.pop("TransactionUID", None)
-            ds_from_request.pop("SOPClassUID", None)
-            ds_from_request.pop("AffectedSOPClassUID", None)
+            deep_copy_of_request.pop("SOPInstanceUID", None)
+            deep_copy_of_request.pop("TransactionUID", None)
+            deep_copy_of_request.pop("SOPClassUID", None)
+            deep_copy_of_request.pop("AffectedSOPClassUID", None)
             # ProcedureStepProgressInformationSequence
 
-            ds.update(ds_from_request)
+            ds.update(deep_copy_of_request)
             print("Contents of Dataset after update from N-SET:")
             print(ds)
             ds.is_implicit_VR = False
@@ -806,6 +820,7 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
             ds.fix_meta_info()
             dcmwrite(match.filename, ds, write_like_original=False)
             ds.Status = 0xFF00
+            response_ds = ds
         except InvalidDicomError or TypeError as exc:
             logger.error(f"Error reading file: {match.filename}")
             logger.exception(exc)
@@ -816,7 +831,7 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
             yield 0xC421, None
 
         yield 0xFF00
-        yield ds
+        yield response_ds
         return
 
 
