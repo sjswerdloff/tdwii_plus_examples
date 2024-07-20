@@ -82,15 +82,28 @@ class TDD_Widget(QWidget):
         except OSError as config_file_error:
             logging.exception("Problem parsing config file: " + config_file_error)
         self.ups_dataset_dict = dict()
+        try:
+            if "ae_title" in default_dict and "import_staging_directory" in default_dict:
+                self._restart_scp()
+        except Exception:
+            logging.error(
+                "Unable to start SCP for this Emulator, check AE Title in defaults configuration and ApplicationEntities.json"
+            )
 
     @Slot()
     def _get_input_information(self):
+        fallback_retrieve_ae_title = self.ui.qr_ae_line_edit.text()
         for ups_uid, ups_ds in self.ups_dataset_dict.items():
             debug_message = f"Retrieving inputs for UPS with UID: {ups_uid}"
             logging.debug(debug_message)
             # retrieve AE title for OST is embedded in the input information sequence
             # provide the import staging/cache directory so cmove_inputs can skip instances already present.
-            cmove_inputs.cmove_inputs(ups_ds, self.ui.tdd_ae_line_edit.text(), self.ui.import_staging_dir_line_edit.text())
+            cmove_inputs.cmove_inputs(
+                ups_ds,
+                self.ui.tdd_ae_line_edit.text(),
+                self.ui.import_staging_dir_line_edit.text(),
+                fallback_retrieve_ae_title=fallback_retrieve_ae_title,
+            )
 
     @Slot()
     def _get_referenced_rtss_and_volumetric_images(self):

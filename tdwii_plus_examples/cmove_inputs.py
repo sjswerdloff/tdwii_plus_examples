@@ -113,7 +113,7 @@ def cmove_specific_input(
         print("Association rejected, aborted or never connected")
 
 
-def cmove_inputs(ds, local_store_ae_title, cache_dir: Path | str = None):
+def cmove_inputs(ds, local_store_ae_title, cache_dir: Path | str = None, fallback_retrieve_ae_title: str = None):
     """Given a particular UPS C-FIND-RSP, issue a C-MOVE-RQ for the inputs
 
     Args:
@@ -132,8 +132,17 @@ def cmove_inputs(ds, local_store_ae_title, cache_dir: Path | str = None):
         study_uid = iis_item.StudyInstanceUID
         series_uid = iis_item.SeriesInstanceUID
         ref_instance_seq = iis_item.ReferencedSOPSequence
-        dicom_retrieval_seq = iis_item.DICOMRetrievalSequence
-        retrieve_ae_title = dicom_retrieval_seq[0].RetrieveAETitle
+        if "DICOMRetrievalSequence" not in ref_instance_seq:
+            print(f"UPS {ds.SOPInstanceUID} is missing the DICOMRetrieval Sequence")
+            if fallback_retrieve_ae_title is None:
+                continue
+            else:
+                print(f"Using fallback retrieve AE Title: {fallback_retrieve_ae_title}")
+                retrieve_ae_title = fallback_retrieve_ae_title
+        else:
+            dicom_retrieval_seq = ref_instance_seq.DICOMRetrievalSequence
+            retrieve_ae_title = dicom_retrieval_seq[0].RetrieveAETitle
+
         for ref_instance_index in range(len(ref_instance_seq)):
             instance_uid = ref_instance_seq[ref_instance_index].ReferencedSOPInstanceUID
             if str(instance_uid) not in cached_iods:
