@@ -30,6 +30,11 @@
     "Port": 11112
   },
   {
+    "AETitle": "IMS_TNONC_SEQ1",
+    "IPAddr": "127.0.0.1",
+    "Port": 11112
+  },
+  {
     "AETitle": "TMS",
     "IPAddr": "127.0.0.1",
     "Port": 11114

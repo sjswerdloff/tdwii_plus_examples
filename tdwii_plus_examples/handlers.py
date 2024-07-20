@@ -58,7 +58,7 @@ _SERVICE_STATUS = {
 }
 _ups_instances = dict()
 
-_global_subscribers = dict()  # AE Title and delection lock boolean "TRUE" or "FALSE" is the text representation
+_global_subscribers = dict()  # AE Title and delete lock boolean "TRUE" or "FALSE" is the text representation
 _filtered_subscribers = dict()  # AE Title and the Dataset acting as the query filter
 
 REMOTE_AE_CONFIG_FILE = "ApplicationEntities.json"
@@ -143,12 +143,12 @@ def _ups_is_match_for_query(query: Dataset, ups: Dataset) -> bool:
     # (i.e. is this "RT Treatment With Internal Verification")
     """
         (0040,4018) SQ (Sequence with explicit length #=1)      #  82, 1 ScheduledWorkitemCodeSequence
-        (fffe,e000) na (Item with explicit length #=3)          #  74, 1 Item
+        (0xfffe,e000) na (Item with explicit length #=3)          #  74, 1 Item
             (0008,0100) SH [121726]                                 #   6, 1 CodeValue
             (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
             (0008,0104) LO [RT Treatment with Internal Verification] #  40, 1 CodeMeaning
-        (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
-        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0xfffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (0xfffe,e0dd) na (SequenceDelimitationItem for re-encoding) #   0, 0 SequenceDelimitationItem
     """
     return True
 
