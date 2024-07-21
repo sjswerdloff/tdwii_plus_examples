@@ -5,6 +5,7 @@ Used for changing the Procedure Step State, could be made more general to regist
 """
 
 import argparse
+import logging
 import os
 import sys
 from configparser import ConfigParser
@@ -22,7 +23,99 @@ from pynetdicom.sop_class import (  # UnifiedProcedureStepWatch,; UPSFilteredGlo
     UPSGlobalSubscriptionInstance,
 )
 
+from tdwii_plus_examples import tdwii_config
+
 __version__ = "0.1.0"
+
+GLOBAL_SUBSCRIPTION_TYPE: int = 3
+PROCEDURE_STEP_CHANGE_TYPE: int = 1
+
+SCHEDULED: str = "SCHEDULED"
+IN_PROGRESS: str = "IN PROGRESS"
+CANCELED: str = "CANCELED"
+COMPLETED: str = "COMPLETED"
+
+ALLOWED_STEP_STATES = (IN_PROGRESS, CANCELED, COMPLETED)
+
+
+class NActionSCU:
+    def __init__(
+        self,
+        calling_ae_title: str,
+        called_ae_title: str,
+        receiving_ae_title: str = None,
+    ):
+        self.calling_ae_title = calling_ae_title
+        self.called_ae_title = called_ae_title
+        if receiving_ae_title is None:
+            self.receiving_ae_title = self.calling_ae_title
+        else:
+            self.receiving_ae_title = receiving_ae_title
+        self.transaction_uid = generate_uid()
+
+    def current_transaction_uid(self) -> UID:
+        return self.transaction_uid
+
+    def send_action(
+        self, action_info_ds: Dataset, action_type: int, called_ae_title: str = ""
+    ) -> Tuple[Dataset, Optional[Dataset]] | None:
+        ae = AE(ae_title=self.calling_ae_title)
+
+        if len(called_ae_title) == 0:
+            called_ae_title = self.called_ae_title
+
+        assert called_ae_title is not None
+
+        addr = tdwii_config.known_ae_ipaddr[called_ae_title]
+        port = tdwii_config.known_ae_port[called_ae_title]
+
+        assoc = ae.associate(
+            addr,
+            port,
+            contexts=UnifiedProcedurePresentationContexts,
+            ae_title=called_ae_title,
+        )
+        result = None
+        if assoc.is_established:
+            try:
+                result = send_action(
+                    assoc=assoc,
+                    class_uid=action_info_ds.RequestedSOPClassUID,
+                    instance_uid=action_info_ds.RequestedSOPInstanceUID,
+                    action_type=action_type,
+                    action_info=action_info_ds,
+                )
+                # status_dataset, response = send_procedure_step_state_change(assoc, requested_state, args.ups_uid, transaction_uid)
+                # print(f"Status Code: 0x{status_dataset.Status:X}")
+            except InvalidDicomError:
+                error_message = f"Error performing send_action to {called_ae_title}"
+                logging.error(error_message)
+        else:
+            error_message = f"Unable to form association with {called_ae_title}"
+            logging.error(error_message)
+
+        assoc.release()
+        return result
+
+    def send_procedure_step_state_change(self, new_state: str, ups_uid: UID | str) -> Tuple[Dataset, Optional[Dataset]]:
+        ds = Dataset()
+        ds.RequestedSOPInstanceUID = ups_uid
+        ds.RequestedSOPClassUID = UnifiedProcedureStepPush
+        ds.TransactionUID = self.transaction_uid
+        ds.ProcedureStepState = new_state
+        result = self.send_action(ds, PROCEDURE_STEP_CHANGE_TYPE)
+        return result
+
+    def send_global_watch_registration(self, action_info: Dataset = None):
+        ds = action_info
+        if ds is None:
+            ds = Dataset()
+            ds.DeletionLock = "FALSE"
+            ds.RequestingAE = self.calling_ae_title
+            ds.ReceivingAE = self.receiving_ae_title
+            ds.RequestedSOPInstanceUID = UPSGlobalSubscriptionInstance
+            ds.RequestedSOPClassUID = UnifiedProcedureStepPush
+        return self.send_action(action_info=ds, action_type=GLOBAL_SUBSCRIPTION_TYPE)
 
 
 def send_action(
@@ -72,7 +165,7 @@ def send_global_watch_registration(args: argparse.Namespace, assoc: Association,
 
     Args:
         args (argparse.Namespace): _description_
-        assoc (Assocation): _description_
+        assoc (Association): _description_
         action_info (Dataset, optional): _description_. Defaults to None.
 
     Returns:

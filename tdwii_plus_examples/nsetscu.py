@@ -52,6 +52,8 @@ class NSetSCU:
         )
         success = False
         if assoc.is_established:
+            info_message = f"Association established with {dest_ae_title}"
+            logging.info(info_message)
             msg_id = 0
             success = True
             ups_responses = list()
@@ -76,6 +78,8 @@ class NSetSCU:
                     logging.error(error_msg)
 
             assoc.release()
+            info_message = f"Released association with {receiving_ae_title}"
+            logging.info(info_message)
         return success, ups_responses
 
 

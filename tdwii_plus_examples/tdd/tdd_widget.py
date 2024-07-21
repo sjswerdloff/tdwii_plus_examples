@@ -2,12 +2,14 @@
 # This Python file uses the following encoding: utf-8
 import logging
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 import tomli
-from pydicom import DataElement, Dataset, dcmread, uid
+from pydicom import DataElement, Dataset, Sequence, dcmread, uid
 from pydicom.valuerep import VR
 from pynetdicom.presentation import build_context
+from pynetdicom.sop_class import UnifiedProcedureStepPush
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import (
     QApplication,
@@ -18,6 +20,8 @@ from PySide6.QtWidgets import (
 )
 
 from tdwii_plus_examples import cmove_inputs, tdwii_config
+from tdwii_plus_examples.nactionscu import CANCELED, COMPLETED, IN_PROGRESS, NActionSCU
+from tdwii_plus_examples.nsetscu import NSetSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -45,6 +49,8 @@ class TDD_Widget(QWidget):
         self.ui.push_button_get_ups.clicked.connect(self._get_ups)
         self.ui.get_listed_inputs_push_button.clicked.connect(self._get_input_information)
         self.ui.get_rtss_and_ct_push_button.clicked.connect(self._get_referenced_rtss_and_volumetric_images)
+        self.ui.in_progress_button.clicked.connect(self._start_procedure)
+        self.ui.update_progress_button.clicked.connect(self._send_beam_and_session_percentage_update)
         self.ui.ups_response_tree_widget.setColumnCount(5)
         self.tdd_scp = None
         self.ui.soonest_date_time_edit.setDateTime(QDateTime.currentDateTime().addSecs(-3600))
@@ -89,6 +95,79 @@ class TDD_Widget(QWidget):
             logging.error(
                 "Unable to start SCP for this Emulator, check AE Title in defaults configuration and ApplicationEntities.json"
             )
+        self.current_transaction_uid = None
+
+    @Slot()
+    def _start_procedure(self):
+        my_ae_title = self.ui.tdd_ae_line_edit.text()
+        tms_ae_title = self.ui.ups_ae_line_edit.text()
+        naction_scu = NActionSCU(calling_ae_title=my_ae_title, called_ae_title=tms_ae_title)
+        ups_uid = self._get_currently_selected_ups_uid()
+        if self.current_transaction_uid is not None:
+            logging.warning(
+                "There is a Transaction UID in use, starting multiple procedures in parallel with the TMS is not typical behavior"
+            )
+        naction_scu.send_procedure_step_state_change(IN_PROGRESS, ups_uid=ups_uid)
+        self.current_transaction_uid = naction_scu.current_transaction_uid()
+        self.ui.transaction_uid_line_edit.setText(str(self.current_transaction_uid))
+
+    def _get_currently_selected_ups_uid(self) -> uid.UID | None:
+        current_item = self.ui.ups_response_tree_widget.currentItem()
+        while type(current_item.parent) is QTreeWidgetItem:
+            current_item = current_item.parent
+
+        for child_index in range(current_item.childCount()):
+            child = current_item.child(child_index)
+            keyword = child.text(4)
+            value = child.text(2)
+            if keyword == "SOPInstanceUID":
+                break
+        if keyword != "SOPInstanceUID":
+            logging.error("Unable to find SOP Instance UID")
+            return
+        ups_uid = value
+        return ups_uid
+
+    @Slot()
+    def _send_beam_and_session_percentage_update(self):
+        my_ae_title = self.ui.tdd_ae_line_edit.text()
+        tms_ae_title = self.ui.ups_ae_line_edit.text()
+        n_set_scu = NSetSCU(sending_ae_title=my_ae_title, receiving_ae_title=tms_ae_title)
+        beam_number = self.ui.beam_number_spin_box.text()
+        percent_complete = self.ui.session_percent_spin_box.text()
+        ups_uid = self._get_currently_selected_ups_uid()
+        transaction_uid = self.current_transaction_uid
+        ds = Dataset()
+        ds.AffectedSOPInstanceUID = ups_uid
+        ds.AffectedSOPClassUID = UnifiedProcedureStepPush
+        ds.TransactionUID = transaction_uid
+        ds.RequestedSOPClassUID = UnifiedProcedureStepPush
+        ds.RequestedSOPInstanceUID = ups_uid
+        update_ds = Dataset()
+
+        update_ds.ProcedureStepProgressInformationSequence = Sequence()
+        info_seq_item = Dataset()
+        info_seq_item.ProcedureStepProgress = str(percent_complete)
+        update_ds.ProcedureStepProgressInformationSequence.append(info_seq_item)
+
+        info_seq_item.ProcedureStepProgressParametersSequence = Sequence()
+        beam_number_code_sequence = create_code_seq_item(
+            value="2018004", designator="99IHERO2018", meaning="Referenced Beam Number"
+        )
+        parameters_sequence_item = create_ups_content_item(
+            value_type="NUMERIC", value=beam_number, code_seq_item=beam_number_code_sequence
+        )
+        info_seq_item.ProcedureStepProgressParametersSequence.append(parameters_sequence_item)
+
+        UPSPerformedProcedureSequence = Sequence()
+        update_ds.UnifiedProcedureStepPerformedProcedureSequence = UPSPerformedProcedureSequence
+        perf_pro_seq_item = Dataset()
+        update_ds.UnifiedProcedureStepPerformedProcedureSequence.append(perf_pro_seq_item)
+        perf_pro_seq_item.OutputInformationSequence = Sequence()
+        ds.update(update_ds)
+        status, ups_responses = n_set_scu.n_set_ups(n_set_ds=ds, receiving_ae_title=tms_ae_title)
+        logging.info(str(status))
+        logging.info(str(ups_responses))
 
     @Slot()
     def _get_input_information(self):
@@ -452,6 +531,33 @@ def study_uid_for_series_from_common_instance_reference(iod_ds: Dataset, series_
                 other_study_uid = other_study.StudyInstanceUID
                 return other_study_uid
     return None
+
+
+def create_code_seq_item(value: str | int, designator: str, meaning: str) -> Dataset:
+    code_seq_item = Dataset()
+    code_seq_item.CodeValue = value
+    code_seq_item.CodingSchemeDesignator = designator
+    code_seq_item.CodeMeaning = meaning
+    return code_seq_item
+
+
+def create_ups_content_item(value_type: str, value: any, code_seq_item: Dataset) -> Dataset:
+    content_item = Dataset()
+    content_item.ValueType = value_type
+    if value_type == "TEXT":
+        content_item.TextValue = str(value)
+    elif value_type == "NUMERIC":
+        content_item.MeasurementUnitsCodeSequence = Sequence([measurement_units_code_seq_item_no_units()])
+        content_item.ConceptNameCodeSequence = Sequence([code_seq_item])
+        content_item.NumericValue = value
+    else:
+        raise ValueError(f"Value Type {value_type} not supported")
+    return content_item
+
+
+@lru_cache
+def measurement_units_code_seq_item_no_units() -> Dataset:
+    return create_code_seq_item("1", "UCUM", "no units")
 
 
 if __name__ == "__main__":
