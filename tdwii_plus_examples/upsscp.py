@@ -40,7 +40,7 @@ def _dont_log(event):
     pass
 
 
-_handlers._send_c_find_rsp = _dont_log
+# _handlers._send_c_find_rsp = _dont_log
 _handlers._send_c_get_rsp = _dont_log
 _handlers._send_c_move_rsp = _dont_log
 _handlers._send_c_store_rq = _dont_log
