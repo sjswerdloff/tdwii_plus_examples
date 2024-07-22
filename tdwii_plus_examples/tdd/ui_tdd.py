@@ -69,7 +69,7 @@ class Ui_MainTDDWidget(object):
     def setupUi(self, MainTDDWidget):
         if not MainTDDWidget.objectName():
             MainTDDWidget.setObjectName("MainTDDWidget")
-        MainTDDWidget.resize(978, 804)
+        MainTDDWidget.resize(978, 880)
         self.formLayout = QFormLayout(MainTDDWidget)
         self.formLayout.setObjectName("formLayout")
         self.group_box_aes_and_machine = QGroupBox(MainTDDWidget)
@@ -240,7 +240,7 @@ class Ui_MainTDDWidget(object):
         self.scrollArea.setAlignment(Qt.AlignCenter)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 706, 177))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 706, 238))
         self.horizontalLayout_2 = QHBoxLayout(self.scrollAreaWidgetContents)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.ups_response_tree_widget = QTreeWidget(self.scrollAreaWidgetContents)
@@ -302,20 +302,10 @@ class Ui_MainTDDWidget(object):
 
         self.gridLayout_3.addWidget(self.session_percent_spin_box, 2, 1, 1, 1)
 
-        self.update_progress_button = QPushButton(self.groupBox_3)
-        self.update_progress_button.setObjectName("update_progress_button")
-
-        self.gridLayout_3.addWidget(self.update_progress_button, 3, 0, 1, 1)
-
         self.final_update_button = QPushButton(self.groupBox_3)
         self.final_update_button.setObjectName("final_update_button")
 
         self.gridLayout_3.addWidget(self.final_update_button, 4, 0, 1, 1)
-
-        self.send_tx_record_button = QPushButton(self.groupBox_3)
-        self.send_tx_record_button.setObjectName("send_tx_record_button")
-
-        self.gridLayout_3.addWidget(self.send_tx_record_button, 4, 1, 1, 1)
 
         self.cancel_procedure_button = QPushButton(self.groupBox_3)
         self.cancel_procedure_button.setObjectName("cancel_procedure_button")
@@ -326,6 +316,11 @@ class Ui_MainTDDWidget(object):
         self.complete_procedure_button.setObjectName("complete_procedure_button")
 
         self.gridLayout_3.addWidget(self.complete_procedure_button, 5, 1, 1, 1)
+
+        self.send_tx_record_button = QPushButton(self.groupBox_3)
+        self.send_tx_record_button.setObjectName("send_tx_record_button")
+
+        self.gridLayout_3.addWidget(self.send_tx_record_button, 3, 1, 1, 1)
 
         self.formLayout.setWidget(5, QFormLayout.SpanningRole, self.groupBox_3)
 
@@ -384,10 +379,9 @@ class Ui_MainTDDWidget(object):
         self.in_progress_button.setText(QCoreApplication.translate("MainTDDWidget", "Start Procedure", None))
         self.beam_number_label.setText(QCoreApplication.translate("MainTDDWidget", "Beam Number", None))
         self.session_percent_label.setText(QCoreApplication.translate("MainTDDWidget", "Session Percent Complete", None))
-        self.update_progress_button.setText(QCoreApplication.translate("MainTDDWidget", "Update", None))
         self.final_update_button.setText(QCoreApplication.translate("MainTDDWidget", "Finish", None))
-        self.send_tx_record_button.setText(QCoreApplication.translate("MainTDDWidget", "Send Tx Record", None))
         self.cancel_procedure_button.setText(QCoreApplication.translate("MainTDDWidget", "Cancel", None))
         self.complete_procedure_button.setText(QCoreApplication.translate("MainTDDWidget", "Complete", None))
+        self.send_tx_record_button.setText(QCoreApplication.translate("MainTDDWidget", "Send Tx Record", None))
 
     # retranslateUi

@@ -50,7 +50,9 @@ class TDD_Widget(QWidget):
         self.ui.get_listed_inputs_push_button.clicked.connect(self._get_input_information)
         self.ui.get_rtss_and_ct_push_button.clicked.connect(self._get_referenced_rtss_and_volumetric_images)
         self.ui.in_progress_button.clicked.connect(self._start_procedure)
-        self.ui.update_progress_button.clicked.connect(self._send_beam_and_session_percentage_update)
+
+        self.ui.beam_number_spin_box.valueChanged.connect(self._send_beam_and_session_percentage_update)
+        self.ui.session_percent_spin_box.valueChanged.connect(self._send_beam_and_session_percentage_update)
         self.ui.ups_response_tree_widget.setColumnCount(5)
         self.tdd_scp = None
         self.ui.soonest_date_time_edit.setDateTime(QDateTime.currentDateTime().addSecs(-3600))

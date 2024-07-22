@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>978</width>
-    <height>804</height>
+    <height>880</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -259,7 +259,7 @@
            <x>0</x>
            <y>0</y>
            <width>706</width>
-           <height>177</height>
+           <height>238</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -374,24 +374,10 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QPushButton" name="update_progress_button">
-        <property name="text">
-         <string>Update</string>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="0">
        <widget class="QPushButton" name="final_update_button">
         <property name="text">
          <string>Finish</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QPushButton" name="send_tx_record_button">
-        <property name="text">
-         <string>Send Tx Record</string>
         </property>
        </widget>
       </item>
@@ -406,6 +392,13 @@
        <widget class="QPushButton" name="complete_procedure_button">
         <property name="text">
          <string>Complete</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="send_tx_record_button">
+        <property name="text">
+         <string>Send Tx Record</string>
         </property>
        </widget>
       </item>
