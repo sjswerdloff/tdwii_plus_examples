@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # This Python file uses the following encoding: utf-8
+import copy
 import logging
 import sys
 from functools import lru_cache
 from pathlib import Path
+from typing import Dict, List
 
 import tomli
 from pydicom import DataElement, Dataset, Sequence, dcmread, uid
@@ -14,6 +16,7 @@ from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-mod
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
+    QMessageBox,
     QTreeWidget,
     QTreeWidgetItem,
     QWidget,
@@ -22,6 +25,7 @@ from PySide6.QtWidgets import (
 from tdwii_plus_examples import cmove_inputs, tdwii_config
 from tdwii_plus_examples.nactionscu import CANCELED, COMPLETED, IN_PROGRESS, NActionSCU
 from tdwii_plus_examples.nsetscu import NSetSCU
+from tdwii_plus_examples.rtbdi_creator.storescu import StoreSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -50,9 +54,13 @@ class TDD_Widget(QWidget):
         self.ui.get_listed_inputs_push_button.clicked.connect(self._get_input_information)
         self.ui.get_rtss_and_ct_push_button.clicked.connect(self._get_referenced_rtss_and_volumetric_images)
         self.ui.in_progress_button.clicked.connect(self._start_procedure)
-
         self.ui.beam_number_spin_box.valueChanged.connect(self._send_beam_and_session_percentage_update)
         self.ui.session_percent_spin_box.valueChanged.connect(self._send_beam_and_session_percentage_update)
+        self.ui.send_tx_record_button.clicked.connect(self._send_treatment_records)
+        self.ui.final_update_button.clicked.connect(self._final_update)
+        self.ui.cancel_procedure_button.clicked.connect(self._cancel_procedure)
+        self.ui.complete_procedure_button.clicked.connect(self._complete_procedure)
+
         self.ui.ups_response_tree_widget.setColumnCount(5)
         self.tdd_scp = None
         self.ui.soonest_date_time_edit.setDateTime(QDateTime.currentDateTime().addSecs(-3600))
@@ -89,7 +97,7 @@ class TDD_Widget(QWidget):
                 logging.warning(warning_msg)
         except OSError as config_file_error:
             logging.exception("Problem parsing config file: " + config_file_error)
-        self.ups_dataset_dict = dict()
+        self.ups_dataset_dict: Dict[str, Dataset] = dict()
         try:
             if "ae_title" in default_dict and "import_staging_directory" in default_dict:
                 self._restart_scp()
@@ -98,9 +106,11 @@ class TDD_Widget(QWidget):
                 "Unable to start SCP for this Emulator, check AE Title in defaults configuration and ApplicationEntities.json"
             )
         self.current_transaction_uid = None
+        self.clearing_flag = False
 
     @Slot()
     def _start_procedure(self):
+        self.clearing_flag = False
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         tms_ae_title = self.ui.ups_ae_line_edit.text()
         naction_scu = NActionSCU(calling_ae_title=my_ae_title, called_ae_title=tms_ae_title)
@@ -112,6 +122,46 @@ class TDD_Widget(QWidget):
         naction_scu.send_procedure_step_state_change(IN_PROGRESS, ups_uid=ups_uid)
         self.current_transaction_uid = naction_scu.current_transaction_uid()
         self.ui.transaction_uid_line_edit.setText(str(self.current_transaction_uid))
+        self._send_beam_and_session_percentage_update()  # need to send first beam and 0% progress
+
+    @Slot()
+    def _cancel_procedure(self):
+        my_ae_title = self.ui.tdd_ae_line_edit.text()
+        tms_ae_title = self.ui.ups_ae_line_edit.text()
+        naction_scu = NActionSCU(
+            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, transaction_uid=self.current_transaction_uid
+        )
+        # naction_scu.transaction_uid = self.current_transaction_uid
+        ups_uid = self._get_currently_selected_ups_uid()
+        if self.current_transaction_uid is None:
+            logging.warning("There is no Transaction UID in use, unable to cancel")
+            return
+        naction_scu.send_procedure_step_state_change(CANCELED, ups_uid=ups_uid)
+        self.current_transaction_uid = None
+        self.ui.transaction_uid_line_edit.setText("")
+        self.clearing_flag = True
+        self.ui.session_percent_spin_box.setValue(0)
+        self.ui.beam_number_spin_box.setValue(1)
+
+    @Slot()
+    def _complete_procedure(self):
+        my_ae_title = self.ui.tdd_ae_line_edit.text()
+        tms_ae_title = self.ui.ups_ae_line_edit.text()
+        naction_scu = NActionSCU(
+            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, transaction_uid=self.current_transaction_uid
+        )
+
+        # naction_scu.current_transaction_uid = self.current_transaction_uid
+        ups_uid = self._get_currently_selected_ups_uid()
+        if self.current_transaction_uid is None:
+            logging.warning("There is no Transaction UID in use, unable to complete")
+            return
+        naction_scu.send_procedure_step_state_change(COMPLETED, ups_uid=ups_uid)
+        self.current_transaction_uid = None
+        self.ui.transaction_uid_line_edit.setText("")
+        self.clearing_flag = True
+        self.ui.session_percent_spin_box.setValue(0)
+        self.ui.beam_number_spin_box.setValue(1)
 
     def _get_currently_selected_ups_uid(self) -> uid.UID | None:
         current_item = self.ui.ups_response_tree_widget.currentItem()
@@ -134,14 +184,17 @@ class TDD_Widget(QWidget):
     def _send_beam_and_session_percentage_update(self):
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         tms_ae_title = self.ui.ups_ae_line_edit.text()
-        n_set_scu = NSetSCU(sending_ae_title=my_ae_title, receiving_ae_title=tms_ae_title)
         beam_number = self.ui.beam_number_spin_box.text()
         percent_complete = self.ui.session_percent_spin_box.text()
+        if self.clearing_flag:
+            return  # it was a reset/clear from cancel or complete.  Don't try to do an N-SET, it's no longer IN PROGRESS
+        n_set_scu = NSetSCU(sending_ae_title=my_ae_title, receiving_ae_title=tms_ae_title)
+
         ups_uid = self._get_currently_selected_ups_uid()
         transaction_uid = self.current_transaction_uid
         ds = Dataset()
-        ds.AffectedSOPInstanceUID = ups_uid
-        ds.AffectedSOPClassUID = UnifiedProcedureStepPush
+        # ds.AffectedSOPInstanceUID = ups_uid
+        # ds.AffectedSOPClassUID = UnifiedProcedureStepPush
         ds.TransactionUID = transaction_uid
         ds.RequestedSOPClassUID = UnifiedProcedureStepPush
         ds.RequestedSOPInstanceUID = ups_uid
@@ -167,6 +220,9 @@ class TDD_Widget(QWidget):
         update_ds.UnifiedProcedureStepPerformedProcedureSequence.append(perf_pro_seq_item)
         perf_pro_seq_item.OutputInformationSequence = Sequence()
         ds.update(update_ds)
+
+        ups_ds = self.ups_dataset_dict[ups_uid]
+        ups_ds.update(ds)  # include UnifiedProcedureStepPerformedProcedureSequence. Needed for final update
         status, ups_responses = n_set_scu.n_set_ups(n_set_ds=ds, receiving_ae_title=tms_ae_title)
         logging.info(str(status))
         logging.info(str(ups_responses))
@@ -489,6 +545,145 @@ class TDD_Widget(QWidget):
                     seq_child_item.setText(4, elem.keyword)
                     self._populate_tree_widget_item_from_dataset(seq_child_item, seq_item)
 
+    def _validate_treatment_records(self, treatment_record_ds_list) -> bool:
+        """Confirms that the treatment records reference the plan
+        and are for the correct fraction  number.  Modifies the input list
+        by removing an invalid treatment records.  Presents a Message to the user
+        if any of the treatment records aren't valid.
+
+        Args:
+            treatment_record_ds_list (_type_): _description_
+        """
+        mismatched_records = []
+
+        ups_uid = self._get_currently_selected_ups_uid()
+        ups_ds = self.ups_dataset_dict[ups_uid]
+        sop_reference_dict = sop_references_in_input_info(ups_ds)
+        if uid.RTIonPlanStorage in sop_reference_dict:
+            plan_uid = sop_reference_dict[uid.RTIonPlanStorage]
+        elif uid.RTPlanStorage in sop_reference_dict:
+            plan_uid = sop_reference_dict[uid.RTPlanStorage]
+        if uid.RTBeamsDeliveryInstructionStorage in sop_reference_dict:
+            rtbdi_uid = sop_reference_dict[uid.RTBeamsDeliveryInstructionStorage]
+
+        bdi_ds = ds_from_staging_directory(rtbdi_uid, self.ui.import_staging_dir_line_edit.text())
+        plan_ds = ds_from_staging_directory(plan_uid, self.ui.import_staging_dir_line_edit.text())
+
+        if len(treatment_record_ds_list) != 0:
+            for tx_record_ds in treatment_record_ds_list:
+                if not is_tx_record_for_plan(tx_record_ds, plan_ds):
+                    treatment_record_ds_list.remove(tx_record_ds)
+                    mismatched_records.append(tx_record_ds.SOPInstanceUID)
+                else:
+                    if not is_tx_record_for_bdi(tx_record_ds, bdi_ds):
+                        treatment_record_ds_list.remove(tx_record_ds)
+                        mismatched_records.append(tx_record_ds.SOPInstanceUID)
+
+        if len(mismatched_records) != 0:
+            QMessageBox.show("<br>".join(mismatched_records))
+        return len(mismatched_records) == 0
+
+    def _get_treatment_record_datasets(self) -> List[Dataset]:
+        treatment_record_paths = []
+        treatment_record_paths, ok = QFileDialog.getOpenFileNames(
+            parent=self,
+            caption="Treatment Records",
+            filter="*.dcm",
+        )
+        if not ok:
+            return []
+        treatment_record_ds_list = load_treatment_records(treatment_record_paths)
+        valid_records = self._validate_treatment_records(treatment_record_ds_list)
+        if not valid_records:
+            treatment_record_paths = []
+            treatment_record_ds_list = []
+        return treatment_record_ds_list
+
+    def _send_treatment_records(self):
+        tx_record_ds_list = self._get_treatment_record_datasets()
+        my_ae_title = self.ui.tdd_ae_line_edit.text()
+        object_store_ae_title = self.ui.qr_ae_line_edit.text()
+        if len(tx_record_ds_list) > 0:
+            store_scu = StoreSCU(my_ae_title, object_store_ae_title)
+            store_scu.store(tx_record_ds_list)
+
+        # Still the need the OutputInformationSequence even if there's no treatment records
+        #  The Final Update can send an *empty* OutputInformationSequence, but the sequence and element
+        #  hierarchy needs to be there.
+        ups_uid = self._get_currently_selected_ups_uid()
+        ups_ds = self.ups_dataset_dict[ups_uid]
+        if "UnifiedProcedureStepPerformedProcedureSequence" not in ups_ds:
+            ups_ds.UnifiedProcedureStepPerformedProcedureSequence = Sequence()
+            performed_procedure_sequence = Dataset()
+            ups_ds.UnifiedProcedureStepPerformedProcedureSequence.append(performed_procedure_sequence)
+        if "OutputInformationSequence" not in ups_ds.UnifiedProcedureStepPerformedProcedureSequence[0]:
+            ups_ds.UnifiedProcedureStepPerformedProcedureSequence[0].OutputInformationSequence = Sequence()
+        output_info_seq = ups_ds.UnifiedProcedureStepPerformedProcedureSequence[0].OutputInformationSequence
+        for tx_record_ds in tx_record_ds_list:
+            tx_record_uid = tx_record_ds.SOPInstanceUID
+            list_of_existing_references_to_same_tx_record = []
+            try:
+                list_of_existing_references_to_same_tx_record = [
+                    x for x in output_info_seq if x.ReferencedSOPSequence[0].SOPInstanceUID == tx_record_uid
+                ]
+            except AttributeError | IndexError:
+                pass
+
+            if not len(list_of_existing_references_to_same_tx_record):
+                output_info_seq_item = Dataset()
+                output_info_seq_item.StudyInstanceUID = tx_record_ds.StudyInstanceUID
+                output_info_seq_item.SeriesInstanceUID = tx_record_ds.SeriesInstanceUID
+                output_info_seq_item.ReferencedSOPSequence = Sequence()
+                output_info_seq_item.ReferencedSOPSequence[0] = Dataset()
+                output_info_seq_item.ReferencedSOPSequence[0].SOPClassUID = tx_record_ds.SOPClassUID
+                output_info_seq_item.ReferencedSOPSequence[0].SOPInstanceUID = tx_record_ds.SOPInstanceUID
+                output_info_seq_item.TypeOfInstances = "DICOM"
+                dicom_retrieval_sequence_item = Dataset()
+                dicom_retrieval_sequence_item.RetrieveAETitle = object_store_ae_title
+                output_info_seq_item.DICOMRetrievalSequence = Sequence()
+                output_info_seq_item.DICOMRetrievalSequence.append(dicom_retrieval_sequence_item)
+                output_info_seq.append(output_info_seq_item)
+
+        return
+
+    def _final_update(self):
+        my_ae_title = self.ui.tdd_ae_line_edit.text()
+        tms_ae_title = self.ui.ups_ae_line_edit.text()
+        transaction_uid = self.current_transaction_uid
+        n_set_scu = NSetSCU(sending_ae_title=my_ae_title, receiving_ae_title=tms_ae_title)
+        ups_uid = self._get_currently_selected_ups_uid()
+        ups_ds = self.ups_dataset_dict[ups_uid]
+        ds = Dataset()
+        # ds.AffectedSOPInstanceUID = ups_uid
+        # ds.AffectedSOPClassUID = UnifiedProcedureStepPush
+        ds.TransactionUID = transaction_uid
+        ds.RequestedSOPClassUID = UnifiedProcedureStepPush
+        ds.RequestedSOPInstanceUID = ups_uid
+        update_ds = Dataset()
+
+        update_ds.ProcedureStepProgressInformationSequence = Sequence()
+        info_seq_item = Dataset()
+        info_seq_item.ProcedureStepProgress = str(100)
+        update_ds.ProcedureStepProgressInformationSequence.append(info_seq_item)
+
+        UPSPerformedProcedureSequence = Sequence()
+        update_ds.UnifiedProcedureStepPerformedProcedureSequence = UPSPerformedProcedureSequence
+        perf_pro_seq_item = Dataset()
+        update_ds.UnifiedProcedureStepPerformedProcedureSequence.append(perf_pro_seq_item)
+        if "UnifiedProcedureStepPerformedProcedureSequence" not in ups_ds:
+            ups_ds.UnifiedProcedureStepPerformedProcedureSequence = Sequence()
+        if len(ups_ds.UnifiedProcedureStepPerformedProcedureSequence) == 0:
+            perf_pro_seq_item.OutputInformationSequence = Sequence()
+        else:
+            perf_pro_seq_item.OutputInformationSequence = ups_ds.UnifiedProcedureStepPerformedProcedureSequence[
+                0
+            ].OutputInformationSequence
+        ds.update(update_ds)
+
+        n_set_scu.n_set_ups(ds)
+
+        return
+
 
 def iod_in_staging_directory(sop_instance_uid: str, staging_directory: Path | str) -> bool:
     """Search the staging directory for a file that matches the SOP Instance UID
@@ -507,6 +702,26 @@ def iod_in_staging_directory(sop_instance_uid: str, staging_directory: Path | st
     if found_instances is not None and len(found_instances) > 0:
         return True
     return False
+
+
+def ds_from_staging_directory(sop_instance_uid: str, staging_directory: Path | str) -> Dataset | None:
+    """Search the staging directory for a file that matches the SOP Instance UID
+    Will do a recursive search.
+
+    Args:
+        sop_instance_uid (str): _description_
+        staging_directory (Path | str): _description_
+
+    Returns:
+        bool: _description_
+    """
+    search_path = Path(staging_directory)
+    search_pattern = f"**/*.{sop_instance_uid}.dcm"
+    found_instances = list(search_path.glob(search_pattern))
+    if found_instances is not None and len(found_instances) > 0:
+        return dcmread(found_instances[0], force=True)
+    else:
+        return None
 
 
 def sop_references_in_input_info(ups_ds: Dataset) -> dict[uid.UID | str, uid.UID | str]:
@@ -560,6 +775,59 @@ def create_ups_content_item(value_type: str, value: any, code_seq_item: Dataset)
 @lru_cache
 def measurement_units_code_seq_item_no_units() -> Dataset:
     return create_code_seq_item("1", "UCUM", "no units")
+
+
+def load_treatment_records(treatment_record_paths: List[Path]) -> List[Dataset]:
+    tx_rec_ds_list = [dcmread(x, force=True) for x in treatment_record_paths]
+    return tx_rec_ds_list
+
+
+def is_tx_record_for_plan(tx_rec_ds: Dataset, plan: Dataset) -> bool:
+    try:
+        is_ion_tx_rec = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
+        if tx_rec_ds.ReferencedRTPlanSequence[0].ReferencedSOPInstanceUID != plan.SOPInstanceUID:
+            return False
+        else:
+            if is_ion_tx_rec:
+                if plan.SOPClassUID != uid.RTIonPlanStorage:
+                    return False
+                planned_beam_numbers = [x.BeamNumber for x in plan.IonBeamSequence]
+                for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
+                    referenced_beam_number = tx_session.ReferencedBeamNumber
+                    if referenced_beam_number not in planned_beam_numbers:
+                        return False
+            else:
+                if plan.SOPClassUID != uid.RTPlanStorage:
+                    return False
+                planned_beam_numbers = [x.BeamNumber for x in plan.BeamSequence]
+                for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
+                    referenced_beam_number = tx_session.ReferencedBeamNumber
+                    if referenced_beam_number not in planned_beam_numbers:
+                        return False
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+
+def is_tx_record_for_bdi(tx_rec_ds: Dataset, bdi: Dataset) -> bool:
+    try:
+        is_ion_tx_rec = tx_rec_ds.SOPClassUID == uid.RTIonBeamsTreatmentRecordStorage
+        bdi_current_fraction_list = [x.CurrentFractionNumber for x in bdi.BeamTaskSequence]
+        if is_ion_tx_rec:
+            for tx_session in tx_rec_ds.TreatmentSessionIonBeamSequence:
+                current_fraction_number = tx_session.CurrentFractionNumber
+                if current_fraction_number not in bdi_current_fraction_list:
+                    return False
+        else:
+            for tx_session in tx_rec_ds.TreatmentSessionBeamSequence:
+                current_fraction_number = tx_session.CurrentFractionNumber
+                if current_fraction_number not in bdi_current_fraction_list:
+                    return False
+        return True
+    except Exception as error:
+        print(error)
+        return False
 
 
 if __name__ == "__main__":

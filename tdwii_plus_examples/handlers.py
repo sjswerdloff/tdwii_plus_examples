@@ -15,6 +15,7 @@ from pydicom import Dataset, dcmread, dcmwrite
 
 # from pydicom.dataset import FileMetaDataset
 from pydicom.errors import InvalidDicomError
+from pydicom.uid import ExplicitVRLittleEndian
 from pynetdicom import AE, UnifiedProcedurePresentationContexts
 from pynetdicom.dsutils import decode
 from pynetdicom.sop_class import (
@@ -561,6 +562,17 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 stored_transaction_uid = match.transaction_uid
                 service_status = _SERVICE_STATUS[current_step_state][requested_step_state]
 
+                if transaction_uid is None and current_step_state != "SCHEDULED":
+                    logging.error("Transaction UID is None, and current step state is not SCHEDULED")
+                elif len(transaction_uid) == 0 and current_step_state != "SCHEDULED":
+                    logging.error("Transaction UID is zero length, and current step state is not SCHEDULED")
+                elif current_step_state != "SCHEDULED" and str(transaction_uid) != str(stored_transaction_uid):
+                    logging.error("Current Step state is not SCHEDULED, but transaction uids don't match")
+                    error_message = (
+                        f"Provided Transaction UID {transaction_uid}, vs. Stored Transaction UID {stored_transaction_uid}"
+                    )
+                    logging.error(error_message)
+
                 if (
                     (transaction_uid is None)
                     or (len(transaction_uid) == 0)  # noqa: W503,W504
@@ -730,7 +742,7 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
         return
     else:
         # the internal search needs to match on SOP Instance UID
-        ds_from_request.SOPInstanceUID = event.request.AffectedSOPInstanceUID
+        ds_from_request.SOPInstanceUID = event.request.RequestedSOPInstanceUID
 
     engine = create_engine(db_path)
     with engine.connect() as conn:  # noqa:  F841
@@ -817,6 +829,7 @@ def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config,
             print(ds)
             ds.is_implicit_VR = False
             ds.ensure_file_meta()
+            ds.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
             ds.fix_meta_info()
             dcmwrite(match.filename, ds, write_like_original=False)
             ds.Status = 0xFF00
@@ -910,7 +923,11 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     # file_meta.is_little_endian = True
     # ds.file_meta = file_meta
     ds.is_little_endian = True
-    ds.is_implicit_VR = True
+    ds.is_implicit_VR = False  # need this for reading in later on.
+
+    ds.ensure_file_meta()
+    ds.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+    ds.fix_meta_info()
     logger.info(f"SOP Instance UID '{sop_instance}'")
 
     # Try and add the instance to the database
@@ -921,7 +938,7 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
         logger.warning("Instance already exists in storage directory, overwriting")
 
     try:
-        ds.save_as(fpath, write_like_original=True)
+        ds.save_as(fpath, write_like_original=False)
     except Exception as exc:
         logger.error("Failed writing instance to storage directory")
         logger.exception(exc)

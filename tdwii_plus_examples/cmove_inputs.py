@@ -132,7 +132,7 @@ def cmove_inputs(ds, local_store_ae_title, cache_dir: Path | str = None, fallbac
         study_uid = iis_item.StudyInstanceUID
         series_uid = iis_item.SeriesInstanceUID
         ref_instance_seq = iis_item.ReferencedSOPSequence
-        if "DICOMRetrievalSequence" not in ref_instance_seq:
+        if "DICOMRetrievalSequence" not in iis_item:
             print(f"UPS {ds.SOPInstanceUID} is missing the DICOMRetrieval Sequence")
             if fallback_retrieve_ae_title is None:
                 continue
@@ -140,11 +140,13 @@ def cmove_inputs(ds, local_store_ae_title, cache_dir: Path | str = None, fallbac
                 print(f"Using fallback retrieve AE Title: {fallback_retrieve_ae_title}")
                 retrieve_ae_title = fallback_retrieve_ae_title
         else:
-            dicom_retrieval_seq = ref_instance_seq.DICOMRetrievalSequence
+            dicom_retrieval_seq = iis_item.DICOMRetrievalSequence
             retrieve_ae_title = dicom_retrieval_seq[0].RetrieveAETitle
 
         for ref_instance_index in range(len(ref_instance_seq)):
-            instance_uid = ref_instance_seq[ref_instance_index].ReferencedSOPInstanceUID
+            ref_instance_seq_item = ref_instance_seq[ref_instance_index]
+            instance_uid = ref_instance_seq_item.ReferencedSOPInstanceUID
+
             if str(instance_uid) not in cached_iods:
                 cmove_specific_input(
                     retrieve_ae_title,

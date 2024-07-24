@@ -44,6 +44,7 @@ class NActionSCU:
         calling_ae_title: str,
         called_ae_title: str,
         receiving_ae_title: str = None,
+        transaction_uid: UID | str = None,
     ):
         self.calling_ae_title = calling_ae_title
         self.called_ae_title = called_ae_title
@@ -51,7 +52,10 @@ class NActionSCU:
             self.receiving_ae_title = self.calling_ae_title
         else:
             self.receiving_ae_title = receiving_ae_title
-        self.transaction_uid = generate_uid()
+        if transaction_uid is None:
+            self.transaction_uid = generate_uid()
+        else:
+            self.transaction_uid = UID(transaction_uid)
 
     def current_transaction_uid(self) -> UID:
         return self.transaction_uid
