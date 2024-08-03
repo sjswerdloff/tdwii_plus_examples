@@ -359,7 +359,7 @@ Spinners for changing the Beam Number and Percent Complete RO-62 (N-SET-RQ),
 
 A button for sending the treatment record (pops a dialog for you to select your previously generated treatment records for the plan with the current fraction number) RO-63,
 
-A Finish button () for RO-64 Final Update, and
+A Finish button for RO-64 Final Update, and
 
 Either Cancel or Complete for RO-65.
 
