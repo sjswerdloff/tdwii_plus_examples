@@ -1,0 +1,11 @@
+# Default configuration file for ppvs
+
+## Application settings
+[DEFAULT]
+    ups_ae_title = "UPSSCP"
+    qr_ae_title = "QRSCP"
+    # Our AE Title
+    ae_title = "TDD"
+    #   This directory contains the retrieved Composit IOD Instances
+    import_staging_directory = "~/tdd_import_staging"
+    machine = "ProNova SC360 GR"

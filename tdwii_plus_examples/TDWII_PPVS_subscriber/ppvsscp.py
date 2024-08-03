@@ -1,18 +1,19 @@
 import os
 from time import sleep
 
-from basescp import BaseSCP
 from pynetdicom import ALL_TRANSFER_SYNTAXES, AllStoragePresentationContexts
-from storescp import StoreSCP
 
+from tdwii_plus_examples import tdwii_config
+from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver import NEventReceiver
+from tdwii_plus_examples.TDWII_PPVS_subscriber.storescp import StoreSCP
 
 
 class PPVS_SCP(NEventReceiver, StoreSCP):
     def __init__(
         self,
         ae_title: str = "PPVS_SCP",
-        port: int = 11115,
+        port: int = -1,
         logger=None,
         bind_address: str = "",
         storage_presentation_contexts=AllStoragePresentationContexts,
@@ -23,6 +24,8 @@ class PPVS_SCP(NEventReceiver, StoreSCP):
     ):
         # self.storage_presentation_contexts = storage_presentation_contexts
         # self.transfer_syntaxes = transfer_syntaxes
+        if port < 1:
+            port = tdwii_config.known_ae_port[ae_title]
         self.nevent_callback = nevent_callback
         StoreSCP.__init__(
             self,

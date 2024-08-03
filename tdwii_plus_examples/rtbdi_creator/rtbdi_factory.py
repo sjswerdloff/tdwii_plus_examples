@@ -266,6 +266,7 @@ def create_ups_from_plan_and_bdi(
     work_item.CodeMeaning = "RT Treatment with Internal Verification"
     scheduled_work_item_code_sequence = pydicom.Sequence([work_item])
     ups_ds.ScheduledWorkitemCodeSequence = scheduled_work_item_code_sequence
+
     plan_reference_item = _create_referenced_instances_and_access_item(plan, retrieve_ae_title)
     bdi_reference_item = _create_referenced_instances_and_access_item(bdi, retrieve_ae_title)
 
@@ -424,6 +425,10 @@ def _create_referenced_instances_and_access_item(
     else:
         raise KeyError("Missing Series Instance UID")
 
+    dicom_retrieval_seq_item = pydicom.Dataset()
+    dicom_retrieval_seq_item.RetrieveAETitle = retrieve_ae_title
+    ref_instance_seq_item.DICOMRetrievalSequence = pydicom.Sequence([dicom_retrieval_seq_item])
+
     ref_sop_seq_item = pydicom.Dataset()
     if "SOPClassUID" in input_ds:
         ref_sop_seq_item.ReferencedSOPClassUID = input_ds.SOPClassUID
@@ -438,9 +443,7 @@ def _create_referenced_instances_and_access_item(
         raise KeyError("Neither SOPClassUID, ReferencedSOPClassUID, nor ReferencedSOPSequence are present in input dataset")
 
     ref_instance_seq_item.ReferencedSOPSequence = pydicom.Sequence([ref_sop_seq_item])
-    dicom_retrieval_seq_item = pydicom.Dataset()
-    dicom_retrieval_seq_item.RetrieveAETitle = retrieve_ae_title
-    ref_sop_seq_item.DICOMRetrievalSequence = pydicom.Sequence([dicom_retrieval_seq_item])
+
     return ref_instance_seq_item
 
 
