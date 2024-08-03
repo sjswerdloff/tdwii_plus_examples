@@ -308,7 +308,7 @@ class TDD_Widget(QWidget):
                             else:
                                 logging.warning(warning_message)
 
-                        except AttributeError | IndexError:
+                        except (AttributeError, IndexError):
                             warning_message = f"No RT SS for Plan {sop_uid}"
                             logging.warning(warning_message)
 
