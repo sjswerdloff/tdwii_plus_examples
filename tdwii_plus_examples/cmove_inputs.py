@@ -4,6 +4,7 @@ and issues a C-MOVE-RQ for each input from it's specified storage AE
 Requires a configuration json file containing a list of AE Title/Address/Port
 """
 import json
+import logging
 import re
 import sys
 from pathlib import Path
@@ -88,7 +89,8 @@ def cmove_specific_input(
     else:
         cached_iods = _load_cached_iods_list(cache_dir=cache_dir)
         if instance_uid in cached_iods:
-            info_message = f"Requested SOP instance {instance_uid} is already in cache directory {cache_dir}"
+            debug_message = f"Requested SOP instance {instance_uid} is already in cache directory {cache_dir}"
+            logging.debug(debug_message)
             return
 
     ip_addr = get_ip_addr_for_ae_title(retrieve_ae_title)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # This Python file uses the following encoding: utf-8
-import copy
+
 import logging
 import sys
 from functools import lru_cache
@@ -36,7 +36,6 @@ from tdwii_plus_examples.TDWII_PPVS_subscriber.ppvsscp import PPVS_SCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.upsfindscu import (
     create_ups_query,
     get_ups,
-    response_content_to_dict,
 )
 from tdwii_plus_examples.TDWII_PPVS_subscriber.watchscu import WatchSCU
 
@@ -117,7 +116,8 @@ class TDD_Widget(QWidget):
         ups_uid = self._get_currently_selected_ups_uid()
         if self.current_transaction_uid is not None:
             logging.warning(
-                "There is a Transaction UID in use, starting multiple procedures in parallel with the TMS is not typical behavior"
+                "There is a Transaction UID in use, starting multiple procedures in parallel \
+                    with the TMS is not typical behavior"
             )
         naction_scu.send_procedure_step_state_change(IN_PROGRESS, ups_uid=ups_uid)
         self.current_transaction_uid = naction_scu.current_transaction_uid()

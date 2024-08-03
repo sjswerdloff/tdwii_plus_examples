@@ -89,7 +89,10 @@ class NActionSCU:
                     action_type=action_type,
                     action_info=action_info_ds,
                 )
-                # status_dataset, response = send_procedure_step_state_change(assoc, requested_state, args.ups_uid, transaction_uid)
+                # status_dataset, response = send_procedure_step_state_change(assoc,
+                #                                                             requested_state,
+                #                                                             args.ups_uid,
+                #                                                             transaction_uid)
                 # print(f"Status Code: 0x{status_dataset.Status:X}")
             except InvalidDicomError:
                 error_message = f"Error performing send_action to {called_ae_title}"
