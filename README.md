@@ -260,13 +260,20 @@ python nevent_sender.py 127.0.0.1 11115
 
 ## A Qt/PySide6 based utility for generating RT Beams Delivery Instructions and Unified Procedure Step content
 ```shell
-python rtbdi_creator/mainbdiwidget.py
+python tdwii_plus_examples/rtbdi_creator/mainbdiwidget.py
 ```
 
 ## A Qt/PySide6 based example of a Patient Position Verification System that subscribes to UPS Events and responds by querying for the UPS information, requesting (C-MOVE) the referenced information objects, etc.
 ```shell
-python TDWII_PPVS_Subscriber/ppvs_subscriber_widget.py
+python tdwii_plus_examples/TDWII_PPVS_Subscriber/ppvs_subscriber_widget.py
 ```
+
+
+## A Qt/PySide6 based example of a Treatment Delivery System that also subscribes to UPS Events and responds by querying for the UPS information, requesting (C-MOVE) the referenced information objects, etc. and allows the user to drive through the entire workflow (but treatment record generation is not supported yet... you'll need to provide your own)
+```shell
+python tdwii_plus_examples/tdd/tdd_widget.py
+```
+
 
 ## The OST can be simulated using the pynetdicom qrscp application.
 
@@ -276,21 +283,18 @@ But the purpose of the examples is to provide working sample code for individual
 
 # Cookbook for PPVS: Creating a sample TDW-II environment with the tools described or mentioned above
 The following assumes you have at least one RT Ion Plan or RT Plan (that is accessible via the file system),
-and you are in the top level directory of this project (directory specifications are *nix switch from / to \ for MS Windows and pushd and popd are availabe in PowerShell or just change directories explicitly)
+and you are in the top level directory of this project (directory specifications are *nix switch from / to \ for MS Windows and pushd and popd are available in PowerShell or just change directories explicitly)
 The example below assumes you are doing everything in one terminal/shell window, but it can certainly be done in separate windows for easier tracking of console logging from the various programs.
 
-```shell
-cd tdwii_plus_examples
-```
 
 Start the TMS simulator (assuming you are already in the tdwii_plus_example subdirectory):
 ```shell
-python tdwii_plus_examples/upsscp.py &
+python tdwii_plus_examples/upsscp.py --debug &
 ```
 Start the OST simulator (assuming you have cloned pynetdicom parallel to tdwii_plus_examples)
 ```shell
 pushd ../../pynetdicom/pynetdicom/apps/qrscp
-python qrscp.py &
+python qrscp.py --debug &
 ```
 Start the RTBDI creator
 ```shell
