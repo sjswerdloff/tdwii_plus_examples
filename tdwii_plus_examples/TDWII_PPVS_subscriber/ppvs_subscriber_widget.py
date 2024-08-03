@@ -149,7 +149,13 @@ class PPVS_SubscriberWidget(QWidget):
         cache_path = Path(self.ui.import_staging_dir_line_edit.text())
         retrieve_ae_title = self.ui.qr_ae_line_edit.text()
         dest_ae_title = self.ui.ppvs_ae_line_edit.text()
-        for ups_uid, ups_ds in self.ups_dataset_dict.items():
+        ups_uid = self._get_currently_selected_ups_uid()
+        if ups_uid is None or ups_uid not in self.ups_dataset_dict:
+            cmove_input_dict = self.ups_dataset_dict
+        else:
+            cmove_input_dict = {str(ups_uid): self.ups_dataset_dict[ups_uid]}
+
+        for ups_uid, ups_ds in cmove_input_dict.items():
             debug_message = f"Searching inputs for plan in UPS with UID: {ups_uid}"
             logging.debug(debug_message)
             sop_dict = sop_references_in_input_info(ups_ds)
