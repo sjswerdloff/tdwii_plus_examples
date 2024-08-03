@@ -285,7 +285,7 @@ cd tdwii_plus_examples
 
 Start the TMS simulator (assuming you are already in the tdwii_plus_example subdirectory):
 ```shell
-python upsscp.py &
+python tdwii_plus_examples/upsscp.py &
 ```
 Start the OST simulator (assuming you have cloned pynetdicom parallel to tdwii_plus_examples)
 ```shell
@@ -295,43 +295,38 @@ python qrscp.py &
 Start the RTBDI creator
 ```shell
 popd
-python rtbdi_creator/mainbdiwidget.py &
+python tdwii_plus_examples/rtbdi_creator/mainbdiwidget.py &
 ```
+Enter the Move/Retrieve AE Title if you are using something other than the default.
+
 Using the RTBDI creator, find the plan you want to use as the basis for the UPS and RTBDI
-(take note of which plan you chose and what directory it is in, you should be able to copy to your clipboard)
+send the plan to the OST (the Move/Retrieve AE)
+
 Specify 1 as the fraction number
+
 Select a directory for where the RTBDI and UPS will be placed.  (you might want to create a separate directory for this ahead of time... or right now)
-click on the 'Export BDI' button
-Type in 'QRSCP' for the Move/Retrieve AE Title
+
+click on the 'Export BDI' button (the RTBDI will get sent to the OST)
+
 Unless you want to specify a date other than today, you don't need to adjust the scheduled DateTime
-click on the 'Export UPS' button
 
-Send the plan and the RTBDI to the OST (QRSCP)
-Use your preferred cstore scu, or you can use the app provided in pynetdicom:
-```python
-python ../../pynetdicom/pynetdicom/apps/storescu/storescu.py 127.0.0.1 11112 "full path to dicom plan file"
-```
-
-change directory to the BDI Output Dir you specified earlier
-
-```python
-python ../../pynetdicom/pynetdicom/apps/storescu/storescu.py 127.0.0.1 11112 RB*.dcm
-```
+click on the 'Export UPS' button (the UPS will get scheduled on the TMS)
 
 change back to the tdwii_plus_examples subdirectory of this project
+
 start the PPVS Emulator:
-```python
-python TDWII_PPVS_subscriber/ppvs_subscriber_widget.py &
+```shell
+python tdwii_plus_examples/TDWII_PPVS_subscriber/ppvs_subscriber_widget.py &
 ```
 In the PPVS Emulator:
 
-Set the UPS AE to "TMS" (without the quotes)
+Enter the UPS AE for the TMS if you are using something other than the default
 
-Set the QRSCP AE to "OST" (without the quotes)
+Enter the QRSCP AE for the OST if you are using something other than the default
 
 Set the Machine Name to... the name of the machine in the RT (Ion) Plan you provided (typical values can be TR1 or G1, but it's whatever is in the plan)
 
-Set the Event and Store SCP AE Title to "PPVS_SCP" (without the quotes)
+Enter the Event and Store SCP AE Title for the PPVS if you want to use something other than the default (you are using the PPVS emulator, so the default is appropriate for it)
 
 Choose a staging directory (where you want the the retrieved plan and RTBDI to go... mostly as proof that the C-MOVE worked)
 
@@ -342,10 +337,33 @@ The PPVS Emulator is now ready to be notified of any newly scheduled UPS (after 
 Scheduling the UPS:
 
 ```python
-python ncreatescu.py 127.0.0.1 11114 "full path to the UPS you exported"
+python tdwii_plus_examples/ncreatescu.py 127.0.0.1 11114 "full path to the UPS you exported"
 ```
+or use the RTBDI creator to create another RTBDI and UPS
 
 This will schedule the UPS in the TMS, and that will trigger the TMS Emulator to notify the PPVS Emulator that a UPS is ready, and the PPVS Emulator will query for the UPS content from the TMS Emulator and then retrieve the plan and the RTBDI that are referenced in the UPS from the OST Emulator (the QRSCP from pynetdicom).
+
+start the TDD Emulator:
+```shell
+python tdwii_plus_examples/tdd/tdd_widget.py &
+```
+In the TDD Emulator:
+
+Follow the instructions for the PPVS Emulator, but specify a different import staging directory.
+
+If you don't use the defaults for the TDD Event And Store SCP AE title, make sure not to use the same value being used by any of the other actors.
+
+The TDD has additional UI for Starting the Procedure RO-60 (NACTION-RQ to IN PROGRESS)
+
+Spinners for changing the Beam Number and Percent Complete RO-62 (N-SET-RQ),
+
+A button for sending the treatment record (pops a dialog for you to select your previously generated treatment records for the plan with the current fraction number) RO-63,
+
+A Finish button () for RO-64 Final Update, and
+
+Either Cancel or Complete for RO-65.
+
+
 
 # Abbreviations
 | Abbr. | Description |
@@ -365,8 +383,4 @@ This will schedule the UPS in the TMS, and that will trigger the TMS Emulator to
 ```shell
 poetry install -E all
 poetry run pre-commit install
-```
-and until it's added to the pre-commit, please run the following before committing/pushing
-```shell
-poetry run flake8 --count --exit-zero --extend-ignore=E203 --max-line-length=127 --statistics --exclude="tdwii_plus_examples/rtbdi_creator/ui_form.py tdwii_plus_examples/TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber.py" tdwii_plus_examples
 ```
