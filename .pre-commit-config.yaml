@@ -34,7 +34,7 @@ repos:
       - id: sync_with_poetry
         args: [] # optional args
   - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0  # Use the ref you want to point at
+    rev: 7.0.0  # Use the ref you want to point at
     hooks:
       - id: flake8
         name: flake8 (strict)
@@ -52,6 +52,6 @@ repos:
           "--extend-ignore=E203",
           "--max-line-length=127",
           "--statistics",
-          "--exclude=tdwii_plus_examples/rtbdi_creator/ui_form.py,tdwii_plus_examples/TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber.py",
+          "--exclude=tdwii_plus_examples/tdd/ui_tdd.py,tdwii_plus_examples/rtbdi_creator/ui_form.py,tdwii_plus_examples/TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber.py",
           "tdwii_plus_examples"
         ]
