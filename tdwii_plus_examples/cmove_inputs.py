@@ -86,6 +86,7 @@ def cmove_specific_input(
 
     if instance_uid is None or len(instance_uid) == 0:
         ds.QueryRetrieveLevel = "SERIES"
+        del ds.SOPInstanceUID
     else:
         cached_iods = _load_cached_iods_list(cache_dir=cache_dir)
         if instance_uid in cached_iods:
