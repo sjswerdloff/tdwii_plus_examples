@@ -167,6 +167,9 @@ class PPVS_SubscriberWidget(QWidget):
                         patient_id = plan_ds.PatientID
                         study_uid = plan_ds.StudyInstanceUID
                         series_uid = plan_ds.SeriesInstanceUID
+                        # the study uid might be the same but the series UID will not
+                        # study_uid = ""
+                        series_uid = ""
                         try:
                             referenced_rtss_seq = plan_ds.ReferencedStructureSetSequence
                             referenced_rtss_seq_item = referenced_rtss_seq[0]
@@ -190,7 +193,7 @@ class PPVS_SubscriberWidget(QWidget):
 
                             rtss_ds = dcmread(rt_ss_path, force=True)
                             warning_message = f"No RT Referenced Series in RT SS {rtss_sop_instance_uid}"
-                            if "ReferencedFrameOfReference" in rtss_ds:
+                            if "ReferencedFrameOfReferenceSequence" in rtss_ds:
                                 for referenced_frame_of_reference_sequence_item in rtss_ds.ReferencedFrameOfReferenceSequence:
                                     if "RTReferencedStudySequence" in referenced_frame_of_reference_sequence_item:
                                         for (
@@ -216,7 +219,7 @@ class PPVS_SubscriberWidget(QWidget):
                             else:
                                 logging.warning(warning_message)
 
-                        except AttributeError | IndexError:
+                        except (AttributeError, IndexError):
                             warning_message = f"No RT SS for Plan {sop_uid}"
                             logging.warning(warning_message)
 
