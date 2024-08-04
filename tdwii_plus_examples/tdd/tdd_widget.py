@@ -259,11 +259,14 @@ class TDD_Widget(QWidget):
                         patient_id = plan_ds.PatientID
                         study_uid = plan_ds.StudyInstanceUID
                         series_uid = plan_ds.SeriesInstanceUID
+                        # the study uid might be the same but the series UID will not
+                        # study_uid = ""
+                        series_uid = ""
                         try:
                             referenced_rtss_seq = plan_ds.ReferencedStructureSetSequence
                             referenced_rtss_seq_item = referenced_rtss_seq[0]
                             rtss_sop_instance_uid = referenced_rtss_seq_item.ReferencedSOPInstanceUID
-                            if not iod_in_staging_directory(rtss_sop_instance_uid, ""):
+                            if not iod_in_staging_directory(rtss_sop_instance_uid, cache_path):
                                 cmove_inputs.cmove_specific_input(
                                     retrieve_ae_title=retrieve_ae_title,
                                     dest_ae_title=dest_ae_title,
@@ -282,7 +285,7 @@ class TDD_Widget(QWidget):
 
                             rtss_ds = dcmread(rt_ss_path, force=True)
                             warning_message = f"No RT Referenced Series in RT SS {rtss_sop_instance_uid}"
-                            if "ReferencedFrameOfReference" in rtss_ds:
+                            if "ReferencedFrameOfReferenceSequence" in rtss_ds:
                                 for referenced_frame_of_reference_sequence_item in rtss_ds.ReferencedFrameOfReferenceSequence:
                                     if "RTReferencedStudySequence" in referenced_frame_of_reference_sequence_item:
                                         for (
@@ -295,6 +298,8 @@ class TDD_Widget(QWidget):
                                                 study_uid = study_uid_for_series_from_common_instance_reference(
                                                     rtss_ds, series_uid
                                                 )
+                                                if study_uid is None:
+                                                    study_uid = rtss_ds.StudyInstanceUID
                                                 cmove_inputs.cmove_specific_input(
                                                     retrieve_ae_title=retrieve_ae_title,
                                                     dest_ae_title=dest_ae_title,
