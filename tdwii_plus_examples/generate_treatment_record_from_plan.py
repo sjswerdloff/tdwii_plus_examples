@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Create an RT Ion Beams Treatment Record from a provided RT Ion Plan
     Run as a script, it writes the RT Ion Beams Treatment Record to the local directory with RX_{SOPInstanceUID}.dcm file name
     Returns:
@@ -371,8 +372,22 @@ def populate_rt_ion_beams_treatment_record(
 
 if __name__ == "__main__":
     add_dict_entry(0x0008001C, "CS", "SyntheticData", "Synthetic Data", "1", "")
+    add_dict_entry(0x00120022, "LO", "IssuerOfClinicalTrialProtocolID", "Issuer of Clinical Trial Protocol ID", "1", "")
+    add_dict_entry(0x00120073, "LO", "IssuerOfClinicalTrialSeriesID", "Issuer of Clinical Trial Series ID", "1", "")
+    add_dict_entry(0x00120032, "LO", "IssuerOfClinicalTrialSiteID", "Issuer of Clinical Trial Site ID", "1", "")
+    add_dict_entry(0x00120041, "LO", "IssuerOfClinicalTrialSubjectID", "Issuer of Clinical Trial Subject ID", "1", "")
+    add_dict_entry(
+        0x00120041, "LO", "IssuerOfClinicalTrialSubjectReadingID", "Issuer of Clinical Trial Subject Reading ID", "1", ""
+    )
+    add_dict_entry(0x00120055, "LO", "IssuerOfClinicalTrialTimePointID", "Issuer of Clinical Trial Time Point ID", "1", "")
+    add_dict_entry(
+        0x00120023, "SQ", "OtherClinicalTrialProtocolIDsSequence", "Other Clinical Trial Protocol IDs Sequence", "1", ""
+    )
+    add_dict_entry(0x00181204, "DA", "DateOfManufacture", "Date Of Manufacture", "1", "")
+    add_dict_entry(0x00181205, "DA", "DateOfInstallation", "Date Of Installation", "1", "")
+
     ds_plan = None
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         ds_plan = dcmread(sys.argv[1], force=True)
     else:
         print(f"Usage: {sys.argv[0]} RTIonPlan_file")
