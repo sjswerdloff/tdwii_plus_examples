@@ -4,10 +4,7 @@
 """
 import sys
 
-import pydicom
-from pydicom import dataset, dcmread
-from pydicom.dataelem import DataElement
-from pydicom.tag import Tag
+from pydicom import dcmread
 
 if len(sys.argv) < 3:
     print(f"{sys.argv[0]} input_file_path output_file_path")
