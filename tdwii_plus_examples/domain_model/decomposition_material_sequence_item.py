@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class DecompositionMaterialSequenceItem:
             if "MaterialCodeSequence" in self._dataset:
                 del self._dataset.MaterialCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MaterialCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MaterialCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MaterialCodeSequence = value
             if "MaterialCodeSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class DecompositionMaterialSequenceItem:
 
     def add_MaterialCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MaterialCodeSequence.append(item)
         if "MaterialCodeSequence" not in self._dataset:
             self._dataset.MaterialCodeSequence = pydicom.Sequence()
@@ -63,7 +63,7 @@ class DecompositionMaterialSequenceItem:
             if "MaterialAttenuationSequence" in self._dataset:
                 del self._dataset.MaterialAttenuationSequence
         elif not isinstance(value, list) or not all(isinstance(item, MaterialAttenuationSequenceItem) for item in value):
-            raise ValueError(f"MaterialAttenuationSequence must be a list of MaterialAttenuationSequenceItem objects")
+            raise ValueError("MaterialAttenuationSequence must be a list of MaterialAttenuationSequenceItem objects")
         else:
             self._MaterialAttenuationSequence = value
             if "MaterialAttenuationSequence" not in self._dataset:
@@ -73,7 +73,7 @@ class DecompositionMaterialSequenceItem:
 
     def add_MaterialAttenuation(self, item: MaterialAttenuationSequenceItem):
         if not isinstance(item, MaterialAttenuationSequenceItem):
-            raise ValueError(f"Item must be an instance of MaterialAttenuationSequenceItem")
+            raise ValueError("Item must be an instance of MaterialAttenuationSequenceItem")
         self._MaterialAttenuationSequence.append(item)
         if "MaterialAttenuationSequence" not in self._dataset:
             self._dataset.MaterialAttenuationSequence = pydicom.Sequence()

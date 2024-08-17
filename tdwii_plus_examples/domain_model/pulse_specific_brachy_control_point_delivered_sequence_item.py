@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -109,7 +109,8 @@ class PulseSpecificBrachyControlPointDeliveredSequenceItem:
             isinstance(item, BrachyPulseControlPointDeliveredSequenceItem) for item in value
         ):
             raise ValueError(
-                f"BrachyPulseControlPointDeliveredSequence must be a list of BrachyPulseControlPointDeliveredSequenceItem objects"
+                "BrachyPulseControlPointDeliveredSequence must be a list of BrachyPulseControlPointDeliveredSequenceItem"
+                " objects"
             )
         else:
             self._BrachyPulseControlPointDeliveredSequence = value
@@ -120,7 +121,7 @@ class PulseSpecificBrachyControlPointDeliveredSequenceItem:
 
     def add_BrachyPulseControlPointDelivered(self, item: BrachyPulseControlPointDeliveredSequenceItem):
         if not isinstance(item, BrachyPulseControlPointDeliveredSequenceItem):
-            raise ValueError(f"Item must be an instance of BrachyPulseControlPointDeliveredSequenceItem")
+            raise ValueError("Item must be an instance of BrachyPulseControlPointDeliveredSequenceItem")
         self._BrachyPulseControlPointDeliveredSequence.append(item)
         if "BrachyPulseControlPointDeliveredSequence" not in self._dataset:
             self._dataset.BrachyPulseControlPointDeliveredSequence = pydicom.Sequence()

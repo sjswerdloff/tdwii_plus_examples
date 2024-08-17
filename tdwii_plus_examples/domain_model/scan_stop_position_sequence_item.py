@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class ScanStopPositionSequenceItem:
             if "ImagingSourcePositionSequence" in self._dataset:
                 del self._dataset.ImagingSourcePositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, ImagingSourcePositionSequenceItem) for item in value):
-            raise ValueError(f"ImagingSourcePositionSequence must be a list of ImagingSourcePositionSequenceItem objects")
+            raise ValueError("ImagingSourcePositionSequence must be a list of ImagingSourcePositionSequenceItem objects")
         else:
             self._ImagingSourcePositionSequence = value
             if "ImagingSourcePositionSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class ScanStopPositionSequenceItem:
 
     def add_ImagingSourcePosition(self, item: ImagingSourcePositionSequenceItem):
         if not isinstance(item, ImagingSourcePositionSequenceItem):
-            raise ValueError(f"Item must be an instance of ImagingSourcePositionSequenceItem")
+            raise ValueError("Item must be an instance of ImagingSourcePositionSequenceItem")
         self._ImagingSourcePositionSequence.append(item)
         if "ImagingSourcePositionSequence" not in self._dataset:
             self._dataset.ImagingSourcePositionSequence = pydicom.Sequence()
@@ -63,7 +63,7 @@ class ScanStopPositionSequenceItem:
             if "ImageReceptorPositionSequence" in self._dataset:
                 del self._dataset.ImageReceptorPositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, ImageReceptorPositionSequenceItem) for item in value):
-            raise ValueError(f"ImageReceptorPositionSequence must be a list of ImageReceptorPositionSequenceItem objects")
+            raise ValueError("ImageReceptorPositionSequence must be a list of ImageReceptorPositionSequenceItem objects")
         else:
             self._ImageReceptorPositionSequence = value
             if "ImageReceptorPositionSequence" not in self._dataset:
@@ -73,7 +73,7 @@ class ScanStopPositionSequenceItem:
 
     def add_ImageReceptorPosition(self, item: ImageReceptorPositionSequenceItem):
         if not isinstance(item, ImageReceptorPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of ImageReceptorPositionSequenceItem")
+            raise ValueError("Item must be an instance of ImageReceptorPositionSequenceItem")
         self._ImageReceptorPositionSequence.append(item)
         if "ImageReceptorPositionSequence" not in self._dataset:
             self._dataset.ImageReceptorPositionSequence = pydicom.Sequence()

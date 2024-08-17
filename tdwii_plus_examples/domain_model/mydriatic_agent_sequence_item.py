@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -34,7 +34,7 @@ class MydriaticAgentSequenceItem:
             if "MydriaticAgentCodeSequence" in self._dataset:
                 del self._dataset.MydriaticAgentCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MydriaticAgentCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MydriaticAgentCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MydriaticAgentCodeSequence = value
             if "MydriaticAgentCodeSequence" not in self._dataset:
@@ -44,7 +44,7 @@ class MydriaticAgentSequenceItem:
 
     def add_MydriaticAgentCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MydriaticAgentCodeSequence.append(item)
         if "MydriaticAgentCodeSequence" not in self._dataset:
             self._dataset.MydriaticAgentCodeSequence = pydicom.Sequence()
@@ -74,7 +74,8 @@ class MydriaticAgentSequenceItem:
             isinstance(item, MydriaticAgentConcentrationUnitsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"MydriaticAgentConcentrationUnitsSequence must be a list of MydriaticAgentConcentrationUnitsSequenceItem objects"
+                "MydriaticAgentConcentrationUnitsSequence must be a list of MydriaticAgentConcentrationUnitsSequenceItem"
+                " objects"
             )
         else:
             self._MydriaticAgentConcentrationUnitsSequence = value
@@ -85,7 +86,7 @@ class MydriaticAgentSequenceItem:
 
     def add_MydriaticAgentConcentrationUnits(self, item: MydriaticAgentConcentrationUnitsSequenceItem):
         if not isinstance(item, MydriaticAgentConcentrationUnitsSequenceItem):
-            raise ValueError(f"Item must be an instance of MydriaticAgentConcentrationUnitsSequenceItem")
+            raise ValueError("Item must be an instance of MydriaticAgentConcentrationUnitsSequenceItem")
         self._MydriaticAgentConcentrationUnitsSequence.append(item)
         if "MydriaticAgentConcentrationUnitsSequence" not in self._dataset:
             self._dataset.MydriaticAgentConcentrationUnitsSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class SourceOfRefractiveMeasurementsSequenceItem:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class SourceOfRefractiveMeasurementsSequenceItem:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -65,7 +65,7 @@ class SourceOfRefractiveMeasurementsSequenceItem:
             if "SourceOfRefractiveMeasurementsCodeSequence" in self._dataset:
                 del self._dataset.SourceOfRefractiveMeasurementsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SourceOfRefractiveMeasurementsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SourceOfRefractiveMeasurementsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SourceOfRefractiveMeasurementsCodeSequence = value
             if "SourceOfRefractiveMeasurementsCodeSequence" not in self._dataset:
@@ -75,7 +75,7 @@ class SourceOfRefractiveMeasurementsSequenceItem:
 
     def add_SourceOfRefractiveMeasurementsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SourceOfRefractiveMeasurementsCodeSequence.append(item)
         if "SourceOfRefractiveMeasurementsCodeSequence" not in self._dataset:
             self._dataset.SourceOfRefractiveMeasurementsCodeSequence = pydicom.Sequence()

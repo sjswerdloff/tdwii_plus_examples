@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -44,7 +44,7 @@ class RadiationDoseSequenceItem:
             isinstance(item, RadiationDoseValuesParametersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RadiationDoseValuesParametersSequence must be a list of RadiationDoseValuesParametersSequenceItem objects"
+                "RadiationDoseValuesParametersSequence must be a list of RadiationDoseValuesParametersSequenceItem objects"
             )
         else:
             self._RadiationDoseValuesParametersSequence = value
@@ -55,7 +55,7 @@ class RadiationDoseSequenceItem:
 
     def add_RadiationDoseValuesParameters(self, item: RadiationDoseValuesParametersSequenceItem):
         if not isinstance(item, RadiationDoseValuesParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationDoseValuesParametersSequenceItem")
+            raise ValueError("Item must be an instance of RadiationDoseValuesParametersSequenceItem")
         self._RadiationDoseValuesParametersSequence.append(item)
         if "RadiationDoseValuesParametersSequence" not in self._dataset:
             self._dataset.RadiationDoseValuesParametersSequence = pydicom.Sequence()
@@ -80,7 +80,7 @@ class RadiationDoseSequenceItem:
             isinstance(item, ReferencedRTRadiationRecordSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedRTRadiationRecordSequence must be a list of ReferencedRTRadiationRecordSequenceItem objects"
+                "ReferencedRTRadiationRecordSequence must be a list of ReferencedRTRadiationRecordSequenceItem objects"
             )
         else:
             self._ReferencedRTRadiationRecordSequence = value
@@ -91,7 +91,7 @@ class RadiationDoseSequenceItem:
 
     def add_ReferencedRTRadiationRecord(self, item: ReferencedRTRadiationRecordSequenceItem):
         if not isinstance(item, ReferencedRTRadiationRecordSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTRadiationRecordSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTRadiationRecordSequenceItem")
         self._ReferencedRTRadiationRecordSequence.append(item)
         if "ReferencedRTRadiationRecordSequence" not in self._dataset:
             self._dataset.ReferencedRTRadiationRecordSequence = pydicom.Sequence()
@@ -118,7 +118,7 @@ class RadiationDoseSequenceItem:
             isinstance(item, MeasuredMetersetToDoseMappingSequenceItem) for item in value
         ):
             raise ValueError(
-                f"MeasuredMetersetToDoseMappingSequence must be a list of MeasuredMetersetToDoseMappingSequenceItem objects"
+                "MeasuredMetersetToDoseMappingSequence must be a list of MeasuredMetersetToDoseMappingSequenceItem objects"
             )
         else:
             self._MeasuredMetersetToDoseMappingSequence = value
@@ -129,7 +129,7 @@ class RadiationDoseSequenceItem:
 
     def add_MeasuredMetersetToDoseMapping(self, item: MeasuredMetersetToDoseMappingSequenceItem):
         if not isinstance(item, MeasuredMetersetToDoseMappingSequenceItem):
-            raise ValueError(f"Item must be an instance of MeasuredMetersetToDoseMappingSequenceItem")
+            raise ValueError("Item must be an instance of MeasuredMetersetToDoseMappingSequenceItem")
         self._MeasuredMetersetToDoseMappingSequence.append(item)
         if "MeasuredMetersetToDoseMappingSequence" not in self._dataset:
             self._dataset.MeasuredMetersetToDoseMappingSequence = pydicom.Sequence()

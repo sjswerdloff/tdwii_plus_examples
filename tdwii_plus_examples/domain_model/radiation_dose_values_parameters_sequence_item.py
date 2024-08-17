@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class RadiationDoseValuesParametersSequenceItem:
             if "DoseValuesSequence" in self._dataset:
                 del self._dataset.DoseValuesSequence
         elif not isinstance(value, list) or not all(isinstance(item, DoseValuesSequenceItem) for item in value):
-            raise ValueError(f"DoseValuesSequence must be a list of DoseValuesSequenceItem objects")
+            raise ValueError("DoseValuesSequence must be a list of DoseValuesSequenceItem objects")
         else:
             self._DoseValuesSequence = value
             if "DoseValuesSequence" not in self._dataset:
@@ -67,7 +67,7 @@ class RadiationDoseValuesParametersSequenceItem:
 
     def add_DoseValues(self, item: DoseValuesSequenceItem):
         if not isinstance(item, DoseValuesSequenceItem):
-            raise ValueError(f"Item must be an instance of DoseValuesSequenceItem")
+            raise ValueError("Item must be an instance of DoseValuesSequenceItem")
         self._DoseValuesSequence.append(item)
         if "DoseValuesSequence" not in self._dataset:
             self._dataset.DoseValuesSequence = pydicom.Sequence()

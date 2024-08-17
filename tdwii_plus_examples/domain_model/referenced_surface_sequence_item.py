@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -63,7 +63,8 @@ class ReferencedSurfaceSequenceItem:
             isinstance(item, SegmentSurfaceGenerationAlgorithmIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SegmentSurfaceGenerationAlgorithmIdentificationSequence must be a list of SegmentSurfaceGenerationAlgorithmIdentificationSequenceItem objects"
+                "SegmentSurfaceGenerationAlgorithmIdentificationSequence must be a list of"
+                " SegmentSurfaceGenerationAlgorithmIdentificationSequenceItem objects"
             )
         else:
             self._SegmentSurfaceGenerationAlgorithmIdentificationSequence = value
@@ -76,7 +77,7 @@ class ReferencedSurfaceSequenceItem:
         self, item: SegmentSurfaceGenerationAlgorithmIdentificationSequenceItem
     ):
         if not isinstance(item, SegmentSurfaceGenerationAlgorithmIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of SegmentSurfaceGenerationAlgorithmIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of SegmentSurfaceGenerationAlgorithmIdentificationSequenceItem")
         self._SegmentSurfaceGenerationAlgorithmIdentificationSequence.append(item)
         if "SegmentSurfaceGenerationAlgorithmIdentificationSequence" not in self._dataset:
             self._dataset.SegmentSurfaceGenerationAlgorithmIdentificationSequence = pydicom.Sequence()
@@ -103,7 +104,7 @@ class ReferencedSurfaceSequenceItem:
             isinstance(item, SegmentSurfaceSourceInstanceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SegmentSurfaceSourceInstanceSequence must be a list of SegmentSurfaceSourceInstanceSequenceItem objects"
+                "SegmentSurfaceSourceInstanceSequence must be a list of SegmentSurfaceSourceInstanceSequenceItem objects"
             )
         else:
             self._SegmentSurfaceSourceInstanceSequence = value
@@ -114,7 +115,7 @@ class ReferencedSurfaceSequenceItem:
 
     def add_SegmentSurfaceSourceInstance(self, item: SegmentSurfaceSourceInstanceSequenceItem):
         if not isinstance(item, SegmentSurfaceSourceInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of SegmentSurfaceSourceInstanceSequenceItem")
+            raise ValueError("Item must be an instance of SegmentSurfaceSourceInstanceSequenceItem")
         self._SegmentSurfaceSourceInstanceSequence.append(item)
         if "SegmentSurfaceSourceInstanceSequence" not in self._dataset:
             self._dataset.SegmentSurfaceSourceInstanceSequence = pydicom.Sequence()

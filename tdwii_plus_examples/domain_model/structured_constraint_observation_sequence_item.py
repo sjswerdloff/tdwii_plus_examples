@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class StructuredConstraintObservationSequenceItem:
             if "MeasurementUnitsCodeSequence" in self._dataset:
                 del self._dataset.MeasurementUnitsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MeasurementUnitsCodeSequence = value
             if "MeasurementUnitsCodeSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class StructuredConstraintObservationSequenceItem:
 
     def add_MeasurementUnitsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MeasurementUnitsCodeSequence.append(item)
         if "MeasurementUnitsCodeSequence" not in self._dataset:
             self._dataset.MeasurementUnitsCodeSequence = pydicom.Sequence()
@@ -165,7 +165,7 @@ class StructuredConstraintObservationSequenceItem:
             if "AssessedAttributeValueSequence" in self._dataset:
                 del self._dataset.AssessedAttributeValueSequence
         elif not isinstance(value, list) or not all(isinstance(item, AssessedAttributeValueSequenceItem) for item in value):
-            raise ValueError(f"AssessedAttributeValueSequence must be a list of AssessedAttributeValueSequenceItem objects")
+            raise ValueError("AssessedAttributeValueSequence must be a list of AssessedAttributeValueSequenceItem objects")
         else:
             self._AssessedAttributeValueSequence = value
             if "AssessedAttributeValueSequence" not in self._dataset:
@@ -175,7 +175,7 @@ class StructuredConstraintObservationSequenceItem:
 
     def add_AssessedAttributeValue(self, item: AssessedAttributeValueSequenceItem):
         if not isinstance(item, AssessedAttributeValueSequenceItem):
-            raise ValueError(f"Item must be an instance of AssessedAttributeValueSequenceItem")
+            raise ValueError("Item must be an instance of AssessedAttributeValueSequenceItem")
         self._AssessedAttributeValueSequence.append(item)
         if "AssessedAttributeValueSequence" not in self._dataset:
             self._dataset.AssessedAttributeValueSequence = pydicom.Sequence()
@@ -253,7 +253,7 @@ class StructuredConstraintObservationSequenceItem:
             if "ConstraintValueSequence" in self._dataset:
                 del self._dataset.ConstraintValueSequence
         elif not isinstance(value, list) or not all(isinstance(item, ConstraintValueSequenceItem) for item in value):
-            raise ValueError(f"ConstraintValueSequence must be a list of ConstraintValueSequenceItem objects")
+            raise ValueError("ConstraintValueSequence must be a list of ConstraintValueSequenceItem objects")
         else:
             self._ConstraintValueSequence = value
             if "ConstraintValueSequence" not in self._dataset:
@@ -263,7 +263,7 @@ class StructuredConstraintObservationSequenceItem:
 
     def add_ConstraintValue(self, item: ConstraintValueSequenceItem):
         if not isinstance(item, ConstraintValueSequenceItem):
-            raise ValueError(f"Item must be an instance of ConstraintValueSequenceItem")
+            raise ValueError("Item must be an instance of ConstraintValueSequenceItem")
         self._ConstraintValueSequence.append(item)
         if "ConstraintValueSequence" not in self._dataset:
             self._dataset.ConstraintValueSequence = pydicom.Sequence()
@@ -285,7 +285,7 @@ class StructuredConstraintObservationSequenceItem:
             if "RecommendedDefaultValueSequence" in self._dataset:
                 del self._dataset.RecommendedDefaultValueSequence
         elif not isinstance(value, list) or not all(isinstance(item, RecommendedDefaultValueSequenceItem) for item in value):
-            raise ValueError(f"RecommendedDefaultValueSequence must be a list of RecommendedDefaultValueSequenceItem objects")
+            raise ValueError("RecommendedDefaultValueSequence must be a list of RecommendedDefaultValueSequenceItem objects")
         else:
             self._RecommendedDefaultValueSequence = value
             if "RecommendedDefaultValueSequence" not in self._dataset:
@@ -295,7 +295,7 @@ class StructuredConstraintObservationSequenceItem:
 
     def add_RecommendedDefaultValue(self, item: RecommendedDefaultValueSequenceItem):
         if not isinstance(item, RecommendedDefaultValueSequenceItem):
-            raise ValueError(f"Item must be an instance of RecommendedDefaultValueSequenceItem")
+            raise ValueError("Item must be an instance of RecommendedDefaultValueSequenceItem")
         self._RecommendedDefaultValueSequence.append(item)
         if "RecommendedDefaultValueSequence" not in self._dataset:
             self._dataset.RecommendedDefaultValueSequence = pydicom.Sequence()

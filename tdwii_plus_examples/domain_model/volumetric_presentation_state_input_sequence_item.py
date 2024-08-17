@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -86,7 +86,7 @@ class VolumetricPresentationStateInputSequenceItem:
             if "VOILUTSequence" in self._dataset:
                 del self._dataset.VOILUTSequence
         elif not isinstance(value, list) or not all(isinstance(item, VOILUTSequenceItem) for item in value):
-            raise ValueError(f"VOILUTSequence must be a list of VOILUTSequenceItem objects")
+            raise ValueError("VOILUTSequence must be a list of VOILUTSequenceItem objects")
         else:
             self._VOILUTSequence = value
             if "VOILUTSequence" not in self._dataset:
@@ -96,7 +96,7 @@ class VolumetricPresentationStateInputSequenceItem:
 
     def add_VOILUT(self, item: VOILUTSequenceItem):
         if not isinstance(item, VOILUTSequenceItem):
-            raise ValueError(f"Item must be an instance of VOILUTSequenceItem")
+            raise ValueError("Item must be an instance of VOILUTSequenceItem")
         self._VOILUTSequence.append(item)
         if "VOILUTSequence" not in self._dataset:
             self._dataset.VOILUTSequence = pydicom.Sequence()

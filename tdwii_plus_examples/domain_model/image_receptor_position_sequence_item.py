@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class ImageReceptorPositionSequenceItem:
             if "DevicePositionParameterSequence" in self._dataset:
                 del self._dataset.DevicePositionParameterSequence
         elif not isinstance(value, list) or not all(isinstance(item, DevicePositionParameterSequenceItem) for item in value):
-            raise ValueError(f"DevicePositionParameterSequence must be a list of DevicePositionParameterSequenceItem objects")
+            raise ValueError("DevicePositionParameterSequence must be a list of DevicePositionParameterSequenceItem objects")
         else:
             self._DevicePositionParameterSequence = value
             if "DevicePositionParameterSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class ImageReceptorPositionSequenceItem:
 
     def add_DevicePositionParameter(self, item: DevicePositionParameterSequenceItem):
         if not isinstance(item, DevicePositionParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of DevicePositionParameterSequenceItem")
+            raise ValueError("Item must be an instance of DevicePositionParameterSequenceItem")
         self._DevicePositionParameterSequence.append(item)
         if "DevicePositionParameterSequence" not in self._dataset:
             self._dataset.DevicePositionParameterSequence = pydicom.Sequence()

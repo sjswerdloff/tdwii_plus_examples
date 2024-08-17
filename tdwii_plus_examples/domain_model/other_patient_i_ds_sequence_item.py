@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -76,7 +76,7 @@ class OtherPatientIDsSequenceItem:
             isinstance(item, IssuerOfPatientIDQualifiersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
+                "IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
             )
         else:
             self._IssuerOfPatientIDQualifiersSequence = value
@@ -87,7 +87,7 @@ class OtherPatientIDsSequenceItem:
 
     def add_IssuerOfPatientIDQualifiers(self, item: IssuerOfPatientIDQualifiersSequenceItem):
         if not isinstance(item, IssuerOfPatientIDQualifiersSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
         self._IssuerOfPatientIDQualifiersSequence.append(item)
         if "IssuerOfPatientIDQualifiersSequence" not in self._dataset:
             self._dataset.IssuerOfPatientIDQualifiersSequence = pydicom.Sequence()

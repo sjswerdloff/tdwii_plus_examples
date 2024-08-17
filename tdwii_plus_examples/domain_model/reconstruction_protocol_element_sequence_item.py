@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -73,7 +73,7 @@ class ReconstructionProtocolElementSequenceItem:
             if "DerivationCodeSequence" in self._dataset:
                 del self._dataset.DerivationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DerivationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DerivationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DerivationCodeSequence = value
             if "DerivationCodeSequence" not in self._dataset:
@@ -83,7 +83,7 @@ class ReconstructionProtocolElementSequenceItem:
 
     def add_DerivationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DerivationCodeSequence.append(item)
         if "DerivationCodeSequence" not in self._dataset:
             self._dataset.DerivationCodeSequence = pydicom.Sequence()
@@ -147,7 +147,7 @@ class ReconstructionProtocolElementSequenceItem:
             if "RequestedSeriesDescriptionCodeSequence" in self._dataset:
                 del self._dataset.RequestedSeriesDescriptionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RequestedSeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RequestedSeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RequestedSeriesDescriptionCodeSequence = value
             if "RequestedSeriesDescriptionCodeSequence" not in self._dataset:
@@ -157,7 +157,7 @@ class ReconstructionProtocolElementSequenceItem:
 
     def add_RequestedSeriesDescriptionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RequestedSeriesDescriptionCodeSequence.append(item)
         if "RequestedSeriesDescriptionCodeSequence" not in self._dataset:
             self._dataset.RequestedSeriesDescriptionCodeSequence = pydicom.Sequence()
@@ -392,7 +392,7 @@ class ReconstructionProtocolElementSequenceItem:
             isinstance(item, ReconstructionStartLocationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReconstructionStartLocationSequence must be a list of ReconstructionStartLocationSequenceItem objects"
+                "ReconstructionStartLocationSequence must be a list of ReconstructionStartLocationSequenceItem objects"
             )
         else:
             self._ReconstructionStartLocationSequence = value
@@ -403,7 +403,7 @@ class ReconstructionProtocolElementSequenceItem:
 
     def add_ReconstructionStartLocation(self, item: ReconstructionStartLocationSequenceItem):
         if not isinstance(item, ReconstructionStartLocationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReconstructionStartLocationSequenceItem")
+            raise ValueError("Item must be an instance of ReconstructionStartLocationSequenceItem")
         self._ReconstructionStartLocationSequence.append(item)
         if "ReconstructionStartLocationSequence" not in self._dataset:
             self._dataset.ReconstructionStartLocationSequence = pydicom.Sequence()
@@ -426,7 +426,7 @@ class ReconstructionProtocolElementSequenceItem:
                 del self._dataset.ReconstructionEndLocationSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReconstructionEndLocationSequenceItem) for item in value):
             raise ValueError(
-                f"ReconstructionEndLocationSequence must be a list of ReconstructionEndLocationSequenceItem objects"
+                "ReconstructionEndLocationSequence must be a list of ReconstructionEndLocationSequenceItem objects"
             )
         else:
             self._ReconstructionEndLocationSequence = value
@@ -437,7 +437,7 @@ class ReconstructionProtocolElementSequenceItem:
 
     def add_ReconstructionEndLocation(self, item: ReconstructionEndLocationSequenceItem):
         if not isinstance(item, ReconstructionEndLocationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReconstructionEndLocationSequenceItem")
+            raise ValueError("Item must be an instance of ReconstructionEndLocationSequenceItem")
         self._ReconstructionEndLocationSequence.append(item)
         if "ReconstructionEndLocationSequence" not in self._dataset:
             self._dataset.ReconstructionEndLocationSequence = pydicom.Sequence()
@@ -459,7 +459,7 @@ class ReconstructionProtocolElementSequenceItem:
             if "ReconstructionAlgorithmSequence" in self._dataset:
                 del self._dataset.ReconstructionAlgorithmSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReconstructionAlgorithmSequenceItem) for item in value):
-            raise ValueError(f"ReconstructionAlgorithmSequence must be a list of ReconstructionAlgorithmSequenceItem objects")
+            raise ValueError("ReconstructionAlgorithmSequence must be a list of ReconstructionAlgorithmSequenceItem objects")
         else:
             self._ReconstructionAlgorithmSequence = value
             if "ReconstructionAlgorithmSequence" not in self._dataset:
@@ -469,7 +469,7 @@ class ReconstructionProtocolElementSequenceItem:
 
     def add_ReconstructionAlgorithm(self, item: ReconstructionAlgorithmSequenceItem):
         if not isinstance(item, ReconstructionAlgorithmSequenceItem):
-            raise ValueError(f"Item must be an instance of ReconstructionAlgorithmSequenceItem")
+            raise ValueError("Item must be an instance of ReconstructionAlgorithmSequenceItem")
         self._ReconstructionAlgorithmSequence.append(item)
         if "ReconstructionAlgorithmSequence" not in self._dataset:
             self._dataset.ReconstructionAlgorithmSequence = pydicom.Sequence()
@@ -501,7 +501,8 @@ class ReconstructionProtocolElementSequenceItem:
             isinstance(item, ReconstructionTargetCenterLocationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReconstructionTargetCenterLocationSequence must be a list of ReconstructionTargetCenterLocationSequenceItem objects"
+                "ReconstructionTargetCenterLocationSequence must be a list of ReconstructionTargetCenterLocationSequenceItem"
+                " objects"
             )
         else:
             self._ReconstructionTargetCenterLocationSequence = value
@@ -512,7 +513,7 @@ class ReconstructionProtocolElementSequenceItem:
 
     def add_ReconstructionTargetCenterLocation(self, item: ReconstructionTargetCenterLocationSequenceItem):
         if not isinstance(item, ReconstructionTargetCenterLocationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReconstructionTargetCenterLocationSequenceItem")
+            raise ValueError("Item must be an instance of ReconstructionTargetCenterLocationSequenceItem")
         self._ReconstructionTargetCenterLocationSequence.append(item)
         if "ReconstructionTargetCenterLocationSequence" not in self._dataset:
             self._dataset.ReconstructionTargetCenterLocationSequence = pydicom.Sequence()

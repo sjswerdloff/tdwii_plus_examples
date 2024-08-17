@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class ConfirmationSequenceItem:
             if "PertinentDocumentsSequence" in self._dataset:
                 del self._dataset.PertinentDocumentsSequence
         elif not isinstance(value, list) or not all(isinstance(item, PertinentDocumentsSequenceItem) for item in value):
-            raise ValueError(f"PertinentDocumentsSequence must be a list of PertinentDocumentsSequenceItem objects")
+            raise ValueError("PertinentDocumentsSequence must be a list of PertinentDocumentsSequenceItem objects")
         else:
             self._PertinentDocumentsSequence = value
             if "PertinentDocumentsSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class ConfirmationSequenceItem:
 
     def add_PertinentDocuments(self, item: PertinentDocumentsSequenceItem):
         if not isinstance(item, PertinentDocumentsSequenceItem):
-            raise ValueError(f"Item must be an instance of PertinentDocumentsSequenceItem")
+            raise ValueError("Item must be an instance of PertinentDocumentsSequenceItem")
         self._PertinentDocumentsSequence.append(item)
         if "PertinentDocumentsSequence" not in self._dataset:
             self._dataset.PertinentDocumentsSequence = pydicom.Sequence()
@@ -67,7 +67,7 @@ class ConfirmationSequenceItem:
             if "AssertionCodeSequence" in self._dataset:
                 del self._dataset.AssertionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AssertionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AssertionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AssertionCodeSequence = value
             if "AssertionCodeSequence" not in self._dataset:
@@ -77,7 +77,7 @@ class ConfirmationSequenceItem:
 
     def add_AssertionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AssertionCodeSequence.append(item)
         if "AssertionCodeSequence" not in self._dataset:
             self._dataset.AssertionCodeSequence = pydicom.Sequence()
@@ -113,7 +113,7 @@ class ConfirmationSequenceItem:
             if "AsserterIdentificationSequence" in self._dataset:
                 del self._dataset.AsserterIdentificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, AsserterIdentificationSequenceItem) for item in value):
-            raise ValueError(f"AsserterIdentificationSequence must be a list of AsserterIdentificationSequenceItem objects")
+            raise ValueError("AsserterIdentificationSequence must be a list of AsserterIdentificationSequenceItem objects")
         else:
             self._AsserterIdentificationSequence = value
             if "AsserterIdentificationSequence" not in self._dataset:
@@ -123,7 +123,7 @@ class ConfirmationSequenceItem:
 
     def add_AsserterIdentification(self, item: AsserterIdentificationSequenceItem):
         if not isinstance(item, AsserterIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of AsserterIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of AsserterIdentificationSequenceItem")
         self._AsserterIdentificationSequence.append(item)
         if "AsserterIdentificationSequence" not in self._dataset:
             self._dataset.AsserterIdentificationSequence = pydicom.Sequence()
@@ -187,7 +187,7 @@ class ConfirmationSequenceItem:
             if "RelatedAssertionSequence" in self._dataset:
                 del self._dataset.RelatedAssertionSequence
         elif not isinstance(value, list) or not all(isinstance(item, RelatedAssertionSequenceItem) for item in value):
-            raise ValueError(f"RelatedAssertionSequence must be a list of RelatedAssertionSequenceItem objects")
+            raise ValueError("RelatedAssertionSequence must be a list of RelatedAssertionSequenceItem objects")
         else:
             self._RelatedAssertionSequence = value
             if "RelatedAssertionSequence" not in self._dataset:
@@ -197,7 +197,7 @@ class ConfirmationSequenceItem:
 
     def add_RelatedAssertion(self, item: RelatedAssertionSequenceItem):
         if not isinstance(item, RelatedAssertionSequenceItem):
-            raise ValueError(f"Item must be an instance of RelatedAssertionSequenceItem")
+            raise ValueError("Item must be an instance of RelatedAssertionSequenceItem")
         self._RelatedAssertionSequence.append(item)
         if "RelatedAssertionSequence" not in self._dataset:
             self._dataset.RelatedAssertionSequence = pydicom.Sequence()

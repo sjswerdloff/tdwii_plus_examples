@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -496,7 +496,7 @@ class RealTimeAudioWaveform:
             isinstance(item, CodingSchemeIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"CodingSchemeIdentificationSequence must be a list of CodingSchemeIdentificationSequenceItem objects"
+                "CodingSchemeIdentificationSequence must be a list of CodingSchemeIdentificationSequenceItem objects"
             )
         else:
             self._CodingSchemeIdentificationSequence = value
@@ -507,7 +507,7 @@ class RealTimeAudioWaveform:
 
     def add_CodingSchemeIdentification(self, item: CodingSchemeIdentificationSequenceItem):
         if not isinstance(item, CodingSchemeIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of CodingSchemeIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of CodingSchemeIdentificationSequenceItem")
         self._CodingSchemeIdentificationSequence.append(item)
         if "CodingSchemeIdentificationSequence" not in self._dataset:
             self._dataset.CodingSchemeIdentificationSequence = pydicom.Sequence()
@@ -532,7 +532,7 @@ class RealTimeAudioWaveform:
             isinstance(item, ContextGroupIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ContextGroupIdentificationSequence must be a list of ContextGroupIdentificationSequenceItem objects"
+                "ContextGroupIdentificationSequence must be a list of ContextGroupIdentificationSequenceItem objects"
             )
         else:
             self._ContextGroupIdentificationSequence = value
@@ -543,7 +543,7 @@ class RealTimeAudioWaveform:
 
     def add_ContextGroupIdentification(self, item: ContextGroupIdentificationSequenceItem):
         if not isinstance(item, ContextGroupIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ContextGroupIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ContextGroupIdentificationSequenceItem")
         self._ContextGroupIdentificationSequence.append(item)
         if "ContextGroupIdentificationSequence" not in self._dataset:
             self._dataset.ContextGroupIdentificationSequence = pydicom.Sequence()
@@ -570,7 +570,7 @@ class RealTimeAudioWaveform:
             isinstance(item, MappingResourceIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"MappingResourceIdentificationSequence must be a list of MappingResourceIdentificationSequenceItem objects"
+                "MappingResourceIdentificationSequence must be a list of MappingResourceIdentificationSequenceItem objects"
             )
         else:
             self._MappingResourceIdentificationSequence = value
@@ -581,7 +581,7 @@ class RealTimeAudioWaveform:
 
     def add_MappingResourceIdentification(self, item: MappingResourceIdentificationSequenceItem):
         if not isinstance(item, MappingResourceIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of MappingResourceIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of MappingResourceIdentificationSequenceItem")
         self._MappingResourceIdentificationSequence.append(item)
         if "MappingResourceIdentificationSequence" not in self._dataset:
             self._dataset.MappingResourceIdentificationSequence = pydicom.Sequence()
@@ -625,7 +625,8 @@ class RealTimeAudioWaveform:
             isinstance(item, PrivateDataElementCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PrivateDataElementCharacteristicsSequence must be a list of PrivateDataElementCharacteristicsSequenceItem objects"
+                "PrivateDataElementCharacteristicsSequence must be a list of PrivateDataElementCharacteristicsSequenceItem"
+                " objects"
             )
         else:
             self._PrivateDataElementCharacteristicsSequence = value
@@ -636,7 +637,7 @@ class RealTimeAudioWaveform:
 
     def add_PrivateDataElementCharacteristics(self, item: PrivateDataElementCharacteristicsSequenceItem):
         if not isinstance(item, PrivateDataElementCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of PrivateDataElementCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of PrivateDataElementCharacteristicsSequenceItem")
         self._PrivateDataElementCharacteristicsSequence.append(item)
         if "PrivateDataElementCharacteristicsSequence" not in self._dataset:
             self._dataset.PrivateDataElementCharacteristicsSequence = pydicom.Sequence()
@@ -673,7 +674,7 @@ class RealTimeAudioWaveform:
                 del self._dataset.ReferencedDefinedProtocolSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDefinedProtocolSequenceItem) for item in value):
             raise ValueError(
-                f"ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
+                "ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedDefinedProtocolSequence = value
@@ -684,7 +685,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferencedDefinedProtocol(self, item: ReferencedDefinedProtocolSequenceItem):
         if not isinstance(item, ReferencedDefinedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDefinedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDefinedProtocolSequenceItem")
         self._ReferencedDefinedProtocolSequence.append(item)
         if "ReferencedDefinedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedDefinedProtocolSequence = pydicom.Sequence()
@@ -709,7 +710,7 @@ class RealTimeAudioWaveform:
             isinstance(item, ReferencedPerformedProtocolSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
+                "ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedPerformedProtocolSequence = value
@@ -720,7 +721,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferencedPerformedProtocol(self, item: ReferencedPerformedProtocolSequenceItem):
         if not isinstance(item, ReferencedPerformedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPerformedProtocolSequenceItem")
         self._ReferencedPerformedProtocolSequence.append(item)
         if "ReferencedPerformedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedPerformedProtocolSequence = pydicom.Sequence()
@@ -742,7 +743,7 @@ class RealTimeAudioWaveform:
             if "ContributingEquipmentSequence" in self._dataset:
                 del self._dataset.ContributingEquipmentSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContributingEquipmentSequenceItem) for item in value):
-            raise ValueError(f"ContributingEquipmentSequence must be a list of ContributingEquipmentSequenceItem objects")
+            raise ValueError("ContributingEquipmentSequence must be a list of ContributingEquipmentSequenceItem objects")
         else:
             self._ContributingEquipmentSequence = value
             if "ContributingEquipmentSequence" not in self._dataset:
@@ -752,7 +753,7 @@ class RealTimeAudioWaveform:
 
     def add_ContributingEquipment(self, item: ContributingEquipmentSequenceItem):
         if not isinstance(item, ContributingEquipmentSequenceItem):
-            raise ValueError(f"Item must be an instance of ContributingEquipmentSequenceItem")
+            raise ValueError("Item must be an instance of ContributingEquipmentSequenceItem")
         self._ContributingEquipmentSequence.append(item)
         if "ContributingEquipmentSequence" not in self._dataset:
             self._dataset.ContributingEquipmentSequence = pydicom.Sequence()
@@ -791,7 +792,7 @@ class RealTimeAudioWaveform:
             isinstance(item, ConversionSourceAttributesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConversionSourceAttributesSequence must be a list of ConversionSourceAttributesSequenceItem objects"
+                "ConversionSourceAttributesSequence must be a list of ConversionSourceAttributesSequenceItem objects"
             )
         else:
             self._ConversionSourceAttributesSequence = value
@@ -802,7 +803,7 @@ class RealTimeAudioWaveform:
 
     def add_ConversionSourceAttributes(self, item: ConversionSourceAttributesSequenceItem):
         if not isinstance(item, ConversionSourceAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of ConversionSourceAttributesSequenceItem")
+            raise ValueError("Item must be an instance of ConversionSourceAttributesSequenceItem")
         self._ConversionSourceAttributesSequence.append(item)
         if "ConversionSourceAttributesSequence" not in self._dataset:
             self._dataset.ConversionSourceAttributesSequence = pydicom.Sequence()
@@ -843,7 +844,7 @@ class RealTimeAudioWaveform:
             isinstance(item, HL7StructuredDocumentReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"HL7StructuredDocumentReferenceSequence must be a list of HL7StructuredDocumentReferenceSequenceItem objects"
+                "HL7StructuredDocumentReferenceSequence must be a list of HL7StructuredDocumentReferenceSequenceItem objects"
             )
         else:
             self._HL7StructuredDocumentReferenceSequence = value
@@ -854,7 +855,7 @@ class RealTimeAudioWaveform:
 
     def add_HL7StructuredDocumentReference(self, item: HL7StructuredDocumentReferenceSequenceItem):
         if not isinstance(item, HL7StructuredDocumentReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of HL7StructuredDocumentReferenceSequenceItem")
+            raise ValueError("Item must be an instance of HL7StructuredDocumentReferenceSequenceItem")
         self._HL7StructuredDocumentReferenceSequence.append(item)
         if "HL7StructuredDocumentReferenceSequence" not in self._dataset:
             self._dataset.HL7StructuredDocumentReferenceSequence = pydicom.Sequence()
@@ -932,7 +933,7 @@ class RealTimeAudioWaveform:
             if "EncryptedAttributesSequence" in self._dataset:
                 del self._dataset.EncryptedAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, EncryptedAttributesSequenceItem) for item in value):
-            raise ValueError(f"EncryptedAttributesSequence must be a list of EncryptedAttributesSequenceItem objects")
+            raise ValueError("EncryptedAttributesSequence must be a list of EncryptedAttributesSequenceItem objects")
         else:
             self._EncryptedAttributesSequence = value
             if "EncryptedAttributesSequence" not in self._dataset:
@@ -942,7 +943,7 @@ class RealTimeAudioWaveform:
 
     def add_EncryptedAttributes(self, item: EncryptedAttributesSequenceItem):
         if not isinstance(item, EncryptedAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of EncryptedAttributesSequenceItem")
+            raise ValueError("Item must be an instance of EncryptedAttributesSequenceItem")
         self._EncryptedAttributesSequence.append(item)
         if "EncryptedAttributesSequence" not in self._dataset:
             self._dataset.EncryptedAttributesSequence = pydicom.Sequence()
@@ -964,7 +965,7 @@ class RealTimeAudioWaveform:
             if "OriginalAttributesSequence" in self._dataset:
                 del self._dataset.OriginalAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, OriginalAttributesSequenceItem) for item in value):
-            raise ValueError(f"OriginalAttributesSequence must be a list of OriginalAttributesSequenceItem objects")
+            raise ValueError("OriginalAttributesSequence must be a list of OriginalAttributesSequenceItem objects")
         else:
             self._OriginalAttributesSequence = value
             if "OriginalAttributesSequence" not in self._dataset:
@@ -974,7 +975,7 @@ class RealTimeAudioWaveform:
 
     def add_OriginalAttributes(self, item: OriginalAttributesSequenceItem):
         if not isinstance(item, OriginalAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of OriginalAttributesSequenceItem")
+            raise ValueError("Item must be an instance of OriginalAttributesSequenceItem")
         self._OriginalAttributesSequence.append(item)
         if "OriginalAttributesSequence" not in self._dataset:
             self._dataset.OriginalAttributesSequence = pydicom.Sequence()
@@ -1024,7 +1025,7 @@ class RealTimeAudioWaveform:
             if "MACParametersSequence" in self._dataset:
                 del self._dataset.MACParametersSequence
         elif not isinstance(value, list) or not all(isinstance(item, MACParametersSequenceItem) for item in value):
-            raise ValueError(f"MACParametersSequence must be a list of MACParametersSequenceItem objects")
+            raise ValueError("MACParametersSequence must be a list of MACParametersSequenceItem objects")
         else:
             self._MACParametersSequence = value
             if "MACParametersSequence" not in self._dataset:
@@ -1034,7 +1035,7 @@ class RealTimeAudioWaveform:
 
     def add_MACParameters(self, item: MACParametersSequenceItem):
         if not isinstance(item, MACParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of MACParametersSequenceItem")
+            raise ValueError("Item must be an instance of MACParametersSequenceItem")
         self._MACParametersSequence.append(item)
         if "MACParametersSequence" not in self._dataset:
             self._dataset.MACParametersSequence = pydicom.Sequence()
@@ -1056,7 +1057,7 @@ class RealTimeAudioWaveform:
             if "DigitalSignaturesSequence" in self._dataset:
                 del self._dataset.DigitalSignaturesSequence
         elif not isinstance(value, list) or not all(isinstance(item, DigitalSignaturesSequenceItem) for item in value):
-            raise ValueError(f"DigitalSignaturesSequence must be a list of DigitalSignaturesSequenceItem objects")
+            raise ValueError("DigitalSignaturesSequence must be a list of DigitalSignaturesSequenceItem objects")
         else:
             self._DigitalSignaturesSequence = value
             if "DigitalSignaturesSequence" not in self._dataset:
@@ -1066,7 +1067,7 @@ class RealTimeAudioWaveform:
 
     def add_DigitalSignatures(self, item: DigitalSignaturesSequenceItem):
         if not isinstance(item, DigitalSignaturesSequenceItem):
-            raise ValueError(f"Item must be an instance of DigitalSignaturesSequenceItem")
+            raise ValueError("Item must be an instance of DigitalSignaturesSequenceItem")
         self._DigitalSignaturesSequence.append(item)
         if "DigitalSignaturesSequence" not in self._dataset:
             self._dataset.DigitalSignaturesSequence = pydicom.Sequence()
@@ -1186,7 +1187,7 @@ class RealTimeAudioWaveform:
             if "ReferencedInstanceSequence" in self._dataset:
                 del self._dataset.ReferencedInstanceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedInstanceSequenceItem) for item in value):
-            raise ValueError(f"ReferencedInstanceSequence must be a list of ReferencedInstanceSequenceItem objects")
+            raise ValueError("ReferencedInstanceSequence must be a list of ReferencedInstanceSequenceItem objects")
         else:
             self._ReferencedInstanceSequence = value
             if "ReferencedInstanceSequence" not in self._dataset:
@@ -1196,7 +1197,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferencedInstance(self, item: ReferencedInstanceSequenceItem):
         if not isinstance(item, ReferencedInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedInstanceSequenceItem")
         self._ReferencedInstanceSequence.append(item)
         if "ReferencedInstanceSequence" not in self._dataset:
             self._dataset.ReferencedInstanceSequence = pydicom.Sequence()
@@ -1232,7 +1233,7 @@ class RealTimeAudioWaveform:
             if "RealTimeBulkDataFlowSequence" in self._dataset:
                 del self._dataset.RealTimeBulkDataFlowSequence
         elif not isinstance(value, list) or not all(isinstance(item, RealTimeBulkDataFlowSequenceItem) for item in value):
-            raise ValueError(f"RealTimeBulkDataFlowSequence must be a list of RealTimeBulkDataFlowSequenceItem objects")
+            raise ValueError("RealTimeBulkDataFlowSequence must be a list of RealTimeBulkDataFlowSequenceItem objects")
         else:
             self._RealTimeBulkDataFlowSequence = value
             if "RealTimeBulkDataFlowSequence" not in self._dataset:
@@ -1242,7 +1243,7 @@ class RealTimeAudioWaveform:
 
     def add_RealTimeBulkDataFlow(self, item: RealTimeBulkDataFlowSequenceItem):
         if not isinstance(item, RealTimeBulkDataFlowSequenceItem):
-            raise ValueError(f"Item must be an instance of RealTimeBulkDataFlowSequenceItem")
+            raise ValueError("Item must be an instance of RealTimeBulkDataFlowSequenceItem")
         self._RealTimeBulkDataFlowSequence.append(item)
         if "RealTimeBulkDataFlowSequence" not in self._dataset:
             self._dataset.RealTimeBulkDataFlowSequence = pydicom.Sequence()
@@ -1269,7 +1270,7 @@ class RealTimeAudioWaveform:
             isinstance(item, CurrentFrameFunctionalGroupsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"CurrentFrameFunctionalGroupsSequence must be a list of CurrentFrameFunctionalGroupsSequenceItem objects"
+                "CurrentFrameFunctionalGroupsSequence must be a list of CurrentFrameFunctionalGroupsSequenceItem objects"
             )
         else:
             self._CurrentFrameFunctionalGroupsSequence = value
@@ -1280,7 +1281,7 @@ class RealTimeAudioWaveform:
 
     def add_CurrentFrameFunctionalGroups(self, item: CurrentFrameFunctionalGroupsSequenceItem):
         if not isinstance(item, CurrentFrameFunctionalGroupsSequenceItem):
-            raise ValueError(f"Item must be an instance of CurrentFrameFunctionalGroupsSequenceItem")
+            raise ValueError("Item must be an instance of CurrentFrameFunctionalGroupsSequenceItem")
         self._CurrentFrameFunctionalGroupsSequence.append(item)
         if "CurrentFrameFunctionalGroupsSequence" not in self._dataset:
             self._dataset.CurrentFrameFunctionalGroupsSequence = pydicom.Sequence()
@@ -1358,7 +1359,7 @@ class RealTimeAudioWaveform:
             if "SeriesDescriptionCodeSequence" in self._dataset:
                 del self._dataset.SeriesDescriptionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SeriesDescriptionCodeSequence = value
             if "SeriesDescriptionCodeSequence" not in self._dataset:
@@ -1368,7 +1369,7 @@ class RealTimeAudioWaveform:
 
     def add_SeriesDescriptionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SeriesDescriptionCodeSequence.append(item)
         if "SeriesDescriptionCodeSequence" not in self._dataset:
             self._dataset.SeriesDescriptionCodeSequence = pydicom.Sequence()
@@ -1412,7 +1413,8 @@ class RealTimeAudioWaveform:
             isinstance(item, PerformingPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PerformingPhysicianIdentificationSequence must be a list of PerformingPhysicianIdentificationSequenceItem objects"
+                "PerformingPhysicianIdentificationSequence must be a list of PerformingPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._PerformingPhysicianIdentificationSequence = value
@@ -1423,7 +1425,7 @@ class RealTimeAudioWaveform:
 
     def add_PerformingPhysicianIdentification(self, item: PerformingPhysicianIdentificationSequenceItem):
         if not isinstance(item, PerformingPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PerformingPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PerformingPhysicianIdentificationSequenceItem")
         self._PerformingPhysicianIdentificationSequence.append(item)
         if "PerformingPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.PerformingPhysicianIdentificationSequence = pydicom.Sequence()
@@ -1459,7 +1461,7 @@ class RealTimeAudioWaveform:
             if "OperatorIdentificationSequence" in self._dataset:
                 del self._dataset.OperatorIdentificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, OperatorIdentificationSequenceItem) for item in value):
-            raise ValueError(f"OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
+            raise ValueError("OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
         else:
             self._OperatorIdentificationSequence = value
             if "OperatorIdentificationSequence" not in self._dataset:
@@ -1469,7 +1471,7 @@ class RealTimeAudioWaveform:
 
     def add_OperatorIdentification(self, item: OperatorIdentificationSequenceItem):
         if not isinstance(item, OperatorIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of OperatorIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of OperatorIdentificationSequenceItem")
         self._OperatorIdentificationSequence.append(item)
         if "OperatorIdentificationSequence" not in self._dataset:
             self._dataset.OperatorIdentificationSequence = pydicom.Sequence()
@@ -1499,7 +1501,8 @@ class RealTimeAudioWaveform:
             isinstance(item, ReferencedPerformedProcedureStepSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem objects"
+                "ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedPerformedProcedureStepSequence = value
@@ -1510,7 +1513,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferencedPerformedProcedureStep(self, item: ReferencedPerformedProcedureStepSequenceItem):
         if not isinstance(item, ReferencedPerformedProcedureStepSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProcedureStepSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPerformedProcedureStepSequenceItem")
         self._ReferencedPerformedProcedureStepSequence.append(item)
         if "ReferencedPerformedProcedureStepSequence" not in self._dataset:
             self._dataset.ReferencedPerformedProcedureStepSequence = pydicom.Sequence()
@@ -1532,7 +1535,7 @@ class RealTimeAudioWaveform:
             if "RelatedSeriesSequence" in self._dataset:
                 del self._dataset.RelatedSeriesSequence
         elif not isinstance(value, list) or not all(isinstance(item, RelatedSeriesSequenceItem) for item in value):
-            raise ValueError(f"RelatedSeriesSequence must be a list of RelatedSeriesSequenceItem objects")
+            raise ValueError("RelatedSeriesSequence must be a list of RelatedSeriesSequenceItem objects")
         else:
             self._RelatedSeriesSequence = value
             if "RelatedSeriesSequence" not in self._dataset:
@@ -1542,7 +1545,7 @@ class RealTimeAudioWaveform:
 
     def add_RelatedSeries(self, item: RelatedSeriesSequenceItem):
         if not isinstance(item, RelatedSeriesSequenceItem):
-            raise ValueError(f"Item must be an instance of RelatedSeriesSequenceItem")
+            raise ValueError("Item must be an instance of RelatedSeriesSequenceItem")
         self._RelatedSeriesSequence.append(item)
         if "RelatedSeriesSequence" not in self._dataset:
             self._dataset.RelatedSeriesSequence = pydicom.Sequence()
@@ -1774,7 +1777,7 @@ class RealTimeAudioWaveform:
             if "PerformedProtocolCodeSequence" in self._dataset:
                 del self._dataset.PerformedProtocolCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PerformedProtocolCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PerformedProtocolCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PerformedProtocolCodeSequence = value
             if "PerformedProtocolCodeSequence" not in self._dataset:
@@ -1784,7 +1787,7 @@ class RealTimeAudioWaveform:
 
     def add_PerformedProtocolCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PerformedProtocolCodeSequence.append(item)
         if "PerformedProtocolCodeSequence" not in self._dataset:
             self._dataset.PerformedProtocolCodeSequence = pydicom.Sequence()
@@ -1806,7 +1809,7 @@ class RealTimeAudioWaveform:
             if "RequestAttributesSequence" in self._dataset:
                 del self._dataset.RequestAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, RequestAttributesSequenceItem) for item in value):
-            raise ValueError(f"RequestAttributesSequence must be a list of RequestAttributesSequenceItem objects")
+            raise ValueError("RequestAttributesSequence must be a list of RequestAttributesSequenceItem objects")
         else:
             self._RequestAttributesSequence = value
             if "RequestAttributesSequence" not in self._dataset:
@@ -1816,7 +1819,7 @@ class RealTimeAudioWaveform:
 
     def add_RequestAttributes(self, item: RequestAttributesSequenceItem):
         if not isinstance(item, RequestAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of RequestAttributesSequenceItem")
+            raise ValueError("Item must be an instance of RequestAttributesSequenceItem")
         self._RequestAttributesSequence.append(item)
         if "RequestAttributesSequence" not in self._dataset:
             self._dataset.RequestAttributesSequence = pydicom.Sequence()
@@ -1880,7 +1883,7 @@ class RealTimeAudioWaveform:
             if "AdmittingDiagnosesCodeSequence" in self._dataset:
                 del self._dataset.AdmittingDiagnosesCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AdmittingDiagnosesCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AdmittingDiagnosesCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AdmittingDiagnosesCodeSequence = value
             if "AdmittingDiagnosesCodeSequence" not in self._dataset:
@@ -1890,7 +1893,7 @@ class RealTimeAudioWaveform:
 
     def add_AdmittingDiagnosesCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AdmittingDiagnosesCodeSequence.append(item)
         if "AdmittingDiagnosesCodeSequence" not in self._dataset:
             self._dataset.AdmittingDiagnosesCodeSequence = pydicom.Sequence()
@@ -1940,7 +1943,7 @@ class RealTimeAudioWaveform:
             if "PatientSizeCodeSequence" in self._dataset:
                 del self._dataset.PatientSizeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientSizeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientSizeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientSizeCodeSequence = value
             if "PatientSizeCodeSequence" not in self._dataset:
@@ -1950,7 +1953,7 @@ class RealTimeAudioWaveform:
 
     def add_PatientSizeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientSizeCodeSequence.append(item)
         if "PatientSizeCodeSequence" not in self._dataset:
             self._dataset.PatientSizeCodeSequence = pydicom.Sequence()
@@ -2154,7 +2157,7 @@ class RealTimeAudioWaveform:
             if "ReasonForVisitCodeSequence" in self._dataset:
                 del self._dataset.ReasonForVisitCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForVisitCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForVisitCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForVisitCodeSequence = value
             if "ReasonForVisitCodeSequence" not in self._dataset:
@@ -2164,7 +2167,7 @@ class RealTimeAudioWaveform:
 
     def add_ReasonForVisitCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForVisitCodeSequence.append(item)
         if "ReasonForVisitCodeSequence" not in self._dataset:
             self._dataset.ReasonForVisitCodeSequence = pydicom.Sequence()
@@ -2200,7 +2203,7 @@ class RealTimeAudioWaveform:
             if "IssuerOfAdmissionIDSequence" in self._dataset:
                 del self._dataset.IssuerOfAdmissionIDSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfAdmissionIDSequenceItem) for item in value):
-            raise ValueError(f"IssuerOfAdmissionIDSequence must be a list of IssuerOfAdmissionIDSequenceItem objects")
+            raise ValueError("IssuerOfAdmissionIDSequence must be a list of IssuerOfAdmissionIDSequenceItem objects")
         else:
             self._IssuerOfAdmissionIDSequence = value
             if "IssuerOfAdmissionIDSequence" not in self._dataset:
@@ -2210,7 +2213,7 @@ class RealTimeAudioWaveform:
 
     def add_IssuerOfAdmissionID(self, item: IssuerOfAdmissionIDSequenceItem):
         if not isinstance(item, IssuerOfAdmissionIDSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfAdmissionIDSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfAdmissionIDSequenceItem")
         self._IssuerOfAdmissionIDSequence.append(item)
         if "IssuerOfAdmissionIDSequence" not in self._dataset:
             self._dataset.IssuerOfAdmissionIDSequence = pydicom.Sequence()
@@ -2260,9 +2263,7 @@ class RealTimeAudioWaveform:
             if "IssuerOfServiceEpisodeIDSequence" in self._dataset:
                 del self._dataset.IssuerOfServiceEpisodeIDSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfServiceEpisodeIDSequenceItem) for item in value):
-            raise ValueError(
-                f"IssuerOfServiceEpisodeIDSequence must be a list of IssuerOfServiceEpisodeIDSequenceItem objects"
-            )
+            raise ValueError("IssuerOfServiceEpisodeIDSequence must be a list of IssuerOfServiceEpisodeIDSequenceItem objects")
         else:
             self._IssuerOfServiceEpisodeIDSequence = value
             if "IssuerOfServiceEpisodeIDSequence" not in self._dataset:
@@ -2272,7 +2273,7 @@ class RealTimeAudioWaveform:
 
     def add_IssuerOfServiceEpisodeID(self, item: IssuerOfServiceEpisodeIDSequenceItem):
         if not isinstance(item, IssuerOfServiceEpisodeIDSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfServiceEpisodeIDSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfServiceEpisodeIDSequenceItem")
         self._IssuerOfServiceEpisodeIDSequence.append(item)
         if "IssuerOfServiceEpisodeIDSequence" not in self._dataset:
             self._dataset.IssuerOfServiceEpisodeIDSequence = pydicom.Sequence()
@@ -2380,7 +2381,7 @@ class RealTimeAudioWaveform:
             if "InstitutionalDepartmentTypeCodeSequence" in self._dataset:
                 del self._dataset.InstitutionalDepartmentTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InstitutionalDepartmentTypeCodeSequence = value
             if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
@@ -2390,7 +2391,7 @@ class RealTimeAudioWaveform:
 
     def add_InstitutionalDepartmentTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InstitutionalDepartmentTypeCodeSequence.append(item)
         if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
             self._dataset.InstitutionalDepartmentTypeCodeSequence = pydicom.Sequence()
@@ -2468,7 +2469,7 @@ class RealTimeAudioWaveform:
             if "UDISequence" in self._dataset:
                 del self._dataset.UDISequence
         elif not isinstance(value, list) or not all(isinstance(item, UDISequenceItem) for item in value):
-            raise ValueError(f"UDISequence must be a list of UDISequenceItem objects")
+            raise ValueError("UDISequence must be a list of UDISequenceItem objects")
         else:
             self._UDISequence = value
             if "UDISequence" not in self._dataset:
@@ -2478,7 +2479,7 @@ class RealTimeAudioWaveform:
 
     def add_UDI(self, item: UDISequenceItem):
         if not isinstance(item, UDISequenceItem):
-            raise ValueError(f"Item must be an instance of UDISequenceItem")
+            raise ValueError("Item must be an instance of UDISequenceItem")
         self._UDISequence.append(item)
         if "UDISequence" not in self._dataset:
             self._dataset.UDISequence = pydicom.Sequence()
@@ -2612,7 +2613,7 @@ class RealTimeAudioWaveform:
             if "AcquisitionContextSequence" in self._dataset:
                 del self._dataset.AcquisitionContextSequence
         elif not isinstance(value, list) or not all(isinstance(item, AcquisitionContextSequenceItem) for item in value):
-            raise ValueError(f"AcquisitionContextSequence must be a list of AcquisitionContextSequenceItem objects")
+            raise ValueError("AcquisitionContextSequence must be a list of AcquisitionContextSequenceItem objects")
         else:
             self._AcquisitionContextSequence = value
             if "AcquisitionContextSequence" not in self._dataset:
@@ -2622,7 +2623,7 @@ class RealTimeAudioWaveform:
 
     def add_AcquisitionContext(self, item: AcquisitionContextSequenceItem):
         if not isinstance(item, AcquisitionContextSequenceItem):
-            raise ValueError(f"Item must be an instance of AcquisitionContextSequenceItem")
+            raise ValueError("Item must be an instance of AcquisitionContextSequenceItem")
         self._AcquisitionContextSequence.append(item)
         if "AcquisitionContextSequence" not in self._dataset:
             self._dataset.AcquisitionContextSequence = pydicom.Sequence()
@@ -2658,7 +2659,7 @@ class RealTimeAudioWaveform:
             if "ReferencedPatientSequence" in self._dataset:
                 del self._dataset.ReferencedPatientSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedPatientSequenceItem) for item in value):
-            raise ValueError(f"ReferencedPatientSequence must be a list of ReferencedPatientSequenceItem objects")
+            raise ValueError("ReferencedPatientSequence must be a list of ReferencedPatientSequenceItem objects")
         else:
             self._ReferencedPatientSequence = value
             if "ReferencedPatientSequence" not in self._dataset:
@@ -2668,7 +2669,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferencedPatient(self, item: ReferencedPatientSequenceItem):
         if not isinstance(item, ReferencedPatientSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPatientSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPatientSequenceItem")
         self._ReferencedPatientSequence.append(item)
         if "ReferencedPatientSequence" not in self._dataset:
             self._dataset.ReferencedPatientSequence = pydicom.Sequence()
@@ -2749,7 +2750,7 @@ class RealTimeAudioWaveform:
             isinstance(item, IssuerOfPatientIDQualifiersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
+                "IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
             )
         else:
             self._IssuerOfPatientIDQualifiersSequence = value
@@ -2760,7 +2761,7 @@ class RealTimeAudioWaveform:
 
     def add_IssuerOfPatientIDQualifiers(self, item: IssuerOfPatientIDQualifiersSequenceItem):
         if not isinstance(item, IssuerOfPatientIDQualifiersSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
         self._IssuerOfPatientIDQualifiersSequence.append(item)
         if "IssuerOfPatientIDQualifiersSequence" not in self._dataset:
             self._dataset.IssuerOfPatientIDQualifiersSequence = pydicom.Sequence()
@@ -2790,7 +2791,8 @@ class RealTimeAudioWaveform:
             isinstance(item, SourcePatientGroupIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SourcePatientGroupIdentificationSequence must be a list of SourcePatientGroupIdentificationSequenceItem objects"
+                "SourcePatientGroupIdentificationSequence must be a list of SourcePatientGroupIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._SourcePatientGroupIdentificationSequence = value
@@ -2801,7 +2803,7 @@ class RealTimeAudioWaveform:
 
     def add_SourcePatientGroupIdentification(self, item: SourcePatientGroupIdentificationSequenceItem):
         if not isinstance(item, SourcePatientGroupIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of SourcePatientGroupIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of SourcePatientGroupIdentificationSequenceItem")
         self._SourcePatientGroupIdentificationSequence.append(item)
         if "SourcePatientGroupIdentificationSequence" not in self._dataset:
             self._dataset.SourcePatientGroupIdentificationSequence = pydicom.Sequence()
@@ -2828,7 +2830,7 @@ class RealTimeAudioWaveform:
             isinstance(item, GroupOfPatientsIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"GroupOfPatientsIdentificationSequence must be a list of GroupOfPatientsIdentificationSequenceItem objects"
+                "GroupOfPatientsIdentificationSequence must be a list of GroupOfPatientsIdentificationSequenceItem objects"
             )
         else:
             self._GroupOfPatientsIdentificationSequence = value
@@ -2839,7 +2841,7 @@ class RealTimeAudioWaveform:
 
     def add_GroupOfPatientsIdentification(self, item: GroupOfPatientsIdentificationSequenceItem):
         if not isinstance(item, GroupOfPatientsIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of GroupOfPatientsIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of GroupOfPatientsIdentificationSequenceItem")
         self._GroupOfPatientsIdentificationSequence.append(item)
         if "GroupOfPatientsIdentificationSequence" not in self._dataset:
             self._dataset.GroupOfPatientsIdentificationSequence = pydicom.Sequence()
@@ -2987,7 +2989,7 @@ class RealTimeAudioWaveform:
             if "StrainStockSequence" in self._dataset:
                 del self._dataset.StrainStockSequence
         elif not isinstance(value, list) or not all(isinstance(item, StrainStockSequenceItem) for item in value):
-            raise ValueError(f"StrainStockSequence must be a list of StrainStockSequenceItem objects")
+            raise ValueError("StrainStockSequence must be a list of StrainStockSequenceItem objects")
         else:
             self._StrainStockSequence = value
             if "StrainStockSequence" not in self._dataset:
@@ -2997,7 +2999,7 @@ class RealTimeAudioWaveform:
 
     def add_StrainStock(self, item: StrainStockSequenceItem):
         if not isinstance(item, StrainStockSequenceItem):
-            raise ValueError(f"Item must be an instance of StrainStockSequenceItem")
+            raise ValueError("Item must be an instance of StrainStockSequenceItem")
         self._StrainStockSequence.append(item)
         if "StrainStockSequence" not in self._dataset:
             self._dataset.StrainStockSequence = pydicom.Sequence()
@@ -3033,7 +3035,7 @@ class RealTimeAudioWaveform:
             if "StrainCodeSequence" in self._dataset:
                 del self._dataset.StrainCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"StrainCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("StrainCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._StrainCodeSequence = value
             if "StrainCodeSequence" not in self._dataset:
@@ -3043,7 +3045,7 @@ class RealTimeAudioWaveform:
 
     def add_StrainCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._StrainCodeSequence.append(item)
         if "StrainCodeSequence" not in self._dataset:
             self._dataset.StrainCodeSequence = pydicom.Sequence()
@@ -3065,7 +3067,7 @@ class RealTimeAudioWaveform:
             if "GeneticModificationsSequence" in self._dataset:
                 del self._dataset.GeneticModificationsSequence
         elif not isinstance(value, list) or not all(isinstance(item, GeneticModificationsSequenceItem) for item in value):
-            raise ValueError(f"GeneticModificationsSequence must be a list of GeneticModificationsSequenceItem objects")
+            raise ValueError("GeneticModificationsSequence must be a list of GeneticModificationsSequenceItem objects")
         else:
             self._GeneticModificationsSequence = value
             if "GeneticModificationsSequence" not in self._dataset:
@@ -3075,7 +3077,7 @@ class RealTimeAudioWaveform:
 
     def add_GeneticModifications(self, item: GeneticModificationsSequenceItem):
         if not isinstance(item, GeneticModificationsSequenceItem):
-            raise ValueError(f"Item must be an instance of GeneticModificationsSequenceItem")
+            raise ValueError("Item must be an instance of GeneticModificationsSequenceItem")
         self._GeneticModificationsSequence.append(item)
         if "GeneticModificationsSequence" not in self._dataset:
             self._dataset.GeneticModificationsSequence = pydicom.Sequence()
@@ -3111,7 +3113,7 @@ class RealTimeAudioWaveform:
             if "OtherPatientIDsSequence" in self._dataset:
                 del self._dataset.OtherPatientIDsSequence
         elif not isinstance(value, list) or not all(isinstance(item, OtherPatientIDsSequenceItem) for item in value):
-            raise ValueError(f"OtherPatientIDsSequence must be a list of OtherPatientIDsSequenceItem objects")
+            raise ValueError("OtherPatientIDsSequence must be a list of OtherPatientIDsSequenceItem objects")
         else:
             self._OtherPatientIDsSequence = value
             if "OtherPatientIDsSequence" not in self._dataset:
@@ -3121,7 +3123,7 @@ class RealTimeAudioWaveform:
 
     def add_OtherPatientIDs(self, item: OtherPatientIDsSequenceItem):
         if not isinstance(item, OtherPatientIDsSequenceItem):
-            raise ValueError(f"Item must be an instance of OtherPatientIDsSequenceItem")
+            raise ValueError("Item must be an instance of OtherPatientIDsSequenceItem")
         self._OtherPatientIDsSequence.append(item)
         if "OtherPatientIDsSequence" not in self._dataset:
             self._dataset.OtherPatientIDsSequence = pydicom.Sequence()
@@ -3143,7 +3145,7 @@ class RealTimeAudioWaveform:
             if "ReferencedPatientPhotoSequence" in self._dataset:
                 del self._dataset.ReferencedPatientPhotoSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedPatientPhotoSequenceItem) for item in value):
-            raise ValueError(f"ReferencedPatientPhotoSequence must be a list of ReferencedPatientPhotoSequenceItem objects")
+            raise ValueError("ReferencedPatientPhotoSequence must be a list of ReferencedPatientPhotoSequenceItem objects")
         else:
             self._ReferencedPatientPhotoSequence = value
             if "ReferencedPatientPhotoSequence" not in self._dataset:
@@ -3153,7 +3155,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferencedPatientPhoto(self, item: ReferencedPatientPhotoSequenceItem):
         if not isinstance(item, ReferencedPatientPhotoSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPatientPhotoSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPatientPhotoSequenceItem")
         self._ReferencedPatientPhotoSequence.append(item)
         if "ReferencedPatientPhotoSequence" not in self._dataset:
             self._dataset.ReferencedPatientPhotoSequence = pydicom.Sequence()
@@ -3203,7 +3205,7 @@ class RealTimeAudioWaveform:
             if "PatientSpeciesCodeSequence" in self._dataset:
                 del self._dataset.PatientSpeciesCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientSpeciesCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientSpeciesCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientSpeciesCodeSequence = value
             if "PatientSpeciesCodeSequence" not in self._dataset:
@@ -3213,7 +3215,7 @@ class RealTimeAudioWaveform:
 
     def add_PatientSpeciesCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientSpeciesCodeSequence.append(item)
         if "PatientSpeciesCodeSequence" not in self._dataset:
             self._dataset.PatientSpeciesCodeSequence = pydicom.Sequence()
@@ -3249,7 +3251,7 @@ class RealTimeAudioWaveform:
             if "PatientBreedCodeSequence" in self._dataset:
                 del self._dataset.PatientBreedCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientBreedCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientBreedCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientBreedCodeSequence = value
             if "PatientBreedCodeSequence" not in self._dataset:
@@ -3259,7 +3261,7 @@ class RealTimeAudioWaveform:
 
     def add_PatientBreedCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientBreedCodeSequence.append(item)
         if "PatientBreedCodeSequence" not in self._dataset:
             self._dataset.PatientBreedCodeSequence = pydicom.Sequence()
@@ -3281,7 +3283,7 @@ class RealTimeAudioWaveform:
             if "BreedRegistrationSequence" in self._dataset:
                 del self._dataset.BreedRegistrationSequence
         elif not isinstance(value, list) or not all(isinstance(item, BreedRegistrationSequenceItem) for item in value):
-            raise ValueError(f"BreedRegistrationSequence must be a list of BreedRegistrationSequenceItem objects")
+            raise ValueError("BreedRegistrationSequence must be a list of BreedRegistrationSequenceItem objects")
         else:
             self._BreedRegistrationSequence = value
             if "BreedRegistrationSequence" not in self._dataset:
@@ -3291,7 +3293,7 @@ class RealTimeAudioWaveform:
 
     def add_BreedRegistration(self, item: BreedRegistrationSequenceItem):
         if not isinstance(item, BreedRegistrationSequenceItem):
-            raise ValueError(f"Item must be an instance of BreedRegistrationSequenceItem")
+            raise ValueError("Item must be an instance of BreedRegistrationSequenceItem")
         self._BreedRegistrationSequence.append(item)
         if "BreedRegistrationSequence" not in self._dataset:
             self._dataset.BreedRegistrationSequence = pydicom.Sequence()
@@ -3397,7 +3399,7 @@ class RealTimeAudioWaveform:
             if "DeidentificationMethodCodeSequence" in self._dataset:
                 del self._dataset.DeidentificationMethodCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DeidentificationMethodCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DeidentificationMethodCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DeidentificationMethodCodeSequence = value
             if "DeidentificationMethodCodeSequence" not in self._dataset:
@@ -3407,7 +3409,7 @@ class RealTimeAudioWaveform:
 
     def add_DeidentificationMethodCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DeidentificationMethodCodeSequence.append(item)
         if "DeidentificationMethodCodeSequence" not in self._dataset:
             self._dataset.DeidentificationMethodCodeSequence = pydicom.Sequence()
@@ -3485,7 +3487,7 @@ class RealTimeAudioWaveform:
             if "ClinicalTrialTimePointTypeCodeSequence" in self._dataset:
                 del self._dataset.ClinicalTrialTimePointTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ClinicalTrialTimePointTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ClinicalTrialTimePointTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ClinicalTrialTimePointTypeCodeSequence = value
             if "ClinicalTrialTimePointTypeCodeSequence" not in self._dataset:
@@ -3495,7 +3497,7 @@ class RealTimeAudioWaveform:
 
     def add_ClinicalTrialTimePointTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ClinicalTrialTimePointTypeCodeSequence.append(item)
         if "ClinicalTrialTimePointTypeCodeSequence" not in self._dataset:
             self._dataset.ClinicalTrialTimePointTypeCodeSequence = pydicom.Sequence()
@@ -3534,7 +3536,7 @@ class RealTimeAudioWaveform:
             isinstance(item, ConsentForClinicalTrialUseSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConsentForClinicalTrialUseSequence must be a list of ConsentForClinicalTrialUseSequenceItem objects"
+                "ConsentForClinicalTrialUseSequence must be a list of ConsentForClinicalTrialUseSequenceItem objects"
             )
         else:
             self._ConsentForClinicalTrialUseSequence = value
@@ -3545,7 +3547,7 @@ class RealTimeAudioWaveform:
 
     def add_ConsentForClinicalTrialUse(self, item: ConsentForClinicalTrialUseSequenceItem):
         if not isinstance(item, ConsentForClinicalTrialUseSequenceItem):
-            raise ValueError(f"Item must be an instance of ConsentForClinicalTrialUseSequenceItem")
+            raise ValueError("Item must be an instance of ConsentForClinicalTrialUseSequenceItem")
         self._ConsentForClinicalTrialUseSequence.append(item)
         if "ConsentForClinicalTrialUseSequence" not in self._dataset:
             self._dataset.ConsentForClinicalTrialUseSequence = pydicom.Sequence()
@@ -3609,7 +3611,7 @@ class RealTimeAudioWaveform:
             if "IssuerOfAccessionNumberSequence" in self._dataset:
                 del self._dataset.IssuerOfAccessionNumberSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfAccessionNumberSequenceItem) for item in value):
-            raise ValueError(f"IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
+            raise ValueError("IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
         else:
             self._IssuerOfAccessionNumberSequence = value
             if "IssuerOfAccessionNumberSequence" not in self._dataset:
@@ -3619,7 +3621,7 @@ class RealTimeAudioWaveform:
 
     def add_IssuerOfAccessionNumber(self, item: IssuerOfAccessionNumberSequenceItem):
         if not isinstance(item, IssuerOfAccessionNumberSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfAccessionNumberSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfAccessionNumberSequenceItem")
         self._IssuerOfAccessionNumberSequence.append(item)
         if "IssuerOfAccessionNumberSequence" not in self._dataset:
             self._dataset.IssuerOfAccessionNumberSequence = pydicom.Sequence()
@@ -3663,7 +3665,8 @@ class RealTimeAudioWaveform:
             isinstance(item, ReferringPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferringPhysicianIdentificationSequence must be a list of ReferringPhysicianIdentificationSequenceItem objects"
+                "ReferringPhysicianIdentificationSequence must be a list of ReferringPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._ReferringPhysicianIdentificationSequence = value
@@ -3674,7 +3677,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferringPhysicianIdentification(self, item: ReferringPhysicianIdentificationSequenceItem):
         if not isinstance(item, ReferringPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferringPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ReferringPhysicianIdentificationSequenceItem")
         self._ReferringPhysicianIdentificationSequence.append(item)
         if "ReferringPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.ReferringPhysicianIdentificationSequence = pydicom.Sequence()
@@ -3718,7 +3721,8 @@ class RealTimeAudioWaveform:
             isinstance(item, ConsultingPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConsultingPhysicianIdentificationSequence must be a list of ConsultingPhysicianIdentificationSequenceItem objects"
+                "ConsultingPhysicianIdentificationSequence must be a list of ConsultingPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._ConsultingPhysicianIdentificationSequence = value
@@ -3729,7 +3733,7 @@ class RealTimeAudioWaveform:
 
     def add_ConsultingPhysicianIdentification(self, item: ConsultingPhysicianIdentificationSequenceItem):
         if not isinstance(item, ConsultingPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ConsultingPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ConsultingPhysicianIdentificationSequenceItem")
         self._ConsultingPhysicianIdentificationSequence.append(item)
         if "ConsultingPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.ConsultingPhysicianIdentificationSequence = pydicom.Sequence()
@@ -3765,7 +3769,7 @@ class RealTimeAudioWaveform:
             if "ProcedureCodeSequence" in self._dataset:
                 del self._dataset.ProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ProcedureCodeSequence = value
             if "ProcedureCodeSequence" not in self._dataset:
@@ -3775,7 +3779,7 @@ class RealTimeAudioWaveform:
 
     def add_ProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ProcedureCodeSequence.append(item)
         if "ProcedureCodeSequence" not in self._dataset:
             self._dataset.ProcedureCodeSequence = pydicom.Sequence()
@@ -3819,7 +3823,8 @@ class RealTimeAudioWaveform:
             isinstance(item, PhysiciansOfRecordIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PhysiciansOfRecordIdentificationSequence must be a list of PhysiciansOfRecordIdentificationSequenceItem objects"
+                "PhysiciansOfRecordIdentificationSequence must be a list of PhysiciansOfRecordIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._PhysiciansOfRecordIdentificationSequence = value
@@ -3830,7 +3835,7 @@ class RealTimeAudioWaveform:
 
     def add_PhysiciansOfRecordIdentification(self, item: PhysiciansOfRecordIdentificationSequenceItem):
         if not isinstance(item, PhysiciansOfRecordIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PhysiciansOfRecordIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PhysiciansOfRecordIdentificationSequenceItem")
         self._PhysiciansOfRecordIdentificationSequence.append(item)
         if "PhysiciansOfRecordIdentificationSequence" not in self._dataset:
             self._dataset.PhysiciansOfRecordIdentificationSequence = pydicom.Sequence()
@@ -3876,7 +3881,8 @@ class RealTimeAudioWaveform:
             isinstance(item, PhysiciansReadingStudyIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PhysiciansReadingStudyIdentificationSequence must be a list of PhysiciansReadingStudyIdentificationSequenceItem objects"
+                "PhysiciansReadingStudyIdentificationSequence must be a list of"
+                " PhysiciansReadingStudyIdentificationSequenceItem objects"
             )
         else:
             self._PhysiciansReadingStudyIdentificationSequence = value
@@ -3887,7 +3893,7 @@ class RealTimeAudioWaveform:
 
     def add_PhysiciansReadingStudyIdentification(self, item: PhysiciansReadingStudyIdentificationSequenceItem):
         if not isinstance(item, PhysiciansReadingStudyIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PhysiciansReadingStudyIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PhysiciansReadingStudyIdentificationSequenceItem")
         self._PhysiciansReadingStudyIdentificationSequence.append(item)
         if "PhysiciansReadingStudyIdentificationSequence" not in self._dataset:
             self._dataset.PhysiciansReadingStudyIdentificationSequence = pydicom.Sequence()
@@ -3909,7 +3915,7 @@ class RealTimeAudioWaveform:
             if "ReferencedStudySequence" in self._dataset:
                 del self._dataset.ReferencedStudySequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedStudySequenceItem) for item in value):
-            raise ValueError(f"ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
+            raise ValueError("ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
         else:
             self._ReferencedStudySequence = value
             if "ReferencedStudySequence" not in self._dataset:
@@ -3919,7 +3925,7 @@ class RealTimeAudioWaveform:
 
     def add_ReferencedStudy(self, item: ReferencedStudySequenceItem):
         if not isinstance(item, ReferencedStudySequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedStudySequenceItem")
+            raise ValueError("Item must be an instance of ReferencedStudySequenceItem")
         self._ReferencedStudySequence.append(item)
         if "ReferencedStudySequence" not in self._dataset:
             self._dataset.ReferencedStudySequence = pydicom.Sequence()
@@ -3983,7 +3989,7 @@ class RealTimeAudioWaveform:
             if "RequestingServiceCodeSequence" in self._dataset:
                 del self._dataset.RequestingServiceCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RequestingServiceCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RequestingServiceCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RequestingServiceCodeSequence = value
             if "RequestingServiceCodeSequence" not in self._dataset:
@@ -3993,7 +3999,7 @@ class RealTimeAudioWaveform:
 
     def add_RequestingServiceCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RequestingServiceCodeSequence.append(item)
         if "RequestingServiceCodeSequence" not in self._dataset:
             self._dataset.RequestingServiceCodeSequence = pydicom.Sequence()
@@ -4017,7 +4023,7 @@ class RealTimeAudioWaveform:
             if "ReasonForPerformedProcedureCodeSequence" in self._dataset:
                 del self._dataset.ReasonForPerformedProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForPerformedProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForPerformedProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForPerformedProcedureCodeSequence = value
             if "ReasonForPerformedProcedureCodeSequence" not in self._dataset:
@@ -4027,7 +4033,7 @@ class RealTimeAudioWaveform:
 
     def add_ReasonForPerformedProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForPerformedProcedureCodeSequence.append(item)
         if "ReasonForPerformedProcedureCodeSequence" not in self._dataset:
             self._dataset.ReasonForPerformedProcedureCodeSequence = pydicom.Sequence()
@@ -4110,7 +4116,7 @@ class RealTimeAudioWaveform:
             isinstance(item, OtherClinicalTrialProtocolIDsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OtherClinicalTrialProtocolIDsSequence must be a list of OtherClinicalTrialProtocolIDsSequenceItem objects"
+                "OtherClinicalTrialProtocolIDsSequence must be a list of OtherClinicalTrialProtocolIDsSequenceItem objects"
             )
         else:
             self._OtherClinicalTrialProtocolIDsSequence = value
@@ -4121,7 +4127,7 @@ class RealTimeAudioWaveform:
 
     def add_OtherClinicalTrialProtocolIDs(self, item: OtherClinicalTrialProtocolIDsSequenceItem):
         if not isinstance(item, OtherClinicalTrialProtocolIDsSequenceItem):
-            raise ValueError(f"Item must be an instance of OtherClinicalTrialProtocolIDsSequenceItem")
+            raise ValueError("Item must be an instance of OtherClinicalTrialProtocolIDsSequenceItem")
         self._OtherClinicalTrialProtocolIDsSequence.append(item)
         if "OtherClinicalTrialProtocolIDsSequence" not in self._dataset:
             self._dataset.OtherClinicalTrialProtocolIDsSequence = pydicom.Sequence()

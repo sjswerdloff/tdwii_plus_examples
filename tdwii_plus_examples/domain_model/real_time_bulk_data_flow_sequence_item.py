@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class RealTimeBulkDataFlowSequenceItem:
             if "FlowIdentifierSequence" in self._dataset:
                 del self._dataset.FlowIdentifierSequence
         elif not isinstance(value, list) or not all(isinstance(item, FlowIdentifierSequenceItem) for item in value):
-            raise ValueError(f"FlowIdentifierSequence must be a list of FlowIdentifierSequenceItem objects")
+            raise ValueError("FlowIdentifierSequence must be a list of FlowIdentifierSequenceItem objects")
         else:
             self._FlowIdentifierSequence = value
             if "FlowIdentifierSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class RealTimeBulkDataFlowSequenceItem:
 
     def add_FlowIdentifier(self, item: FlowIdentifierSequenceItem):
         if not isinstance(item, FlowIdentifierSequenceItem):
-            raise ValueError(f"Item must be an instance of FlowIdentifierSequenceItem")
+            raise ValueError("Item must be an instance of FlowIdentifierSequenceItem")
         self._FlowIdentifierSequence.append(item)
         if "FlowIdentifierSequence" not in self._dataset:
             self._dataset.FlowIdentifierSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -61,7 +61,8 @@ class OpticalSelectedOphthalmicAxialLengthSequenceItem:
             isinstance(item, SelectedSegmentalOphthalmicAxialLengthSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SelectedSegmentalOphthalmicAxialLengthSequence must be a list of SelectedSegmentalOphthalmicAxialLengthSequenceItem objects"
+                "SelectedSegmentalOphthalmicAxialLengthSequence must be a list of"
+                " SelectedSegmentalOphthalmicAxialLengthSequenceItem objects"
             )
         else:
             self._SelectedSegmentalOphthalmicAxialLengthSequence = value
@@ -72,7 +73,7 @@ class OpticalSelectedOphthalmicAxialLengthSequenceItem:
 
     def add_SelectedSegmentalOphthalmicAxialLength(self, item: SelectedSegmentalOphthalmicAxialLengthSequenceItem):
         if not isinstance(item, SelectedSegmentalOphthalmicAxialLengthSequenceItem):
-            raise ValueError(f"Item must be an instance of SelectedSegmentalOphthalmicAxialLengthSequenceItem")
+            raise ValueError("Item must be an instance of SelectedSegmentalOphthalmicAxialLengthSequenceItem")
         self._SelectedSegmentalOphthalmicAxialLengthSequence.append(item)
         if "SelectedSegmentalOphthalmicAxialLengthSequence" not in self._dataset:
             self._dataset.SelectedSegmentalOphthalmicAxialLengthSequence = pydicom.Sequence()
@@ -104,7 +105,8 @@ class OpticalSelectedOphthalmicAxialLengthSequenceItem:
             isinstance(item, SelectedTotalOphthalmicAxialLengthSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SelectedTotalOphthalmicAxialLengthSequence must be a list of SelectedTotalOphthalmicAxialLengthSequenceItem objects"
+                "SelectedTotalOphthalmicAxialLengthSequence must be a list of SelectedTotalOphthalmicAxialLengthSequenceItem"
+                " objects"
             )
         else:
             self._SelectedTotalOphthalmicAxialLengthSequence = value
@@ -115,7 +117,7 @@ class OpticalSelectedOphthalmicAxialLengthSequenceItem:
 
     def add_SelectedTotalOphthalmicAxialLength(self, item: SelectedTotalOphthalmicAxialLengthSequenceItem):
         if not isinstance(item, SelectedTotalOphthalmicAxialLengthSequenceItem):
-            raise ValueError(f"Item must be an instance of SelectedTotalOphthalmicAxialLengthSequenceItem")
+            raise ValueError("Item must be an instance of SelectedTotalOphthalmicAxialLengthSequenceItem")
         self._SelectedTotalOphthalmicAxialLengthSequence.append(item)
         if "SelectedTotalOphthalmicAxialLengthSequence" not in self._dataset:
             self._dataset.SelectedTotalOphthalmicAxialLengthSequence = pydicom.Sequence()

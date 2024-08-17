@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -184,7 +184,7 @@ class AcquisitionProtocolElementSequenceItem:
                 del self._dataset.XAAcquisitionPhaseDetailsSequence
         elif not isinstance(value, list) or not all(isinstance(item, XAAcquisitionPhaseDetailsSequenceItem) for item in value):
             raise ValueError(
-                f"XAAcquisitionPhaseDetailsSequence must be a list of XAAcquisitionPhaseDetailsSequenceItem objects"
+                "XAAcquisitionPhaseDetailsSequence must be a list of XAAcquisitionPhaseDetailsSequenceItem objects"
             )
         else:
             self._XAAcquisitionPhaseDetailsSequence = value
@@ -195,7 +195,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_XAAcquisitionPhaseDetails(self, item: XAAcquisitionPhaseDetailsSequenceItem):
         if not isinstance(item, XAAcquisitionPhaseDetailsSequenceItem):
-            raise ValueError(f"Item must be an instance of XAAcquisitionPhaseDetailsSequenceItem")
+            raise ValueError("Item must be an instance of XAAcquisitionPhaseDetailsSequenceItem")
         self._XAAcquisitionPhaseDetailsSequence.append(item)
         if "XAAcquisitionPhaseDetailsSequence" not in self._dataset:
             self._dataset.XAAcquisitionPhaseDetailsSequence = pydicom.Sequence()
@@ -217,7 +217,7 @@ class AcquisitionProtocolElementSequenceItem:
             if "XAPlaneDetailsSequence" in self._dataset:
                 del self._dataset.XAPlaneDetailsSequence
         elif not isinstance(value, list) or not all(isinstance(item, XAPlaneDetailsSequenceItem) for item in value):
-            raise ValueError(f"XAPlaneDetailsSequence must be a list of XAPlaneDetailsSequenceItem objects")
+            raise ValueError("XAPlaneDetailsSequence must be a list of XAPlaneDetailsSequenceItem objects")
         else:
             self._XAPlaneDetailsSequence = value
             if "XAPlaneDetailsSequence" not in self._dataset:
@@ -227,7 +227,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_XAPlaneDetails(self, item: XAPlaneDetailsSequenceItem):
         if not isinstance(item, XAPlaneDetailsSequenceItem):
-            raise ValueError(f"Item must be an instance of XAPlaneDetailsSequenceItem")
+            raise ValueError("Item must be an instance of XAPlaneDetailsSequenceItem")
         self._XAPlaneDetailsSequence.append(item)
         if "XAPlaneDetailsSequence" not in self._dataset:
             self._dataset.XAPlaneDetailsSequence = pydicom.Sequence()
@@ -249,7 +249,7 @@ class AcquisitionProtocolElementSequenceItem:
             if "RequestedSeriesDescriptionCodeSequence" in self._dataset:
                 del self._dataset.RequestedSeriesDescriptionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RequestedSeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RequestedSeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RequestedSeriesDescriptionCodeSequence = value
             if "RequestedSeriesDescriptionCodeSequence" not in self._dataset:
@@ -259,7 +259,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_RequestedSeriesDescriptionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RequestedSeriesDescriptionCodeSequence.append(item)
         if "RequestedSeriesDescriptionCodeSequence" not in self._dataset:
             self._dataset.RequestedSeriesDescriptionCodeSequence = pydicom.Sequence()
@@ -324,7 +324,7 @@ class AcquisitionProtocolElementSequenceItem:
                 del self._dataset.ReferencedDefinedProtocolSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDefinedProtocolSequenceItem) for item in value):
             raise ValueError(
-                f"ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
+                "ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedDefinedProtocolSequence = value
@@ -335,7 +335,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_ReferencedDefinedProtocol(self, item: ReferencedDefinedProtocolSequenceItem):
         if not isinstance(item, ReferencedDefinedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDefinedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDefinedProtocolSequenceItem")
         self._ReferencedDefinedProtocolSequence.append(item)
         if "ReferencedDefinedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedDefinedProtocolSequence = pydicom.Sequence()
@@ -360,7 +360,7 @@ class AcquisitionProtocolElementSequenceItem:
             isinstance(item, ReferencedPerformedProtocolSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
+                "ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedPerformedProtocolSequence = value
@@ -371,7 +371,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_ReferencedPerformedProtocol(self, item: ReferencedPerformedProtocolSequenceItem):
         if not isinstance(item, ReferencedPerformedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPerformedProtocolSequenceItem")
         self._ReferencedPerformedProtocolSequence.append(item)
         if "ReferencedPerformedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedPerformedProtocolSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -67,7 +67,7 @@ class AssessedSOPInstanceSequenceItem:
             isinstance(item, ReferencedComparisonSOPInstanceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedComparisonSOPInstanceSequence must be a list of ReferencedComparisonSOPInstanceSequenceItem objects"
+                "ReferencedComparisonSOPInstanceSequence must be a list of ReferencedComparisonSOPInstanceSequenceItem objects"
             )
         else:
             self._ReferencedComparisonSOPInstanceSequence = value
@@ -78,7 +78,7 @@ class AssessedSOPInstanceSequenceItem:
 
     def add_ReferencedComparisonSOPInstance(self, item: ReferencedComparisonSOPInstanceSequenceItem):
         if not isinstance(item, ReferencedComparisonSOPInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedComparisonSOPInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedComparisonSOPInstanceSequenceItem")
         self._ReferencedComparisonSOPInstanceSequence.append(item)
         if "ReferencedComparisonSOPInstanceSequence" not in self._dataset:
             self._dataset.ReferencedComparisonSOPInstanceSequence = pydicom.Sequence()

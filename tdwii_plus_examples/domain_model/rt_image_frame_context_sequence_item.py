@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class RTImageFrameContextSequenceItem:
             if "RTImageScopeSequence" in self._dataset:
                 del self._dataset.RTImageScopeSequence
         elif not isinstance(value, list) or not all(isinstance(item, RTImageScopeSequenceItem) for item in value):
-            raise ValueError(f"RTImageScopeSequence must be a list of RTImageScopeSequenceItem objects")
+            raise ValueError("RTImageScopeSequence must be a list of RTImageScopeSequenceItem objects")
         else:
             self._RTImageScopeSequence = value
             if "RTImageScopeSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class RTImageFrameContextSequenceItem:
 
     def add_RTImageScope(self, item: RTImageScopeSequenceItem):
         if not isinstance(item, RTImageScopeSequenceItem):
-            raise ValueError(f"Item must be an instance of RTImageScopeSequenceItem")
+            raise ValueError("Item must be an instance of RTImageScopeSequenceItem")
         self._RTImageScopeSequence.append(item)
         if "RTImageScopeSequence" not in self._dataset:
             self._dataset.RTImageScopeSequence = pydicom.Sequence()

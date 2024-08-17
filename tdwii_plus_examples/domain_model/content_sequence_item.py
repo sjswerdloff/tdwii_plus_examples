@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -40,7 +40,7 @@ class ContentSequenceItem:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -50,7 +50,7 @@ class ContentSequenceItem:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -100,7 +100,7 @@ class ContentSequenceItem:
             if "ConceptNameCodeSequence" in self._dataset:
                 del self._dataset.ConceptNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptNameCodeSequence = value
             if "ConceptNameCodeSequence" not in self._dataset:
@@ -110,7 +110,7 @@ class ContentSequenceItem:
 
     def add_ConceptNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptNameCodeSequence.append(item)
         if "ConceptNameCodeSequence" not in self._dataset:
             self._dataset.ConceptNameCodeSequence = pydicom.Sequence()
@@ -286,7 +286,7 @@ class ContentSequenceItem:
             if "ConceptCodeSequence" in self._dataset:
                 del self._dataset.ConceptCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptCodeSequence = value
             if "ConceptCodeSequence" not in self._dataset:
@@ -296,7 +296,7 @@ class ContentSequenceItem:
 
     def add_ConceptCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptCodeSequence.append(item)
         if "ConceptCodeSequence" not in self._dataset:
             self._dataset.ConceptCodeSequence = pydicom.Sequence()
@@ -318,7 +318,7 @@ class ContentSequenceItem:
             if "MeasuredValueSequence" in self._dataset:
                 del self._dataset.MeasuredValueSequence
         elif not isinstance(value, list) or not all(isinstance(item, MeasuredValueSequenceItem) for item in value):
-            raise ValueError(f"MeasuredValueSequence must be a list of MeasuredValueSequenceItem objects")
+            raise ValueError("MeasuredValueSequence must be a list of MeasuredValueSequenceItem objects")
         else:
             self._MeasuredValueSequence = value
             if "MeasuredValueSequence" not in self._dataset:
@@ -328,7 +328,7 @@ class ContentSequenceItem:
 
     def add_MeasuredValue(self, item: MeasuredValueSequenceItem):
         if not isinstance(item, MeasuredValueSequenceItem):
-            raise ValueError(f"Item must be an instance of MeasuredValueSequenceItem")
+            raise ValueError("Item must be an instance of MeasuredValueSequenceItem")
         self._MeasuredValueSequence.append(item)
         if "MeasuredValueSequence" not in self._dataset:
             self._dataset.MeasuredValueSequence = pydicom.Sequence()
@@ -350,7 +350,7 @@ class ContentSequenceItem:
             if "NumericValueQualifierCodeSequence" in self._dataset:
                 del self._dataset.NumericValueQualifierCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"NumericValueQualifierCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("NumericValueQualifierCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._NumericValueQualifierCodeSequence = value
             if "NumericValueQualifierCodeSequence" not in self._dataset:
@@ -360,7 +360,7 @@ class ContentSequenceItem:
 
     def add_NumericValueQualifierCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._NumericValueQualifierCodeSequence.append(item)
         if "NumericValueQualifierCodeSequence" not in self._dataset:
             self._dataset.NumericValueQualifierCodeSequence = pydicom.Sequence()
@@ -382,7 +382,7 @@ class ContentSequenceItem:
             if "ContentTemplateSequence" in self._dataset:
                 del self._dataset.ContentTemplateSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContentTemplateSequenceItem) for item in value):
-            raise ValueError(f"ContentTemplateSequence must be a list of ContentTemplateSequenceItem objects")
+            raise ValueError("ContentTemplateSequence must be a list of ContentTemplateSequenceItem objects")
         else:
             self._ContentTemplateSequence = value
             if "ContentTemplateSequence" not in self._dataset:
@@ -392,7 +392,7 @@ class ContentSequenceItem:
 
     def add_ContentTemplate(self, item: ContentTemplateSequenceItem):
         if not isinstance(item, ContentTemplateSequenceItem):
-            raise ValueError(f"Item must be an instance of ContentTemplateSequenceItem")
+            raise ValueError("Item must be an instance of ContentTemplateSequenceItem")
         self._ContentTemplateSequence.append(item)
         if "ContentTemplateSequence" not in self._dataset:
             self._dataset.ContentTemplateSequence = pydicom.Sequence()
@@ -414,7 +414,7 @@ class ContentSequenceItem:
             if "TabulatedValuesSequence" in self._dataset:
                 del self._dataset.TabulatedValuesSequence
         elif not isinstance(value, list) or not all(isinstance(item, TabulatedValuesSequenceItem) for item in value):
-            raise ValueError(f"TabulatedValuesSequence must be a list of TabulatedValuesSequenceItem objects")
+            raise ValueError("TabulatedValuesSequence must be a list of TabulatedValuesSequenceItem objects")
         else:
             self._TabulatedValuesSequence = value
             if "TabulatedValuesSequence" not in self._dataset:
@@ -424,7 +424,7 @@ class ContentSequenceItem:
 
     def add_TabulatedValues(self, item: TabulatedValuesSequenceItem):
         if not isinstance(item, TabulatedValuesSequenceItem):
-            raise ValueError(f"Item must be an instance of TabulatedValuesSequenceItem")
+            raise ValueError("Item must be an instance of TabulatedValuesSequenceItem")
         self._TabulatedValuesSequence.append(item)
         if "TabulatedValuesSequence" not in self._dataset:
             self._dataset.TabulatedValuesSequence = pydicom.Sequence()

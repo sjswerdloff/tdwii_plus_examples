@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -71,7 +71,7 @@ class TrackSetSequenceItem:
             if "TrackSequence" in self._dataset:
                 del self._dataset.TrackSequence
         elif not isinstance(value, list) or not all(isinstance(item, TrackSequenceItem) for item in value):
-            raise ValueError(f"TrackSequence must be a list of TrackSequenceItem objects")
+            raise ValueError("TrackSequence must be a list of TrackSequenceItem objects")
         else:
             self._TrackSequence = value
             if "TrackSequence" not in self._dataset:
@@ -81,7 +81,7 @@ class TrackSetSequenceItem:
 
     def add_Track(self, item: TrackSequenceItem):
         if not isinstance(item, TrackSequenceItem):
-            raise ValueError(f"Item must be an instance of TrackSequenceItem")
+            raise ValueError("Item must be an instance of TrackSequenceItem")
         self._TrackSequence.append(item)
         if "TrackSequence" not in self._dataset:
             self._dataset.TrackSequence = pydicom.Sequence()
@@ -111,7 +111,7 @@ class TrackSetSequenceItem:
             isinstance(item, TrackingAlgorithmIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"TrackingAlgorithmIdentificationSequence must be a list of TrackingAlgorithmIdentificationSequenceItem objects"
+                "TrackingAlgorithmIdentificationSequence must be a list of TrackingAlgorithmIdentificationSequenceItem objects"
             )
         else:
             self._TrackingAlgorithmIdentificationSequence = value
@@ -122,7 +122,7 @@ class TrackSetSequenceItem:
 
     def add_TrackingAlgorithmIdentification(self, item: TrackingAlgorithmIdentificationSequenceItem):
         if not isinstance(item, TrackingAlgorithmIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of TrackingAlgorithmIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of TrackingAlgorithmIdentificationSequenceItem")
         self._TrackingAlgorithmIdentificationSequence.append(item)
         if "TrackingAlgorithmIdentificationSequence" not in self._dataset:
             self._dataset.TrackingAlgorithmIdentificationSequence = pydicom.Sequence()
@@ -186,7 +186,7 @@ class TrackSetSequenceItem:
             if "TrackSetAnatomicalTypeCodeSequence" in self._dataset:
                 del self._dataset.TrackSetAnatomicalTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TrackSetAnatomicalTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TrackSetAnatomicalTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TrackSetAnatomicalTypeCodeSequence = value
             if "TrackSetAnatomicalTypeCodeSequence" not in self._dataset:
@@ -196,7 +196,7 @@ class TrackSetSequenceItem:
 
     def add_TrackSetAnatomicalTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TrackSetAnatomicalTypeCodeSequence.append(item)
         if "TrackSetAnatomicalTypeCodeSequence" not in self._dataset:
             self._dataset.TrackSetAnatomicalTypeCodeSequence = pydicom.Sequence()
@@ -218,7 +218,7 @@ class TrackSetSequenceItem:
             if "MeasurementsSequence" in self._dataset:
                 del self._dataset.MeasurementsSequence
         elif not isinstance(value, list) or not all(isinstance(item, MeasurementsSequenceItem) for item in value):
-            raise ValueError(f"MeasurementsSequence must be a list of MeasurementsSequenceItem objects")
+            raise ValueError("MeasurementsSequence must be a list of MeasurementsSequenceItem objects")
         else:
             self._MeasurementsSequence = value
             if "MeasurementsSequence" not in self._dataset:
@@ -228,7 +228,7 @@ class TrackSetSequenceItem:
 
     def add_Measurements(self, item: MeasurementsSequenceItem):
         if not isinstance(item, MeasurementsSequenceItem):
-            raise ValueError(f"Item must be an instance of MeasurementsSequenceItem")
+            raise ValueError("Item must be an instance of MeasurementsSequenceItem")
         self._MeasurementsSequence.append(item)
         if "MeasurementsSequence" not in self._dataset:
             self._dataset.MeasurementsSequence = pydicom.Sequence()
@@ -250,7 +250,7 @@ class TrackSetSequenceItem:
             if "TrackSetStatisticsSequence" in self._dataset:
                 del self._dataset.TrackSetStatisticsSequence
         elif not isinstance(value, list) or not all(isinstance(item, TrackSetStatisticsSequenceItem) for item in value):
-            raise ValueError(f"TrackSetStatisticsSequence must be a list of TrackSetStatisticsSequenceItem objects")
+            raise ValueError("TrackSetStatisticsSequence must be a list of TrackSetStatisticsSequenceItem objects")
         else:
             self._TrackSetStatisticsSequence = value
             if "TrackSetStatisticsSequence" not in self._dataset:
@@ -260,7 +260,7 @@ class TrackSetSequenceItem:
 
     def add_TrackSetStatistics(self, item: TrackSetStatisticsSequenceItem):
         if not isinstance(item, TrackSetStatisticsSequenceItem):
-            raise ValueError(f"Item must be an instance of TrackSetStatisticsSequenceItem")
+            raise ValueError("Item must be an instance of TrackSetStatisticsSequenceItem")
         self._TrackSetStatisticsSequence.append(item)
         if "TrackSetStatisticsSequence" not in self._dataset:
             self._dataset.TrackSetStatisticsSequence = pydicom.Sequence()
@@ -282,7 +282,7 @@ class TrackSetSequenceItem:
             if "TrackStatisticsSequence" in self._dataset:
                 del self._dataset.TrackStatisticsSequence
         elif not isinstance(value, list) or not all(isinstance(item, TrackStatisticsSequenceItem) for item in value):
-            raise ValueError(f"TrackStatisticsSequence must be a list of TrackStatisticsSequenceItem objects")
+            raise ValueError("TrackStatisticsSequence must be a list of TrackStatisticsSequenceItem objects")
         else:
             self._TrackStatisticsSequence = value
             if "TrackStatisticsSequence" not in self._dataset:
@@ -292,7 +292,7 @@ class TrackSetSequenceItem:
 
     def add_TrackStatistics(self, item: TrackStatisticsSequenceItem):
         if not isinstance(item, TrackStatisticsSequenceItem):
-            raise ValueError(f"Item must be an instance of TrackStatisticsSequenceItem")
+            raise ValueError("Item must be an instance of TrackStatisticsSequenceItem")
         self._TrackStatisticsSequence.append(item)
         if "TrackStatisticsSequence" not in self._dataset:
             self._dataset.TrackStatisticsSequence = pydicom.Sequence()
@@ -314,7 +314,7 @@ class TrackSetSequenceItem:
             if "DiffusionAcquisitionCodeSequence" in self._dataset:
                 del self._dataset.DiffusionAcquisitionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DiffusionAcquisitionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DiffusionAcquisitionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DiffusionAcquisitionCodeSequence = value
             if "DiffusionAcquisitionCodeSequence" not in self._dataset:
@@ -324,7 +324,7 @@ class TrackSetSequenceItem:
 
     def add_DiffusionAcquisitionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DiffusionAcquisitionCodeSequence.append(item)
         if "DiffusionAcquisitionCodeSequence" not in self._dataset:
             self._dataset.DiffusionAcquisitionCodeSequence = pydicom.Sequence()
@@ -346,7 +346,7 @@ class TrackSetSequenceItem:
             if "DiffusionModelCodeSequence" in self._dataset:
                 del self._dataset.DiffusionModelCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DiffusionModelCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DiffusionModelCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DiffusionModelCodeSequence = value
             if "DiffusionModelCodeSequence" not in self._dataset:
@@ -356,7 +356,7 @@ class TrackSetSequenceItem:
 
     def add_DiffusionModelCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DiffusionModelCodeSequence.append(item)
         if "DiffusionModelCodeSequence" not in self._dataset:
             self._dataset.DiffusionModelCodeSequence = pydicom.Sequence()

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -59,7 +59,7 @@ class PositioningLandmarkSequenceItem:
             if "ReferenceBasisCodeSequence" in self._dataset:
                 del self._dataset.ReferenceBasisCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReferenceBasisCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReferenceBasisCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReferenceBasisCodeSequence = value
             if "ReferenceBasisCodeSequence" not in self._dataset:
@@ -69,7 +69,7 @@ class PositioningLandmarkSequenceItem:
 
     def add_ReferenceBasisCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReferenceBasisCodeSequence.append(item)
         if "ReferenceBasisCodeSequence" not in self._dataset:
             self._dataset.ReferenceBasisCodeSequence = pydicom.Sequence()
@@ -91,7 +91,7 @@ class PositioningLandmarkSequenceItem:
             if "ReferenceGeometryCodeSequence" in self._dataset:
                 del self._dataset.ReferenceGeometryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReferenceGeometryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReferenceGeometryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReferenceGeometryCodeSequence = value
             if "ReferenceGeometryCodeSequence" not in self._dataset:
@@ -101,7 +101,7 @@ class PositioningLandmarkSequenceItem:
 
     def add_ReferenceGeometryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReferenceGeometryCodeSequence.append(item)
         if "ReferenceGeometryCodeSequence" not in self._dataset:
             self._dataset.ReferenceGeometryCodeSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -33,7 +33,7 @@ class FrameAnatomySequenceItem:
             if "AnatomicRegionSequence" in self._dataset:
                 del self._dataset.AnatomicRegionSequence
         elif not isinstance(value, list) or not all(isinstance(item, AnatomicRegionSequenceItem) for item in value):
-            raise ValueError(f"AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
+            raise ValueError("AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
         else:
             self._AnatomicRegionSequence = value
             if "AnatomicRegionSequence" not in self._dataset:
@@ -43,7 +43,7 @@ class FrameAnatomySequenceItem:
 
     def add_AnatomicRegion(self, item: AnatomicRegionSequenceItem):
         if not isinstance(item, AnatomicRegionSequenceItem):
-            raise ValueError(f"Item must be an instance of AnatomicRegionSequenceItem")
+            raise ValueError("Item must be an instance of AnatomicRegionSequenceItem")
         self._AnatomicRegionSequence.append(item)
         if "AnatomicRegionSequence" not in self._dataset:
             self._dataset.AnatomicRegionSequence = pydicom.Sequence()
@@ -65,9 +65,7 @@ class FrameAnatomySequenceItem:
             if "PrimaryAnatomicStructureSequence" in self._dataset:
                 del self._dataset.PrimaryAnatomicStructureSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrimaryAnatomicStructureSequenceItem) for item in value):
-            raise ValueError(
-                f"PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects"
-            )
+            raise ValueError("PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects")
         else:
             self._PrimaryAnatomicStructureSequence = value
             if "PrimaryAnatomicStructureSequence" not in self._dataset:
@@ -77,7 +75,7 @@ class FrameAnatomySequenceItem:
 
     def add_PrimaryAnatomicStructure(self, item: PrimaryAnatomicStructureSequenceItem):
         if not isinstance(item, PrimaryAnatomicStructureSequenceItem):
-            raise ValueError(f"Item must be an instance of PrimaryAnatomicStructureSequenceItem")
+            raise ValueError("Item must be an instance of PrimaryAnatomicStructureSequenceItem")
         self._PrimaryAnatomicStructureSequence.append(item)
         if "PrimaryAnatomicStructureSequence" not in self._dataset:
             self._dataset.PrimaryAnatomicStructureSequence = pydicom.Sequence()

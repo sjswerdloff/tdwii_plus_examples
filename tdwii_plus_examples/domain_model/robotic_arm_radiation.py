@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -282,7 +282,7 @@ class RoboticArmRadiation:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -292,7 +292,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -314,7 +314,7 @@ class RoboticArmRadiation:
             if "ReferencedInstanceSequence" in self._dataset:
                 del self._dataset.ReferencedInstanceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedInstanceSequenceItem) for item in value):
-            raise ValueError(f"ReferencedInstanceSequence must be a list of ReferencedInstanceSequenceItem objects")
+            raise ValueError("ReferencedInstanceSequence must be a list of ReferencedInstanceSequenceItem objects")
         else:
             self._ReferencedInstanceSequence = value
             if "ReferencedInstanceSequence" not in self._dataset:
@@ -324,7 +324,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedInstance(self, item: ReferencedInstanceSequenceItem):
         if not isinstance(item, ReferencedInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedInstanceSequenceItem")
         self._ReferencedInstanceSequence.append(item)
         if "ReferencedInstanceSequence" not in self._dataset:
             self._dataset.ReferencedInstanceSequence = pydicom.Sequence()
@@ -360,7 +360,7 @@ class RoboticArmRadiation:
             if "SourceImageSequence" in self._dataset:
                 del self._dataset.SourceImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, SourceImageSequenceItem) for item in value):
-            raise ValueError(f"SourceImageSequence must be a list of SourceImageSequenceItem objects")
+            raise ValueError("SourceImageSequence must be a list of SourceImageSequenceItem objects")
         else:
             self._SourceImageSequence = value
             if "SourceImageSequence" not in self._dataset:
@@ -370,7 +370,7 @@ class RoboticArmRadiation:
 
     def add_SourceImage(self, item: SourceImageSequenceItem):
         if not isinstance(item, SourceImageSequenceItem):
-            raise ValueError(f"Item must be an instance of SourceImageSequenceItem")
+            raise ValueError("Item must be an instance of SourceImageSequenceItem")
         self._SourceImageSequence.append(item)
         if "SourceImageSequence" not in self._dataset:
             self._dataset.SourceImageSequence = pydicom.Sequence()
@@ -392,7 +392,7 @@ class RoboticArmRadiation:
             if "DerivationCodeSequence" in self._dataset:
                 del self._dataset.DerivationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DerivationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DerivationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DerivationCodeSequence = value
             if "DerivationCodeSequence" not in self._dataset:
@@ -402,7 +402,7 @@ class RoboticArmRadiation:
 
     def add_DerivationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DerivationCodeSequence.append(item)
         if "DerivationCodeSequence" not in self._dataset:
             self._dataset.DerivationCodeSequence = pydicom.Sequence()
@@ -424,7 +424,7 @@ class RoboticArmRadiation:
             if "SourceInstanceSequence" in self._dataset:
                 del self._dataset.SourceInstanceSequence
         elif not isinstance(value, list) or not all(isinstance(item, SourceInstanceSequenceItem) for item in value):
-            raise ValueError(f"SourceInstanceSequence must be a list of SourceInstanceSequenceItem objects")
+            raise ValueError("SourceInstanceSequence must be a list of SourceInstanceSequenceItem objects")
         else:
             self._SourceInstanceSequence = value
             if "SourceInstanceSequence" not in self._dataset:
@@ -434,7 +434,7 @@ class RoboticArmRadiation:
 
     def add_SourceInstance(self, item: SourceInstanceSequenceItem):
         if not isinstance(item, SourceInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of SourceInstanceSequenceItem")
+            raise ValueError("Item must be an instance of SourceInstanceSequenceItem")
         self._SourceInstanceSequence.append(item)
         if "SourceInstanceSequence" not in self._dataset:
             self._dataset.SourceInstanceSequence = pydicom.Sequence()
@@ -456,7 +456,7 @@ class RoboticArmRadiation:
             if "ReferencedSeriesSequence" in self._dataset:
                 del self._dataset.ReferencedSeriesSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSeriesSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSeriesSequence must be a list of ReferencedSeriesSequenceItem objects")
+            raise ValueError("ReferencedSeriesSequence must be a list of ReferencedSeriesSequenceItem objects")
         else:
             self._ReferencedSeriesSequence = value
             if "ReferencedSeriesSequence" not in self._dataset:
@@ -466,7 +466,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedSeries(self, item: ReferencedSeriesSequenceItem):
         if not isinstance(item, ReferencedSeriesSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSeriesSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSeriesSequenceItem")
         self._ReferencedSeriesSequence.append(item)
         if "ReferencedSeriesSequence" not in self._dataset:
             self._dataset.ReferencedSeriesSequence = pydicom.Sequence()
@@ -500,7 +500,8 @@ class RoboticArmRadiation:
             isinstance(item, StudiesContainingOtherReferencedInstancesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"StudiesContainingOtherReferencedInstancesSequence must be a list of StudiesContainingOtherReferencedInstancesSequenceItem objects"
+                "StudiesContainingOtherReferencedInstancesSequence must be a list of"
+                " StudiesContainingOtherReferencedInstancesSequenceItem objects"
             )
         else:
             self._StudiesContainingOtherReferencedInstancesSequence = value
@@ -511,7 +512,7 @@ class RoboticArmRadiation:
 
     def add_StudiesContainingOtherReferencedInstances(self, item: StudiesContainingOtherReferencedInstancesSequenceItem):
         if not isinstance(item, StudiesContainingOtherReferencedInstancesSequenceItem):
-            raise ValueError(f"Item must be an instance of StudiesContainingOtherReferencedInstancesSequenceItem")
+            raise ValueError("Item must be an instance of StudiesContainingOtherReferencedInstancesSequenceItem")
         self._StudiesContainingOtherReferencedInstancesSequence.append(item)
         if "StudiesContainingOtherReferencedInstancesSequence" not in self._dataset:
             self._dataset.StudiesContainingOtherReferencedInstancesSequence = pydicom.Sequence()
@@ -589,7 +590,7 @@ class RoboticArmRadiation:
             if "AuthorIdentificationSequence" in self._dataset:
                 del self._dataset.AuthorIdentificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, AuthorIdentificationSequenceItem) for item in value):
-            raise ValueError(f"AuthorIdentificationSequence must be a list of AuthorIdentificationSequenceItem objects")
+            raise ValueError("AuthorIdentificationSequence must be a list of AuthorIdentificationSequenceItem objects")
         else:
             self._AuthorIdentificationSequence = value
             if "AuthorIdentificationSequence" not in self._dataset:
@@ -599,7 +600,7 @@ class RoboticArmRadiation:
 
     def add_AuthorIdentification(self, item: AuthorIdentificationSequenceItem):
         if not isinstance(item, AuthorIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of AuthorIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of AuthorIdentificationSequenceItem")
         self._AuthorIdentificationSequence.append(item)
         if "AuthorIdentificationSequence" not in self._dataset:
             self._dataset.AuthorIdentificationSequence = pydicom.Sequence()
@@ -633,7 +634,8 @@ class RoboticArmRadiation:
             isinstance(item, InstanceLevelReferencedPerformedProcedureStepSequenceItem) for item in value
         ):
             raise ValueError(
-                f"InstanceLevelReferencedPerformedProcedureStepSequence must be a list of InstanceLevelReferencedPerformedProcedureStepSequenceItem objects"
+                "InstanceLevelReferencedPerformedProcedureStepSequence must be a list of"
+                " InstanceLevelReferencedPerformedProcedureStepSequenceItem objects"
             )
         else:
             self._InstanceLevelReferencedPerformedProcedureStepSequence = value
@@ -646,7 +648,7 @@ class RoboticArmRadiation:
         self, item: InstanceLevelReferencedPerformedProcedureStepSequenceItem
     ):
         if not isinstance(item, InstanceLevelReferencedPerformedProcedureStepSequenceItem):
-            raise ValueError(f"Item must be an instance of InstanceLevelReferencedPerformedProcedureStepSequenceItem")
+            raise ValueError("Item must be an instance of InstanceLevelReferencedPerformedProcedureStepSequenceItem")
         self._InstanceLevelReferencedPerformedProcedureStepSequence.append(item)
         if "InstanceLevelReferencedPerformedProcedureStepSequence" not in self._dataset:
             self._dataset.InstanceLevelReferencedPerformedProcedureStepSequence = pydicom.Sequence()
@@ -740,7 +742,7 @@ class RoboticArmRadiation:
             if "InstitutionalDepartmentTypeCodeSequence" in self._dataset:
                 del self._dataset.InstitutionalDepartmentTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InstitutionalDepartmentTypeCodeSequence = value
             if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
@@ -750,7 +752,7 @@ class RoboticArmRadiation:
 
     def add_InstitutionalDepartmentTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InstitutionalDepartmentTypeCodeSequence.append(item)
         if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
             self._dataset.InstitutionalDepartmentTypeCodeSequence = pydicom.Sequence()
@@ -828,7 +830,7 @@ class RoboticArmRadiation:
             if "UDISequence" in self._dataset:
                 del self._dataset.UDISequence
         elif not isinstance(value, list) or not all(isinstance(item, UDISequenceItem) for item in value):
-            raise ValueError(f"UDISequence must be a list of UDISequenceItem objects")
+            raise ValueError("UDISequence must be a list of UDISequenceItem objects")
         else:
             self._UDISequence = value
             if "UDISequence" not in self._dataset:
@@ -838,7 +840,7 @@ class RoboticArmRadiation:
 
     def add_UDI(self, item: UDISequenceItem):
         if not isinstance(item, UDISequenceItem):
-            raise ValueError(f"Item must be an instance of UDISequenceItem")
+            raise ValueError("Item must be an instance of UDISequenceItem")
         self._UDISequence.append(item)
         if "UDISequence" not in self._dataset:
             self._dataset.UDISequence = pydicom.Sequence()
@@ -1070,7 +1072,7 @@ class RoboticArmRadiation:
             if "IssuerOfAccessionNumberSequence" in self._dataset:
                 del self._dataset.IssuerOfAccessionNumberSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfAccessionNumberSequenceItem) for item in value):
-            raise ValueError(f"IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
+            raise ValueError("IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
         else:
             self._IssuerOfAccessionNumberSequence = value
             if "IssuerOfAccessionNumberSequence" not in self._dataset:
@@ -1080,7 +1082,7 @@ class RoboticArmRadiation:
 
     def add_IssuerOfAccessionNumber(self, item: IssuerOfAccessionNumberSequenceItem):
         if not isinstance(item, IssuerOfAccessionNumberSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfAccessionNumberSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfAccessionNumberSequenceItem")
         self._IssuerOfAccessionNumberSequence.append(item)
         if "IssuerOfAccessionNumberSequence" not in self._dataset:
             self._dataset.IssuerOfAccessionNumberSequence = pydicom.Sequence()
@@ -1124,7 +1126,8 @@ class RoboticArmRadiation:
             isinstance(item, ReferringPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferringPhysicianIdentificationSequence must be a list of ReferringPhysicianIdentificationSequenceItem objects"
+                "ReferringPhysicianIdentificationSequence must be a list of ReferringPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._ReferringPhysicianIdentificationSequence = value
@@ -1135,7 +1138,7 @@ class RoboticArmRadiation:
 
     def add_ReferringPhysicianIdentification(self, item: ReferringPhysicianIdentificationSequenceItem):
         if not isinstance(item, ReferringPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferringPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ReferringPhysicianIdentificationSequenceItem")
         self._ReferringPhysicianIdentificationSequence.append(item)
         if "ReferringPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.ReferringPhysicianIdentificationSequence = pydicom.Sequence()
@@ -1179,7 +1182,8 @@ class RoboticArmRadiation:
             isinstance(item, ConsultingPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConsultingPhysicianIdentificationSequence must be a list of ConsultingPhysicianIdentificationSequenceItem objects"
+                "ConsultingPhysicianIdentificationSequence must be a list of ConsultingPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._ConsultingPhysicianIdentificationSequence = value
@@ -1190,7 +1194,7 @@ class RoboticArmRadiation:
 
     def add_ConsultingPhysicianIdentification(self, item: ConsultingPhysicianIdentificationSequenceItem):
         if not isinstance(item, ConsultingPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ConsultingPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ConsultingPhysicianIdentificationSequenceItem")
         self._ConsultingPhysicianIdentificationSequence.append(item)
         if "ConsultingPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.ConsultingPhysicianIdentificationSequence = pydicom.Sequence()
@@ -1226,7 +1230,7 @@ class RoboticArmRadiation:
             if "ProcedureCodeSequence" in self._dataset:
                 del self._dataset.ProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ProcedureCodeSequence = value
             if "ProcedureCodeSequence" not in self._dataset:
@@ -1236,7 +1240,7 @@ class RoboticArmRadiation:
 
     def add_ProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ProcedureCodeSequence.append(item)
         if "ProcedureCodeSequence" not in self._dataset:
             self._dataset.ProcedureCodeSequence = pydicom.Sequence()
@@ -1280,7 +1284,8 @@ class RoboticArmRadiation:
             isinstance(item, PhysiciansOfRecordIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PhysiciansOfRecordIdentificationSequence must be a list of PhysiciansOfRecordIdentificationSequenceItem objects"
+                "PhysiciansOfRecordIdentificationSequence must be a list of PhysiciansOfRecordIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._PhysiciansOfRecordIdentificationSequence = value
@@ -1291,7 +1296,7 @@ class RoboticArmRadiation:
 
     def add_PhysiciansOfRecordIdentification(self, item: PhysiciansOfRecordIdentificationSequenceItem):
         if not isinstance(item, PhysiciansOfRecordIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PhysiciansOfRecordIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PhysiciansOfRecordIdentificationSequenceItem")
         self._PhysiciansOfRecordIdentificationSequence.append(item)
         if "PhysiciansOfRecordIdentificationSequence" not in self._dataset:
             self._dataset.PhysiciansOfRecordIdentificationSequence = pydicom.Sequence()
@@ -1337,7 +1342,8 @@ class RoboticArmRadiation:
             isinstance(item, PhysiciansReadingStudyIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PhysiciansReadingStudyIdentificationSequence must be a list of PhysiciansReadingStudyIdentificationSequenceItem objects"
+                "PhysiciansReadingStudyIdentificationSequence must be a list of"
+                " PhysiciansReadingStudyIdentificationSequenceItem objects"
             )
         else:
             self._PhysiciansReadingStudyIdentificationSequence = value
@@ -1348,7 +1354,7 @@ class RoboticArmRadiation:
 
     def add_PhysiciansReadingStudyIdentification(self, item: PhysiciansReadingStudyIdentificationSequenceItem):
         if not isinstance(item, PhysiciansReadingStudyIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PhysiciansReadingStudyIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PhysiciansReadingStudyIdentificationSequenceItem")
         self._PhysiciansReadingStudyIdentificationSequence.append(item)
         if "PhysiciansReadingStudyIdentificationSequence" not in self._dataset:
             self._dataset.PhysiciansReadingStudyIdentificationSequence = pydicom.Sequence()
@@ -1370,7 +1376,7 @@ class RoboticArmRadiation:
             if "ReferencedStudySequence" in self._dataset:
                 del self._dataset.ReferencedStudySequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedStudySequenceItem) for item in value):
-            raise ValueError(f"ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
+            raise ValueError("ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
         else:
             self._ReferencedStudySequence = value
             if "ReferencedStudySequence" not in self._dataset:
@@ -1380,7 +1386,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedStudy(self, item: ReferencedStudySequenceItem):
         if not isinstance(item, ReferencedStudySequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedStudySequenceItem")
+            raise ValueError("Item must be an instance of ReferencedStudySequenceItem")
         self._ReferencedStudySequence.append(item)
         if "ReferencedStudySequence" not in self._dataset:
             self._dataset.ReferencedStudySequence = pydicom.Sequence()
@@ -1444,7 +1450,7 @@ class RoboticArmRadiation:
             if "RequestingServiceCodeSequence" in self._dataset:
                 del self._dataset.RequestingServiceCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RequestingServiceCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RequestingServiceCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RequestingServiceCodeSequence = value
             if "RequestingServiceCodeSequence" not in self._dataset:
@@ -1454,7 +1460,7 @@ class RoboticArmRadiation:
 
     def add_RequestingServiceCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RequestingServiceCodeSequence.append(item)
         if "RequestingServiceCodeSequence" not in self._dataset:
             self._dataset.RequestingServiceCodeSequence = pydicom.Sequence()
@@ -1478,7 +1484,7 @@ class RoboticArmRadiation:
             if "ReasonForPerformedProcedureCodeSequence" in self._dataset:
                 del self._dataset.ReasonForPerformedProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForPerformedProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForPerformedProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForPerformedProcedureCodeSequence = value
             if "ReasonForPerformedProcedureCodeSequence" not in self._dataset:
@@ -1488,7 +1494,7 @@ class RoboticArmRadiation:
 
     def add_ReasonForPerformedProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForPerformedProcedureCodeSequence.append(item)
         if "ReasonForPerformedProcedureCodeSequence" not in self._dataset:
             self._dataset.ReasonForPerformedProcedureCodeSequence = pydicom.Sequence()
@@ -1560,7 +1566,8 @@ class RoboticArmRadiation:
             isinstance(item, ReferencedPerformedProcedureStepSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem objects"
+                "ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedPerformedProcedureStepSequence = value
@@ -1571,7 +1578,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedPerformedProcedureStep(self, item: ReferencedPerformedProcedureStepSequenceItem):
         if not isinstance(item, ReferencedPerformedProcedureStepSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProcedureStepSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPerformedProcedureStepSequenceItem")
         self._ReferencedPerformedProcedureStepSequence.append(item)
         if "ReferencedPerformedProcedureStepSequence" not in self._dataset:
             self._dataset.ReferencedPerformedProcedureStepSequence = pydicom.Sequence()
@@ -1663,7 +1670,7 @@ class RoboticArmRadiation:
             if "AdmittingDiagnosesCodeSequence" in self._dataset:
                 del self._dataset.AdmittingDiagnosesCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AdmittingDiagnosesCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AdmittingDiagnosesCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AdmittingDiagnosesCodeSequence = value
             if "AdmittingDiagnosesCodeSequence" not in self._dataset:
@@ -1673,7 +1680,7 @@ class RoboticArmRadiation:
 
     def add_AdmittingDiagnosesCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AdmittingDiagnosesCodeSequence.append(item)
         if "AdmittingDiagnosesCodeSequence" not in self._dataset:
             self._dataset.AdmittingDiagnosesCodeSequence = pydicom.Sequence()
@@ -1723,7 +1730,7 @@ class RoboticArmRadiation:
             if "PatientSizeCodeSequence" in self._dataset:
                 del self._dataset.PatientSizeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientSizeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientSizeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientSizeCodeSequence = value
             if "PatientSizeCodeSequence" not in self._dataset:
@@ -1733,7 +1740,7 @@ class RoboticArmRadiation:
 
     def add_PatientSizeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientSizeCodeSequence.append(item)
         if "PatientSizeCodeSequence" not in self._dataset:
             self._dataset.PatientSizeCodeSequence = pydicom.Sequence()
@@ -1937,7 +1944,7 @@ class RoboticArmRadiation:
             if "ReasonForVisitCodeSequence" in self._dataset:
                 del self._dataset.ReasonForVisitCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForVisitCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForVisitCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForVisitCodeSequence = value
             if "ReasonForVisitCodeSequence" not in self._dataset:
@@ -1947,7 +1954,7 @@ class RoboticArmRadiation:
 
     def add_ReasonForVisitCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForVisitCodeSequence.append(item)
         if "ReasonForVisitCodeSequence" not in self._dataset:
             self._dataset.ReasonForVisitCodeSequence = pydicom.Sequence()
@@ -1983,7 +1990,7 @@ class RoboticArmRadiation:
             if "IssuerOfAdmissionIDSequence" in self._dataset:
                 del self._dataset.IssuerOfAdmissionIDSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfAdmissionIDSequenceItem) for item in value):
-            raise ValueError(f"IssuerOfAdmissionIDSequence must be a list of IssuerOfAdmissionIDSequenceItem objects")
+            raise ValueError("IssuerOfAdmissionIDSequence must be a list of IssuerOfAdmissionIDSequenceItem objects")
         else:
             self._IssuerOfAdmissionIDSequence = value
             if "IssuerOfAdmissionIDSequence" not in self._dataset:
@@ -1993,7 +2000,7 @@ class RoboticArmRadiation:
 
     def add_IssuerOfAdmissionID(self, item: IssuerOfAdmissionIDSequenceItem):
         if not isinstance(item, IssuerOfAdmissionIDSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfAdmissionIDSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfAdmissionIDSequenceItem")
         self._IssuerOfAdmissionIDSequence.append(item)
         if "IssuerOfAdmissionIDSequence" not in self._dataset:
             self._dataset.IssuerOfAdmissionIDSequence = pydicom.Sequence()
@@ -2043,9 +2050,7 @@ class RoboticArmRadiation:
             if "IssuerOfServiceEpisodeIDSequence" in self._dataset:
                 del self._dataset.IssuerOfServiceEpisodeIDSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfServiceEpisodeIDSequenceItem) for item in value):
-            raise ValueError(
-                f"IssuerOfServiceEpisodeIDSequence must be a list of IssuerOfServiceEpisodeIDSequenceItem objects"
-            )
+            raise ValueError("IssuerOfServiceEpisodeIDSequence must be a list of IssuerOfServiceEpisodeIDSequenceItem objects")
         else:
             self._IssuerOfServiceEpisodeIDSequence = value
             if "IssuerOfServiceEpisodeIDSequence" not in self._dataset:
@@ -2055,7 +2060,7 @@ class RoboticArmRadiation:
 
     def add_IssuerOfServiceEpisodeID(self, item: IssuerOfServiceEpisodeIDSequenceItem):
         if not isinstance(item, IssuerOfServiceEpisodeIDSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfServiceEpisodeIDSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfServiceEpisodeIDSequenceItem")
         self._IssuerOfServiceEpisodeIDSequence.append(item)
         if "IssuerOfServiceEpisodeIDSequence" not in self._dataset:
             self._dataset.IssuerOfServiceEpisodeIDSequence = pydicom.Sequence()
@@ -2091,7 +2096,7 @@ class RoboticArmRadiation:
             if "ReferencedPatientSequence" in self._dataset:
                 del self._dataset.ReferencedPatientSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedPatientSequenceItem) for item in value):
-            raise ValueError(f"ReferencedPatientSequence must be a list of ReferencedPatientSequenceItem objects")
+            raise ValueError("ReferencedPatientSequence must be a list of ReferencedPatientSequenceItem objects")
         else:
             self._ReferencedPatientSequence = value
             if "ReferencedPatientSequence" not in self._dataset:
@@ -2101,7 +2106,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedPatient(self, item: ReferencedPatientSequenceItem):
         if not isinstance(item, ReferencedPatientSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPatientSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPatientSequenceItem")
         self._ReferencedPatientSequence.append(item)
         if "ReferencedPatientSequence" not in self._dataset:
             self._dataset.ReferencedPatientSequence = pydicom.Sequence()
@@ -2182,7 +2187,7 @@ class RoboticArmRadiation:
             isinstance(item, IssuerOfPatientIDQualifiersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
+                "IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
             )
         else:
             self._IssuerOfPatientIDQualifiersSequence = value
@@ -2193,7 +2198,7 @@ class RoboticArmRadiation:
 
     def add_IssuerOfPatientIDQualifiers(self, item: IssuerOfPatientIDQualifiersSequenceItem):
         if not isinstance(item, IssuerOfPatientIDQualifiersSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
         self._IssuerOfPatientIDQualifiersSequence.append(item)
         if "IssuerOfPatientIDQualifiersSequence" not in self._dataset:
             self._dataset.IssuerOfPatientIDQualifiersSequence = pydicom.Sequence()
@@ -2223,7 +2228,8 @@ class RoboticArmRadiation:
             isinstance(item, SourcePatientGroupIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SourcePatientGroupIdentificationSequence must be a list of SourcePatientGroupIdentificationSequenceItem objects"
+                "SourcePatientGroupIdentificationSequence must be a list of SourcePatientGroupIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._SourcePatientGroupIdentificationSequence = value
@@ -2234,7 +2240,7 @@ class RoboticArmRadiation:
 
     def add_SourcePatientGroupIdentification(self, item: SourcePatientGroupIdentificationSequenceItem):
         if not isinstance(item, SourcePatientGroupIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of SourcePatientGroupIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of SourcePatientGroupIdentificationSequenceItem")
         self._SourcePatientGroupIdentificationSequence.append(item)
         if "SourcePatientGroupIdentificationSequence" not in self._dataset:
             self._dataset.SourcePatientGroupIdentificationSequence = pydicom.Sequence()
@@ -2261,7 +2267,7 @@ class RoboticArmRadiation:
             isinstance(item, GroupOfPatientsIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"GroupOfPatientsIdentificationSequence must be a list of GroupOfPatientsIdentificationSequenceItem objects"
+                "GroupOfPatientsIdentificationSequence must be a list of GroupOfPatientsIdentificationSequenceItem objects"
             )
         else:
             self._GroupOfPatientsIdentificationSequence = value
@@ -2272,7 +2278,7 @@ class RoboticArmRadiation:
 
     def add_GroupOfPatientsIdentification(self, item: GroupOfPatientsIdentificationSequenceItem):
         if not isinstance(item, GroupOfPatientsIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of GroupOfPatientsIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of GroupOfPatientsIdentificationSequenceItem")
         self._GroupOfPatientsIdentificationSequence.append(item)
         if "GroupOfPatientsIdentificationSequence" not in self._dataset:
             self._dataset.GroupOfPatientsIdentificationSequence = pydicom.Sequence()
@@ -2420,7 +2426,7 @@ class RoboticArmRadiation:
             if "StrainStockSequence" in self._dataset:
                 del self._dataset.StrainStockSequence
         elif not isinstance(value, list) or not all(isinstance(item, StrainStockSequenceItem) for item in value):
-            raise ValueError(f"StrainStockSequence must be a list of StrainStockSequenceItem objects")
+            raise ValueError("StrainStockSequence must be a list of StrainStockSequenceItem objects")
         else:
             self._StrainStockSequence = value
             if "StrainStockSequence" not in self._dataset:
@@ -2430,7 +2436,7 @@ class RoboticArmRadiation:
 
     def add_StrainStock(self, item: StrainStockSequenceItem):
         if not isinstance(item, StrainStockSequenceItem):
-            raise ValueError(f"Item must be an instance of StrainStockSequenceItem")
+            raise ValueError("Item must be an instance of StrainStockSequenceItem")
         self._StrainStockSequence.append(item)
         if "StrainStockSequence" not in self._dataset:
             self._dataset.StrainStockSequence = pydicom.Sequence()
@@ -2466,7 +2472,7 @@ class RoboticArmRadiation:
             if "StrainCodeSequence" in self._dataset:
                 del self._dataset.StrainCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"StrainCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("StrainCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._StrainCodeSequence = value
             if "StrainCodeSequence" not in self._dataset:
@@ -2476,7 +2482,7 @@ class RoboticArmRadiation:
 
     def add_StrainCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._StrainCodeSequence.append(item)
         if "StrainCodeSequence" not in self._dataset:
             self._dataset.StrainCodeSequence = pydicom.Sequence()
@@ -2498,7 +2504,7 @@ class RoboticArmRadiation:
             if "GeneticModificationsSequence" in self._dataset:
                 del self._dataset.GeneticModificationsSequence
         elif not isinstance(value, list) or not all(isinstance(item, GeneticModificationsSequenceItem) for item in value):
-            raise ValueError(f"GeneticModificationsSequence must be a list of GeneticModificationsSequenceItem objects")
+            raise ValueError("GeneticModificationsSequence must be a list of GeneticModificationsSequenceItem objects")
         else:
             self._GeneticModificationsSequence = value
             if "GeneticModificationsSequence" not in self._dataset:
@@ -2508,7 +2514,7 @@ class RoboticArmRadiation:
 
     def add_GeneticModifications(self, item: GeneticModificationsSequenceItem):
         if not isinstance(item, GeneticModificationsSequenceItem):
-            raise ValueError(f"Item must be an instance of GeneticModificationsSequenceItem")
+            raise ValueError("Item must be an instance of GeneticModificationsSequenceItem")
         self._GeneticModificationsSequence.append(item)
         if "GeneticModificationsSequence" not in self._dataset:
             self._dataset.GeneticModificationsSequence = pydicom.Sequence()
@@ -2544,7 +2550,7 @@ class RoboticArmRadiation:
             if "OtherPatientIDsSequence" in self._dataset:
                 del self._dataset.OtherPatientIDsSequence
         elif not isinstance(value, list) or not all(isinstance(item, OtherPatientIDsSequenceItem) for item in value):
-            raise ValueError(f"OtherPatientIDsSequence must be a list of OtherPatientIDsSequenceItem objects")
+            raise ValueError("OtherPatientIDsSequence must be a list of OtherPatientIDsSequenceItem objects")
         else:
             self._OtherPatientIDsSequence = value
             if "OtherPatientIDsSequence" not in self._dataset:
@@ -2554,7 +2560,7 @@ class RoboticArmRadiation:
 
     def add_OtherPatientIDs(self, item: OtherPatientIDsSequenceItem):
         if not isinstance(item, OtherPatientIDsSequenceItem):
-            raise ValueError(f"Item must be an instance of OtherPatientIDsSequenceItem")
+            raise ValueError("Item must be an instance of OtherPatientIDsSequenceItem")
         self._OtherPatientIDsSequence.append(item)
         if "OtherPatientIDsSequence" not in self._dataset:
             self._dataset.OtherPatientIDsSequence = pydicom.Sequence()
@@ -2576,7 +2582,7 @@ class RoboticArmRadiation:
             if "ReferencedPatientPhotoSequence" in self._dataset:
                 del self._dataset.ReferencedPatientPhotoSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedPatientPhotoSequenceItem) for item in value):
-            raise ValueError(f"ReferencedPatientPhotoSequence must be a list of ReferencedPatientPhotoSequenceItem objects")
+            raise ValueError("ReferencedPatientPhotoSequence must be a list of ReferencedPatientPhotoSequenceItem objects")
         else:
             self._ReferencedPatientPhotoSequence = value
             if "ReferencedPatientPhotoSequence" not in self._dataset:
@@ -2586,7 +2592,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedPatientPhoto(self, item: ReferencedPatientPhotoSequenceItem):
         if not isinstance(item, ReferencedPatientPhotoSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPatientPhotoSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPatientPhotoSequenceItem")
         self._ReferencedPatientPhotoSequence.append(item)
         if "ReferencedPatientPhotoSequence" not in self._dataset:
             self._dataset.ReferencedPatientPhotoSequence = pydicom.Sequence()
@@ -2636,7 +2642,7 @@ class RoboticArmRadiation:
             if "PatientSpeciesCodeSequence" in self._dataset:
                 del self._dataset.PatientSpeciesCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientSpeciesCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientSpeciesCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientSpeciesCodeSequence = value
             if "PatientSpeciesCodeSequence" not in self._dataset:
@@ -2646,7 +2652,7 @@ class RoboticArmRadiation:
 
     def add_PatientSpeciesCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientSpeciesCodeSequence.append(item)
         if "PatientSpeciesCodeSequence" not in self._dataset:
             self._dataset.PatientSpeciesCodeSequence = pydicom.Sequence()
@@ -2682,7 +2688,7 @@ class RoboticArmRadiation:
             if "PatientBreedCodeSequence" in self._dataset:
                 del self._dataset.PatientBreedCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientBreedCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientBreedCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientBreedCodeSequence = value
             if "PatientBreedCodeSequence" not in self._dataset:
@@ -2692,7 +2698,7 @@ class RoboticArmRadiation:
 
     def add_PatientBreedCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientBreedCodeSequence.append(item)
         if "PatientBreedCodeSequence" not in self._dataset:
             self._dataset.PatientBreedCodeSequence = pydicom.Sequence()
@@ -2714,7 +2720,7 @@ class RoboticArmRadiation:
             if "BreedRegistrationSequence" in self._dataset:
                 del self._dataset.BreedRegistrationSequence
         elif not isinstance(value, list) or not all(isinstance(item, BreedRegistrationSequenceItem) for item in value):
-            raise ValueError(f"BreedRegistrationSequence must be a list of BreedRegistrationSequenceItem objects")
+            raise ValueError("BreedRegistrationSequence must be a list of BreedRegistrationSequenceItem objects")
         else:
             self._BreedRegistrationSequence = value
             if "BreedRegistrationSequence" not in self._dataset:
@@ -2724,7 +2730,7 @@ class RoboticArmRadiation:
 
     def add_BreedRegistration(self, item: BreedRegistrationSequenceItem):
         if not isinstance(item, BreedRegistrationSequenceItem):
-            raise ValueError(f"Item must be an instance of BreedRegistrationSequenceItem")
+            raise ValueError("Item must be an instance of BreedRegistrationSequenceItem")
         self._BreedRegistrationSequence.append(item)
         if "BreedRegistrationSequence" not in self._dataset:
             self._dataset.BreedRegistrationSequence = pydicom.Sequence()
@@ -2830,7 +2836,7 @@ class RoboticArmRadiation:
             if "DeidentificationMethodCodeSequence" in self._dataset:
                 del self._dataset.DeidentificationMethodCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DeidentificationMethodCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DeidentificationMethodCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DeidentificationMethodCodeSequence = value
             if "DeidentificationMethodCodeSequence" not in self._dataset:
@@ -2840,7 +2846,7 @@ class RoboticArmRadiation:
 
     def add_DeidentificationMethodCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DeidentificationMethodCodeSequence.append(item)
         if "DeidentificationMethodCodeSequence" not in self._dataset:
             self._dataset.DeidentificationMethodCodeSequence = pydicom.Sequence()
@@ -2867,7 +2873,7 @@ class RoboticArmRadiation:
             isinstance(item, TreatmentDeviceIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"TreatmentDeviceIdentificationSequence must be a list of TreatmentDeviceIdentificationSequenceItem objects"
+                "TreatmentDeviceIdentificationSequence must be a list of TreatmentDeviceIdentificationSequenceItem objects"
             )
         else:
             self._TreatmentDeviceIdentificationSequence = value
@@ -2878,7 +2884,7 @@ class RoboticArmRadiation:
 
     def add_TreatmentDeviceIdentification(self, item: TreatmentDeviceIdentificationSequenceItem):
         if not isinstance(item, TreatmentDeviceIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of TreatmentDeviceIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of TreatmentDeviceIdentificationSequenceItem")
         self._TreatmentDeviceIdentificationSequence.append(item)
         if "TreatmentDeviceIdentificationSequence" not in self._dataset:
             self._dataset.TreatmentDeviceIdentificationSequence = pydicom.Sequence()
@@ -2900,7 +2906,7 @@ class RoboticArmRadiation:
             if "RadiationDosimeterUnitSequence" in self._dataset:
                 del self._dataset.RadiationDosimeterUnitSequence
         elif not isinstance(value, list) or not all(isinstance(item, RadiationDosimeterUnitSequenceItem) for item in value):
-            raise ValueError(f"RadiationDosimeterUnitSequence must be a list of RadiationDosimeterUnitSequenceItem objects")
+            raise ValueError("RadiationDosimeterUnitSequence must be a list of RadiationDosimeterUnitSequenceItem objects")
         else:
             self._RadiationDosimeterUnitSequence = value
             if "RadiationDosimeterUnitSequence" not in self._dataset:
@@ -2910,7 +2916,7 @@ class RoboticArmRadiation:
 
     def add_RadiationDosimeterUnit(self, item: RadiationDosimeterUnitSequenceItem):
         if not isinstance(item, RadiationDosimeterUnitSequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationDosimeterUnitSequenceItem")
+            raise ValueError("Item must be an instance of RadiationDosimeterUnitSequenceItem")
         self._RadiationDosimeterUnitSequence.append(item)
         if "RadiationDosimeterUnitSequence" not in self._dataset:
             self._dataset.RadiationDosimeterUnitSequence = pydicom.Sequence()
@@ -2934,7 +2940,7 @@ class RoboticArmRadiation:
             if "RTDeviceDistanceReferenceLocationCodeSequence" in self._dataset:
                 del self._dataset.RTDeviceDistanceReferenceLocationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTDeviceDistanceReferenceLocationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTDeviceDistanceReferenceLocationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTDeviceDistanceReferenceLocationCodeSequence = value
             if "RTDeviceDistanceReferenceLocationCodeSequence" not in self._dataset:
@@ -2944,7 +2950,7 @@ class RoboticArmRadiation:
 
     def add_RTDeviceDistanceReferenceLocationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTDeviceDistanceReferenceLocationCodeSequence.append(item)
         if "RTDeviceDistanceReferenceLocationCodeSequence" not in self._dataset:
             self._dataset.RTDeviceDistanceReferenceLocationCodeSequence = pydicom.Sequence()
@@ -3004,7 +3010,8 @@ class RoboticArmRadiation:
             isinstance(item, EquipmentReferencePointCoordinatesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"EquipmentReferencePointCoordinatesSequence must be a list of EquipmentReferencePointCoordinatesSequenceItem objects"
+                "EquipmentReferencePointCoordinatesSequence must be a list of EquipmentReferencePointCoordinatesSequenceItem"
+                " objects"
             )
         else:
             self._EquipmentReferencePointCoordinatesSequence = value
@@ -3015,7 +3022,7 @@ class RoboticArmRadiation:
 
     def add_EquipmentReferencePointCoordinates(self, item: EquipmentReferencePointCoordinatesSequenceItem):
         if not isinstance(item, EquipmentReferencePointCoordinatesSequenceItem):
-            raise ValueError(f"Item must be an instance of EquipmentReferencePointCoordinatesSequenceItem")
+            raise ValueError("Item must be an instance of EquipmentReferencePointCoordinatesSequenceItem")
         self._EquipmentReferencePointCoordinatesSequence.append(item)
         if "EquipmentReferencePointCoordinatesSequence" not in self._dataset:
             self._dataset.EquipmentReferencePointCoordinatesSequence = pydicom.Sequence()
@@ -3037,7 +3044,7 @@ class RoboticArmRadiation:
             if "PatientSupportDevicesSequence" in self._dataset:
                 del self._dataset.PatientSupportDevicesSequence
         elif not isinstance(value, list) or not all(isinstance(item, PatientSupportDevicesSequenceItem) for item in value):
-            raise ValueError(f"PatientSupportDevicesSequence must be a list of PatientSupportDevicesSequenceItem objects")
+            raise ValueError("PatientSupportDevicesSequence must be a list of PatientSupportDevicesSequenceItem objects")
         else:
             self._PatientSupportDevicesSequence = value
             if "PatientSupportDevicesSequence" not in self._dataset:
@@ -3047,7 +3054,7 @@ class RoboticArmRadiation:
 
     def add_PatientSupportDevices(self, item: PatientSupportDevicesSequenceItem):
         if not isinstance(item, PatientSupportDevicesSequenceItem):
-            raise ValueError(f"Item must be an instance of PatientSupportDevicesSequenceItem")
+            raise ValueError("Item must be an instance of PatientSupportDevicesSequenceItem")
         self._PatientSupportDevicesSequence.append(item)
         if "PatientSupportDevicesSequence" not in self._dataset:
             self._dataset.PatientSupportDevicesSequence = pydicom.Sequence()
@@ -3158,7 +3165,7 @@ class RoboticArmRadiation:
             isinstance(item, OtherClinicalTrialProtocolIDsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OtherClinicalTrialProtocolIDsSequence must be a list of OtherClinicalTrialProtocolIDsSequenceItem objects"
+                "OtherClinicalTrialProtocolIDsSequence must be a list of OtherClinicalTrialProtocolIDsSequenceItem objects"
             )
         else:
             self._OtherClinicalTrialProtocolIDsSequence = value
@@ -3169,7 +3176,7 @@ class RoboticArmRadiation:
 
     def add_OtherClinicalTrialProtocolIDs(self, item: OtherClinicalTrialProtocolIDsSequenceItem):
         if not isinstance(item, OtherClinicalTrialProtocolIDsSequenceItem):
-            raise ValueError(f"Item must be an instance of OtherClinicalTrialProtocolIDsSequenceItem")
+            raise ValueError("Item must be an instance of OtherClinicalTrialProtocolIDsSequenceItem")
         self._OtherClinicalTrialProtocolIDsSequence.append(item)
         if "OtherClinicalTrialProtocolIDsSequence" not in self._dataset:
             self._dataset.OtherClinicalTrialProtocolIDsSequence = pydicom.Sequence()
@@ -3320,7 +3327,7 @@ class RoboticArmRadiation:
             isinstance(item, RTAccessoryHolderDefinitionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTAccessoryHolderDefinitionSequence must be a list of RTAccessoryHolderDefinitionSequenceItem objects"
+                "RTAccessoryHolderDefinitionSequence must be a list of RTAccessoryHolderDefinitionSequenceItem objects"
             )
         else:
             self._RTAccessoryHolderDefinitionSequence = value
@@ -3331,7 +3338,7 @@ class RoboticArmRadiation:
 
     def add_RTAccessoryHolderDefinition(self, item: RTAccessoryHolderDefinitionSequenceItem):
         if not isinstance(item, RTAccessoryHolderDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of RTAccessoryHolderDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of RTAccessoryHolderDefinitionSequenceItem")
         self._RTAccessoryHolderDefinitionSequence.append(item)
         if "RTAccessoryHolderDefinitionSequence" not in self._dataset:
             self._dataset.RTAccessoryHolderDefinitionSequence = pydicom.Sequence()
@@ -3372,7 +3379,7 @@ class RoboticArmRadiation:
             isinstance(item, RTBeamLimitingDeviceDefinitionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTBeamLimitingDeviceDefinitionSequence must be a list of RTBeamLimitingDeviceDefinitionSequenceItem objects"
+                "RTBeamLimitingDeviceDefinitionSequence must be a list of RTBeamLimitingDeviceDefinitionSequenceItem objects"
             )
         else:
             self._RTBeamLimitingDeviceDefinitionSequence = value
@@ -3383,7 +3390,7 @@ class RoboticArmRadiation:
 
     def add_RTBeamLimitingDeviceDefinition(self, item: RTBeamLimitingDeviceDefinitionSequenceItem):
         if not isinstance(item, RTBeamLimitingDeviceDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of RTBeamLimitingDeviceDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of RTBeamLimitingDeviceDefinitionSequenceItem")
         self._RTBeamLimitingDeviceDefinitionSequence.append(item)
         if "RTBeamLimitingDeviceDefinitionSequence" not in self._dataset:
             self._dataset.RTBeamLimitingDeviceDefinitionSequence = pydicom.Sequence()
@@ -3419,7 +3426,7 @@ class RoboticArmRadiation:
             if "RadiationGenerationModeSequence" in self._dataset:
                 del self._dataset.RadiationGenerationModeSequence
         elif not isinstance(value, list) or not all(isinstance(item, RadiationGenerationModeSequenceItem) for item in value):
-            raise ValueError(f"RadiationGenerationModeSequence must be a list of RadiationGenerationModeSequenceItem objects")
+            raise ValueError("RadiationGenerationModeSequence must be a list of RadiationGenerationModeSequenceItem objects")
         else:
             self._RadiationGenerationModeSequence = value
             if "RadiationGenerationModeSequence" not in self._dataset:
@@ -3429,7 +3436,7 @@ class RoboticArmRadiation:
 
     def add_RadiationGenerationMode(self, item: RadiationGenerationModeSequenceItem):
         if not isinstance(item, RadiationGenerationModeSequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationGenerationModeSequenceItem")
+            raise ValueError("Item must be an instance of RadiationGenerationModeSequenceItem")
         self._RadiationGenerationModeSequence.append(item)
         if "RadiationGenerationModeSequence" not in self._dataset:
             self._dataset.RadiationGenerationModeSequence = pydicom.Sequence()
@@ -3465,7 +3472,7 @@ class RoboticArmRadiation:
             if "DefinitionSourceSequence" in self._dataset:
                 del self._dataset.DefinitionSourceSequence
         elif not isinstance(value, list) or not all(isinstance(item, DefinitionSourceSequenceItem) for item in value):
-            raise ValueError(f"DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
+            raise ValueError("DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
         else:
             self._DefinitionSourceSequence = value
             if "DefinitionSourceSequence" not in self._dataset:
@@ -3475,7 +3482,7 @@ class RoboticArmRadiation:
 
     def add_DefinitionSource(self, item: DefinitionSourceSequenceItem):
         if not isinstance(item, DefinitionSourceSequenceItem):
-            raise ValueError(f"Item must be an instance of DefinitionSourceSequenceItem")
+            raise ValueError("Item must be an instance of DefinitionSourceSequenceItem")
         self._DefinitionSourceSequence.append(item)
         if "DefinitionSourceSequence" not in self._dataset:
             self._dataset.DefinitionSourceSequence = pydicom.Sequence()
@@ -3497,7 +3504,7 @@ class RoboticArmRadiation:
             if "PatientOrientationCodeSequence" in self._dataset:
                 del self._dataset.PatientOrientationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientOrientationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientOrientationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientOrientationCodeSequence = value
             if "PatientOrientationCodeSequence" not in self._dataset:
@@ -3507,7 +3514,7 @@ class RoboticArmRadiation:
 
     def add_PatientOrientationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientOrientationCodeSequence.append(item)
         if "PatientOrientationCodeSequence" not in self._dataset:
             self._dataset.PatientOrientationCodeSequence = pydicom.Sequence()
@@ -3559,7 +3566,7 @@ class RoboticArmRadiation:
             if "ContentCreatorIdentificationCodeSequence" in self._dataset:
                 del self._dataset.ContentCreatorIdentificationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ContentCreatorIdentificationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ContentCreatorIdentificationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ContentCreatorIdentificationCodeSequence = value
             if "ContentCreatorIdentificationCodeSequence" not in self._dataset:
@@ -3569,7 +3576,7 @@ class RoboticArmRadiation:
 
     def add_ContentCreatorIdentificationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ContentCreatorIdentificationCodeSequence.append(item)
         if "ContentCreatorIdentificationCodeSequence" not in self._dataset:
             self._dataset.ContentCreatorIdentificationCodeSequence = pydicom.Sequence()
@@ -3591,7 +3598,7 @@ class RoboticArmRadiation:
             if "RTToleranceSetSequence" in self._dataset:
                 del self._dataset.RTToleranceSetSequence
         elif not isinstance(value, list) or not all(isinstance(item, RTToleranceSetSequenceItem) for item in value):
-            raise ValueError(f"RTToleranceSetSequence must be a list of RTToleranceSetSequenceItem objects")
+            raise ValueError("RTToleranceSetSequence must be a list of RTToleranceSetSequenceItem objects")
         else:
             self._RTToleranceSetSequence = value
             if "RTToleranceSetSequence" not in self._dataset:
@@ -3601,7 +3608,7 @@ class RoboticArmRadiation:
 
     def add_RTToleranceSet(self, item: RTToleranceSetSequenceItem):
         if not isinstance(item, RTToleranceSetSequenceItem):
-            raise ValueError(f"Item must be an instance of RTToleranceSetSequenceItem")
+            raise ValueError("Item must be an instance of RTToleranceSetSequenceItem")
         self._RTToleranceSetSequence.append(item)
         if "RTToleranceSetSequence" not in self._dataset:
             self._dataset.RTToleranceSetSequence = pydicom.Sequence()
@@ -3639,7 +3646,7 @@ class RoboticArmRadiation:
             if "TreatmentMachineSpecialModeCodeSequence" in self._dataset:
                 del self._dataset.TreatmentMachineSpecialModeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TreatmentMachineSpecialModeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TreatmentMachineSpecialModeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TreatmentMachineSpecialModeCodeSequence = value
             if "TreatmentMachineSpecialModeCodeSequence" not in self._dataset:
@@ -3649,7 +3656,7 @@ class RoboticArmRadiation:
 
     def add_TreatmentMachineSpecialModeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TreatmentMachineSpecialModeCodeSequence.append(item)
         if "TreatmentMachineSpecialModeCodeSequence" not in self._dataset:
             self._dataset.TreatmentMachineSpecialModeCodeSequence = pydicom.Sequence()
@@ -3699,7 +3706,7 @@ class RoboticArmRadiation:
             if "TreatmentPositionSequence" in self._dataset:
                 del self._dataset.TreatmentPositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, TreatmentPositionSequenceItem) for item in value):
-            raise ValueError(f"TreatmentPositionSequence must be a list of TreatmentPositionSequenceItem objects")
+            raise ValueError("TreatmentPositionSequence must be a list of TreatmentPositionSequenceItem objects")
         else:
             self._TreatmentPositionSequence = value
             if "TreatmentPositionSequence" not in self._dataset:
@@ -3709,7 +3716,7 @@ class RoboticArmRadiation:
 
     def add_TreatmentPosition(self, item: TreatmentPositionSequenceItem):
         if not isinstance(item, TreatmentPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of TreatmentPositionSequenceItem")
+            raise ValueError("Item must be an instance of TreatmentPositionSequenceItem")
         self._TreatmentPositionSequence.append(item)
         if "TreatmentPositionSequence" not in self._dataset:
             self._dataset.TreatmentPositionSequence = pydicom.Sequence()
@@ -3733,7 +3740,7 @@ class RoboticArmRadiation:
             if "PatientEquipmentRelationshipCodeSequence" in self._dataset:
                 del self._dataset.PatientEquipmentRelationshipCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientEquipmentRelationshipCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientEquipmentRelationshipCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientEquipmentRelationshipCodeSequence = value
             if "PatientEquipmentRelationshipCodeSequence" not in self._dataset:
@@ -3743,7 +3750,7 @@ class RoboticArmRadiation:
 
     def add_PatientEquipmentRelationshipCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientEquipmentRelationshipCodeSequence.append(item)
         if "PatientEquipmentRelationshipCodeSequence" not in self._dataset:
             self._dataset.PatientEquipmentRelationshipCodeSequence = pydicom.Sequence()
@@ -3779,7 +3786,7 @@ class RoboticArmRadiation:
             if "RTTreatmentTechniqueCodeSequence" in self._dataset:
                 del self._dataset.RTTreatmentTechniqueCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTTreatmentTechniqueCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTTreatmentTechniqueCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTTreatmentTechniqueCodeSequence = value
             if "RTTreatmentTechniqueCodeSequence" not in self._dataset:
@@ -3789,7 +3796,7 @@ class RoboticArmRadiation:
 
     def add_RTTreatmentTechniqueCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTTreatmentTechniqueCodeSequence.append(item)
         if "RTTreatmentTechniqueCodeSequence" not in self._dataset:
             self._dataset.RTTreatmentTechniqueCodeSequence = pydicom.Sequence()
@@ -3968,7 +3975,7 @@ class RoboticArmRadiation:
             isinstance(item, CodingSchemeIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"CodingSchemeIdentificationSequence must be a list of CodingSchemeIdentificationSequenceItem objects"
+                "CodingSchemeIdentificationSequence must be a list of CodingSchemeIdentificationSequenceItem objects"
             )
         else:
             self._CodingSchemeIdentificationSequence = value
@@ -3979,7 +3986,7 @@ class RoboticArmRadiation:
 
     def add_CodingSchemeIdentification(self, item: CodingSchemeIdentificationSequenceItem):
         if not isinstance(item, CodingSchemeIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of CodingSchemeIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of CodingSchemeIdentificationSequenceItem")
         self._CodingSchemeIdentificationSequence.append(item)
         if "CodingSchemeIdentificationSequence" not in self._dataset:
             self._dataset.CodingSchemeIdentificationSequence = pydicom.Sequence()
@@ -4004,7 +4011,7 @@ class RoboticArmRadiation:
             isinstance(item, ContextGroupIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ContextGroupIdentificationSequence must be a list of ContextGroupIdentificationSequenceItem objects"
+                "ContextGroupIdentificationSequence must be a list of ContextGroupIdentificationSequenceItem objects"
             )
         else:
             self._ContextGroupIdentificationSequence = value
@@ -4015,7 +4022,7 @@ class RoboticArmRadiation:
 
     def add_ContextGroupIdentification(self, item: ContextGroupIdentificationSequenceItem):
         if not isinstance(item, ContextGroupIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ContextGroupIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ContextGroupIdentificationSequenceItem")
         self._ContextGroupIdentificationSequence.append(item)
         if "ContextGroupIdentificationSequence" not in self._dataset:
             self._dataset.ContextGroupIdentificationSequence = pydicom.Sequence()
@@ -4042,7 +4049,7 @@ class RoboticArmRadiation:
             isinstance(item, MappingResourceIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"MappingResourceIdentificationSequence must be a list of MappingResourceIdentificationSequenceItem objects"
+                "MappingResourceIdentificationSequence must be a list of MappingResourceIdentificationSequenceItem objects"
             )
         else:
             self._MappingResourceIdentificationSequence = value
@@ -4053,7 +4060,7 @@ class RoboticArmRadiation:
 
     def add_MappingResourceIdentification(self, item: MappingResourceIdentificationSequenceItem):
         if not isinstance(item, MappingResourceIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of MappingResourceIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of MappingResourceIdentificationSequenceItem")
         self._MappingResourceIdentificationSequence.append(item)
         if "MappingResourceIdentificationSequence" not in self._dataset:
             self._dataset.MappingResourceIdentificationSequence = pydicom.Sequence()
@@ -4097,7 +4104,8 @@ class RoboticArmRadiation:
             isinstance(item, PrivateDataElementCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PrivateDataElementCharacteristicsSequence must be a list of PrivateDataElementCharacteristicsSequenceItem objects"
+                "PrivateDataElementCharacteristicsSequence must be a list of PrivateDataElementCharacteristicsSequenceItem"
+                " objects"
             )
         else:
             self._PrivateDataElementCharacteristicsSequence = value
@@ -4108,7 +4116,7 @@ class RoboticArmRadiation:
 
     def add_PrivateDataElementCharacteristics(self, item: PrivateDataElementCharacteristicsSequenceItem):
         if not isinstance(item, PrivateDataElementCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of PrivateDataElementCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of PrivateDataElementCharacteristicsSequenceItem")
         self._PrivateDataElementCharacteristicsSequence.append(item)
         if "PrivateDataElementCharacteristicsSequence" not in self._dataset:
             self._dataset.PrivateDataElementCharacteristicsSequence = pydicom.Sequence()
@@ -4145,7 +4153,7 @@ class RoboticArmRadiation:
                 del self._dataset.ReferencedDefinedProtocolSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDefinedProtocolSequenceItem) for item in value):
             raise ValueError(
-                f"ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
+                "ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedDefinedProtocolSequence = value
@@ -4156,7 +4164,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedDefinedProtocol(self, item: ReferencedDefinedProtocolSequenceItem):
         if not isinstance(item, ReferencedDefinedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDefinedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDefinedProtocolSequenceItem")
         self._ReferencedDefinedProtocolSequence.append(item)
         if "ReferencedDefinedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedDefinedProtocolSequence = pydicom.Sequence()
@@ -4181,7 +4189,7 @@ class RoboticArmRadiation:
             isinstance(item, ReferencedPerformedProtocolSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
+                "ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedPerformedProtocolSequence = value
@@ -4192,7 +4200,7 @@ class RoboticArmRadiation:
 
     def add_ReferencedPerformedProtocol(self, item: ReferencedPerformedProtocolSequenceItem):
         if not isinstance(item, ReferencedPerformedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPerformedProtocolSequenceItem")
         self._ReferencedPerformedProtocolSequence.append(item)
         if "ReferencedPerformedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedPerformedProtocolSequence = pydicom.Sequence()
@@ -4214,7 +4222,7 @@ class RoboticArmRadiation:
             if "ContributingEquipmentSequence" in self._dataset:
                 del self._dataset.ContributingEquipmentSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContributingEquipmentSequenceItem) for item in value):
-            raise ValueError(f"ContributingEquipmentSequence must be a list of ContributingEquipmentSequenceItem objects")
+            raise ValueError("ContributingEquipmentSequence must be a list of ContributingEquipmentSequenceItem objects")
         else:
             self._ContributingEquipmentSequence = value
             if "ContributingEquipmentSequence" not in self._dataset:
@@ -4224,7 +4232,7 @@ class RoboticArmRadiation:
 
     def add_ContributingEquipment(self, item: ContributingEquipmentSequenceItem):
         if not isinstance(item, ContributingEquipmentSequenceItem):
-            raise ValueError(f"Item must be an instance of ContributingEquipmentSequenceItem")
+            raise ValueError("Item must be an instance of ContributingEquipmentSequenceItem")
         self._ContributingEquipmentSequence.append(item)
         if "ContributingEquipmentSequence" not in self._dataset:
             self._dataset.ContributingEquipmentSequence = pydicom.Sequence()
@@ -4263,7 +4271,7 @@ class RoboticArmRadiation:
             isinstance(item, ConversionSourceAttributesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConversionSourceAttributesSequence must be a list of ConversionSourceAttributesSequenceItem objects"
+                "ConversionSourceAttributesSequence must be a list of ConversionSourceAttributesSequenceItem objects"
             )
         else:
             self._ConversionSourceAttributesSequence = value
@@ -4274,7 +4282,7 @@ class RoboticArmRadiation:
 
     def add_ConversionSourceAttributes(self, item: ConversionSourceAttributesSequenceItem):
         if not isinstance(item, ConversionSourceAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of ConversionSourceAttributesSequenceItem")
+            raise ValueError("Item must be an instance of ConversionSourceAttributesSequenceItem")
         self._ConversionSourceAttributesSequence.append(item)
         if "ConversionSourceAttributesSequence" not in self._dataset:
             self._dataset.ConversionSourceAttributesSequence = pydicom.Sequence()
@@ -4315,7 +4323,7 @@ class RoboticArmRadiation:
             isinstance(item, HL7StructuredDocumentReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"HL7StructuredDocumentReferenceSequence must be a list of HL7StructuredDocumentReferenceSequenceItem objects"
+                "HL7StructuredDocumentReferenceSequence must be a list of HL7StructuredDocumentReferenceSequenceItem objects"
             )
         else:
             self._HL7StructuredDocumentReferenceSequence = value
@@ -4326,7 +4334,7 @@ class RoboticArmRadiation:
 
     def add_HL7StructuredDocumentReference(self, item: HL7StructuredDocumentReferenceSequenceItem):
         if not isinstance(item, HL7StructuredDocumentReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of HL7StructuredDocumentReferenceSequenceItem")
+            raise ValueError("Item must be an instance of HL7StructuredDocumentReferenceSequenceItem")
         self._HL7StructuredDocumentReferenceSequence.append(item)
         if "HL7StructuredDocumentReferenceSequence" not in self._dataset:
             self._dataset.HL7StructuredDocumentReferenceSequence = pydicom.Sequence()
@@ -4404,7 +4412,7 @@ class RoboticArmRadiation:
             if "EncryptedAttributesSequence" in self._dataset:
                 del self._dataset.EncryptedAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, EncryptedAttributesSequenceItem) for item in value):
-            raise ValueError(f"EncryptedAttributesSequence must be a list of EncryptedAttributesSequenceItem objects")
+            raise ValueError("EncryptedAttributesSequence must be a list of EncryptedAttributesSequenceItem objects")
         else:
             self._EncryptedAttributesSequence = value
             if "EncryptedAttributesSequence" not in self._dataset:
@@ -4414,7 +4422,7 @@ class RoboticArmRadiation:
 
     def add_EncryptedAttributes(self, item: EncryptedAttributesSequenceItem):
         if not isinstance(item, EncryptedAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of EncryptedAttributesSequenceItem")
+            raise ValueError("Item must be an instance of EncryptedAttributesSequenceItem")
         self._EncryptedAttributesSequence.append(item)
         if "EncryptedAttributesSequence" not in self._dataset:
             self._dataset.EncryptedAttributesSequence = pydicom.Sequence()
@@ -4436,7 +4444,7 @@ class RoboticArmRadiation:
             if "OriginalAttributesSequence" in self._dataset:
                 del self._dataset.OriginalAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, OriginalAttributesSequenceItem) for item in value):
-            raise ValueError(f"OriginalAttributesSequence must be a list of OriginalAttributesSequenceItem objects")
+            raise ValueError("OriginalAttributesSequence must be a list of OriginalAttributesSequenceItem objects")
         else:
             self._OriginalAttributesSequence = value
             if "OriginalAttributesSequence" not in self._dataset:
@@ -4446,7 +4454,7 @@ class RoboticArmRadiation:
 
     def add_OriginalAttributes(self, item: OriginalAttributesSequenceItem):
         if not isinstance(item, OriginalAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of OriginalAttributesSequenceItem")
+            raise ValueError("Item must be an instance of OriginalAttributesSequenceItem")
         self._OriginalAttributesSequence.append(item)
         if "OriginalAttributesSequence" not in self._dataset:
             self._dataset.OriginalAttributesSequence = pydicom.Sequence()
@@ -4496,7 +4504,7 @@ class RoboticArmRadiation:
             if "MACParametersSequence" in self._dataset:
                 del self._dataset.MACParametersSequence
         elif not isinstance(value, list) or not all(isinstance(item, MACParametersSequenceItem) for item in value):
-            raise ValueError(f"MACParametersSequence must be a list of MACParametersSequenceItem objects")
+            raise ValueError("MACParametersSequence must be a list of MACParametersSequenceItem objects")
         else:
             self._MACParametersSequence = value
             if "MACParametersSequence" not in self._dataset:
@@ -4506,7 +4514,7 @@ class RoboticArmRadiation:
 
     def add_MACParameters(self, item: MACParametersSequenceItem):
         if not isinstance(item, MACParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of MACParametersSequenceItem")
+            raise ValueError("Item must be an instance of MACParametersSequenceItem")
         self._MACParametersSequence.append(item)
         if "MACParametersSequence" not in self._dataset:
             self._dataset.MACParametersSequence = pydicom.Sequence()
@@ -4528,7 +4536,7 @@ class RoboticArmRadiation:
             if "DigitalSignaturesSequence" in self._dataset:
                 del self._dataset.DigitalSignaturesSequence
         elif not isinstance(value, list) or not all(isinstance(item, DigitalSignaturesSequenceItem) for item in value):
-            raise ValueError(f"DigitalSignaturesSequence must be a list of DigitalSignaturesSequenceItem objects")
+            raise ValueError("DigitalSignaturesSequence must be a list of DigitalSignaturesSequenceItem objects")
         else:
             self._DigitalSignaturesSequence = value
             if "DigitalSignaturesSequence" not in self._dataset:
@@ -4538,7 +4546,7 @@ class RoboticArmRadiation:
 
     def add_DigitalSignatures(self, item: DigitalSignaturesSequenceItem):
         if not isinstance(item, DigitalSignaturesSequenceItem):
-            raise ValueError(f"Item must be an instance of DigitalSignaturesSequenceItem")
+            raise ValueError("Item must be an instance of DigitalSignaturesSequenceItem")
         self._DigitalSignaturesSequence.append(item)
         if "DigitalSignaturesSequence" not in self._dataset:
             self._dataset.DigitalSignaturesSequence = pydicom.Sequence()
@@ -4574,7 +4582,7 @@ class RoboticArmRadiation:
             if "RoboticPathNodeSetCodeSequence" in self._dataset:
                 del self._dataset.RoboticPathNodeSetCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RoboticPathNodeSetCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RoboticPathNodeSetCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RoboticPathNodeSetCodeSequence = value
             if "RoboticPathNodeSetCodeSequence" not in self._dataset:
@@ -4584,7 +4592,7 @@ class RoboticArmRadiation:
 
     def add_RoboticPathNodeSetCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RoboticPathNodeSetCodeSequence.append(item)
         if "RoboticPathNodeSetCodeSequence" not in self._dataset:
             self._dataset.RoboticPathNodeSetCodeSequence = pydicom.Sequence()
@@ -4606,7 +4614,7 @@ class RoboticArmRadiation:
             if "RoboticPathControlPointSequence" in self._dataset:
                 del self._dataset.RoboticPathControlPointSequence
         elif not isinstance(value, list) or not all(isinstance(item, RoboticPathControlPointSequenceItem) for item in value):
-            raise ValueError(f"RoboticPathControlPointSequence must be a list of RoboticPathControlPointSequenceItem objects")
+            raise ValueError("RoboticPathControlPointSequence must be a list of RoboticPathControlPointSequenceItem objects")
         else:
             self._RoboticPathControlPointSequence = value
             if "RoboticPathControlPointSequence" not in self._dataset:
@@ -4616,7 +4624,7 @@ class RoboticArmRadiation:
 
     def add_RoboticPathControlPoint(self, item: RoboticPathControlPointSequenceItem):
         if not isinstance(item, RoboticPathControlPointSequenceItem):
-            raise ValueError(f"Item must be an instance of RoboticPathControlPointSequenceItem")
+            raise ValueError("Item must be an instance of RoboticPathControlPointSequenceItem")
         self._RoboticPathControlPointSequence.append(item)
         if "RoboticPathControlPointSequence" not in self._dataset:
             self._dataset.RoboticPathControlPointSequence = pydicom.Sequence()
@@ -4694,7 +4702,7 @@ class RoboticArmRadiation:
             if "SeriesDescriptionCodeSequence" in self._dataset:
                 del self._dataset.SeriesDescriptionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SeriesDescriptionCodeSequence = value
             if "SeriesDescriptionCodeSequence" not in self._dataset:
@@ -4704,7 +4712,7 @@ class RoboticArmRadiation:
 
     def add_SeriesDescriptionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SeriesDescriptionCodeSequence.append(item)
         if "SeriesDescriptionCodeSequence" not in self._dataset:
             self._dataset.SeriesDescriptionCodeSequence = pydicom.Sequence()
@@ -4748,7 +4756,8 @@ class RoboticArmRadiation:
             isinstance(item, PerformingPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PerformingPhysicianIdentificationSequence must be a list of PerformingPhysicianIdentificationSequenceItem objects"
+                "PerformingPhysicianIdentificationSequence must be a list of PerformingPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._PerformingPhysicianIdentificationSequence = value
@@ -4759,7 +4768,7 @@ class RoboticArmRadiation:
 
     def add_PerformingPhysicianIdentification(self, item: PerformingPhysicianIdentificationSequenceItem):
         if not isinstance(item, PerformingPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PerformingPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PerformingPhysicianIdentificationSequenceItem")
         self._PerformingPhysicianIdentificationSequence.append(item)
         if "PerformingPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.PerformingPhysicianIdentificationSequence = pydicom.Sequence()
@@ -4795,7 +4804,7 @@ class RoboticArmRadiation:
             if "OperatorIdentificationSequence" in self._dataset:
                 del self._dataset.OperatorIdentificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, OperatorIdentificationSequenceItem) for item in value):
-            raise ValueError(f"OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
+            raise ValueError("OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
         else:
             self._OperatorIdentificationSequence = value
             if "OperatorIdentificationSequence" not in self._dataset:
@@ -4805,7 +4814,7 @@ class RoboticArmRadiation:
 
     def add_OperatorIdentification(self, item: OperatorIdentificationSequenceItem):
         if not isinstance(item, OperatorIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of OperatorIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of OperatorIdentificationSequenceItem")
         self._OperatorIdentificationSequence.append(item)
         if "OperatorIdentificationSequence" not in self._dataset:
             self._dataset.OperatorIdentificationSequence = pydicom.Sequence()
@@ -4835,7 +4844,8 @@ class RoboticArmRadiation:
             isinstance(item, ReferencedPerformedProcedureStepSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem objects"
+                "ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedPerformedProcedureStepSequence = value
@@ -4844,15 +4854,6 @@ class RoboticArmRadiation:
             self._dataset.ReferencedPerformedProcedureStepSequence.clear()
             self._dataset.ReferencedPerformedProcedureStepSequence.extend([item.to_dataset() for item in value])
 
-    def add_ReferencedPerformedProcedureStep(self, item: ReferencedPerformedProcedureStepSequenceItem):
-        if not isinstance(item, ReferencedPerformedProcedureStepSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProcedureStepSequenceItem")
-        self._ReferencedPerformedProcedureStepSequence.append(item)
-        if "ReferencedPerformedProcedureStepSequence" not in self._dataset:
-            self._dataset.ReferencedPerformedProcedureStepSequence = pydicom.Sequence()
-        self._dataset.ReferencedPerformedProcedureStepSequence.append(item.to_dataset())
-
-    @property
     def RelatedSeriesSequence(self) -> Optional[List[RelatedSeriesSequenceItem]]:
         if "RelatedSeriesSequence" in self._dataset:
             if len(self._RelatedSeriesSequence) == len(self._dataset.RelatedSeriesSequence):
@@ -4868,7 +4869,7 @@ class RoboticArmRadiation:
             if "RelatedSeriesSequence" in self._dataset:
                 del self._dataset.RelatedSeriesSequence
         elif not isinstance(value, list) or not all(isinstance(item, RelatedSeriesSequenceItem) for item in value):
-            raise ValueError(f"RelatedSeriesSequence must be a list of RelatedSeriesSequenceItem objects")
+            raise ValueError("RelatedSeriesSequence must be a list of RelatedSeriesSequenceItem objects")
         else:
             self._RelatedSeriesSequence = value
             if "RelatedSeriesSequence" not in self._dataset:
@@ -4878,7 +4879,7 @@ class RoboticArmRadiation:
 
     def add_RelatedSeries(self, item: RelatedSeriesSequenceItem):
         if not isinstance(item, RelatedSeriesSequenceItem):
-            raise ValueError(f"Item must be an instance of RelatedSeriesSequenceItem")
+            raise ValueError("Item must be an instance of RelatedSeriesSequenceItem")
         self._RelatedSeriesSequence.append(item)
         if "RelatedSeriesSequence" not in self._dataset:
             self._dataset.RelatedSeriesSequence = pydicom.Sequence()
@@ -5110,7 +5111,7 @@ class RoboticArmRadiation:
             if "PerformedProtocolCodeSequence" in self._dataset:
                 del self._dataset.PerformedProtocolCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PerformedProtocolCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PerformedProtocolCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PerformedProtocolCodeSequence = value
             if "PerformedProtocolCodeSequence" not in self._dataset:
@@ -5120,7 +5121,7 @@ class RoboticArmRadiation:
 
     def add_PerformedProtocolCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PerformedProtocolCodeSequence.append(item)
         if "PerformedProtocolCodeSequence" not in self._dataset:
             self._dataset.PerformedProtocolCodeSequence = pydicom.Sequence()
@@ -5142,7 +5143,7 @@ class RoboticArmRadiation:
             if "RequestAttributesSequence" in self._dataset:
                 del self._dataset.RequestAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, RequestAttributesSequenceItem) for item in value):
-            raise ValueError(f"RequestAttributesSequence must be a list of RequestAttributesSequenceItem objects")
+            raise ValueError("RequestAttributesSequence must be a list of RequestAttributesSequenceItem objects")
         else:
             self._RequestAttributesSequence = value
             if "RequestAttributesSequence" not in self._dataset:
@@ -5152,7 +5153,7 @@ class RoboticArmRadiation:
 
     def add_RequestAttributes(self, item: RequestAttributesSequenceItem):
         if not isinstance(item, RequestAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of RequestAttributesSequenceItem")
+            raise ValueError("Item must be an instance of RequestAttributesSequenceItem")
         self._RequestAttributesSequence.append(item)
         if "RequestAttributesSequence" not in self._dataset:
             self._dataset.RequestAttributesSequence = pydicom.Sequence()
@@ -5258,7 +5259,7 @@ class RoboticArmRadiation:
             if "ClinicalTrialTimePointTypeCodeSequence" in self._dataset:
                 del self._dataset.ClinicalTrialTimePointTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ClinicalTrialTimePointTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ClinicalTrialTimePointTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ClinicalTrialTimePointTypeCodeSequence = value
             if "ClinicalTrialTimePointTypeCodeSequence" not in self._dataset:
@@ -5268,7 +5269,7 @@ class RoboticArmRadiation:
 
     def add_ClinicalTrialTimePointTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ClinicalTrialTimePointTypeCodeSequence.append(item)
         if "ClinicalTrialTimePointTypeCodeSequence" not in self._dataset:
             self._dataset.ClinicalTrialTimePointTypeCodeSequence = pydicom.Sequence()
@@ -5307,7 +5308,7 @@ class RoboticArmRadiation:
             isinstance(item, ConsentForClinicalTrialUseSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConsentForClinicalTrialUseSequence must be a list of ConsentForClinicalTrialUseSequenceItem objects"
+                "ConsentForClinicalTrialUseSequence must be a list of ConsentForClinicalTrialUseSequenceItem objects"
             )
         else:
             self._ConsentForClinicalTrialUseSequence = value
@@ -5318,7 +5319,7 @@ class RoboticArmRadiation:
 
     def add_ConsentForClinicalTrialUse(self, item: ConsentForClinicalTrialUseSequenceItem):
         if not isinstance(item, ConsentForClinicalTrialUseSequenceItem):
-            raise ValueError(f"Item must be an instance of ConsentForClinicalTrialUseSequenceItem")
+            raise ValueError("Item must be an instance of ConsentForClinicalTrialUseSequenceItem")
         self._ConsentForClinicalTrialUseSequence.append(item)
         if "ConsentForClinicalTrialUseSequence" not in self._dataset:
             self._dataset.ConsentForClinicalTrialUseSequence = pydicom.Sequence()

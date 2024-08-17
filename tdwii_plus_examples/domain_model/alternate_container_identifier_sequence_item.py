@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -50,7 +50,7 @@ class AlternateContainerIdentifierSequenceItem:
             isinstance(item, IssuerOfTheContainerIdentifierSequenceItem) for item in value
         ):
             raise ValueError(
-                f"IssuerOfTheContainerIdentifierSequence must be a list of IssuerOfTheContainerIdentifierSequenceItem objects"
+                "IssuerOfTheContainerIdentifierSequence must be a list of IssuerOfTheContainerIdentifierSequenceItem objects"
             )
         else:
             self._IssuerOfTheContainerIdentifierSequence = value
@@ -61,7 +61,7 @@ class AlternateContainerIdentifierSequenceItem:
 
     def add_IssuerOfTheContainerIdentifier(self, item: IssuerOfTheContainerIdentifierSequenceItem):
         if not isinstance(item, IssuerOfTheContainerIdentifierSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfTheContainerIdentifierSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfTheContainerIdentifierSequenceItem")
         self._IssuerOfTheContainerIdentifierSequence.append(item)
         if "IssuerOfTheContainerIdentifierSequence" not in self._dataset:
             self._dataset.IssuerOfTheContainerIdentifierSequence = pydicom.Sequence()

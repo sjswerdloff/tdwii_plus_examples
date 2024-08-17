@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -114,7 +114,7 @@ class DataInformationSequenceItem:
             if "TimeSlotInformationSequence" in self._dataset:
                 del self._dataset.TimeSlotInformationSequence
         elif not isinstance(value, list) or not all(isinstance(item, TimeSlotInformationSequenceItem) for item in value):
-            raise ValueError(f"TimeSlotInformationSequence must be a list of TimeSlotInformationSequenceItem objects")
+            raise ValueError("TimeSlotInformationSequence must be a list of TimeSlotInformationSequenceItem objects")
         else:
             self._TimeSlotInformationSequence = value
             if "TimeSlotInformationSequence" not in self._dataset:
@@ -124,7 +124,7 @@ class DataInformationSequenceItem:
 
     def add_TimeSlotInformation(self, item: TimeSlotInformationSequenceItem):
         if not isinstance(item, TimeSlotInformationSequenceItem):
-            raise ValueError(f"Item must be an instance of TimeSlotInformationSequenceItem")
+            raise ValueError("Item must be an instance of TimeSlotInformationSequenceItem")
         self._TimeSlotInformationSequence.append(item)
         if "TimeSlotInformationSequence" not in self._dataset:
             self._dataset.TimeSlotInformationSequence = pydicom.Sequence()

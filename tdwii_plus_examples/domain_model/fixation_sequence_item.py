@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class FixationSequenceItem:
             if "FixationMonitoringCodeSequence" in self._dataset:
                 del self._dataset.FixationMonitoringCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"FixationMonitoringCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("FixationMonitoringCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._FixationMonitoringCodeSequence = value
             if "FixationMonitoringCodeSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class FixationSequenceItem:
 
     def add_FixationMonitoringCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._FixationMonitoringCodeSequence.append(item)
         if "FixationMonitoringCodeSequence" not in self._dataset:
             self._dataset.FixationMonitoringCodeSequence = pydicom.Sequence()

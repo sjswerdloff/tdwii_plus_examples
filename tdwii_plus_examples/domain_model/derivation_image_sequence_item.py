@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class DerivationImageSequenceItem:
             if "SourceImageSequence" in self._dataset:
                 del self._dataset.SourceImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, SourceImageSequenceItem) for item in value):
-            raise ValueError(f"SourceImageSequence must be a list of SourceImageSequenceItem objects")
+            raise ValueError("SourceImageSequence must be a list of SourceImageSequenceItem objects")
         else:
             self._SourceImageSequence = value
             if "SourceImageSequence" not in self._dataset:
@@ -55,7 +55,7 @@ class DerivationImageSequenceItem:
 
     def add_SourceImage(self, item: SourceImageSequenceItem):
         if not isinstance(item, SourceImageSequenceItem):
-            raise ValueError(f"Item must be an instance of SourceImageSequenceItem")
+            raise ValueError("Item must be an instance of SourceImageSequenceItem")
         self._SourceImageSequence.append(item)
         if "SourceImageSequence" not in self._dataset:
             self._dataset.SourceImageSequence = pydicom.Sequence()
@@ -77,7 +77,7 @@ class DerivationImageSequenceItem:
             if "DerivationCodeSequence" in self._dataset:
                 del self._dataset.DerivationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DerivationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DerivationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DerivationCodeSequence = value
             if "DerivationCodeSequence" not in self._dataset:
@@ -87,7 +87,7 @@ class DerivationImageSequenceItem:
 
     def add_DerivationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DerivationCodeSequence.append(item)
         if "DerivationCodeSequence" not in self._dataset:
             self._dataset.DerivationCodeSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -85,7 +85,7 @@ class ApplicatorSequenceItem:
             if "ApplicatorGeometrySequence" in self._dataset:
                 del self._dataset.ApplicatorGeometrySequence
         elif not isinstance(value, list) or not all(isinstance(item, ApplicatorGeometrySequenceItem) for item in value):
-            raise ValueError(f"ApplicatorGeometrySequence must be a list of ApplicatorGeometrySequenceItem objects")
+            raise ValueError("ApplicatorGeometrySequence must be a list of ApplicatorGeometrySequenceItem objects")
         else:
             self._ApplicatorGeometrySequence = value
             if "ApplicatorGeometrySequence" not in self._dataset:
@@ -95,7 +95,7 @@ class ApplicatorSequenceItem:
 
     def add_ApplicatorGeometry(self, item: ApplicatorGeometrySequenceItem):
         if not isinstance(item, ApplicatorGeometrySequenceItem):
-            raise ValueError(f"Item must be an instance of ApplicatorGeometrySequenceItem")
+            raise ValueError("Item must be an instance of ApplicatorGeometrySequenceItem")
         self._ApplicatorGeometrySequence.append(item)
         if "ApplicatorGeometrySequence" not in self._dataset:
             self._dataset.ApplicatorGeometrySequence = pydicom.Sequence()

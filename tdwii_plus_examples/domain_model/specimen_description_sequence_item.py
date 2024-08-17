@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,9 +43,7 @@ class SpecimenDescriptionSequenceItem:
             if "PrimaryAnatomicStructureSequence" in self._dataset:
                 del self._dataset.PrimaryAnatomicStructureSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrimaryAnatomicStructureSequenceItem) for item in value):
-            raise ValueError(
-                f"PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects"
-            )
+            raise ValueError("PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects")
         else:
             self._PrimaryAnatomicStructureSequence = value
             if "PrimaryAnatomicStructureSequence" not in self._dataset:
@@ -55,7 +53,7 @@ class SpecimenDescriptionSequenceItem:
 
     def add_PrimaryAnatomicStructure(self, item: PrimaryAnatomicStructureSequenceItem):
         if not isinstance(item, PrimaryAnatomicStructureSequenceItem):
-            raise ValueError(f"Item must be an instance of PrimaryAnatomicStructureSequenceItem")
+            raise ValueError("Item must be an instance of PrimaryAnatomicStructureSequenceItem")
         self._PrimaryAnatomicStructureSequence.append(item)
         if "PrimaryAnatomicStructureSequence" not in self._dataset:
             self._dataset.PrimaryAnatomicStructureSequence = pydicom.Sequence()
@@ -110,7 +108,7 @@ class SpecimenDescriptionSequenceItem:
             isinstance(item, IssuerOfTheSpecimenIdentifierSequenceItem) for item in value
         ):
             raise ValueError(
-                f"IssuerOfTheSpecimenIdentifierSequence must be a list of IssuerOfTheSpecimenIdentifierSequenceItem objects"
+                "IssuerOfTheSpecimenIdentifierSequence must be a list of IssuerOfTheSpecimenIdentifierSequenceItem objects"
             )
         else:
             self._IssuerOfTheSpecimenIdentifierSequence = value
@@ -121,7 +119,7 @@ class SpecimenDescriptionSequenceItem:
 
     def add_IssuerOfTheSpecimenIdentifier(self, item: IssuerOfTheSpecimenIdentifierSequenceItem):
         if not isinstance(item, IssuerOfTheSpecimenIdentifierSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfTheSpecimenIdentifierSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfTheSpecimenIdentifierSequenceItem")
         self._IssuerOfTheSpecimenIdentifierSequence.append(item)
         if "IssuerOfTheSpecimenIdentifierSequence" not in self._dataset:
             self._dataset.IssuerOfTheSpecimenIdentifierSequence = pydicom.Sequence()
@@ -143,7 +141,7 @@ class SpecimenDescriptionSequenceItem:
             if "SpecimenTypeCodeSequence" in self._dataset:
                 del self._dataset.SpecimenTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SpecimenTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SpecimenTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SpecimenTypeCodeSequence = value
             if "SpecimenTypeCodeSequence" not in self._dataset:
@@ -153,7 +151,7 @@ class SpecimenDescriptionSequenceItem:
 
     def add_SpecimenTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SpecimenTypeCodeSequence.append(item)
         if "SpecimenTypeCodeSequence" not in self._dataset:
             self._dataset.SpecimenTypeCodeSequence = pydicom.Sequence()
@@ -203,7 +201,7 @@ class SpecimenDescriptionSequenceItem:
             if "SpecimenPreparationSequence" in self._dataset:
                 del self._dataset.SpecimenPreparationSequence
         elif not isinstance(value, list) or not all(isinstance(item, SpecimenPreparationSequenceItem) for item in value):
-            raise ValueError(f"SpecimenPreparationSequence must be a list of SpecimenPreparationSequenceItem objects")
+            raise ValueError("SpecimenPreparationSequence must be a list of SpecimenPreparationSequenceItem objects")
         else:
             self._SpecimenPreparationSequence = value
             if "SpecimenPreparationSequence" not in self._dataset:
@@ -213,7 +211,7 @@ class SpecimenDescriptionSequenceItem:
 
     def add_SpecimenPreparation(self, item: SpecimenPreparationSequenceItem):
         if not isinstance(item, SpecimenPreparationSequenceItem):
-            raise ValueError(f"Item must be an instance of SpecimenPreparationSequenceItem")
+            raise ValueError("Item must be an instance of SpecimenPreparationSequenceItem")
         self._SpecimenPreparationSequence.append(item)
         if "SpecimenPreparationSequence" not in self._dataset:
             self._dataset.SpecimenPreparationSequence = pydicom.Sequence()
@@ -243,7 +241,7 @@ class SpecimenDescriptionSequenceItem:
             isinstance(item, SpecimenLocalizationContentItemSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SpecimenLocalizationContentItemSequence must be a list of SpecimenLocalizationContentItemSequenceItem objects"
+                "SpecimenLocalizationContentItemSequence must be a list of SpecimenLocalizationContentItemSequenceItem objects"
             )
         else:
             self._SpecimenLocalizationContentItemSequence = value
@@ -254,7 +252,7 @@ class SpecimenDescriptionSequenceItem:
 
     def add_SpecimenLocalizationContentItem(self, item: SpecimenLocalizationContentItemSequenceItem):
         if not isinstance(item, SpecimenLocalizationContentItemSequenceItem):
-            raise ValueError(f"Item must be an instance of SpecimenLocalizationContentItemSequenceItem")
+            raise ValueError("Item must be an instance of SpecimenLocalizationContentItemSequenceItem")
         self._SpecimenLocalizationContentItemSequence.append(item)
         if "SpecimenLocalizationContentItemSequence" not in self._dataset:
             self._dataset.SpecimenLocalizationContentItemSequence = pydicom.Sequence()

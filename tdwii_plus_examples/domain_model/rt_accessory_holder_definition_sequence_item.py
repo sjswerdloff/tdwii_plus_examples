@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -75,7 +75,7 @@ class RTAccessoryHolderDefinitionSequenceItem:
             if "UDISequence" in self._dataset:
                 del self._dataset.UDISequence
         elif not isinstance(value, list) or not all(isinstance(item, UDISequenceItem) for item in value):
-            raise ValueError(f"UDISequence must be a list of UDISequenceItem objects")
+            raise ValueError("UDISequence must be a list of UDISequenceItem objects")
         else:
             self._UDISequence = value
             if "UDISequence" not in self._dataset:
@@ -85,7 +85,7 @@ class RTAccessoryHolderDefinitionSequenceItem:
 
     def add_UDI(self, item: UDISequenceItem):
         if not isinstance(item, UDISequenceItem):
-            raise ValueError(f"Item must be an instance of UDISequenceItem")
+            raise ValueError("Item must be an instance of UDISequenceItem")
         self._UDISequence.append(item)
         if "UDISequence" not in self._dataset:
             self._dataset.UDISequence = pydicom.Sequence()
@@ -219,7 +219,7 @@ class RTAccessoryHolderDefinitionSequenceItem:
             if "RTAccessoryHolderSlotSequence" in self._dataset:
                 del self._dataset.RTAccessoryHolderSlotSequence
         elif not isinstance(value, list) or not all(isinstance(item, RTAccessoryHolderSlotSequenceItem) for item in value):
-            raise ValueError(f"RTAccessoryHolderSlotSequence must be a list of RTAccessoryHolderSlotSequenceItem objects")
+            raise ValueError("RTAccessoryHolderSlotSequence must be a list of RTAccessoryHolderSlotSequenceItem objects")
         else:
             self._RTAccessoryHolderSlotSequence = value
             if "RTAccessoryHolderSlotSequence" not in self._dataset:
@@ -229,7 +229,7 @@ class RTAccessoryHolderDefinitionSequenceItem:
 
     def add_RTAccessoryHolderSlot(self, item: RTAccessoryHolderSlotSequenceItem):
         if not isinstance(item, RTAccessoryHolderSlotSequenceItem):
-            raise ValueError(f"Item must be an instance of RTAccessoryHolderSlotSequenceItem")
+            raise ValueError("Item must be an instance of RTAccessoryHolderSlotSequenceItem")
         self._RTAccessoryHolderSlotSequence.append(item)
         if "RTAccessoryHolderSlotSequence" not in self._dataset:
             self._dataset.RTAccessoryHolderSlotSequence = pydicom.Sequence()
@@ -377,7 +377,7 @@ class RTAccessoryHolderDefinitionSequenceItem:
             if "DeviceTypeCodeSequence" in self._dataset:
                 del self._dataset.DeviceTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DeviceTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DeviceTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DeviceTypeCodeSequence = value
             if "DeviceTypeCodeSequence" not in self._dataset:
@@ -387,7 +387,7 @@ class RTAccessoryHolderDefinitionSequenceItem:
 
     def add_DeviceTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DeviceTypeCodeSequence.append(item)
         if "DeviceTypeCodeSequence" not in self._dataset:
             self._dataset.DeviceTypeCodeSequence = pydicom.Sequence()

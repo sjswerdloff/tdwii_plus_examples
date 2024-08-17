@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -34,7 +34,7 @@ class BlendingSequenceItem:
             if "ReferencedSeriesSequence" in self._dataset:
                 del self._dataset.ReferencedSeriesSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSeriesSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSeriesSequence must be a list of ReferencedSeriesSequenceItem objects")
+            raise ValueError("ReferencedSeriesSequence must be a list of ReferencedSeriesSequenceItem objects")
         else:
             self._ReferencedSeriesSequence = value
             if "ReferencedSeriesSequence" not in self._dataset:
@@ -44,7 +44,7 @@ class BlendingSequenceItem:
 
     def add_ReferencedSeries(self, item: ReferencedSeriesSequenceItem):
         if not isinstance(item, ReferencedSeriesSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSeriesSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSeriesSequenceItem")
         self._ReferencedSeriesSequence.append(item)
         if "ReferencedSeriesSequence" not in self._dataset:
             self._dataset.ReferencedSeriesSequence = pydicom.Sequence()
@@ -122,7 +122,7 @@ class BlendingSequenceItem:
             if "ModalityLUTSequence" in self._dataset:
                 del self._dataset.ModalityLUTSequence
         elif not isinstance(value, list) or not all(isinstance(item, ModalityLUTSequenceItem) for item in value):
-            raise ValueError(f"ModalityLUTSequence must be a list of ModalityLUTSequenceItem objects")
+            raise ValueError("ModalityLUTSequence must be a list of ModalityLUTSequenceItem objects")
         else:
             self._ModalityLUTSequence = value
             if "ModalityLUTSequence" not in self._dataset:
@@ -132,7 +132,7 @@ class BlendingSequenceItem:
 
     def add_ModalityLUT(self, item: ModalityLUTSequenceItem):
         if not isinstance(item, ModalityLUTSequenceItem):
-            raise ValueError(f"Item must be an instance of ModalityLUTSequenceItem")
+            raise ValueError("Item must be an instance of ModalityLUTSequenceItem")
         self._ModalityLUTSequence.append(item)
         if "ModalityLUTSequence" not in self._dataset:
             self._dataset.ModalityLUTSequence = pydicom.Sequence()
@@ -154,7 +154,7 @@ class BlendingSequenceItem:
             if "SoftcopyVOILUTSequence" in self._dataset:
                 del self._dataset.SoftcopyVOILUTSequence
         elif not isinstance(value, list) or not all(isinstance(item, SoftcopyVOILUTSequenceItem) for item in value):
-            raise ValueError(f"SoftcopyVOILUTSequence must be a list of SoftcopyVOILUTSequenceItem objects")
+            raise ValueError("SoftcopyVOILUTSequence must be a list of SoftcopyVOILUTSequenceItem objects")
         else:
             self._SoftcopyVOILUTSequence = value
             if "SoftcopyVOILUTSequence" not in self._dataset:
@@ -164,7 +164,7 @@ class BlendingSequenceItem:
 
     def add_SoftcopyVOILUT(self, item: SoftcopyVOILUTSequenceItem):
         if not isinstance(item, SoftcopyVOILUTSequenceItem):
-            raise ValueError(f"Item must be an instance of SoftcopyVOILUTSequenceItem")
+            raise ValueError("Item must be an instance of SoftcopyVOILUTSequenceItem")
         self._SoftcopyVOILUTSequence.append(item)
         if "SoftcopyVOILUTSequence" not in self._dataset:
             self._dataset.SoftcopyVOILUTSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -33,7 +33,7 @@ class CTImagingAcquisitionParameterSequenceItem:
             if "ParametersSpecificationSequence" in self._dataset:
                 del self._dataset.ParametersSpecificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, ParametersSpecificationSequenceItem) for item in value):
-            raise ValueError(f"ParametersSpecificationSequence must be a list of ParametersSpecificationSequenceItem objects")
+            raise ValueError("ParametersSpecificationSequence must be a list of ParametersSpecificationSequenceItem objects")
         else:
             self._ParametersSpecificationSequence = value
             if "ParametersSpecificationSequence" not in self._dataset:
@@ -43,7 +43,7 @@ class CTImagingAcquisitionParameterSequenceItem:
 
     def add_ParametersSpecification(self, item: ParametersSpecificationSequenceItem):
         if not isinstance(item, ParametersSpecificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ParametersSpecificationSequenceItem")
+            raise ValueError("Item must be an instance of ParametersSpecificationSequenceItem")
         self._ParametersSpecificationSequence.append(item)
         if "ParametersSpecificationSequence" not in self._dataset:
             self._dataset.ParametersSpecificationSequence = pydicom.Sequence()
@@ -65,7 +65,7 @@ class CTImagingAcquisitionParameterSequenceItem:
             if "ScanStartPositionSequence" in self._dataset:
                 del self._dataset.ScanStartPositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, ScanStartPositionSequenceItem) for item in value):
-            raise ValueError(f"ScanStartPositionSequence must be a list of ScanStartPositionSequenceItem objects")
+            raise ValueError("ScanStartPositionSequence must be a list of ScanStartPositionSequenceItem objects")
         else:
             self._ScanStartPositionSequence = value
             if "ScanStartPositionSequence" not in self._dataset:
@@ -75,7 +75,7 @@ class CTImagingAcquisitionParameterSequenceItem:
 
     def add_ScanStartPosition(self, item: ScanStartPositionSequenceItem):
         if not isinstance(item, ScanStartPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of ScanStartPositionSequenceItem")
+            raise ValueError("Item must be an instance of ScanStartPositionSequenceItem")
         self._ScanStartPositionSequence.append(item)
         if "ScanStartPositionSequence" not in self._dataset:
             self._dataset.ScanStartPositionSequence = pydicom.Sequence()
@@ -97,7 +97,7 @@ class CTImagingAcquisitionParameterSequenceItem:
             if "ScanStopPositionSequence" in self._dataset:
                 del self._dataset.ScanStopPositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, ScanStopPositionSequenceItem) for item in value):
-            raise ValueError(f"ScanStopPositionSequence must be a list of ScanStopPositionSequenceItem objects")
+            raise ValueError("ScanStopPositionSequence must be a list of ScanStopPositionSequenceItem objects")
         else:
             self._ScanStopPositionSequence = value
             if "ScanStopPositionSequence" not in self._dataset:
@@ -107,7 +107,7 @@ class CTImagingAcquisitionParameterSequenceItem:
 
     def add_ScanStopPosition(self, item: ScanStopPositionSequenceItem):
         if not isinstance(item, ScanStopPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of ScanStopPositionSequenceItem")
+            raise ValueError("Item must be an instance of ScanStopPositionSequenceItem")
         self._ScanStopPositionSequence.append(item)
         if "ScanStopPositionSequence" not in self._dataset:
             self._dataset.ScanStopPositionSequence = pydicom.Sequence()

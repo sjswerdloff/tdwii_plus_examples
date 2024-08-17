@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -74,7 +74,7 @@ class MRTimingAndRelatedParametersSequenceItem:
             if "OperatingModeSequence" in self._dataset:
                 del self._dataset.OperatingModeSequence
         elif not isinstance(value, list) or not all(isinstance(item, OperatingModeSequenceItem) for item in value):
-            raise ValueError(f"OperatingModeSequence must be a list of OperatingModeSequenceItem objects")
+            raise ValueError("OperatingModeSequence must be a list of OperatingModeSequenceItem objects")
         else:
             self._OperatingModeSequence = value
             if "OperatingModeSequence" not in self._dataset:
@@ -84,7 +84,7 @@ class MRTimingAndRelatedParametersSequenceItem:
 
     def add_OperatingMode(self, item: OperatingModeSequenceItem):
         if not isinstance(item, OperatingModeSequenceItem):
-            raise ValueError(f"Item must be an instance of OperatingModeSequenceItem")
+            raise ValueError("Item must be an instance of OperatingModeSequenceItem")
         self._OperatingModeSequence.append(item)
         if "OperatingModeSequence" not in self._dataset:
             self._dataset.OperatingModeSequence = pydicom.Sequence()
@@ -134,7 +134,7 @@ class MRTimingAndRelatedParametersSequenceItem:
             if "SpecificAbsorptionRateSequence" in self._dataset:
                 del self._dataset.SpecificAbsorptionRateSequence
         elif not isinstance(value, list) or not all(isinstance(item, SpecificAbsorptionRateSequenceItem) for item in value):
-            raise ValueError(f"SpecificAbsorptionRateSequence must be a list of SpecificAbsorptionRateSequenceItem objects")
+            raise ValueError("SpecificAbsorptionRateSequence must be a list of SpecificAbsorptionRateSequenceItem objects")
         else:
             self._SpecificAbsorptionRateSequence = value
             if "SpecificAbsorptionRateSequence" not in self._dataset:
@@ -144,7 +144,7 @@ class MRTimingAndRelatedParametersSequenceItem:
 
     def add_SpecificAbsorptionRate(self, item: SpecificAbsorptionRateSequenceItem):
         if not isinstance(item, SpecificAbsorptionRateSequenceItem):
-            raise ValueError(f"Item must be an instance of SpecificAbsorptionRateSequenceItem")
+            raise ValueError("Item must be an instance of SpecificAbsorptionRateSequenceItem")
         self._SpecificAbsorptionRateSequence.append(item)
         if "SpecificAbsorptionRateSequence" not in self._dataset:
             self._dataset.SpecificAbsorptionRateSequence = pydicom.Sequence()

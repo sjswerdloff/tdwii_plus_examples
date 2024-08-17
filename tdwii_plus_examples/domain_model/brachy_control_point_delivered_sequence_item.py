@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -58,7 +58,7 @@ class BrachyControlPointDeliveredSequenceItem:
             if "OverrideSequence" in self._dataset:
                 del self._dataset.OverrideSequence
         elif not isinstance(value, list) or not all(isinstance(item, OverrideSequenceItem) for item in value):
-            raise ValueError(f"OverrideSequence must be a list of OverrideSequenceItem objects")
+            raise ValueError("OverrideSequence must be a list of OverrideSequenceItem objects")
         else:
             self._OverrideSequence = value
             if "OverrideSequence" not in self._dataset:
@@ -68,7 +68,7 @@ class BrachyControlPointDeliveredSequenceItem:
 
     def add_Override(self, item: OverrideSequenceItem):
         if not isinstance(item, OverrideSequenceItem):
-            raise ValueError(f"Item must be an instance of OverrideSequenceItem")
+            raise ValueError("Item must be an instance of OverrideSequenceItem")
         self._OverrideSequence.append(item)
         if "OverrideSequence" not in self._dataset:
             self._dataset.OverrideSequence = pydicom.Sequence()

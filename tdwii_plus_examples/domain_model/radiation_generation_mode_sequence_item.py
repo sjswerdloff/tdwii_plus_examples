@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -65,7 +65,8 @@ class RadiationGenerationModeSequenceItem:
             isinstance(item, RadiationDeviceConfigurationAndCommissioningKeySequenceItem) for item in value
         ):
             raise ValueError(
-                f"RadiationDeviceConfigurationAndCommissioningKeySequence must be a list of RadiationDeviceConfigurationAndCommissioningKeySequenceItem objects"
+                "RadiationDeviceConfigurationAndCommissioningKeySequence must be a list of"
+                " RadiationDeviceConfigurationAndCommissioningKeySequenceItem objects"
             )
         else:
             self._RadiationDeviceConfigurationAndCommissioningKeySequence = value
@@ -78,7 +79,7 @@ class RadiationGenerationModeSequenceItem:
         self, item: RadiationDeviceConfigurationAndCommissioningKeySequenceItem
     ):
         if not isinstance(item, RadiationDeviceConfigurationAndCommissioningKeySequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationDeviceConfigurationAndCommissioningKeySequenceItem")
+            raise ValueError("Item must be an instance of RadiationDeviceConfigurationAndCommissioningKeySequenceItem")
         self._RadiationDeviceConfigurationAndCommissioningKeySequence.append(item)
         if "RadiationDeviceConfigurationAndCommissioningKeySequence" not in self._dataset:
             self._dataset.RadiationDeviceConfigurationAndCommissioningKeySequence = pydicom.Sequence()
@@ -130,7 +131,7 @@ class RadiationGenerationModeSequenceItem:
             if "RadiationGenerationModeMachineCodeSequence" in self._dataset:
                 del self._dataset.RadiationGenerationModeMachineCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RadiationGenerationModeMachineCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RadiationGenerationModeMachineCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RadiationGenerationModeMachineCodeSequence = value
             if "RadiationGenerationModeMachineCodeSequence" not in self._dataset:
@@ -140,7 +141,7 @@ class RadiationGenerationModeSequenceItem:
 
     def add_RadiationGenerationModeMachineCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RadiationGenerationModeMachineCodeSequence.append(item)
         if "RadiationGenerationModeMachineCodeSequence" not in self._dataset:
             self._dataset.RadiationGenerationModeMachineCodeSequence = pydicom.Sequence()
@@ -162,7 +163,7 @@ class RadiationGenerationModeSequenceItem:
             if "RadiationTypeCodeSequence" in self._dataset:
                 del self._dataset.RadiationTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RadiationTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RadiationTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RadiationTypeCodeSequence = value
             if "RadiationTypeCodeSequence" not in self._dataset:
@@ -172,7 +173,7 @@ class RadiationGenerationModeSequenceItem:
 
     def add_RadiationTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RadiationTypeCodeSequence.append(item)
         if "RadiationTypeCodeSequence" not in self._dataset:
             self._dataset.RadiationTypeCodeSequence = pydicom.Sequence()
@@ -236,7 +237,7 @@ class RadiationGenerationModeSequenceItem:
             if "RadiationFluenceModifierCodeSequence" in self._dataset:
                 del self._dataset.RadiationFluenceModifierCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RadiationFluenceModifierCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RadiationFluenceModifierCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RadiationFluenceModifierCodeSequence = value
             if "RadiationFluenceModifierCodeSequence" not in self._dataset:
@@ -246,7 +247,7 @@ class RadiationGenerationModeSequenceItem:
 
     def add_RadiationFluenceModifierCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RadiationFluenceModifierCodeSequence.append(item)
         if "RadiationFluenceModifierCodeSequence" not in self._dataset:
             self._dataset.RadiationFluenceModifierCodeSequence = pydicom.Sequence()
@@ -268,7 +269,7 @@ class RadiationGenerationModeSequenceItem:
             if "EnergyUnitCodeSequence" in self._dataset:
                 del self._dataset.EnergyUnitCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"EnergyUnitCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("EnergyUnitCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._EnergyUnitCodeSequence = value
             if "EnergyUnitCodeSequence" not in self._dataset:
@@ -278,7 +279,7 @@ class RadiationGenerationModeSequenceItem:
 
     def add_EnergyUnitCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._EnergyUnitCodeSequence.append(item)
         if "EnergyUnitCodeSequence" not in self._dataset:
             self._dataset.EnergyUnitCodeSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -54,7 +54,7 @@ class ReferencedRequestSequenceItem:
             if "IssuerOfAccessionNumberSequence" in self._dataset:
                 del self._dataset.IssuerOfAccessionNumberSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfAccessionNumberSequenceItem) for item in value):
-            raise ValueError(f"IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
+            raise ValueError("IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
         else:
             self._IssuerOfAccessionNumberSequence = value
             if "IssuerOfAccessionNumberSequence" not in self._dataset:
@@ -64,7 +64,7 @@ class ReferencedRequestSequenceItem:
 
     def add_IssuerOfAccessionNumber(self, item: IssuerOfAccessionNumberSequenceItem):
         if not isinstance(item, IssuerOfAccessionNumberSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfAccessionNumberSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfAccessionNumberSequenceItem")
         self._IssuerOfAccessionNumberSequence.append(item)
         if "IssuerOfAccessionNumberSequence" not in self._dataset:
             self._dataset.IssuerOfAccessionNumberSequence = pydicom.Sequence()
@@ -86,7 +86,7 @@ class ReferencedRequestSequenceItem:
             if "ReferencedStudySequence" in self._dataset:
                 del self._dataset.ReferencedStudySequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedStudySequenceItem) for item in value):
-            raise ValueError(f"ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
+            raise ValueError("ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
         else:
             self._ReferencedStudySequence = value
             if "ReferencedStudySequence" not in self._dataset:
@@ -96,7 +96,7 @@ class ReferencedRequestSequenceItem:
 
     def add_ReferencedStudy(self, item: ReferencedStudySequenceItem):
         if not isinstance(item, ReferencedStudySequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedStudySequenceItem")
+            raise ValueError("Item must be an instance of ReferencedStudySequenceItem")
         self._ReferencedStudySequence.append(item)
         if "ReferencedStudySequence" not in self._dataset:
             self._dataset.ReferencedStudySequence = pydicom.Sequence()
@@ -146,7 +146,7 @@ class ReferencedRequestSequenceItem:
             if "RequestedProcedureCodeSequence" in self._dataset:
                 del self._dataset.RequestedProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RequestedProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RequestedProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RequestedProcedureCodeSequence = value
             if "RequestedProcedureCodeSequence" not in self._dataset:
@@ -156,7 +156,7 @@ class ReferencedRequestSequenceItem:
 
     def add_RequestedProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RequestedProcedureCodeSequence.append(item)
         if "RequestedProcedureCodeSequence" not in self._dataset:
             self._dataset.RequestedProcedureCodeSequence = pydicom.Sequence()
@@ -178,7 +178,7 @@ class ReferencedRequestSequenceItem:
             if "OrderPlacerIdentifierSequence" in self._dataset:
                 del self._dataset.OrderPlacerIdentifierSequence
         elif not isinstance(value, list) or not all(isinstance(item, OrderPlacerIdentifierSequenceItem) for item in value):
-            raise ValueError(f"OrderPlacerIdentifierSequence must be a list of OrderPlacerIdentifierSequenceItem objects")
+            raise ValueError("OrderPlacerIdentifierSequence must be a list of OrderPlacerIdentifierSequenceItem objects")
         else:
             self._OrderPlacerIdentifierSequence = value
             if "OrderPlacerIdentifierSequence" not in self._dataset:
@@ -188,7 +188,7 @@ class ReferencedRequestSequenceItem:
 
     def add_OrderPlacerIdentifier(self, item: OrderPlacerIdentifierSequenceItem):
         if not isinstance(item, OrderPlacerIdentifierSequenceItem):
-            raise ValueError(f"Item must be an instance of OrderPlacerIdentifierSequenceItem")
+            raise ValueError("Item must be an instance of OrderPlacerIdentifierSequenceItem")
         self._OrderPlacerIdentifierSequence.append(item)
         if "OrderPlacerIdentifierSequence" not in self._dataset:
             self._dataset.OrderPlacerIdentifierSequence = pydicom.Sequence()
@@ -210,7 +210,7 @@ class ReferencedRequestSequenceItem:
             if "OrderFillerIdentifierSequence" in self._dataset:
                 del self._dataset.OrderFillerIdentifierSequence
         elif not isinstance(value, list) or not all(isinstance(item, OrderFillerIdentifierSequenceItem) for item in value):
-            raise ValueError(f"OrderFillerIdentifierSequence must be a list of OrderFillerIdentifierSequenceItem objects")
+            raise ValueError("OrderFillerIdentifierSequence must be a list of OrderFillerIdentifierSequenceItem objects")
         else:
             self._OrderFillerIdentifierSequence = value
             if "OrderFillerIdentifierSequence" not in self._dataset:
@@ -220,7 +220,7 @@ class ReferencedRequestSequenceItem:
 
     def add_OrderFillerIdentifier(self, item: OrderFillerIdentifierSequenceItem):
         if not isinstance(item, OrderFillerIdentifierSequenceItem):
-            raise ValueError(f"Item must be an instance of OrderFillerIdentifierSequenceItem")
+            raise ValueError("Item must be an instance of OrderFillerIdentifierSequenceItem")
         self._OrderFillerIdentifierSequence.append(item)
         if "OrderFillerIdentifierSequence" not in self._dataset:
             self._dataset.OrderFillerIdentifierSequence = pydicom.Sequence()
@@ -272,7 +272,7 @@ class ReferencedRequestSequenceItem:
             if "ReasonForRequestedProcedureCodeSequence" in self._dataset:
                 del self._dataset.ReasonForRequestedProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForRequestedProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForRequestedProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForRequestedProcedureCodeSequence = value
             if "ReasonForRequestedProcedureCodeSequence" not in self._dataset:
@@ -282,7 +282,7 @@ class ReferencedRequestSequenceItem:
 
     def add_ReasonForRequestedProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForRequestedProcedureCodeSequence.append(item)
         if "ReasonForRequestedProcedureCodeSequence" not in self._dataset:
             self._dataset.ReasonForRequestedProcedureCodeSequence = pydicom.Sequence()

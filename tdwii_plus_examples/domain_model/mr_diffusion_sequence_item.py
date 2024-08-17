@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -50,7 +50,7 @@ class MRDiffusionSequenceItem:
             isinstance(item, DiffusionGradientDirectionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DiffusionGradientDirectionSequence must be a list of DiffusionGradientDirectionSequenceItem objects"
+                "DiffusionGradientDirectionSequence must be a list of DiffusionGradientDirectionSequenceItem objects"
             )
         else:
             self._DiffusionGradientDirectionSequence = value
@@ -61,7 +61,7 @@ class MRDiffusionSequenceItem:
 
     def add_DiffusionGradientDirection(self, item: DiffusionGradientDirectionSequenceItem):
         if not isinstance(item, DiffusionGradientDirectionSequenceItem):
-            raise ValueError(f"Item must be an instance of DiffusionGradientDirectionSequenceItem")
+            raise ValueError("Item must be an instance of DiffusionGradientDirectionSequenceItem")
         self._DiffusionGradientDirectionSequence.append(item)
         if "DiffusionGradientDirectionSequence" not in self._dataset:
             self._dataset.DiffusionGradientDirectionSequence = pydicom.Sequence()
@@ -111,7 +111,7 @@ class MRDiffusionSequenceItem:
             if "DiffusionBMatrixSequence" in self._dataset:
                 del self._dataset.DiffusionBMatrixSequence
         elif not isinstance(value, list) or not all(isinstance(item, DiffusionBMatrixSequenceItem) for item in value):
-            raise ValueError(f"DiffusionBMatrixSequence must be a list of DiffusionBMatrixSequenceItem objects")
+            raise ValueError("DiffusionBMatrixSequence must be a list of DiffusionBMatrixSequenceItem objects")
         else:
             self._DiffusionBMatrixSequence = value
             if "DiffusionBMatrixSequence" not in self._dataset:
@@ -121,7 +121,7 @@ class MRDiffusionSequenceItem:
 
     def add_DiffusionBMatrix(self, item: DiffusionBMatrixSequenceItem):
         if not isinstance(item, DiffusionBMatrixSequenceItem):
-            raise ValueError(f"Item must be an instance of DiffusionBMatrixSequenceItem")
+            raise ValueError("Item must be an instance of DiffusionBMatrixSequenceItem")
         self._DiffusionBMatrixSequence.append(item)
         if "DiffusionBMatrixSequence" not in self._dataset:
             self._dataset.DiffusionBMatrixSequence = pydicom.Sequence()

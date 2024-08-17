@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class FiducialSequenceItem:
             if "DefinitionSourceSequence" in self._dataset:
                 del self._dataset.DefinitionSourceSequence
         elif not isinstance(value, list) or not all(isinstance(item, DefinitionSourceSequenceItem) for item in value):
-            raise ValueError(f"DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
+            raise ValueError("DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
         else:
             self._DefinitionSourceSequence = value
             if "DefinitionSourceSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class FiducialSequenceItem:
 
     def add_DefinitionSource(self, item: DefinitionSourceSequenceItem):
         if not isinstance(item, DefinitionSourceSequenceItem):
-            raise ValueError(f"Item must be an instance of DefinitionSourceSequenceItem")
+            raise ValueError("Item must be an instance of DefinitionSourceSequenceItem")
         self._DefinitionSourceSequence.append(item)
         if "DefinitionSourceSequence" not in self._dataset:
             self._dataset.DefinitionSourceSequence = pydicom.Sequence()
@@ -109,7 +109,7 @@ class FiducialSequenceItem:
             if "FiducialIdentifierCodeSequence" in self._dataset:
                 del self._dataset.FiducialIdentifierCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"FiducialIdentifierCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("FiducialIdentifierCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._FiducialIdentifierCodeSequence = value
             if "FiducialIdentifierCodeSequence" not in self._dataset:
@@ -119,7 +119,7 @@ class FiducialSequenceItem:
 
     def add_FiducialIdentifierCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._FiducialIdentifierCodeSequence.append(item)
         if "FiducialIdentifierCodeSequence" not in self._dataset:
             self._dataset.FiducialIdentifierCodeSequence = pydicom.Sequence()
@@ -155,7 +155,7 @@ class FiducialSequenceItem:
             if "GraphicCoordinatesDataSequence" in self._dataset:
                 del self._dataset.GraphicCoordinatesDataSequence
         elif not isinstance(value, list) or not all(isinstance(item, GraphicCoordinatesDataSequenceItem) for item in value):
-            raise ValueError(f"GraphicCoordinatesDataSequence must be a list of GraphicCoordinatesDataSequenceItem objects")
+            raise ValueError("GraphicCoordinatesDataSequence must be a list of GraphicCoordinatesDataSequenceItem objects")
         else:
             self._GraphicCoordinatesDataSequence = value
             if "GraphicCoordinatesDataSequence" not in self._dataset:
@@ -165,7 +165,7 @@ class FiducialSequenceItem:
 
     def add_GraphicCoordinatesData(self, item: GraphicCoordinatesDataSequenceItem):
         if not isinstance(item, GraphicCoordinatesDataSequenceItem):
-            raise ValueError(f"Item must be an instance of GraphicCoordinatesDataSequenceItem")
+            raise ValueError("Item must be an instance of GraphicCoordinatesDataSequenceItem")
         self._GraphicCoordinatesDataSequence.append(item)
         if "GraphicCoordinatesDataSequence" not in self._dataset:
             self._dataset.GraphicCoordinatesDataSequence = pydicom.Sequence()
@@ -201,7 +201,7 @@ class FiducialSequenceItem:
             if "FiducialsPropertyCategoryCodeSequence" in self._dataset:
                 del self._dataset.FiducialsPropertyCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"FiducialsPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("FiducialsPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._FiducialsPropertyCategoryCodeSequence = value
             if "FiducialsPropertyCategoryCodeSequence" not in self._dataset:
@@ -211,7 +211,7 @@ class FiducialSequenceItem:
 
     def add_FiducialsPropertyCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._FiducialsPropertyCategoryCodeSequence.append(item)
         if "FiducialsPropertyCategoryCodeSequence" not in self._dataset:
             self._dataset.FiducialsPropertyCategoryCodeSequence = pydicom.Sequence()

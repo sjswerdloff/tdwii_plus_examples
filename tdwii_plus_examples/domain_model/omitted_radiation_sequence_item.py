@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -33,7 +33,7 @@ class OmittedRadiationSequenceItem:
             if "AsserterIdentificationSequence" in self._dataset:
                 del self._dataset.AsserterIdentificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, AsserterIdentificationSequenceItem) for item in value):
-            raise ValueError(f"AsserterIdentificationSequence must be a list of AsserterIdentificationSequenceItem objects")
+            raise ValueError("AsserterIdentificationSequence must be a list of AsserterIdentificationSequenceItem objects")
         else:
             self._AsserterIdentificationSequence = value
             if "AsserterIdentificationSequence" not in self._dataset:
@@ -43,7 +43,7 @@ class OmittedRadiationSequenceItem:
 
     def add_AsserterIdentification(self, item: AsserterIdentificationSequenceItem):
         if not isinstance(item, AsserterIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of AsserterIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of AsserterIdentificationSequenceItem")
         self._AsserterIdentificationSequence.append(item)
         if "AsserterIdentificationSequence" not in self._dataset:
             self._dataset.AsserterIdentificationSequence = pydicom.Sequence()
@@ -65,7 +65,7 @@ class OmittedRadiationSequenceItem:
             if "ReferencedRTRadiationSequence" in self._dataset:
                 del self._dataset.ReferencedRTRadiationSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedRTRadiationSequenceItem) for item in value):
-            raise ValueError(f"ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
+            raise ValueError("ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
         else:
             self._ReferencedRTRadiationSequence = value
             if "ReferencedRTRadiationSequence" not in self._dataset:
@@ -75,7 +75,7 @@ class OmittedRadiationSequenceItem:
 
     def add_ReferencedRTRadiation(self, item: ReferencedRTRadiationSequenceItem):
         if not isinstance(item, ReferencedRTRadiationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTRadiationSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTRadiationSequenceItem")
         self._ReferencedRTRadiationSequence.append(item)
         if "ReferencedRTRadiationSequence" not in self._dataset:
             self._dataset.ReferencedRTRadiationSequence = pydicom.Sequence()
@@ -97,7 +97,7 @@ class OmittedRadiationSequenceItem:
             if "ReasonForOmissionCodeSequence" in self._dataset:
                 del self._dataset.ReasonForOmissionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForOmissionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForOmissionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForOmissionCodeSequence = value
             if "ReasonForOmissionCodeSequence" not in self._dataset:
@@ -107,7 +107,7 @@ class OmittedRadiationSequenceItem:
 
     def add_ReasonForOmissionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForOmissionCodeSequence.append(item)
         if "ReasonForOmissionCodeSequence" not in self._dataset:
             self._dataset.ReasonForOmissionCodeSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -39,7 +39,7 @@ class FractionGroupSequenceItem:
             if "DefinitionSourceSequence" in self._dataset:
                 del self._dataset.DefinitionSourceSequence
         elif not isinstance(value, list) or not all(isinstance(item, DefinitionSourceSequenceItem) for item in value):
-            raise ValueError(f"DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
+            raise ValueError("DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
         else:
             self._DefinitionSourceSequence = value
             if "DefinitionSourceSequence" not in self._dataset:
@@ -49,7 +49,7 @@ class FractionGroupSequenceItem:
 
     def add_DefinitionSource(self, item: DefinitionSourceSequenceItem):
         if not isinstance(item, DefinitionSourceSequenceItem):
-            raise ValueError(f"Item must be an instance of DefinitionSourceSequenceItem")
+            raise ValueError("Item must be an instance of DefinitionSourceSequenceItem")
         self._DefinitionSourceSequence.append(item)
         if "DefinitionSourceSequence" not in self._dataset:
             self._dataset.DefinitionSourceSequence = pydicom.Sequence()
@@ -197,7 +197,7 @@ class FractionGroupSequenceItem:
             if "ReferencedBeamSequence" in self._dataset:
                 del self._dataset.ReferencedBeamSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedBeamSequenceItem) for item in value):
-            raise ValueError(f"ReferencedBeamSequence must be a list of ReferencedBeamSequenceItem objects")
+            raise ValueError("ReferencedBeamSequence must be a list of ReferencedBeamSequenceItem objects")
         else:
             self._ReferencedBeamSequence = value
             if "ReferencedBeamSequence" not in self._dataset:
@@ -207,7 +207,7 @@ class FractionGroupSequenceItem:
 
     def add_ReferencedBeam(self, item: ReferencedBeamSequenceItem):
         if not isinstance(item, ReferencedBeamSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedBeamSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedBeamSequenceItem")
         self._ReferencedBeamSequence.append(item)
         if "ReferencedBeamSequence" not in self._dataset:
             self._dataset.ReferencedBeamSequence = pydicom.Sequence()
@@ -237,7 +237,8 @@ class FractionGroupSequenceItem:
             isinstance(item, ReferencedBrachyApplicationSetupSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedBrachyApplicationSetupSequence must be a list of ReferencedBrachyApplicationSetupSequenceItem objects"
+                "ReferencedBrachyApplicationSetupSequence must be a list of ReferencedBrachyApplicationSetupSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedBrachyApplicationSetupSequence = value
@@ -248,7 +249,7 @@ class FractionGroupSequenceItem:
 
     def add_ReferencedBrachyApplicationSetup(self, item: ReferencedBrachyApplicationSetupSequenceItem):
         if not isinstance(item, ReferencedBrachyApplicationSetupSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedBrachyApplicationSetupSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedBrachyApplicationSetupSequenceItem")
         self._ReferencedBrachyApplicationSetupSequence.append(item)
         if "ReferencedBrachyApplicationSetupSequence" not in self._dataset:
             self._dataset.ReferencedBrachyApplicationSetupSequence = pydicom.Sequence()
@@ -270,7 +271,7 @@ class FractionGroupSequenceItem:
             if "ReferencedDoseReferenceSequence" in self._dataset:
                 del self._dataset.ReferencedDoseReferenceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDoseReferenceSequenceItem) for item in value):
-            raise ValueError(f"ReferencedDoseReferenceSequence must be a list of ReferencedDoseReferenceSequenceItem objects")
+            raise ValueError("ReferencedDoseReferenceSequence must be a list of ReferencedDoseReferenceSequenceItem objects")
         else:
             self._ReferencedDoseReferenceSequence = value
             if "ReferencedDoseReferenceSequence" not in self._dataset:
@@ -280,7 +281,7 @@ class FractionGroupSequenceItem:
 
     def add_ReferencedDoseReference(self, item: ReferencedDoseReferenceSequenceItem):
         if not isinstance(item, ReferencedDoseReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDoseReferenceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDoseReferenceSequenceItem")
         self._ReferencedDoseReferenceSequence.append(item)
         if "ReferencedDoseReferenceSequence" not in self._dataset:
             self._dataset.ReferencedDoseReferenceSequence = pydicom.Sequence()
@@ -302,7 +303,7 @@ class FractionGroupSequenceItem:
             if "ReferencedDoseSequence" in self._dataset:
                 del self._dataset.ReferencedDoseSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDoseSequenceItem) for item in value):
-            raise ValueError(f"ReferencedDoseSequence must be a list of ReferencedDoseSequenceItem objects")
+            raise ValueError("ReferencedDoseSequence must be a list of ReferencedDoseSequenceItem objects")
         else:
             self._ReferencedDoseSequence = value
             if "ReferencedDoseSequence" not in self._dataset:
@@ -312,7 +313,7 @@ class FractionGroupSequenceItem:
 
     def add_ReferencedDose(self, item: ReferencedDoseSequenceItem):
         if not isinstance(item, ReferencedDoseSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDoseSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDoseSequenceItem")
         self._ReferencedDoseSequence.append(item)
         if "ReferencedDoseSequence" not in self._dataset:
             self._dataset.ReferencedDoseSequence = pydicom.Sequence()

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -67,7 +67,7 @@ class AcquisitionProtocolElementSequenceItem:
             if "RequestedSeriesDescriptionCodeSequence" in self._dataset:
                 del self._dataset.RequestedSeriesDescriptionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RequestedSeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RequestedSeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RequestedSeriesDescriptionCodeSequence = value
             if "RequestedSeriesDescriptionCodeSequence" not in self._dataset:
@@ -77,7 +77,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_RequestedSeriesDescriptionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RequestedSeriesDescriptionCodeSequence.append(item)
         if "RequestedSeriesDescriptionCodeSequence" not in self._dataset:
             self._dataset.RequestedSeriesDescriptionCodeSequence = pydicom.Sequence()
@@ -225,7 +225,7 @@ class AcquisitionProtocolElementSequenceItem:
             if "CTXRayDetailsSequence" in self._dataset:
                 del self._dataset.CTXRayDetailsSequence
         elif not isinstance(value, list) or not all(isinstance(item, CTXRayDetailsSequenceItem) for item in value):
-            raise ValueError(f"CTXRayDetailsSequence must be a list of CTXRayDetailsSequenceItem objects")
+            raise ValueError("CTXRayDetailsSequence must be a list of CTXRayDetailsSequenceItem objects")
         else:
             self._CTXRayDetailsSequence = value
             if "CTXRayDetailsSequence" not in self._dataset:
@@ -235,7 +235,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_CTXRayDetails(self, item: CTXRayDetailsSequenceItem):
         if not isinstance(item, CTXRayDetailsSequenceItem):
-            raise ValueError(f"Item must be an instance of CTXRayDetailsSequenceItem")
+            raise ValueError("Item must be an instance of CTXRayDetailsSequenceItem")
         self._CTXRayDetailsSequence.append(item)
         if "CTXRayDetailsSequence" not in self._dataset:
             self._dataset.CTXRayDetailsSequence = pydicom.Sequence()
@@ -299,7 +299,7 @@ class AcquisitionProtocolElementSequenceItem:
             if "CTDIPhantomTypeCodeSequence" in self._dataset:
                 del self._dataset.CTDIPhantomTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"CTDIPhantomTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("CTDIPhantomTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._CTDIPhantomTypeCodeSequence = value
             if "CTDIPhantomTypeCodeSequence" not in self._dataset:
@@ -309,7 +309,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_CTDIPhantomTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._CTDIPhantomTypeCodeSequence.append(item)
         if "CTDIPhantomTypeCodeSequence" not in self._dataset:
             self._dataset.CTDIPhantomTypeCodeSequence = pydicom.Sequence()
@@ -401,9 +401,7 @@ class AcquisitionProtocolElementSequenceItem:
             if "AcquisitionStartLocationSequence" in self._dataset:
                 del self._dataset.AcquisitionStartLocationSequence
         elif not isinstance(value, list) or not all(isinstance(item, AcquisitionStartLocationSequenceItem) for item in value):
-            raise ValueError(
-                f"AcquisitionStartLocationSequence must be a list of AcquisitionStartLocationSequenceItem objects"
-            )
+            raise ValueError("AcquisitionStartLocationSequence must be a list of AcquisitionStartLocationSequenceItem objects")
         else:
             self._AcquisitionStartLocationSequence = value
             if "AcquisitionStartLocationSequence" not in self._dataset:
@@ -413,7 +411,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_AcquisitionStartLocation(self, item: AcquisitionStartLocationSequenceItem):
         if not isinstance(item, AcquisitionStartLocationSequenceItem):
-            raise ValueError(f"Item must be an instance of AcquisitionStartLocationSequenceItem")
+            raise ValueError("Item must be an instance of AcquisitionStartLocationSequenceItem")
         self._AcquisitionStartLocationSequence.append(item)
         if "AcquisitionStartLocationSequence" not in self._dataset:
             self._dataset.AcquisitionStartLocationSequence = pydicom.Sequence()
@@ -435,7 +433,7 @@ class AcquisitionProtocolElementSequenceItem:
             if "AcquisitionEndLocationSequence" in self._dataset:
                 del self._dataset.AcquisitionEndLocationSequence
         elif not isinstance(value, list) or not all(isinstance(item, AcquisitionEndLocationSequenceItem) for item in value):
-            raise ValueError(f"AcquisitionEndLocationSequence must be a list of AcquisitionEndLocationSequenceItem objects")
+            raise ValueError("AcquisitionEndLocationSequence must be a list of AcquisitionEndLocationSequenceItem objects")
         else:
             self._AcquisitionEndLocationSequence = value
             if "AcquisitionEndLocationSequence" not in self._dataset:
@@ -445,7 +443,7 @@ class AcquisitionProtocolElementSequenceItem:
 
     def add_AcquisitionEndLocation(self, item: AcquisitionEndLocationSequenceItem):
         if not isinstance(item, AcquisitionEndLocationSequenceItem):
-            raise ValueError(f"Item must be an instance of AcquisitionEndLocationSequenceItem")
+            raise ValueError("Item must be an instance of AcquisitionEndLocationSequenceItem")
         self._AcquisitionEndLocationSequence.append(item)
         if "AcquisitionEndLocationSequence" not in self._dataset:
             self._dataset.AcquisitionEndLocationSequence = pydicom.Sequence()

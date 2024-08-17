@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -44,7 +44,7 @@ class RTPhysicianIntentSequenceItem:
             isinstance(item, RTPhysicianIntentPredecessorSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTPhysicianIntentPredecessorSequence must be a list of RTPhysicianIntentPredecessorSequenceItem objects"
+                "RTPhysicianIntentPredecessorSequence must be a list of RTPhysicianIntentPredecessorSequenceItem objects"
             )
         else:
             self._RTPhysicianIntentPredecessorSequence = value
@@ -55,7 +55,7 @@ class RTPhysicianIntentSequenceItem:
 
     def add_RTPhysicianIntentPredecessor(self, item: RTPhysicianIntentPredecessorSequenceItem):
         if not isinstance(item, RTPhysicianIntentPredecessorSequenceItem):
-            raise ValueError(f"Item must be an instance of RTPhysicianIntentPredecessorSequenceItem")
+            raise ValueError("Item must be an instance of RTPhysicianIntentPredecessorSequenceItem")
         self._RTPhysicianIntentPredecessorSequence.append(item)
         if "RTPhysicianIntentPredecessorSequence" not in self._dataset:
             self._dataset.RTPhysicianIntentPredecessorSequence = pydicom.Sequence()
@@ -133,7 +133,7 @@ class RTPhysicianIntentSequenceItem:
             if "RTProtocolCodeSequence" in self._dataset:
                 del self._dataset.RTProtocolCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTProtocolCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTProtocolCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTProtocolCodeSequence = value
             if "RTProtocolCodeSequence" not in self._dataset:
@@ -143,7 +143,7 @@ class RTPhysicianIntentSequenceItem:
 
     def add_RTProtocolCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTProtocolCodeSequence.append(item)
         if "RTProtocolCodeSequence" not in self._dataset:
             self._dataset.RTProtocolCodeSequence = pydicom.Sequence()
@@ -165,7 +165,7 @@ class RTPhysicianIntentSequenceItem:
             if "RTDiagnosisCodeSequence" in self._dataset:
                 del self._dataset.RTDiagnosisCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTDiagnosisCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTDiagnosisCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTDiagnosisCodeSequence = value
             if "RTDiagnosisCodeSequence" not in self._dataset:
@@ -175,7 +175,7 @@ class RTPhysicianIntentSequenceItem:
 
     def add_RTDiagnosisCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTDiagnosisCodeSequence.append(item)
         if "RTDiagnosisCodeSequence" not in self._dataset:
             self._dataset.RTDiagnosisCodeSequence = pydicom.Sequence()
@@ -202,7 +202,7 @@ class RTPhysicianIntentSequenceItem:
             isinstance(item, RTPhysicianIntentInputInstanceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTPhysicianIntentInputInstanceSequence must be a list of RTPhysicianIntentInputInstanceSequenceItem objects"
+                "RTPhysicianIntentInputInstanceSequence must be a list of RTPhysicianIntentInputInstanceSequenceItem objects"
             )
         else:
             self._RTPhysicianIntentInputInstanceSequence = value
@@ -213,7 +213,7 @@ class RTPhysicianIntentSequenceItem:
 
     def add_RTPhysicianIntentInputInstance(self, item: RTPhysicianIntentInputInstanceSequenceItem):
         if not isinstance(item, RTPhysicianIntentInputInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of RTPhysicianIntentInputInstanceSequenceItem")
+            raise ValueError("Item must be an instance of RTPhysicianIntentInputInstanceSequenceItem")
         self._RTPhysicianIntentInputInstanceSequence.append(item)
         if "RTPhysicianIntentInputInstanceSequence" not in self._dataset:
             self._dataset.RTPhysicianIntentInputInstanceSequence = pydicom.Sequence()
@@ -249,7 +249,7 @@ class RTPhysicianIntentSequenceItem:
             if "TreatmentSiteCodeSequence" in self._dataset:
                 del self._dataset.TreatmentSiteCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TreatmentSiteCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TreatmentSiteCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TreatmentSiteCodeSequence = value
             if "TreatmentSiteCodeSequence" not in self._dataset:
@@ -259,7 +259,7 @@ class RTPhysicianIntentSequenceItem:
 
     def add_TreatmentSiteCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TreatmentSiteCodeSequence.append(item)
         if "TreatmentSiteCodeSequence" not in self._dataset:
             self._dataset.TreatmentSiteCodeSequence = pydicom.Sequence()

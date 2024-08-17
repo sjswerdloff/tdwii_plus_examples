@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class EquipmentReferencePointCoordinatesSequenceItem:
             if "EquipmentReferencePointCodeSequence" in self._dataset:
                 del self._dataset.EquipmentReferencePointCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"EquipmentReferencePointCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("EquipmentReferencePointCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._EquipmentReferencePointCodeSequence = value
             if "EquipmentReferencePointCodeSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class EquipmentReferencePointCoordinatesSequenceItem:
 
     def add_EquipmentReferencePointCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._EquipmentReferencePointCodeSequence.append(item)
         if "EquipmentReferencePointCodeSequence" not in self._dataset:
             self._dataset.EquipmentReferencePointCodeSequence = pydicom.Sequence()

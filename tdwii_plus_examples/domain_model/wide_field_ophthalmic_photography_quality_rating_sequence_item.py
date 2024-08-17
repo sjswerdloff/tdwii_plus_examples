@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -51,7 +51,8 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
             isinstance(item, WideFieldOphthalmicPhotographyQualityThresholdSequenceItem) for item in value
         ):
             raise ValueError(
-                f"WideFieldOphthalmicPhotographyQualityThresholdSequence must be a list of WideFieldOphthalmicPhotographyQualityThresholdSequenceItem objects"
+                "WideFieldOphthalmicPhotographyQualityThresholdSequence must be a list of"
+                " WideFieldOphthalmicPhotographyQualityThresholdSequenceItem objects"
             )
         else:
             self._WideFieldOphthalmicPhotographyQualityThresholdSequence = value
@@ -64,7 +65,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
         self, item: WideFieldOphthalmicPhotographyQualityThresholdSequenceItem
     ):
         if not isinstance(item, WideFieldOphthalmicPhotographyQualityThresholdSequenceItem):
-            raise ValueError(f"Item must be an instance of WideFieldOphthalmicPhotographyQualityThresholdSequenceItem")
+            raise ValueError("Item must be an instance of WideFieldOphthalmicPhotographyQualityThresholdSequenceItem")
         self._WideFieldOphthalmicPhotographyQualityThresholdSequence.append(item)
         if "WideFieldOphthalmicPhotographyQualityThresholdSequence" not in self._dataset:
             self._dataset.WideFieldOphthalmicPhotographyQualityThresholdSequence = pydicom.Sequence()
@@ -100,7 +101,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
             if "MeasurementUnitsCodeSequence" in self._dataset:
                 del self._dataset.MeasurementUnitsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MeasurementUnitsCodeSequence = value
             if "MeasurementUnitsCodeSequence" not in self._dataset:
@@ -110,7 +111,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
 
     def add_MeasurementUnitsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MeasurementUnitsCodeSequence.append(item)
         if "MeasurementUnitsCodeSequence" not in self._dataset:
             self._dataset.MeasurementUnitsCodeSequence = pydicom.Sequence()
@@ -132,7 +133,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
             if "ConceptNameCodeSequence" in self._dataset:
                 del self._dataset.ConceptNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptNameCodeSequence = value
             if "ConceptNameCodeSequence" not in self._dataset:
@@ -142,7 +143,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
 
     def add_ConceptNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptNameCodeSequence.append(item)
         if "ConceptNameCodeSequence" not in self._dataset:
             self._dataset.ConceptNameCodeSequence = pydicom.Sequence()
@@ -178,7 +179,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
             if "AlgorithmFamilyCodeSequence" in self._dataset:
                 del self._dataset.AlgorithmFamilyCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AlgorithmFamilyCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AlgorithmFamilyCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AlgorithmFamilyCodeSequence = value
             if "AlgorithmFamilyCodeSequence" not in self._dataset:
@@ -188,7 +189,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
 
     def add_AlgorithmFamilyCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AlgorithmFamilyCodeSequence.append(item)
         if "AlgorithmFamilyCodeSequence" not in self._dataset:
             self._dataset.AlgorithmFamilyCodeSequence = pydicom.Sequence()
@@ -210,7 +211,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
             if "AlgorithmNameCodeSequence" in self._dataset:
                 del self._dataset.AlgorithmNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AlgorithmNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AlgorithmNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AlgorithmNameCodeSequence = value
             if "AlgorithmNameCodeSequence" not in self._dataset:
@@ -220,7 +221,7 @@ class WideFieldOphthalmicPhotographyQualityRatingSequenceItem:
 
     def add_AlgorithmNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AlgorithmNameCodeSequence.append(item)
         if "AlgorithmNameCodeSequence" not in self._dataset:
             self._dataset.AlgorithmNameCodeSequence = pydicom.Sequence()

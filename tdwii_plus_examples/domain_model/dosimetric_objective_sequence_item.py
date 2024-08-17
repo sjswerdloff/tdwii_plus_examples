@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class DosimetricObjectiveSequenceItem:
             isinstance(item, OriginatingSOPInstanceReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
+                "OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
             )
         else:
             self._OriginatingSOPInstanceReferenceSequence = value
@@ -56,7 +56,7 @@ class DosimetricObjectiveSequenceItem:
 
     def add_OriginatingSOPInstanceReference(self, item: OriginatingSOPInstanceReferenceSequenceItem):
         if not isinstance(item, OriginatingSOPInstanceReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
+            raise ValueError("Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
         self._OriginatingSOPInstanceReferenceSequence.append(item)
         if "OriginatingSOPInstanceReferenceSequence" not in self._dataset:
             self._dataset.OriginatingSOPInstanceReferenceSequence = pydicom.Sequence()
@@ -106,7 +106,7 @@ class DosimetricObjectiveSequenceItem:
             if "DosimetricObjectiveTypeCodeSequence" in self._dataset:
                 del self._dataset.DosimetricObjectiveTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DosimetricObjectiveTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DosimetricObjectiveTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DosimetricObjectiveTypeCodeSequence = value
             if "DosimetricObjectiveTypeCodeSequence" not in self._dataset:
@@ -116,7 +116,7 @@ class DosimetricObjectiveSequenceItem:
 
     def add_DosimetricObjectiveTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DosimetricObjectiveTypeCodeSequence.append(item)
         if "DosimetricObjectiveTypeCodeSequence" not in self._dataset:
             self._dataset.DosimetricObjectiveTypeCodeSequence = pydicom.Sequence()
@@ -157,7 +157,7 @@ class DosimetricObjectiveSequenceItem:
             isinstance(item, DosimetricObjectiveParameterSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DosimetricObjectiveParameterSequence must be a list of DosimetricObjectiveParameterSequenceItem objects"
+                "DosimetricObjectiveParameterSequence must be a list of DosimetricObjectiveParameterSequenceItem objects"
             )
         else:
             self._DosimetricObjectiveParameterSequence = value
@@ -168,7 +168,7 @@ class DosimetricObjectiveSequenceItem:
 
     def add_DosimetricObjectiveParameter(self, item: DosimetricObjectiveParameterSequenceItem):
         if not isinstance(item, DosimetricObjectiveParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of DosimetricObjectiveParameterSequenceItem")
+            raise ValueError("Item must be an instance of DosimetricObjectiveParameterSequenceItem")
         self._DosimetricObjectiveParameterSequence.append(item)
         if "DosimetricObjectiveParameterSequence" not in self._dataset:
             self._dataset.DosimetricObjectiveParameterSequence = pydicom.Sequence()

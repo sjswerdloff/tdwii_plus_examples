@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class RTReferencedStudySequenceItem:
             if "RTReferencedSeriesSequence" in self._dataset:
                 del self._dataset.RTReferencedSeriesSequence
         elif not isinstance(value, list) or not all(isinstance(item, RTReferencedSeriesSequenceItem) for item in value):
-            raise ValueError(f"RTReferencedSeriesSequence must be a list of RTReferencedSeriesSequenceItem objects")
+            raise ValueError("RTReferencedSeriesSequence must be a list of RTReferencedSeriesSequenceItem objects")
         else:
             self._RTReferencedSeriesSequence = value
             if "RTReferencedSeriesSequence" not in self._dataset:
@@ -67,7 +67,7 @@ class RTReferencedStudySequenceItem:
 
     def add_RTReferencedSeries(self, item: RTReferencedSeriesSequenceItem):
         if not isinstance(item, RTReferencedSeriesSequenceItem):
-            raise ValueError(f"Item must be an instance of RTReferencedSeriesSequenceItem")
+            raise ValueError("Item must be an instance of RTReferencedSeriesSequenceItem")
         self._RTReferencedSeriesSequence.append(item)
         if "RTReferencedSeriesSequence" not in self._dataset:
             self._dataset.RTReferencedSeriesSequence = pydicom.Sequence()

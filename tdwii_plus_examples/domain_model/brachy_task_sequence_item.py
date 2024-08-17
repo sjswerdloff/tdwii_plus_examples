@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -62,7 +62,7 @@ class BrachyTaskSequenceItem:
             if "ChannelDeliveryOrderSequence" in self._dataset:
                 del self._dataset.ChannelDeliveryOrderSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelDeliveryOrderSequenceItem) for item in value):
-            raise ValueError(f"ChannelDeliveryOrderSequence must be a list of ChannelDeliveryOrderSequenceItem objects")
+            raise ValueError("ChannelDeliveryOrderSequence must be a list of ChannelDeliveryOrderSequenceItem objects")
         else:
             self._ChannelDeliveryOrderSequence = value
             if "ChannelDeliveryOrderSequence" not in self._dataset:
@@ -72,7 +72,7 @@ class BrachyTaskSequenceItem:
 
     def add_ChannelDeliveryOrder(self, item: ChannelDeliveryOrderSequenceItem):
         if not isinstance(item, ChannelDeliveryOrderSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelDeliveryOrderSequenceItem")
+            raise ValueError("Item must be an instance of ChannelDeliveryOrderSequenceItem")
         self._ChannelDeliveryOrderSequence.append(item)
         if "ChannelDeliveryOrderSequence" not in self._dataset:
             self._dataset.ChannelDeliveryOrderSequence = pydicom.Sequence()
@@ -97,7 +97,7 @@ class BrachyTaskSequenceItem:
             isinstance(item, ChannelDeliveryContinuationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ChannelDeliveryContinuationSequence must be a list of ChannelDeliveryContinuationSequenceItem objects"
+                "ChannelDeliveryContinuationSequence must be a list of ChannelDeliveryContinuationSequenceItem objects"
             )
         else:
             self._ChannelDeliveryContinuationSequence = value
@@ -108,7 +108,7 @@ class BrachyTaskSequenceItem:
 
     def add_ChannelDeliveryContinuation(self, item: ChannelDeliveryContinuationSequenceItem):
         if not isinstance(item, ChannelDeliveryContinuationSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelDeliveryContinuationSequenceItem")
+            raise ValueError("Item must be an instance of ChannelDeliveryContinuationSequenceItem")
         self._ChannelDeliveryContinuationSequence.append(item)
         if "ChannelDeliveryContinuationSequence" not in self._dataset:
             self._dataset.ChannelDeliveryContinuationSequence = pydicom.Sequence()

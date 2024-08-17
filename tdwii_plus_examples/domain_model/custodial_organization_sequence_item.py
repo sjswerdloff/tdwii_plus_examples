@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -44,7 +44,7 @@ class CustodialOrganizationSequenceItem:
             if "InstitutionCodeSequence" in self._dataset:
                 del self._dataset.InstitutionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InstitutionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InstitutionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InstitutionCodeSequence = value
             if "InstitutionCodeSequence" not in self._dataset:
@@ -54,7 +54,7 @@ class CustodialOrganizationSequenceItem:
 
     def add_InstitutionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InstitutionCodeSequence.append(item)
         if "InstitutionCodeSequence" not in self._dataset:
             self._dataset.InstitutionCodeSequence = pydicom.Sequence()
@@ -76,7 +76,7 @@ class CustodialOrganizationSequenceItem:
             if "ResponsibleGroupCodeSequence" in self._dataset:
                 del self._dataset.ResponsibleGroupCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ResponsibleGroupCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ResponsibleGroupCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ResponsibleGroupCodeSequence = value
             if "ResponsibleGroupCodeSequence" not in self._dataset:
@@ -86,7 +86,7 @@ class CustodialOrganizationSequenceItem:
 
     def add_ResponsibleGroupCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ResponsibleGroupCodeSequence.append(item)
         if "ResponsibleGroupCodeSequence" not in self._dataset:
             self._dataset.ResponsibleGroupCodeSequence = pydicom.Sequence()

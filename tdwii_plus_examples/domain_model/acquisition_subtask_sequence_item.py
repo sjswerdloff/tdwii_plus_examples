@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -72,7 +72,7 @@ class AcquisitionSubtaskSequenceItem:
             if "SubtaskWorkitemCodeSequence" in self._dataset:
                 del self._dataset.SubtaskWorkitemCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SubtaskWorkitemCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SubtaskWorkitemCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SubtaskWorkitemCodeSequence = value
             if "SubtaskWorkitemCodeSequence" not in self._dataset:
@@ -82,7 +82,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_SubtaskWorkitemCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SubtaskWorkitemCodeSequence.append(item)
         if "SubtaskWorkitemCodeSequence" not in self._dataset:
             self._dataset.SubtaskWorkitemCodeSequence = pydicom.Sequence()
@@ -130,7 +130,8 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, ReferencedBaselineParametersRTRadiationInstanceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedBaselineParametersRTRadiationInstanceSequence must be a list of ReferencedBaselineParametersRTRadiationInstanceSequenceItem objects"
+                "ReferencedBaselineParametersRTRadiationInstanceSequence must be a list of"
+                " ReferencedBaselineParametersRTRadiationInstanceSequenceItem objects"
             )
         else:
             self._ReferencedBaselineParametersRTRadiationInstanceSequence = value
@@ -143,7 +144,7 @@ class AcquisitionSubtaskSequenceItem:
         self, item: ReferencedBaselineParametersRTRadiationInstanceSequenceItem
     ):
         if not isinstance(item, ReferencedBaselineParametersRTRadiationInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedBaselineParametersRTRadiationInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedBaselineParametersRTRadiationInstanceSequenceItem")
         self._ReferencedBaselineParametersRTRadiationInstanceSequence.append(item)
         if "ReferencedBaselineParametersRTRadiationInstanceSequence" not in self._dataset:
             self._dataset.ReferencedBaselineParametersRTRadiationInstanceSequence = pydicom.Sequence()
@@ -177,7 +178,8 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, PositionAcquisitionTemplateIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PositionAcquisitionTemplateIdentificationSequence must be a list of PositionAcquisitionTemplateIdentificationSequenceItem objects"
+                "PositionAcquisitionTemplateIdentificationSequence must be a list of"
+                " PositionAcquisitionTemplateIdentificationSequenceItem objects"
             )
         else:
             self._PositionAcquisitionTemplateIdentificationSequence = value
@@ -188,7 +190,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_PositionAcquisitionTemplateIdentification(self, item: PositionAcquisitionTemplateIdentificationSequenceItem):
         if not isinstance(item, PositionAcquisitionTemplateIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PositionAcquisitionTemplateIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PositionAcquisitionTemplateIdentificationSequenceItem")
         self._PositionAcquisitionTemplateIdentificationSequence.append(item)
         if "PositionAcquisitionTemplateIdentificationSequence" not in self._dataset:
             self._dataset.PositionAcquisitionTemplateIdentificationSequence = pydicom.Sequence()
@@ -222,7 +224,8 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, ProjectionImagingAcquisitionParameterSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ProjectionImagingAcquisitionParameterSequence must be a list of ProjectionImagingAcquisitionParameterSequenceItem objects"
+                "ProjectionImagingAcquisitionParameterSequence must be a list of"
+                " ProjectionImagingAcquisitionParameterSequenceItem objects"
             )
         else:
             self._ProjectionImagingAcquisitionParameterSequence = value
@@ -233,7 +236,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_ProjectionImagingAcquisitionParameter(self, item: ProjectionImagingAcquisitionParameterSequenceItem):
         if not isinstance(item, ProjectionImagingAcquisitionParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of ProjectionImagingAcquisitionParameterSequenceItem")
+            raise ValueError("Item must be an instance of ProjectionImagingAcquisitionParameterSequenceItem")
         self._ProjectionImagingAcquisitionParameterSequence.append(item)
         if "ProjectionImagingAcquisitionParameterSequence" not in self._dataset:
             self._dataset.ProjectionImagingAcquisitionParameterSequence = pydicom.Sequence()
@@ -260,7 +263,7 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, CTImagingAcquisitionParameterSequenceItem) for item in value
         ):
             raise ValueError(
-                f"CTImagingAcquisitionParameterSequence must be a list of CTImagingAcquisitionParameterSequenceItem objects"
+                "CTImagingAcquisitionParameterSequence must be a list of CTImagingAcquisitionParameterSequenceItem objects"
             )
         else:
             self._CTImagingAcquisitionParameterSequence = value
@@ -271,7 +274,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_CTImagingAcquisitionParameter(self, item: CTImagingAcquisitionParameterSequenceItem):
         if not isinstance(item, CTImagingAcquisitionParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of CTImagingAcquisitionParameterSequenceItem")
+            raise ValueError("Item must be an instance of CTImagingAcquisitionParameterSequenceItem")
         self._CTImagingAcquisitionParameterSequence.append(item)
         if "CTImagingAcquisitionParameterSequence" not in self._dataset:
             self._dataset.CTImagingAcquisitionParameterSequence = pydicom.Sequence()
@@ -298,7 +301,7 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, KVImagingGenerationParametersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"KVImagingGenerationParametersSequence must be a list of KVImagingGenerationParametersSequenceItem objects"
+                "KVImagingGenerationParametersSequence must be a list of KVImagingGenerationParametersSequenceItem objects"
             )
         else:
             self._KVImagingGenerationParametersSequence = value
@@ -309,7 +312,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_KVImagingGenerationParameters(self, item: KVImagingGenerationParametersSequenceItem):
         if not isinstance(item, KVImagingGenerationParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of KVImagingGenerationParametersSequenceItem")
+            raise ValueError("Item must be an instance of KVImagingGenerationParametersSequenceItem")
         self._KVImagingGenerationParametersSequence.append(item)
         if "KVImagingGenerationParametersSequence" not in self._dataset:
             self._dataset.KVImagingGenerationParametersSequence = pydicom.Sequence()
@@ -336,7 +339,7 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, MVImagingGenerationParametersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"MVImagingGenerationParametersSequence must be a list of MVImagingGenerationParametersSequenceItem objects"
+                "MVImagingGenerationParametersSequence must be a list of MVImagingGenerationParametersSequenceItem objects"
             )
         else:
             self._MVImagingGenerationParametersSequence = value
@@ -347,7 +350,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_MVImagingGenerationParameters(self, item: MVImagingGenerationParametersSequenceItem):
         if not isinstance(item, MVImagingGenerationParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of MVImagingGenerationParametersSequenceItem")
+            raise ValueError("Item must be an instance of MVImagingGenerationParametersSequenceItem")
         self._MVImagingGenerationParametersSequence.append(item)
         if "MVImagingGenerationParametersSequence" not in self._dataset:
             self._dataset.MVImagingGenerationParametersSequence = pydicom.Sequence()
@@ -400,7 +403,7 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, AdditionalRTAccessoryDeviceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"AdditionalRTAccessoryDeviceSequence must be a list of AdditionalRTAccessoryDeviceSequenceItem objects"
+                "AdditionalRTAccessoryDeviceSequence must be a list of AdditionalRTAccessoryDeviceSequenceItem objects"
             )
         else:
             self._AdditionalRTAccessoryDeviceSequence = value
@@ -411,7 +414,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_AdditionalRTAccessoryDevice(self, item: AdditionalRTAccessoryDeviceSequenceItem):
         if not isinstance(item, AdditionalRTAccessoryDeviceSequenceItem):
-            raise ValueError(f"Item must be an instance of AdditionalRTAccessoryDeviceSequenceItem")
+            raise ValueError("Item must be an instance of AdditionalRTAccessoryDeviceSequenceItem")
         self._AdditionalRTAccessoryDeviceSequence.append(item)
         if "AdditionalRTAccessoryDeviceSequence" not in self._dataset:
             self._dataset.AdditionalRTAccessoryDeviceSequence = pydicom.Sequence()
@@ -443,7 +446,8 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, DeviceSpecificAcquisitionParameterSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DeviceSpecificAcquisitionParameterSequence must be a list of DeviceSpecificAcquisitionParameterSequenceItem objects"
+                "DeviceSpecificAcquisitionParameterSequence must be a list of DeviceSpecificAcquisitionParameterSequenceItem"
+                " objects"
             )
         else:
             self._DeviceSpecificAcquisitionParameterSequence = value
@@ -454,7 +458,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_DeviceSpecificAcquisitionParameter(self, item: DeviceSpecificAcquisitionParameterSequenceItem):
         if not isinstance(item, DeviceSpecificAcquisitionParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of DeviceSpecificAcquisitionParameterSequenceItem")
+            raise ValueError("Item must be an instance of DeviceSpecificAcquisitionParameterSequenceItem")
         self._DeviceSpecificAcquisitionParameterSequence.append(item)
         if "DeviceSpecificAcquisitionParameterSequence" not in self._dataset:
             self._dataset.DeviceSpecificAcquisitionParameterSequence = pydicom.Sequence()
@@ -486,7 +490,8 @@ class AcquisitionSubtaskSequenceItem:
             isinstance(item, ReferencedPositionReferenceInstanceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPositionReferenceInstanceSequence must be a list of ReferencedPositionReferenceInstanceSequenceItem objects"
+                "ReferencedPositionReferenceInstanceSequence must be a list of ReferencedPositionReferenceInstanceSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedPositionReferenceInstanceSequence = value
@@ -497,7 +502,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_ReferencedPositionReferenceInstance(self, item: ReferencedPositionReferenceInstanceSequenceItem):
         if not isinstance(item, ReferencedPositionReferenceInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPositionReferenceInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPositionReferenceInstanceSequenceItem")
         self._ReferencedPositionReferenceInstanceSequence.append(item)
         if "ReferencedPositionReferenceInstanceSequence" not in self._dataset:
             self._dataset.ReferencedPositionReferenceInstanceSequence = pydicom.Sequence()
@@ -519,7 +524,7 @@ class AcquisitionSubtaskSequenceItem:
             if "AcquisitionInitiationSequence" in self._dataset:
                 del self._dataset.AcquisitionInitiationSequence
         elif not isinstance(value, list) or not all(isinstance(item, AcquisitionInitiationSequenceItem) for item in value):
-            raise ValueError(f"AcquisitionInitiationSequence must be a list of AcquisitionInitiationSequenceItem objects")
+            raise ValueError("AcquisitionInitiationSequence must be a list of AcquisitionInitiationSequenceItem objects")
         else:
             self._AcquisitionInitiationSequence = value
             if "AcquisitionInitiationSequence" not in self._dataset:
@@ -529,7 +534,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_AcquisitionInitiation(self, item: AcquisitionInitiationSequenceItem):
         if not isinstance(item, AcquisitionInitiationSequenceItem):
-            raise ValueError(f"Item must be an instance of AcquisitionInitiationSequenceItem")
+            raise ValueError("Item must be an instance of AcquisitionInitiationSequenceItem")
         self._AcquisitionInitiationSequence.append(item)
         if "AcquisitionInitiationSequence" not in self._dataset:
             self._dataset.AcquisitionInitiationSequence = pydicom.Sequence()
@@ -567,7 +572,7 @@ class AcquisitionSubtaskSequenceItem:
             if "RTDeviceDistanceReferenceLocationCodeSequence" in self._dataset:
                 del self._dataset.RTDeviceDistanceReferenceLocationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTDeviceDistanceReferenceLocationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTDeviceDistanceReferenceLocationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTDeviceDistanceReferenceLocationCodeSequence = value
             if "RTDeviceDistanceReferenceLocationCodeSequence" not in self._dataset:
@@ -577,7 +582,7 @@ class AcquisitionSubtaskSequenceItem:
 
     def add_RTDeviceDistanceReferenceLocationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTDeviceDistanceReferenceLocationCodeSequence.append(item)
         if "RTDeviceDistanceReferenceLocationCodeSequence" not in self._dataset:
             self._dataset.RTDeviceDistanceReferenceLocationCodeSequence = pydicom.Sequence()

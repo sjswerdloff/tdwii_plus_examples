@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -36,7 +36,7 @@ class XRay3DAcquisitionSequenceItem:
             if "SourceImageSequence" in self._dataset:
                 del self._dataset.SourceImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, SourceImageSequenceItem) for item in value):
-            raise ValueError(f"SourceImageSequence must be a list of SourceImageSequenceItem objects")
+            raise ValueError("SourceImageSequence must be a list of SourceImageSequenceItem objects")
         else:
             self._SourceImageSequence = value
             if "SourceImageSequence" not in self._dataset:
@@ -46,7 +46,7 @@ class XRay3DAcquisitionSequenceItem:
 
     def add_SourceImage(self, item: SourceImageSequenceItem):
         if not isinstance(item, SourceImageSequenceItem):
-            raise ValueError(f"Item must be an instance of SourceImageSequenceItem")
+            raise ValueError("Item must be an instance of SourceImageSequenceItem")
         self._SourceImageSequence.append(item)
         if "SourceImageSequence" not in self._dataset:
             self._dataset.SourceImageSequence = pydicom.Sequence()
@@ -82,7 +82,7 @@ class XRay3DAcquisitionSequenceItem:
             if "ContrastBolusAgentSequence" in self._dataset:
                 del self._dataset.ContrastBolusAgentSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContrastBolusAgentSequenceItem) for item in value):
-            raise ValueError(f"ContrastBolusAgentSequence must be a list of ContrastBolusAgentSequenceItem objects")
+            raise ValueError("ContrastBolusAgentSequence must be a list of ContrastBolusAgentSequenceItem objects")
         else:
             self._ContrastBolusAgentSequence = value
             if "ContrastBolusAgentSequence" not in self._dataset:
@@ -92,7 +92,7 @@ class XRay3DAcquisitionSequenceItem:
 
     def add_ContrastBolusAgent(self, item: ContrastBolusAgentSequenceItem):
         if not isinstance(item, ContrastBolusAgentSequenceItem):
-            raise ValueError(f"Item must be an instance of ContrastBolusAgentSequenceItem")
+            raise ValueError("Item must be an instance of ContrastBolusAgentSequenceItem")
         self._ContrastBolusAgentSequence.append(item)
         if "ContrastBolusAgentSequence" not in self._dataset:
             self._dataset.ContrastBolusAgentSequence = pydicom.Sequence()
@@ -800,9 +800,7 @@ class XRay3DAcquisitionSequenceItem:
             if "PerProjectionAcquisitionSequence" in self._dataset:
                 del self._dataset.PerProjectionAcquisitionSequence
         elif not isinstance(value, list) or not all(isinstance(item, PerProjectionAcquisitionSequenceItem) for item in value):
-            raise ValueError(
-                f"PerProjectionAcquisitionSequence must be a list of PerProjectionAcquisitionSequenceItem objects"
-            )
+            raise ValueError("PerProjectionAcquisitionSequence must be a list of PerProjectionAcquisitionSequenceItem objects")
         else:
             self._PerProjectionAcquisitionSequence = value
             if "PerProjectionAcquisitionSequence" not in self._dataset:
@@ -812,7 +810,7 @@ class XRay3DAcquisitionSequenceItem:
 
     def add_PerProjectionAcquisition(self, item: PerProjectionAcquisitionSequenceItem):
         if not isinstance(item, PerProjectionAcquisitionSequenceItem):
-            raise ValueError(f"Item must be an instance of PerProjectionAcquisitionSequenceItem")
+            raise ValueError("Item must be an instance of PerProjectionAcquisitionSequenceItem")
         self._PerProjectionAcquisitionSequence.append(item)
         if "PerProjectionAcquisitionSequence" not in self._dataset:
             self._dataset.PerProjectionAcquisitionSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class MaskSubtractionSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class MaskSubtractionSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -142,7 +142,7 @@ class MaskSubtractionSequenceItem:
             isinstance(item, PixelIntensityRelationshipLUTSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PixelIntensityRelationshipLUTSequence must be a list of PixelIntensityRelationshipLUTSequenceItem objects"
+                "PixelIntensityRelationshipLUTSequence must be a list of PixelIntensityRelationshipLUTSequenceItem objects"
             )
         else:
             self._PixelIntensityRelationshipLUTSequence = value
@@ -153,7 +153,7 @@ class MaskSubtractionSequenceItem:
 
     def add_PixelIntensityRelationshipLUT(self, item: PixelIntensityRelationshipLUTSequenceItem):
         if not isinstance(item, PixelIntensityRelationshipLUTSequenceItem):
-            raise ValueError(f"Item must be an instance of PixelIntensityRelationshipLUTSequenceItem")
+            raise ValueError("Item must be an instance of PixelIntensityRelationshipLUTSequenceItem")
         self._PixelIntensityRelationshipLUTSequence.append(item)
         if "PixelIntensityRelationshipLUTSequence" not in self._dataset:
             self._dataset.PixelIntensityRelationshipLUTSequence = pydicom.Sequence()
@@ -175,7 +175,7 @@ class MaskSubtractionSequenceItem:
             if "PixelShiftSequence" in self._dataset:
                 del self._dataset.PixelShiftSequence
         elif not isinstance(value, list) or not all(isinstance(item, PixelShiftSequenceItem) for item in value):
-            raise ValueError(f"PixelShiftSequence must be a list of PixelShiftSequenceItem objects")
+            raise ValueError("PixelShiftSequence must be a list of PixelShiftSequenceItem objects")
         else:
             self._PixelShiftSequence = value
             if "PixelShiftSequence" not in self._dataset:
@@ -185,7 +185,7 @@ class MaskSubtractionSequenceItem:
 
     def add_PixelShift(self, item: PixelShiftSequenceItem):
         if not isinstance(item, PixelShiftSequenceItem):
-            raise ValueError(f"Item must be an instance of PixelShiftSequenceItem")
+            raise ValueError("Item must be an instance of PixelShiftSequenceItem")
         self._PixelShiftSequence.append(item)
         if "PixelShiftSequence" not in self._dataset:
             self._dataset.PixelShiftSequence = pydicom.Sequence()

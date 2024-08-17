@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class RecordedBlockSequenceItem:
             if "RecordedBlockSlabSequence" in self._dataset:
                 del self._dataset.RecordedBlockSlabSequence
         elif not isinstance(value, list) or not all(isinstance(item, RecordedBlockSlabSequenceItem) for item in value):
-            raise ValueError(f"RecordedBlockSlabSequence must be a list of RecordedBlockSlabSequenceItem objects")
+            raise ValueError("RecordedBlockSlabSequence must be a list of RecordedBlockSlabSequenceItem objects")
         else:
             self._RecordedBlockSlabSequence = value
             if "RecordedBlockSlabSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class RecordedBlockSequenceItem:
 
     def add_RecordedBlockSlab(self, item: RecordedBlockSlabSequenceItem):
         if not isinstance(item, RecordedBlockSlabSequenceItem):
-            raise ValueError(f"Item must be an instance of RecordedBlockSlabSequenceItem")
+            raise ValueError("Item must be an instance of RecordedBlockSlabSequenceItem")
         self._RecordedBlockSlabSequence.append(item)
         if "RecordedBlockSlabSequence" not in self._dataset:
             self._dataset.RecordedBlockSlabSequence = pydicom.Sequence()

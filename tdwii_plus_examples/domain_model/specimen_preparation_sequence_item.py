@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -41,7 +41,8 @@ class SpecimenPreparationSequenceItem:
             isinstance(item, SpecimenPreparationStepContentItemSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SpecimenPreparationStepContentItemSequence must be a list of SpecimenPreparationStepContentItemSequenceItem objects"
+                "SpecimenPreparationStepContentItemSequence must be a list of SpecimenPreparationStepContentItemSequenceItem"
+                " objects"
             )
         else:
             self._SpecimenPreparationStepContentItemSequence = value
@@ -52,7 +53,7 @@ class SpecimenPreparationSequenceItem:
 
     def add_SpecimenPreparationStepContentItem(self, item: SpecimenPreparationStepContentItemSequenceItem):
         if not isinstance(item, SpecimenPreparationStepContentItemSequenceItem):
-            raise ValueError(f"Item must be an instance of SpecimenPreparationStepContentItemSequenceItem")
+            raise ValueError("Item must be an instance of SpecimenPreparationStepContentItemSequenceItem")
         self._SpecimenPreparationStepContentItemSequence.append(item)
         if "SpecimenPreparationStepContentItemSequence" not in self._dataset:
             self._dataset.SpecimenPreparationStepContentItemSequence = pydicom.Sequence()

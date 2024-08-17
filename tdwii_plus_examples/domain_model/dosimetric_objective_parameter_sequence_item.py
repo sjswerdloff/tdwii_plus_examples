@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -38,7 +38,7 @@ class DosimetricObjectiveParameterSequenceItem:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -48,7 +48,7 @@ class DosimetricObjectiveParameterSequenceItem:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -70,7 +70,7 @@ class DosimetricObjectiveParameterSequenceItem:
             if "MeasurementUnitsCodeSequence" in self._dataset:
                 del self._dataset.MeasurementUnitsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MeasurementUnitsCodeSequence = value
             if "MeasurementUnitsCodeSequence" not in self._dataset:
@@ -80,7 +80,7 @@ class DosimetricObjectiveParameterSequenceItem:
 
     def add_MeasurementUnitsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MeasurementUnitsCodeSequence.append(item)
         if "MeasurementUnitsCodeSequence" not in self._dataset:
             self._dataset.MeasurementUnitsCodeSequence = pydicom.Sequence()
@@ -144,7 +144,7 @@ class DosimetricObjectiveParameterSequenceItem:
             if "ConceptNameCodeSequence" in self._dataset:
                 del self._dataset.ConceptNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptNameCodeSequence = value
             if "ConceptNameCodeSequence" not in self._dataset:
@@ -154,7 +154,7 @@ class DosimetricObjectiveParameterSequenceItem:
 
     def add_ConceptNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptNameCodeSequence.append(item)
         if "ConceptNameCodeSequence" not in self._dataset:
             self._dataset.ConceptNameCodeSequence = pydicom.Sequence()
@@ -302,7 +302,7 @@ class DosimetricObjectiveParameterSequenceItem:
             if "ConceptCodeSequence" in self._dataset:
                 del self._dataset.ConceptCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptCodeSequence = value
             if "ConceptCodeSequence" not in self._dataset:
@@ -312,7 +312,7 @@ class DosimetricObjectiveParameterSequenceItem:
 
     def add_ConceptCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptCodeSequence.append(item)
         if "ConceptCodeSequence" not in self._dataset:
             self._dataset.ConceptCodeSequence = pydicom.Sequence()
@@ -349,7 +349,7 @@ class DosimetricObjectiveParameterSequenceItem:
                 del self._dataset.RadiobiologicalDoseEffectSequence
         elif not isinstance(value, list) or not all(isinstance(item, RadiobiologicalDoseEffectSequenceItem) for item in value):
             raise ValueError(
-                f"RadiobiologicalDoseEffectSequence must be a list of RadiobiologicalDoseEffectSequenceItem objects"
+                "RadiobiologicalDoseEffectSequence must be a list of RadiobiologicalDoseEffectSequenceItem objects"
             )
         else:
             self._RadiobiologicalDoseEffectSequence = value
@@ -360,7 +360,7 @@ class DosimetricObjectiveParameterSequenceItem:
 
     def add_RadiobiologicalDoseEffect(self, item: RadiobiologicalDoseEffectSequenceItem):
         if not isinstance(item, RadiobiologicalDoseEffectSequenceItem):
-            raise ValueError(f"Item must be an instance of RadiobiologicalDoseEffectSequenceItem")
+            raise ValueError("Item must be an instance of RadiobiologicalDoseEffectSequenceItem")
         self._RadiobiologicalDoseEffectSequence.append(item)
         if "RadiobiologicalDoseEffectSequence" not in self._dataset:
             self._dataset.RadiobiologicalDoseEffectSequence = pydicom.Sequence()

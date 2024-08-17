@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -59,9 +59,7 @@ class ReferencedRTPhysicianIntentSequenceItem:
             if "ReferencedRTPrescriptionSequence" in self._dataset:
                 del self._dataset.ReferencedRTPrescriptionSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedRTPrescriptionSequenceItem) for item in value):
-            raise ValueError(
-                f"ReferencedRTPrescriptionSequence must be a list of ReferencedRTPrescriptionSequenceItem objects"
-            )
+            raise ValueError("ReferencedRTPrescriptionSequence must be a list of ReferencedRTPrescriptionSequenceItem objects")
         else:
             self._ReferencedRTPrescriptionSequence = value
             if "ReferencedRTPrescriptionSequence" not in self._dataset:
@@ -71,7 +69,7 @@ class ReferencedRTPhysicianIntentSequenceItem:
 
     def add_ReferencedRTPrescription(self, item: ReferencedRTPrescriptionSequenceItem):
         if not isinstance(item, ReferencedRTPrescriptionSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTPrescriptionSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTPrescriptionSequenceItem")
         self._ReferencedRTPrescriptionSequence.append(item)
         if "ReferencedRTPrescriptionSequence" not in self._dataset:
             self._dataset.ReferencedRTPrescriptionSequence = pydicom.Sequence()

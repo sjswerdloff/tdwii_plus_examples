@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class GeneticModificationsSequenceItem:
             if "GeneticModificationsCodeSequence" in self._dataset:
                 del self._dataset.GeneticModificationsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"GeneticModificationsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("GeneticModificationsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._GeneticModificationsCodeSequence = value
             if "GeneticModificationsCodeSequence" not in self._dataset:
@@ -67,7 +67,7 @@ class GeneticModificationsSequenceItem:
 
     def add_GeneticModificationsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._GeneticModificationsCodeSequence.append(item)
         if "GeneticModificationsCodeSequence" not in self._dataset:
             self._dataset.GeneticModificationsCodeSequence = pydicom.Sequence()

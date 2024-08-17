@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class ReferencedImageRealWorldValueMappingSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class ReferencedImageRealWorldValueMappingSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -63,7 +63,7 @@ class ReferencedImageRealWorldValueMappingSequenceItem:
             if "RealWorldValueMappingSequence" in self._dataset:
                 del self._dataset.RealWorldValueMappingSequence
         elif not isinstance(value, list) or not all(isinstance(item, RealWorldValueMappingSequenceItem) for item in value):
-            raise ValueError(f"RealWorldValueMappingSequence must be a list of RealWorldValueMappingSequenceItem objects")
+            raise ValueError("RealWorldValueMappingSequence must be a list of RealWorldValueMappingSequenceItem objects")
         else:
             self._RealWorldValueMappingSequence = value
             if "RealWorldValueMappingSequence" not in self._dataset:
@@ -73,7 +73,7 @@ class ReferencedImageRealWorldValueMappingSequenceItem:
 
     def add_RealWorldValueMapping(self, item: RealWorldValueMappingSequenceItem):
         if not isinstance(item, RealWorldValueMappingSequenceItem):
-            raise ValueError(f"Item must be an instance of RealWorldValueMappingSequenceItem")
+            raise ValueError("Item must be an instance of RealWorldValueMappingSequenceItem")
         self._RealWorldValueMappingSequence.append(item)
         if "RealWorldValueMappingSequence" not in self._dataset:
             self._dataset.RealWorldValueMappingSequence = pydicom.Sequence()

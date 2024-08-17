@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -85,7 +85,7 @@ class UVMappingSequenceItem:
             if "ReferencedTextureSequence" in self._dataset:
                 del self._dataset.ReferencedTextureSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedTextureSequenceItem) for item in value):
-            raise ValueError(f"ReferencedTextureSequence must be a list of ReferencedTextureSequenceItem objects")
+            raise ValueError("ReferencedTextureSequence must be a list of ReferencedTextureSequenceItem objects")
         else:
             self._ReferencedTextureSequence = value
             if "ReferencedTextureSequence" not in self._dataset:
@@ -95,7 +95,7 @@ class UVMappingSequenceItem:
 
     def add_ReferencedTexture(self, item: ReferencedTextureSequenceItem):
         if not isinstance(item, ReferencedTextureSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedTextureSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedTextureSequenceItem")
         self._ReferencedTextureSequence.append(item)
         if "ReferencedTextureSequence" not in self._dataset:
             self._dataset.ReferencedTextureSequence = pydicom.Sequence()

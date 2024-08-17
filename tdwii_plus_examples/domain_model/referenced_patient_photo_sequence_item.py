@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -39,7 +39,7 @@ class ReferencedPatientPhotoSequenceItem:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -49,7 +49,7 @@ class ReferencedPatientPhotoSequenceItem:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -113,7 +113,7 @@ class ReferencedPatientPhotoSequenceItem:
             if "DICOMRetrievalSequence" in self._dataset:
                 del self._dataset.DICOMRetrievalSequence
         elif not isinstance(value, list) or not all(isinstance(item, DICOMRetrievalSequenceItem) for item in value):
-            raise ValueError(f"DICOMRetrievalSequence must be a list of DICOMRetrievalSequenceItem objects")
+            raise ValueError("DICOMRetrievalSequence must be a list of DICOMRetrievalSequenceItem objects")
         else:
             self._DICOMRetrievalSequence = value
             if "DICOMRetrievalSequence" not in self._dataset:
@@ -123,7 +123,7 @@ class ReferencedPatientPhotoSequenceItem:
 
     def add_DICOMRetrieval(self, item: DICOMRetrievalSequenceItem):
         if not isinstance(item, DICOMRetrievalSequenceItem):
-            raise ValueError(f"Item must be an instance of DICOMRetrievalSequenceItem")
+            raise ValueError("Item must be an instance of DICOMRetrievalSequenceItem")
         self._DICOMRetrievalSequence.append(item)
         if "DICOMRetrievalSequence" not in self._dataset:
             self._dataset.DICOMRetrievalSequence = pydicom.Sequence()
@@ -145,7 +145,7 @@ class ReferencedPatientPhotoSequenceItem:
             if "DICOMMediaRetrievalSequence" in self._dataset:
                 del self._dataset.DICOMMediaRetrievalSequence
         elif not isinstance(value, list) or not all(isinstance(item, DICOMMediaRetrievalSequenceItem) for item in value):
-            raise ValueError(f"DICOMMediaRetrievalSequence must be a list of DICOMMediaRetrievalSequenceItem objects")
+            raise ValueError("DICOMMediaRetrievalSequence must be a list of DICOMMediaRetrievalSequenceItem objects")
         else:
             self._DICOMMediaRetrievalSequence = value
             if "DICOMMediaRetrievalSequence" not in self._dataset:
@@ -155,7 +155,7 @@ class ReferencedPatientPhotoSequenceItem:
 
     def add_DICOMMediaRetrieval(self, item: DICOMMediaRetrievalSequenceItem):
         if not isinstance(item, DICOMMediaRetrievalSequenceItem):
-            raise ValueError(f"Item must be an instance of DICOMMediaRetrievalSequenceItem")
+            raise ValueError("Item must be an instance of DICOMMediaRetrievalSequenceItem")
         self._DICOMMediaRetrievalSequence.append(item)
         if "DICOMMediaRetrievalSequence" not in self._dataset:
             self._dataset.DICOMMediaRetrievalSequence = pydicom.Sequence()
@@ -177,7 +177,7 @@ class ReferencedPatientPhotoSequenceItem:
             if "WADORetrievalSequence" in self._dataset:
                 del self._dataset.WADORetrievalSequence
         elif not isinstance(value, list) or not all(isinstance(item, WADORetrievalSequenceItem) for item in value):
-            raise ValueError(f"WADORetrievalSequence must be a list of WADORetrievalSequenceItem objects")
+            raise ValueError("WADORetrievalSequence must be a list of WADORetrievalSequenceItem objects")
         else:
             self._WADORetrievalSequence = value
             if "WADORetrievalSequence" not in self._dataset:
@@ -187,7 +187,7 @@ class ReferencedPatientPhotoSequenceItem:
 
     def add_WADORetrieval(self, item: WADORetrievalSequenceItem):
         if not isinstance(item, WADORetrievalSequenceItem):
-            raise ValueError(f"Item must be an instance of WADORetrievalSequenceItem")
+            raise ValueError("Item must be an instance of WADORetrievalSequenceItem")
         self._WADORetrievalSequence.append(item)
         if "WADORetrievalSequence" not in self._dataset:
             self._dataset.WADORetrievalSequence = pydicom.Sequence()
@@ -209,7 +209,7 @@ class ReferencedPatientPhotoSequenceItem:
             if "XDSRetrievalSequence" in self._dataset:
                 del self._dataset.XDSRetrievalSequence
         elif not isinstance(value, list) or not all(isinstance(item, XDSRetrievalSequenceItem) for item in value):
-            raise ValueError(f"XDSRetrievalSequence must be a list of XDSRetrievalSequenceItem objects")
+            raise ValueError("XDSRetrievalSequence must be a list of XDSRetrievalSequenceItem objects")
         else:
             self._XDSRetrievalSequence = value
             if "XDSRetrievalSequence" not in self._dataset:
@@ -219,7 +219,7 @@ class ReferencedPatientPhotoSequenceItem:
 
     def add_XDSRetrieval(self, item: XDSRetrievalSequenceItem):
         if not isinstance(item, XDSRetrievalSequenceItem):
-            raise ValueError(f"Item must be an instance of XDSRetrievalSequenceItem")
+            raise ValueError("Item must be an instance of XDSRetrievalSequenceItem")
         self._XDSRetrievalSequence.append(item)
         if "XDSRetrievalSequence" not in self._dataset:
             self._dataset.XDSRetrievalSequence = pydicom.Sequence()
@@ -241,7 +241,7 @@ class ReferencedPatientPhotoSequenceItem:
             if "WADORSRetrievalSequence" in self._dataset:
                 del self._dataset.WADORSRetrievalSequence
         elif not isinstance(value, list) or not all(isinstance(item, WADORSRetrievalSequenceItem) for item in value):
-            raise ValueError(f"WADORSRetrievalSequence must be a list of WADORSRetrievalSequenceItem objects")
+            raise ValueError("WADORSRetrievalSequence must be a list of WADORSRetrievalSequenceItem objects")
         else:
             self._WADORSRetrievalSequence = value
             if "WADORSRetrievalSequence" not in self._dataset:
@@ -251,7 +251,7 @@ class ReferencedPatientPhotoSequenceItem:
 
     def add_WADORSRetrieval(self, item: WADORSRetrievalSequenceItem):
         if not isinstance(item, WADORSRetrievalSequenceItem):
-            raise ValueError(f"Item must be an instance of WADORSRetrievalSequenceItem")
+            raise ValueError("Item must be an instance of WADORSRetrievalSequenceItem")
         self._WADORSRetrievalSequence.append(item)
         if "WADORSRetrievalSequence" not in self._dataset:
             self._dataset.WADORSRetrievalSequence = pydicom.Sequence()

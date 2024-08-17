@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,8 @@ class DerivationConceptualVolumeSequenceItem:
             isinstance(item, ConceptualVolumeDerivationAlgorithmSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConceptualVolumeDerivationAlgorithmSequence must be a list of ConceptualVolumeDerivationAlgorithmSequenceItem objects"
+                "ConceptualVolumeDerivationAlgorithmSequence must be a list of ConceptualVolumeDerivationAlgorithmSequenceItem"
+                " objects"
             )
         else:
             self._ConceptualVolumeDerivationAlgorithmSequence = value
@@ -68,7 +69,7 @@ class DerivationConceptualVolumeSequenceItem:
 
     def add_ConceptualVolumeDerivationAlgorithm(self, item: ConceptualVolumeDerivationAlgorithmSequenceItem):
         if not isinstance(item, ConceptualVolumeDerivationAlgorithmSequenceItem):
-            raise ValueError(f"Item must be an instance of ConceptualVolumeDerivationAlgorithmSequenceItem")
+            raise ValueError("Item must be an instance of ConceptualVolumeDerivationAlgorithmSequenceItem")
         self._ConceptualVolumeDerivationAlgorithmSequence.append(item)
         if "ConceptualVolumeDerivationAlgorithmSequence" not in self._dataset:
             self._dataset.ConceptualVolumeDerivationAlgorithmSequence = pydicom.Sequence()
@@ -90,7 +91,7 @@ class DerivationConceptualVolumeSequenceItem:
             if "SourceConceptualVolumeSequence" in self._dataset:
                 del self._dataset.SourceConceptualVolumeSequence
         elif not isinstance(value, list) or not all(isinstance(item, SourceConceptualVolumeSequenceItem) for item in value):
-            raise ValueError(f"SourceConceptualVolumeSequence must be a list of SourceConceptualVolumeSequenceItem objects")
+            raise ValueError("SourceConceptualVolumeSequence must be a list of SourceConceptualVolumeSequenceItem objects")
         else:
             self._SourceConceptualVolumeSequence = value
             if "SourceConceptualVolumeSequence" not in self._dataset:
@@ -100,7 +101,7 @@ class DerivationConceptualVolumeSequenceItem:
 
     def add_SourceConceptualVolume(self, item: SourceConceptualVolumeSequenceItem):
         if not isinstance(item, SourceConceptualVolumeSequenceItem):
-            raise ValueError(f"Item must be an instance of SourceConceptualVolumeSequenceItem")
+            raise ValueError("Item must be an instance of SourceConceptualVolumeSequenceItem")
         self._SourceConceptualVolumeSequence.append(item)
         if "SourceConceptualVolumeSequence" not in self._dataset:
             self._dataset.SourceConceptualVolumeSequence = pydicom.Sequence()

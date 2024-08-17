@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class SegmentSequenceItem:
             if "DefinitionSourceSequence" in self._dataset:
                 del self._dataset.DefinitionSourceSequence
         elif not isinstance(value, list) or not all(isinstance(item, DefinitionSourceSequenceItem) for item in value):
-            raise ValueError(f"DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
+            raise ValueError("DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
         else:
             self._DefinitionSourceSequence = value
             if "DefinitionSourceSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class SegmentSequenceItem:
 
     def add_DefinitionSource(self, item: DefinitionSourceSequenceItem):
         if not isinstance(item, DefinitionSourceSequenceItem):
-            raise ValueError(f"Item must be an instance of DefinitionSourceSequenceItem")
+            raise ValueError("Item must be an instance of DefinitionSourceSequenceItem")
         self._DefinitionSourceSequence.append(item)
         if "DefinitionSourceSequence" not in self._dataset:
             self._dataset.DefinitionSourceSequence = pydicom.Sequence()
@@ -75,7 +75,7 @@ class SegmentSequenceItem:
             if "AnatomicRegionSequence" in self._dataset:
                 del self._dataset.AnatomicRegionSequence
         elif not isinstance(value, list) or not all(isinstance(item, AnatomicRegionSequenceItem) for item in value):
-            raise ValueError(f"AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
+            raise ValueError("AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
         else:
             self._AnatomicRegionSequence = value
             if "AnatomicRegionSequence" not in self._dataset:
@@ -85,7 +85,7 @@ class SegmentSequenceItem:
 
     def add_AnatomicRegion(self, item: AnatomicRegionSequenceItem):
         if not isinstance(item, AnatomicRegionSequenceItem):
-            raise ValueError(f"Item must be an instance of AnatomicRegionSequenceItem")
+            raise ValueError("Item must be an instance of AnatomicRegionSequenceItem")
         self._AnatomicRegionSequence.append(item)
         if "AnatomicRegionSequence" not in self._dataset:
             self._dataset.AnatomicRegionSequence = pydicom.Sequence()
@@ -107,9 +107,7 @@ class SegmentSequenceItem:
             if "PrimaryAnatomicStructureSequence" in self._dataset:
                 del self._dataset.PrimaryAnatomicStructureSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrimaryAnatomicStructureSequenceItem) for item in value):
-            raise ValueError(
-                f"PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects"
-            )
+            raise ValueError("PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects")
         else:
             self._PrimaryAnatomicStructureSequence = value
             if "PrimaryAnatomicStructureSequence" not in self._dataset:
@@ -119,7 +117,7 @@ class SegmentSequenceItem:
 
     def add_PrimaryAnatomicStructure(self, item: PrimaryAnatomicStructureSequenceItem):
         if not isinstance(item, PrimaryAnatomicStructureSequenceItem):
-            raise ValueError(f"Item must be an instance of PrimaryAnatomicStructureSequenceItem")
+            raise ValueError("Item must be an instance of PrimaryAnatomicStructureSequenceItem")
         self._PrimaryAnatomicStructureSequence.append(item)
         if "PrimaryAnatomicStructureSequence" not in self._dataset:
             self._dataset.PrimaryAnatomicStructureSequence = pydicom.Sequence()
@@ -141,7 +139,7 @@ class SegmentSequenceItem:
             if "SegmentedPropertyCategoryCodeSequence" in self._dataset:
                 del self._dataset.SegmentedPropertyCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SegmentedPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SegmentedPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SegmentedPropertyCategoryCodeSequence = value
             if "SegmentedPropertyCategoryCodeSequence" not in self._dataset:
@@ -151,7 +149,7 @@ class SegmentSequenceItem:
 
     def add_SegmentedPropertyCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SegmentedPropertyCategoryCodeSequence.append(item)
         if "SegmentedPropertyCategoryCodeSequence" not in self._dataset:
             self._dataset.SegmentedPropertyCategoryCodeSequence = pydicom.Sequence()
@@ -225,7 +223,8 @@ class SegmentSequenceItem:
             isinstance(item, SegmentationAlgorithmIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SegmentationAlgorithmIdentificationSequence must be a list of SegmentationAlgorithmIdentificationSequenceItem objects"
+                "SegmentationAlgorithmIdentificationSequence must be a list of SegmentationAlgorithmIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._SegmentationAlgorithmIdentificationSequence = value
@@ -236,7 +235,7 @@ class SegmentSequenceItem:
 
     def add_SegmentationAlgorithmIdentification(self, item: SegmentationAlgorithmIdentificationSequenceItem):
         if not isinstance(item, SegmentationAlgorithmIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of SegmentationAlgorithmIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of SegmentationAlgorithmIdentificationSequenceItem")
         self._SegmentationAlgorithmIdentificationSequence.append(item)
         if "SegmentationAlgorithmIdentificationSequence" not in self._dataset:
             self._dataset.SegmentationAlgorithmIdentificationSequence = pydicom.Sequence()
@@ -314,7 +313,7 @@ class SegmentSequenceItem:
             if "SegmentedPropertyTypeCodeSequence" in self._dataset:
                 del self._dataset.SegmentedPropertyTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SegmentedPropertyTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SegmentedPropertyTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SegmentedPropertyTypeCodeSequence = value
             if "SegmentedPropertyTypeCodeSequence" not in self._dataset:
@@ -324,7 +323,7 @@ class SegmentSequenceItem:
 
     def add_SegmentedPropertyTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SegmentedPropertyTypeCodeSequence.append(item)
         if "SegmentedPropertyTypeCodeSequence" not in self._dataset:
             self._dataset.SegmentedPropertyTypeCodeSequence = pydicom.Sequence()
@@ -390,7 +389,7 @@ class SegmentSequenceItem:
             if "ContentCreatorIdentificationCodeSequence" in self._dataset:
                 del self._dataset.ContentCreatorIdentificationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ContentCreatorIdentificationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ContentCreatorIdentificationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ContentCreatorIdentificationCodeSequence = value
             if "ContentCreatorIdentificationCodeSequence" not in self._dataset:
@@ -400,7 +399,7 @@ class SegmentSequenceItem:
 
     def add_ContentCreatorIdentificationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ContentCreatorIdentificationCodeSequence.append(item)
         if "ContentCreatorIdentificationCodeSequence" not in self._dataset:
             self._dataset.ContentCreatorIdentificationCodeSequence = pydicom.Sequence()

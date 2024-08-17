@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
             if "TimeOfFrameGroupSequence" in self._dataset:
                 del self._dataset.TimeOfFrameGroupSequence
         elif not isinstance(value, list) or not all(isinstance(item, TimeOfFrameGroupSequenceItem) for item in value):
-            raise ValueError(f"TimeOfFrameGroupSequence must be a list of TimeOfFrameGroupSequenceItem objects")
+            raise ValueError("TimeOfFrameGroupSequence must be a list of TimeOfFrameGroupSequenceItem objects")
         else:
             self._TimeOfFrameGroupSequence = value
             if "TimeOfFrameGroupSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
 
     def add_TimeOfFrameGroup(self, item: TimeOfFrameGroupSequenceItem):
         if not isinstance(item, TimeOfFrameGroupSequenceItem):
-            raise ValueError(f"Item must be an instance of TimeOfFrameGroupSequenceItem")
+            raise ValueError("Item must be an instance of TimeOfFrameGroupSequenceItem")
         self._TimeOfFrameGroupSequence.append(item)
         if "TimeOfFrameGroupSequence" not in self._dataset:
             self._dataset.TimeOfFrameGroupSequence = pydicom.Sequence()

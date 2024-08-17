@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -69,7 +69,7 @@ class AssessmentObservationsSequenceItem:
             isinstance(item, StructuredConstraintObservationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"StructuredConstraintObservationSequence must be a list of StructuredConstraintObservationSequenceItem objects"
+                "StructuredConstraintObservationSequence must be a list of StructuredConstraintObservationSequenceItem objects"
             )
         else:
             self._StructuredConstraintObservationSequence = value
@@ -80,7 +80,7 @@ class AssessmentObservationsSequenceItem:
 
     def add_StructuredConstraintObservation(self, item: StructuredConstraintObservationSequenceItem):
         if not isinstance(item, StructuredConstraintObservationSequenceItem):
-            raise ValueError(f"Item must be an instance of StructuredConstraintObservationSequenceItem")
+            raise ValueError("Item must be an instance of StructuredConstraintObservationSequenceItem")
         self._StructuredConstraintObservationSequence.append(item)
         if "StructuredConstraintObservationSequence" not in self._dataset:
             self._dataset.StructuredConstraintObservationSequence = pydicom.Sequence()
@@ -102,7 +102,7 @@ class AssessmentObservationsSequenceItem:
             if "ObservationBasisCodeSequence" in self._dataset:
                 del self._dataset.ObservationBasisCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ObservationBasisCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ObservationBasisCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ObservationBasisCodeSequence = value
             if "ObservationBasisCodeSequence" not in self._dataset:
@@ -112,7 +112,7 @@ class AssessmentObservationsSequenceItem:
 
     def add_ObservationBasisCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ObservationBasisCodeSequence.append(item)
         if "ObservationBasisCodeSequence" not in self._dataset:
             self._dataset.ObservationBasisCodeSequence = pydicom.Sequence()

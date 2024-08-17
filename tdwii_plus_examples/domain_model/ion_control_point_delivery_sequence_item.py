@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -162,7 +162,7 @@ class IonControlPointDeliverySequenceItem:
             if "OverrideSequence" in self._dataset:
                 del self._dataset.OverrideSequence
         elif not isinstance(value, list) or not all(isinstance(item, OverrideSequenceItem) for item in value):
-            raise ValueError(f"OverrideSequence must be a list of OverrideSequenceItem objects")
+            raise ValueError("OverrideSequence must be a list of OverrideSequenceItem objects")
         else:
             self._OverrideSequence = value
             if "OverrideSequence" not in self._dataset:
@@ -172,7 +172,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_Override(self, item: OverrideSequenceItem):
         if not isinstance(item, OverrideSequenceItem):
-            raise ValueError(f"Item must be an instance of OverrideSequenceItem")
+            raise ValueError("Item must be an instance of OverrideSequenceItem")
         self._OverrideSequence.append(item)
         if "OverrideSequence" not in self._dataset:
             self._dataset.OverrideSequence = pydicom.Sequence()
@@ -194,7 +194,7 @@ class IonControlPointDeliverySequenceItem:
             if "CorrectedParameterSequence" in self._dataset:
                 del self._dataset.CorrectedParameterSequence
         elif not isinstance(value, list) or not all(isinstance(item, CorrectedParameterSequenceItem) for item in value):
-            raise ValueError(f"CorrectedParameterSequence must be a list of CorrectedParameterSequenceItem objects")
+            raise ValueError("CorrectedParameterSequence must be a list of CorrectedParameterSequenceItem objects")
         else:
             self._CorrectedParameterSequence = value
             if "CorrectedParameterSequence" not in self._dataset:
@@ -204,7 +204,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_CorrectedParameter(self, item: CorrectedParameterSequenceItem):
         if not isinstance(item, CorrectedParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of CorrectedParameterSequenceItem")
+            raise ValueError("Item must be an instance of CorrectedParameterSequenceItem")
         self._CorrectedParameterSequence.append(item)
         if "CorrectedParameterSequence" not in self._dataset:
             self._dataset.CorrectedParameterSequence = pydicom.Sequence()
@@ -231,7 +231,7 @@ class IonControlPointDeliverySequenceItem:
             isinstance(item, EnhancedRTBeamLimitingOpeningSequenceItem) for item in value
         ):
             raise ValueError(
-                f"EnhancedRTBeamLimitingOpeningSequence must be a list of EnhancedRTBeamLimitingOpeningSequenceItem objects"
+                "EnhancedRTBeamLimitingOpeningSequence must be a list of EnhancedRTBeamLimitingOpeningSequenceItem objects"
             )
         else:
             self._EnhancedRTBeamLimitingOpeningSequence = value
@@ -242,7 +242,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_EnhancedRTBeamLimitingOpening(self, item: EnhancedRTBeamLimitingOpeningSequenceItem):
         if not isinstance(item, EnhancedRTBeamLimitingOpeningSequenceItem):
-            raise ValueError(f"Item must be an instance of EnhancedRTBeamLimitingOpeningSequenceItem")
+            raise ValueError("Item must be an instance of EnhancedRTBeamLimitingOpeningSequenceItem")
         self._EnhancedRTBeamLimitingOpeningSequence.append(item)
         if "EnhancedRTBeamLimitingOpeningSequence" not in self._dataset:
             self._dataset.EnhancedRTBeamLimitingOpeningSequence = pydicom.Sequence()
@@ -281,7 +281,7 @@ class IonControlPointDeliverySequenceItem:
             isinstance(item, BeamLimitingDevicePositionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"BeamLimitingDevicePositionSequence must be a list of BeamLimitingDevicePositionSequenceItem objects"
+                "BeamLimitingDevicePositionSequence must be a list of BeamLimitingDevicePositionSequenceItem objects"
             )
         else:
             self._BeamLimitingDevicePositionSequence = value
@@ -292,7 +292,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_BeamLimitingDevicePosition(self, item: BeamLimitingDevicePositionSequenceItem):
         if not isinstance(item, BeamLimitingDevicePositionSequenceItem):
-            raise ValueError(f"Item must be an instance of BeamLimitingDevicePositionSequenceItem")
+            raise ValueError("Item must be an instance of BeamLimitingDevicePositionSequenceItem")
         self._BeamLimitingDevicePositionSequence.append(item)
         if "BeamLimitingDevicePositionSequence" not in self._dataset:
             self._dataset.BeamLimitingDevicePositionSequence = pydicom.Sequence()
@@ -566,7 +566,7 @@ class IonControlPointDeliverySequenceItem:
             if "RangeShifterSettingsSequence" in self._dataset:
                 del self._dataset.RangeShifterSettingsSequence
         elif not isinstance(value, list) or not all(isinstance(item, RangeShifterSettingsSequenceItem) for item in value):
-            raise ValueError(f"RangeShifterSettingsSequence must be a list of RangeShifterSettingsSequenceItem objects")
+            raise ValueError("RangeShifterSettingsSequence must be a list of RangeShifterSettingsSequenceItem objects")
         else:
             self._RangeShifterSettingsSequence = value
             if "RangeShifterSettingsSequence" not in self._dataset:
@@ -576,7 +576,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_RangeShifterSettings(self, item: RangeShifterSettingsSequenceItem):
         if not isinstance(item, RangeShifterSettingsSequenceItem):
-            raise ValueError(f"Item must be an instance of RangeShifterSettingsSequenceItem")
+            raise ValueError("Item must be an instance of RangeShifterSettingsSequenceItem")
         self._RangeShifterSettingsSequence.append(item)
         if "RangeShifterSettingsSequence" not in self._dataset:
             self._dataset.RangeShifterSettingsSequence = pydicom.Sequence()
@@ -603,7 +603,7 @@ class IonControlPointDeliverySequenceItem:
             isinstance(item, LateralSpreadingDeviceSettingsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"LateralSpreadingDeviceSettingsSequence must be a list of LateralSpreadingDeviceSettingsSequenceItem objects"
+                "LateralSpreadingDeviceSettingsSequence must be a list of LateralSpreadingDeviceSettingsSequenceItem objects"
             )
         else:
             self._LateralSpreadingDeviceSettingsSequence = value
@@ -614,7 +614,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_LateralSpreadingDeviceSettings(self, item: LateralSpreadingDeviceSettingsSequenceItem):
         if not isinstance(item, LateralSpreadingDeviceSettingsSequenceItem):
-            raise ValueError(f"Item must be an instance of LateralSpreadingDeviceSettingsSequenceItem")
+            raise ValueError("Item must be an instance of LateralSpreadingDeviceSettingsSequenceItem")
         self._LateralSpreadingDeviceSettingsSequence.append(item)
         if "LateralSpreadingDeviceSettingsSequence" not in self._dataset:
             self._dataset.LateralSpreadingDeviceSettingsSequence = pydicom.Sequence()
@@ -636,7 +636,7 @@ class IonControlPointDeliverySequenceItem:
             if "RangeModulatorSettingsSequence" in self._dataset:
                 del self._dataset.RangeModulatorSettingsSequence
         elif not isinstance(value, list) or not all(isinstance(item, RangeModulatorSettingsSequenceItem) for item in value):
-            raise ValueError(f"RangeModulatorSettingsSequence must be a list of RangeModulatorSettingsSequenceItem objects")
+            raise ValueError("RangeModulatorSettingsSequence must be a list of RangeModulatorSettingsSequenceItem objects")
         else:
             self._RangeModulatorSettingsSequence = value
             if "RangeModulatorSettingsSequence" not in self._dataset:
@@ -646,7 +646,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_RangeModulatorSettings(self, item: RangeModulatorSettingsSequenceItem):
         if not isinstance(item, RangeModulatorSettingsSequenceItem):
-            raise ValueError(f"Item must be an instance of RangeModulatorSettingsSequenceItem")
+            raise ValueError("Item must be an instance of RangeModulatorSettingsSequenceItem")
         self._RangeModulatorSettingsSequence.append(item)
         if "RangeModulatorSettingsSequence" not in self._dataset:
             self._dataset.RangeModulatorSettingsSequence = pydicom.Sequence()
@@ -780,7 +780,7 @@ class IonControlPointDeliverySequenceItem:
             if "IonWedgePositionSequence" in self._dataset:
                 del self._dataset.IonWedgePositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, IonWedgePositionSequenceItem) for item in value):
-            raise ValueError(f"IonWedgePositionSequence must be a list of IonWedgePositionSequenceItem objects")
+            raise ValueError("IonWedgePositionSequence must be a list of IonWedgePositionSequenceItem objects")
         else:
             self._IonWedgePositionSequence = value
             if "IonWedgePositionSequence" not in self._dataset:
@@ -790,7 +790,7 @@ class IonControlPointDeliverySequenceItem:
 
     def add_IonWedgePosition(self, item: IonWedgePositionSequenceItem):
         if not isinstance(item, IonWedgePositionSequenceItem):
-            raise ValueError(f"Item must be an instance of IonWedgePositionSequenceItem")
+            raise ValueError("Item must be an instance of IonWedgePositionSequenceItem")
         self._IonWedgePositionSequence.append(item)
         if "IonWedgePositionSequence" not in self._dataset:
             self._dataset.IonWedgePositionSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,8 @@ class RTImageFrameRadiationAcquisitionSequenceItem:
             isinstance(item, RTImageFramekVRadiationAcquisitionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTImageFramekVRadiationAcquisitionSequence must be a list of RTImageFramekVRadiationAcquisitionSequenceItem objects"
+                "RTImageFramekVRadiationAcquisitionSequence must be a list of RTImageFramekVRadiationAcquisitionSequenceItem"
+                " objects"
             )
         else:
             self._RTImageFramekVRadiationAcquisitionSequence = value
@@ -56,7 +57,7 @@ class RTImageFrameRadiationAcquisitionSequenceItem:
 
     def add_RTImageFramekVRadiationAcquisition(self, item: RTImageFramekVRadiationAcquisitionSequenceItem):
         if not isinstance(item, RTImageFramekVRadiationAcquisitionSequenceItem):
-            raise ValueError(f"Item must be an instance of RTImageFramekVRadiationAcquisitionSequenceItem")
+            raise ValueError("Item must be an instance of RTImageFramekVRadiationAcquisitionSequenceItem")
         self._RTImageFramekVRadiationAcquisitionSequence.append(item)
         if "RTImageFramekVRadiationAcquisitionSequence" not in self._dataset:
             self._dataset.RTImageFramekVRadiationAcquisitionSequence = pydicom.Sequence()
@@ -88,7 +89,8 @@ class RTImageFrameRadiationAcquisitionSequenceItem:
             isinstance(item, RTImageFrameMVRadiationAcquisitionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTImageFrameMVRadiationAcquisitionSequence must be a list of RTImageFrameMVRadiationAcquisitionSequenceItem objects"
+                "RTImageFrameMVRadiationAcquisitionSequence must be a list of RTImageFrameMVRadiationAcquisitionSequenceItem"
+                " objects"
             )
         else:
             self._RTImageFrameMVRadiationAcquisitionSequence = value
@@ -99,7 +101,7 @@ class RTImageFrameRadiationAcquisitionSequenceItem:
 
     def add_RTImageFrameMVRadiationAcquisition(self, item: RTImageFrameMVRadiationAcquisitionSequenceItem):
         if not isinstance(item, RTImageFrameMVRadiationAcquisitionSequenceItem):
-            raise ValueError(f"Item must be an instance of RTImageFrameMVRadiationAcquisitionSequenceItem")
+            raise ValueError("Item must be an instance of RTImageFrameMVRadiationAcquisitionSequenceItem")
         self._RTImageFrameMVRadiationAcquisitionSequence.append(item)
         if "RTImageFrameMVRadiationAcquisitionSequence" not in self._dataset:
             self._dataset.RTImageFrameMVRadiationAcquisitionSequence = pydicom.Sequence()

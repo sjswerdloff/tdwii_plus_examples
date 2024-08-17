@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -73,7 +73,7 @@ class EnhancedRTBeamLimitingOpeningSequenceItem:
             if "RTBeamDelimiterGeometrySequence" in self._dataset:
                 del self._dataset.RTBeamDelimiterGeometrySequence
         elif not isinstance(value, list) or not all(isinstance(item, RTBeamDelimiterGeometrySequenceItem) for item in value):
-            raise ValueError(f"RTBeamDelimiterGeometrySequence must be a list of RTBeamDelimiterGeometrySequenceItem objects")
+            raise ValueError("RTBeamDelimiterGeometrySequence must be a list of RTBeamDelimiterGeometrySequenceItem objects")
         else:
             self._RTBeamDelimiterGeometrySequence = value
             if "RTBeamDelimiterGeometrySequence" not in self._dataset:
@@ -83,7 +83,7 @@ class EnhancedRTBeamLimitingOpeningSequenceItem:
 
     def add_RTBeamDelimiterGeometry(self, item: RTBeamDelimiterGeometrySequenceItem):
         if not isinstance(item, RTBeamDelimiterGeometrySequenceItem):
-            raise ValueError(f"Item must be an instance of RTBeamDelimiterGeometrySequenceItem")
+            raise ValueError("Item must be an instance of RTBeamDelimiterGeometrySequenceItem")
         self._RTBeamDelimiterGeometrySequence.append(item)
         if "RTBeamDelimiterGeometrySequence" not in self._dataset:
             self._dataset.RTBeamDelimiterGeometrySequence = pydicom.Sequence()

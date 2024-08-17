@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -46,7 +46,7 @@ class StructuredDisplayImageBoxSequenceItem:
             isinstance(item, ReferencedStereometricInstanceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedStereometricInstanceSequence must be a list of ReferencedStereometricInstanceSequenceItem objects"
+                "ReferencedStereometricInstanceSequence must be a list of ReferencedStereometricInstanceSequenceItem objects"
             )
         else:
             self._ReferencedStereometricInstanceSequence = value
@@ -57,7 +57,7 @@ class StructuredDisplayImageBoxSequenceItem:
 
     def add_ReferencedStereometricInstance(self, item: ReferencedStereometricInstanceSequenceItem):
         if not isinstance(item, ReferencedStereometricInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedStereometricInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedStereometricInstanceSequenceItem")
         self._ReferencedStereometricInstanceSequence.append(item)
         if "ReferencedStereometricInstanceSequence" not in self._dataset:
             self._dataset.ReferencedStereometricInstanceSequence = pydicom.Sequence()
@@ -79,7 +79,7 @@ class StructuredDisplayImageBoxSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -89,7 +89,7 @@ class StructuredDisplayImageBoxSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -111,7 +111,7 @@ class StructuredDisplayImageBoxSequenceItem:
             if "ReferencedInstanceSequence" in self._dataset:
                 del self._dataset.ReferencedInstanceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedInstanceSequenceItem) for item in value):
-            raise ValueError(f"ReferencedInstanceSequence must be a list of ReferencedInstanceSequenceItem objects")
+            raise ValueError("ReferencedInstanceSequence must be a list of ReferencedInstanceSequenceItem objects")
         else:
             self._ReferencedInstanceSequence = value
             if "ReferencedInstanceSequence" not in self._dataset:
@@ -121,7 +121,7 @@ class StructuredDisplayImageBoxSequenceItem:
 
     def add_ReferencedInstance(self, item: ReferencedInstanceSequenceItem):
         if not isinstance(item, ReferencedInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedInstanceSequenceItem")
         self._ReferencedInstanceSequence.append(item)
         if "ReferencedInstanceSequence" not in self._dataset:
             self._dataset.ReferencedInstanceSequence = pydicom.Sequence()
@@ -188,7 +188,7 @@ class StructuredDisplayImageBoxSequenceItem:
             isinstance(item, ReferencedPresentationStateSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPresentationStateSequence must be a list of ReferencedPresentationStateSequenceItem objects"
+                "ReferencedPresentationStateSequence must be a list of ReferencedPresentationStateSequenceItem objects"
             )
         else:
             self._ReferencedPresentationStateSequence = value
@@ -199,7 +199,7 @@ class StructuredDisplayImageBoxSequenceItem:
 
     def add_ReferencedPresentationState(self, item: ReferencedPresentationStateSequenceItem):
         if not isinstance(item, ReferencedPresentationStateSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPresentationStateSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPresentationStateSequenceItem")
         self._ReferencedPresentationStateSequence.append(item)
         if "ReferencedPresentationStateSequence" not in self._dataset:
             self._dataset.ReferencedPresentationStateSequence = pydicom.Sequence()
@@ -347,7 +347,7 @@ class StructuredDisplayImageBoxSequenceItem:
             if "ReferencedFirstFrameSequence" in self._dataset:
                 del self._dataset.ReferencedFirstFrameSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedFirstFrameSequenceItem) for item in value):
-            raise ValueError(f"ReferencedFirstFrameSequence must be a list of ReferencedFirstFrameSequenceItem objects")
+            raise ValueError("ReferencedFirstFrameSequence must be a list of ReferencedFirstFrameSequenceItem objects")
         else:
             self._ReferencedFirstFrameSequence = value
             if "ReferencedFirstFrameSequence" not in self._dataset:
@@ -357,7 +357,7 @@ class StructuredDisplayImageBoxSequenceItem:
 
     def add_ReferencedFirstFrame(self, item: ReferencedFirstFrameSequenceItem):
         if not isinstance(item, ReferencedFirstFrameSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedFirstFrameSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedFirstFrameSequenceItem")
         self._ReferencedFirstFrameSequence.append(item)
         if "ReferencedFirstFrameSequence" not in self._dataset:
             self._dataset.ReferencedFirstFrameSequence = pydicom.Sequence()

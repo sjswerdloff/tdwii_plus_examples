@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
             if "FrameContentSequence" in self._dataset:
                 del self._dataset.FrameContentSequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameContentSequenceItem) for item in value):
-            raise ValueError(f"FrameContentSequence must be a list of FrameContentSequenceItem objects")
+            raise ValueError("FrameContentSequence must be a list of FrameContentSequenceItem objects")
         else:
             self._FrameContentSequence = value
             if "FrameContentSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
 
     def add_FrameContent(self, item: FrameContentSequenceItem):
         if not isinstance(item, FrameContentSequenceItem):
-            raise ValueError(f"Item must be an instance of FrameContentSequenceItem")
+            raise ValueError("Item must be an instance of FrameContentSequenceItem")
         self._FrameContentSequence.append(item)
         if "FrameContentSequence" not in self._dataset:
             self._dataset.FrameContentSequence = pydicom.Sequence()
@@ -67,7 +67,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
             if "FrameUsefulnessGroupSequence" in self._dataset:
                 del self._dataset.FrameUsefulnessGroupSequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameUsefulnessGroupSequenceItem) for item in value):
-            raise ValueError(f"FrameUsefulnessGroupSequence must be a list of FrameUsefulnessGroupSequenceItem objects")
+            raise ValueError("FrameUsefulnessGroupSequence must be a list of FrameUsefulnessGroupSequenceItem objects")
         else:
             self._FrameUsefulnessGroupSequence = value
             if "FrameUsefulnessGroupSequence" not in self._dataset:
@@ -77,7 +77,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
 
     def add_FrameUsefulnessGroup(self, item: FrameUsefulnessGroupSequenceItem):
         if not isinstance(item, FrameUsefulnessGroupSequenceItem):
-            raise ValueError(f"Item must be an instance of FrameUsefulnessGroupSequenceItem")
+            raise ValueError("Item must be an instance of FrameUsefulnessGroupSequenceItem")
         self._FrameUsefulnessGroupSequence.append(item)
         if "FrameUsefulnessGroupSequence" not in self._dataset:
             self._dataset.FrameUsefulnessGroupSequence = pydicom.Sequence()
@@ -99,7 +99,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
             if "CameraPositionGroupSequence" in self._dataset:
                 del self._dataset.CameraPositionGroupSequence
         elif not isinstance(value, list) or not all(isinstance(item, CameraPositionGroupSequenceItem) for item in value):
-            raise ValueError(f"CameraPositionGroupSequence must be a list of CameraPositionGroupSequenceItem objects")
+            raise ValueError("CameraPositionGroupSequence must be a list of CameraPositionGroupSequenceItem objects")
         else:
             self._CameraPositionGroupSequence = value
             if "CameraPositionGroupSequence" not in self._dataset:
@@ -109,7 +109,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
 
     def add_CameraPositionGroup(self, item: CameraPositionGroupSequenceItem):
         if not isinstance(item, CameraPositionGroupSequenceItem):
-            raise ValueError(f"Item must be an instance of CameraPositionGroupSequenceItem")
+            raise ValueError("Item must be an instance of CameraPositionGroupSequenceItem")
         self._CameraPositionGroupSequence.append(item)
         if "CameraPositionGroupSequence" not in self._dataset:
             self._dataset.CameraPositionGroupSequence = pydicom.Sequence()
@@ -131,7 +131,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
             if "TimeOfFrameGroupSequence" in self._dataset:
                 del self._dataset.TimeOfFrameGroupSequence
         elif not isinstance(value, list) or not all(isinstance(item, TimeOfFrameGroupSequenceItem) for item in value):
-            raise ValueError(f"TimeOfFrameGroupSequence must be a list of TimeOfFrameGroupSequenceItem objects")
+            raise ValueError("TimeOfFrameGroupSequence must be a list of TimeOfFrameGroupSequenceItem objects")
         else:
             self._TimeOfFrameGroupSequence = value
             if "TimeOfFrameGroupSequence" not in self._dataset:
@@ -141,7 +141,7 @@ class CurrentFrameFunctionalGroupsSequenceItem:
 
     def add_TimeOfFrameGroup(self, item: TimeOfFrameGroupSequenceItem):
         if not isinstance(item, TimeOfFrameGroupSequenceItem):
-            raise ValueError(f"Item must be an instance of TimeOfFrameGroupSequenceItem")
+            raise ValueError("Item must be an instance of TimeOfFrameGroupSequenceItem")
         self._TimeOfFrameGroupSequence.append(item)
         if "TimeOfFrameGroupSequence" not in self._dataset:
             self._dataset.TimeOfFrameGroupSequence = pydicom.Sequence()

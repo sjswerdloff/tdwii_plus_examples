@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -128,7 +128,7 @@ class DVHSequenceItem:
             if "DVHReferencedROISequence" in self._dataset:
                 del self._dataset.DVHReferencedROISequence
         elif not isinstance(value, list) or not all(isinstance(item, DVHReferencedROISequenceItem) for item in value):
-            raise ValueError(f"DVHReferencedROISequence must be a list of DVHReferencedROISequenceItem objects")
+            raise ValueError("DVHReferencedROISequence must be a list of DVHReferencedROISequenceItem objects")
         else:
             self._DVHReferencedROISequence = value
             if "DVHReferencedROISequence" not in self._dataset:
@@ -138,7 +138,7 @@ class DVHSequenceItem:
 
     def add_DVHReferencedROI(self, item: DVHReferencedROISequenceItem):
         if not isinstance(item, DVHReferencedROISequenceItem):
-            raise ValueError(f"Item must be an instance of DVHReferencedROISequenceItem")
+            raise ValueError("Item must be an instance of DVHReferencedROISequenceItem")
         self._DVHReferencedROISequence.append(item)
         if "DVHReferencedROISequence" not in self._dataset:
             self._dataset.DVHReferencedROISequence = pydicom.Sequence()

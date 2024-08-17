@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class FractionGroupSummarySequenceItem:
             if "FractionStatusSummarySequence" in self._dataset:
                 del self._dataset.FractionStatusSummarySequence
         elif not isinstance(value, list) or not all(isinstance(item, FractionStatusSummarySequenceItem) for item in value):
-            raise ValueError(f"FractionStatusSummarySequence must be a list of FractionStatusSummarySequenceItem objects")
+            raise ValueError("FractionStatusSummarySequence must be a list of FractionStatusSummarySequenceItem objects")
         else:
             self._FractionStatusSummarySequence = value
             if "FractionStatusSummarySequence" not in self._dataset:
@@ -67,7 +67,7 @@ class FractionGroupSummarySequenceItem:
 
     def add_FractionStatusSummary(self, item: FractionStatusSummarySequenceItem):
         if not isinstance(item, FractionStatusSummarySequenceItem):
-            raise ValueError(f"Item must be an instance of FractionStatusSummarySequenceItem")
+            raise ValueError("Item must be an instance of FractionStatusSummarySequenceItem")
         self._FractionStatusSummarySequence.append(item)
         if "FractionStatusSummarySequence" not in self._dataset:
             self._dataset.FractionStatusSummarySequence = pydicom.Sequence()

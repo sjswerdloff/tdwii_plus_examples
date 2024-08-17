@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -157,7 +157,7 @@ class GraphicObjectSequenceItem:
             if "LineStyleSequence" in self._dataset:
                 del self._dataset.LineStyleSequence
         elif not isinstance(value, list) or not all(isinstance(item, LineStyleSequenceItem) for item in value):
-            raise ValueError(f"LineStyleSequence must be a list of LineStyleSequenceItem objects")
+            raise ValueError("LineStyleSequence must be a list of LineStyleSequenceItem objects")
         else:
             self._LineStyleSequence = value
             if "LineStyleSequence" not in self._dataset:
@@ -167,7 +167,7 @@ class GraphicObjectSequenceItem:
 
     def add_LineStyle(self, item: LineStyleSequenceItem):
         if not isinstance(item, LineStyleSequenceItem):
-            raise ValueError(f"Item must be an instance of LineStyleSequenceItem")
+            raise ValueError("Item must be an instance of LineStyleSequenceItem")
         self._LineStyleSequence.append(item)
         if "LineStyleSequence" not in self._dataset:
             self._dataset.LineStyleSequence = pydicom.Sequence()
@@ -189,7 +189,7 @@ class GraphicObjectSequenceItem:
             if "FillStyleSequence" in self._dataset:
                 del self._dataset.FillStyleSequence
         elif not isinstance(value, list) or not all(isinstance(item, FillStyleSequenceItem) for item in value):
-            raise ValueError(f"FillStyleSequence must be a list of FillStyleSequenceItem objects")
+            raise ValueError("FillStyleSequence must be a list of FillStyleSequenceItem objects")
         else:
             self._FillStyleSequence = value
             if "FillStyleSequence" not in self._dataset:
@@ -199,7 +199,7 @@ class GraphicObjectSequenceItem:
 
     def add_FillStyle(self, item: FillStyleSequenceItem):
         if not isinstance(item, FillStyleSequenceItem):
-            raise ValueError(f"Item must be an instance of FillStyleSequenceItem")
+            raise ValueError("Item must be an instance of FillStyleSequenceItem")
         self._FillStyleSequence.append(item)
         if "FillStyleSequence" not in self._dataset:
             self._dataset.FillStyleSequence = pydicom.Sequence()

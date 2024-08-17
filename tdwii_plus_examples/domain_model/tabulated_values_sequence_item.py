@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -61,7 +61,7 @@ class TabulatedValuesSequenceItem:
             if "TableRowDefinitionSequence" in self._dataset:
                 del self._dataset.TableRowDefinitionSequence
         elif not isinstance(value, list) or not all(isinstance(item, TableRowDefinitionSequenceItem) for item in value):
-            raise ValueError(f"TableRowDefinitionSequence must be a list of TableRowDefinitionSequenceItem objects")
+            raise ValueError("TableRowDefinitionSequence must be a list of TableRowDefinitionSequenceItem objects")
         else:
             self._TableRowDefinitionSequence = value
             if "TableRowDefinitionSequence" not in self._dataset:
@@ -71,7 +71,7 @@ class TabulatedValuesSequenceItem:
 
     def add_TableRowDefinition(self, item: TableRowDefinitionSequenceItem):
         if not isinstance(item, TableRowDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of TableRowDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of TableRowDefinitionSequenceItem")
         self._TableRowDefinitionSequence.append(item)
         if "TableRowDefinitionSequence" not in self._dataset:
             self._dataset.TableRowDefinitionSequence = pydicom.Sequence()
@@ -93,7 +93,7 @@ class TabulatedValuesSequenceItem:
             if "TableColumnDefinitionSequence" in self._dataset:
                 del self._dataset.TableColumnDefinitionSequence
         elif not isinstance(value, list) or not all(isinstance(item, TableColumnDefinitionSequenceItem) for item in value):
-            raise ValueError(f"TableColumnDefinitionSequence must be a list of TableColumnDefinitionSequenceItem objects")
+            raise ValueError("TableColumnDefinitionSequence must be a list of TableColumnDefinitionSequenceItem objects")
         else:
             self._TableColumnDefinitionSequence = value
             if "TableColumnDefinitionSequence" not in self._dataset:
@@ -103,7 +103,7 @@ class TabulatedValuesSequenceItem:
 
     def add_TableColumnDefinition(self, item: TableColumnDefinitionSequenceItem):
         if not isinstance(item, TableColumnDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of TableColumnDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of TableColumnDefinitionSequenceItem")
         self._TableColumnDefinitionSequence.append(item)
         if "TableColumnDefinitionSequence" not in self._dataset:
             self._dataset.TableColumnDefinitionSequence = pydicom.Sequence()
@@ -125,7 +125,7 @@ class TabulatedValuesSequenceItem:
             if "CellValuesSequence" in self._dataset:
                 del self._dataset.CellValuesSequence
         elif not isinstance(value, list) or not all(isinstance(item, CellValuesSequenceItem) for item in value):
-            raise ValueError(f"CellValuesSequence must be a list of CellValuesSequenceItem objects")
+            raise ValueError("CellValuesSequence must be a list of CellValuesSequenceItem objects")
         else:
             self._CellValuesSequence = value
             if "CellValuesSequence" not in self._dataset:
@@ -135,7 +135,7 @@ class TabulatedValuesSequenceItem:
 
     def add_CellValues(self, item: CellValuesSequenceItem):
         if not isinstance(item, CellValuesSequenceItem):
-            raise ValueError(f"Item must be an instance of CellValuesSequenceItem")
+            raise ValueError("Item must be an instance of CellValuesSequenceItem")
         self._CellValuesSequence.append(item)
         if "CellValuesSequence" not in self._dataset:
             self._dataset.CellValuesSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -94,7 +94,7 @@ class ResultsNormalsSequenceItem:
             isinstance(item, GlobalDeviationProbabilitySequenceItem) for item in value
         ):
             raise ValueError(
-                f"GlobalDeviationProbabilitySequence must be a list of GlobalDeviationProbabilitySequenceItem objects"
+                "GlobalDeviationProbabilitySequence must be a list of GlobalDeviationProbabilitySequenceItem objects"
             )
         else:
             self._GlobalDeviationProbabilitySequence = value
@@ -105,7 +105,7 @@ class ResultsNormalsSequenceItem:
 
     def add_GlobalDeviationProbability(self, item: GlobalDeviationProbabilitySequenceItem):
         if not isinstance(item, GlobalDeviationProbabilitySequenceItem):
-            raise ValueError(f"Item must be an instance of GlobalDeviationProbabilitySequenceItem")
+            raise ValueError("Item must be an instance of GlobalDeviationProbabilitySequenceItem")
         self._GlobalDeviationProbabilitySequence.append(item)
         if "GlobalDeviationProbabilitySequence" not in self._dataset:
             self._dataset.GlobalDeviationProbabilitySequence = pydicom.Sequence()
@@ -132,7 +132,7 @@ class ResultsNormalsSequenceItem:
             isinstance(item, LocalizedDeviationProbabilitySequenceItem) for item in value
         ):
             raise ValueError(
-                f"LocalizedDeviationProbabilitySequence must be a list of LocalizedDeviationProbabilitySequenceItem objects"
+                "LocalizedDeviationProbabilitySequence must be a list of LocalizedDeviationProbabilitySequenceItem objects"
             )
         else:
             self._LocalizedDeviationProbabilitySequence = value
@@ -143,7 +143,7 @@ class ResultsNormalsSequenceItem:
 
     def add_LocalizedDeviationProbability(self, item: LocalizedDeviationProbabilitySequenceItem):
         if not isinstance(item, LocalizedDeviationProbabilitySequenceItem):
-            raise ValueError(f"Item must be an instance of LocalizedDeviationProbabilitySequenceItem")
+            raise ValueError("Item must be an instance of LocalizedDeviationProbabilitySequenceItem")
         self._LocalizedDeviationProbabilitySequence.append(item)
         if "LocalizedDeviationProbabilitySequence" not in self._dataset:
             self._dataset.LocalizedDeviationProbabilitySequence = pydicom.Sequence()

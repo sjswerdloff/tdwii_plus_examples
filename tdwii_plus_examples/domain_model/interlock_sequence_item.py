@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -67,7 +67,7 @@ class InterlockSequenceItem:
             isinstance(item, InterlockOriginatingDeviceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"InterlockOriginatingDeviceSequence must be a list of InterlockOriginatingDeviceSequenceItem objects"
+                "InterlockOriginatingDeviceSequence must be a list of InterlockOriginatingDeviceSequenceItem objects"
             )
         else:
             self._InterlockOriginatingDeviceSequence = value
@@ -78,7 +78,7 @@ class InterlockSequenceItem:
 
     def add_InterlockOriginatingDevice(self, item: InterlockOriginatingDeviceSequenceItem):
         if not isinstance(item, InterlockOriginatingDeviceSequenceItem):
-            raise ValueError(f"Item must be an instance of InterlockOriginatingDeviceSequenceItem")
+            raise ValueError("Item must be an instance of InterlockOriginatingDeviceSequenceItem")
         self._InterlockOriginatingDeviceSequence.append(item)
         if "InterlockOriginatingDeviceSequence" not in self._dataset:
             self._dataset.InterlockOriginatingDeviceSequence = pydicom.Sequence()
@@ -100,7 +100,7 @@ class InterlockSequenceItem:
             if "InterlockCodeSequence" in self._dataset:
                 del self._dataset.InterlockCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InterlockCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InterlockCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InterlockCodeSequence = value
             if "InterlockCodeSequence" not in self._dataset:
@@ -110,7 +110,7 @@ class InterlockSequenceItem:
 
     def add_InterlockCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InterlockCodeSequence.append(item)
         if "InterlockCodeSequence" not in self._dataset:
             self._dataset.InterlockCodeSequence = pydicom.Sequence()
@@ -132,7 +132,7 @@ class InterlockSequenceItem:
             if "InterlockResolutionCodeSequence" in self._dataset:
                 del self._dataset.InterlockResolutionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InterlockResolutionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InterlockResolutionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InterlockResolutionCodeSequence = value
             if "InterlockResolutionCodeSequence" not in self._dataset:
@@ -142,7 +142,7 @@ class InterlockSequenceItem:
 
     def add_InterlockResolutionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InterlockResolutionCodeSequence.append(item)
         if "InterlockResolutionCodeSequence" not in self._dataset:
             self._dataset.InterlockResolutionCodeSequence = pydicom.Sequence()
@@ -164,7 +164,7 @@ class InterlockSequenceItem:
             if "InterlockResolutionUserSequence" in self._dataset:
                 del self._dataset.InterlockResolutionUserSequence
         elif not isinstance(value, list) or not all(isinstance(item, InterlockResolutionUserSequenceItem) for item in value):
-            raise ValueError(f"InterlockResolutionUserSequence must be a list of InterlockResolutionUserSequenceItem objects")
+            raise ValueError("InterlockResolutionUserSequence must be a list of InterlockResolutionUserSequenceItem objects")
         else:
             self._InterlockResolutionUserSequence = value
             if "InterlockResolutionUserSequence" not in self._dataset:
@@ -174,7 +174,7 @@ class InterlockSequenceItem:
 
     def add_InterlockResolutionUser(self, item: InterlockResolutionUserSequenceItem):
         if not isinstance(item, InterlockResolutionUserSequenceItem):
-            raise ValueError(f"Item must be an instance of InterlockResolutionUserSequenceItem")
+            raise ValueError("Item must be an instance of InterlockResolutionUserSequenceItem")
         self._InterlockResolutionUserSequence.append(item)
         if "InterlockResolutionUserSequence" not in self._dataset:
             self._dataset.InterlockResolutionUserSequence = pydicom.Sequence()

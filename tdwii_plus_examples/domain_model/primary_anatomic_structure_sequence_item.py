@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -229,7 +229,7 @@ class PrimaryAnatomicStructureSequenceItem:
             if "EquivalentCodeSequence" in self._dataset:
                 del self._dataset.EquivalentCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"EquivalentCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("EquivalentCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._EquivalentCodeSequence = value
             if "EquivalentCodeSequence" not in self._dataset:
@@ -239,7 +239,7 @@ class PrimaryAnatomicStructureSequenceItem:
 
     def add_EquivalentCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._EquivalentCodeSequence.append(item)
         if "EquivalentCodeSequence" not in self._dataset:
             self._dataset.EquivalentCodeSequence = pydicom.Sequence()
@@ -283,7 +283,8 @@ class PrimaryAnatomicStructureSequenceItem:
             isinstance(item, PrimaryAnatomicStructureModifierSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PrimaryAnatomicStructureModifierSequence must be a list of PrimaryAnatomicStructureModifierSequenceItem objects"
+                "PrimaryAnatomicStructureModifierSequence must be a list of PrimaryAnatomicStructureModifierSequenceItem"
+                " objects"
             )
         else:
             self._PrimaryAnatomicStructureModifierSequence = value
@@ -294,7 +295,7 @@ class PrimaryAnatomicStructureSequenceItem:
 
     def add_PrimaryAnatomicStructureModifier(self, item: PrimaryAnatomicStructureModifierSequenceItem):
         if not isinstance(item, PrimaryAnatomicStructureModifierSequenceItem):
-            raise ValueError(f"Item must be an instance of PrimaryAnatomicStructureModifierSequenceItem")
+            raise ValueError("Item must be an instance of PrimaryAnatomicStructureModifierSequenceItem")
         self._PrimaryAnatomicStructureModifierSequence.append(item)
         if "PrimaryAnatomicStructureModifierSequence" not in self._dataset:
             self._dataset.PrimaryAnatomicStructureModifierSequence = pydicom.Sequence()

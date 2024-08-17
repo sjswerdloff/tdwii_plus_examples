@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -30,7 +30,7 @@ class PatientTreatmentOrientationSequenceItem:
             if "PatientOrientationCodeSequence" in self._dataset:
                 del self._dataset.PatientOrientationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientOrientationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientOrientationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientOrientationCodeSequence = value
             if "PatientOrientationCodeSequence" not in self._dataset:
@@ -40,7 +40,7 @@ class PatientTreatmentOrientationSequenceItem:
 
     def add_PatientOrientationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientOrientationCodeSequence.append(item)
         if "PatientOrientationCodeSequence" not in self._dataset:
             self._dataset.PatientOrientationCodeSequence = pydicom.Sequence()
@@ -64,7 +64,7 @@ class PatientTreatmentOrientationSequenceItem:
             if "PatientEquipmentRelationshipCodeSequence" in self._dataset:
                 del self._dataset.PatientEquipmentRelationshipCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientEquipmentRelationshipCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientEquipmentRelationshipCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientEquipmentRelationshipCodeSequence = value
             if "PatientEquipmentRelationshipCodeSequence" not in self._dataset:
@@ -74,7 +74,7 @@ class PatientTreatmentOrientationSequenceItem:
 
     def add_PatientEquipmentRelationshipCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientEquipmentRelationshipCodeSequence.append(item)
         if "PatientEquipmentRelationshipCodeSequence" not in self._dataset:
             self._dataset.PatientEquipmentRelationshipCodeSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -115,7 +115,7 @@ class MRArterialSpinLabelingSequenceItem:
             if "ASLBolusCutoffTimingSequence" in self._dataset:
                 del self._dataset.ASLBolusCutoffTimingSequence
         elif not isinstance(value, list) or not all(isinstance(item, ASLBolusCutoffTimingSequenceItem) for item in value):
-            raise ValueError(f"ASLBolusCutoffTimingSequence must be a list of ASLBolusCutoffTimingSequenceItem objects")
+            raise ValueError("ASLBolusCutoffTimingSequence must be a list of ASLBolusCutoffTimingSequenceItem objects")
         else:
             self._ASLBolusCutoffTimingSequence = value
             if "ASLBolusCutoffTimingSequence" not in self._dataset:
@@ -125,7 +125,7 @@ class MRArterialSpinLabelingSequenceItem:
 
     def add_ASLBolusCutoffTiming(self, item: ASLBolusCutoffTimingSequenceItem):
         if not isinstance(item, ASLBolusCutoffTimingSequenceItem):
-            raise ValueError(f"Item must be an instance of ASLBolusCutoffTimingSequenceItem")
+            raise ValueError("Item must be an instance of ASLBolusCutoffTimingSequenceItem")
         self._ASLBolusCutoffTimingSequence.append(item)
         if "ASLBolusCutoffTimingSequence" not in self._dataset:
             self._dataset.ASLBolusCutoffTimingSequence = pydicom.Sequence()
@@ -147,7 +147,7 @@ class MRArterialSpinLabelingSequenceItem:
             if "ASLSlabSequence" in self._dataset:
                 del self._dataset.ASLSlabSequence
         elif not isinstance(value, list) or not all(isinstance(item, ASLSlabSequenceItem) for item in value):
-            raise ValueError(f"ASLSlabSequence must be a list of ASLSlabSequenceItem objects")
+            raise ValueError("ASLSlabSequence must be a list of ASLSlabSequenceItem objects")
         else:
             self._ASLSlabSequence = value
             if "ASLSlabSequence" not in self._dataset:
@@ -157,7 +157,7 @@ class MRArterialSpinLabelingSequenceItem:
 
     def add_ASLSlab(self, item: ASLSlabSequenceItem):
         if not isinstance(item, ASLSlabSequenceItem):
-            raise ValueError(f"Item must be an instance of ASLSlabSequenceItem")
+            raise ValueError("Item must be an instance of ASLSlabSequenceItem")
         self._ASLSlabSequence.append(item)
         if "ASLSlabSequence" not in self._dataset:
             self._dataset.ASLSlabSequence = pydicom.Sequence()

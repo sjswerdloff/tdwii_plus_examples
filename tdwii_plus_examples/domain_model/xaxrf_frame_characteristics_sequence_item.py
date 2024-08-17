@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class XAXRFFrameCharacteristicsSequenceItem:
             if "DerivationCodeSequence" in self._dataset:
                 del self._dataset.DerivationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DerivationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DerivationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DerivationCodeSequence = value
             if "DerivationCodeSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class XAXRFFrameCharacteristicsSequenceItem:
 
     def add_DerivationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DerivationCodeSequence.append(item)
         if "DerivationCodeSequence" not in self._dataset:
             self._dataset.DerivationCodeSequence = pydicom.Sequence()

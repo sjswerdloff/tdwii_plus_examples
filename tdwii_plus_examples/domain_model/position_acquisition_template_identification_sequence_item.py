@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -59,7 +59,7 @@ class PositionAcquisitionTemplateIdentificationSequenceItem:
             if "PositionAcquisitionTemplateCodeSequence" in self._dataset:
                 del self._dataset.PositionAcquisitionTemplateCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PositionAcquisitionTemplateCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PositionAcquisitionTemplateCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PositionAcquisitionTemplateCodeSequence = value
             if "PositionAcquisitionTemplateCodeSequence" not in self._dataset:
@@ -69,7 +69,7 @@ class PositionAcquisitionTemplateIdentificationSequenceItem:
 
     def add_PositionAcquisitionTemplateCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PositionAcquisitionTemplateCodeSequence.append(item)
         if "PositionAcquisitionTemplateCodeSequence" not in self._dataset:
             self._dataset.PositionAcquisitionTemplateCodeSequence = pydicom.Sequence()

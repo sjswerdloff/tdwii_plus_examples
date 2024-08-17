@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -58,7 +58,7 @@ class ROIPhysicalPropertiesSequenceItem:
             if "ROIElementalCompositionSequence" in self._dataset:
                 del self._dataset.ROIElementalCompositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, ROIElementalCompositionSequenceItem) for item in value):
-            raise ValueError(f"ROIElementalCompositionSequence must be a list of ROIElementalCompositionSequenceItem objects")
+            raise ValueError("ROIElementalCompositionSequence must be a list of ROIElementalCompositionSequenceItem objects")
         else:
             self._ROIElementalCompositionSequence = value
             if "ROIElementalCompositionSequence" not in self._dataset:
@@ -68,7 +68,7 @@ class ROIPhysicalPropertiesSequenceItem:
 
     def add_ROIElementalComposition(self, item: ROIElementalCompositionSequenceItem):
         if not isinstance(item, ROIElementalCompositionSequenceItem):
-            raise ValueError(f"Item must be an instance of ROIElementalCompositionSequenceItem")
+            raise ValueError("Item must be an instance of ROIElementalCompositionSequenceItem")
         self._ROIElementalCompositionSequence.append(item)
         if "ROIElementalCompositionSequence" not in self._dataset:
             self._dataset.ROIElementalCompositionSequence = pydicom.Sequence()

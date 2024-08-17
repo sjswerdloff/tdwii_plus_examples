@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -74,7 +74,7 @@ class IssuerOfPatientIDQualifiersSequenceItem:
             if "AssigningFacilitySequence" in self._dataset:
                 del self._dataset.AssigningFacilitySequence
         elif not isinstance(value, list) or not all(isinstance(item, AssigningFacilitySequenceItem) for item in value):
-            raise ValueError(f"AssigningFacilitySequence must be a list of AssigningFacilitySequenceItem objects")
+            raise ValueError("AssigningFacilitySequence must be a list of AssigningFacilitySequenceItem objects")
         else:
             self._AssigningFacilitySequence = value
             if "AssigningFacilitySequence" not in self._dataset:
@@ -84,7 +84,7 @@ class IssuerOfPatientIDQualifiersSequenceItem:
 
     def add_AssigningFacility(self, item: AssigningFacilitySequenceItem):
         if not isinstance(item, AssigningFacilitySequenceItem):
-            raise ValueError(f"Item must be an instance of AssigningFacilitySequenceItem")
+            raise ValueError("Item must be an instance of AssigningFacilitySequenceItem")
         self._AssigningFacilitySequence.append(item)
         if "AssigningFacilitySequence" not in self._dataset:
             self._dataset.AssigningFacilitySequence = pydicom.Sequence()
@@ -106,7 +106,7 @@ class IssuerOfPatientIDQualifiersSequenceItem:
             if "AssigningJurisdictionCodeSequence" in self._dataset:
                 del self._dataset.AssigningJurisdictionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AssigningJurisdictionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AssigningJurisdictionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AssigningJurisdictionCodeSequence = value
             if "AssigningJurisdictionCodeSequence" not in self._dataset:
@@ -116,7 +116,7 @@ class IssuerOfPatientIDQualifiersSequenceItem:
 
     def add_AssigningJurisdictionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AssigningJurisdictionCodeSequence.append(item)
         if "AssigningJurisdictionCodeSequence" not in self._dataset:
             self._dataset.AssigningJurisdictionCodeSequence = pydicom.Sequence()
@@ -140,7 +140,7 @@ class IssuerOfPatientIDQualifiersSequenceItem:
             if "AssigningAgencyOrDepartmentCodeSequence" in self._dataset:
                 del self._dataset.AssigningAgencyOrDepartmentCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AssigningAgencyOrDepartmentCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AssigningAgencyOrDepartmentCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AssigningAgencyOrDepartmentCodeSequence = value
             if "AssigningAgencyOrDepartmentCodeSequence" not in self._dataset:
@@ -150,7 +150,7 @@ class IssuerOfPatientIDQualifiersSequenceItem:
 
     def add_AssigningAgencyOrDepartmentCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AssigningAgencyOrDepartmentCodeSequence.append(item)
         if "AssigningAgencyOrDepartmentCodeSequence" not in self._dataset:
             self._dataset.AssigningAgencyOrDepartmentCodeSequence = pydicom.Sequence()

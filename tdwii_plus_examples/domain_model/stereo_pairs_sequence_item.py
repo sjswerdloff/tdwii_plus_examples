@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -101,7 +101,7 @@ class StereoPairsSequenceItem:
             if "LeftImageSequence" in self._dataset:
                 del self._dataset.LeftImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, LeftImageSequenceItem) for item in value):
-            raise ValueError(f"LeftImageSequence must be a list of LeftImageSequenceItem objects")
+            raise ValueError("LeftImageSequence must be a list of LeftImageSequenceItem objects")
         else:
             self._LeftImageSequence = value
             if "LeftImageSequence" not in self._dataset:
@@ -111,7 +111,7 @@ class StereoPairsSequenceItem:
 
     def add_LeftImage(self, item: LeftImageSequenceItem):
         if not isinstance(item, LeftImageSequenceItem):
-            raise ValueError(f"Item must be an instance of LeftImageSequenceItem")
+            raise ValueError("Item must be an instance of LeftImageSequenceItem")
         self._LeftImageSequence.append(item)
         if "LeftImageSequence" not in self._dataset:
             self._dataset.LeftImageSequence = pydicom.Sequence()
@@ -133,7 +133,7 @@ class StereoPairsSequenceItem:
             if "RightImageSequence" in self._dataset:
                 del self._dataset.RightImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, RightImageSequenceItem) for item in value):
-            raise ValueError(f"RightImageSequence must be a list of RightImageSequenceItem objects")
+            raise ValueError("RightImageSequence must be a list of RightImageSequenceItem objects")
         else:
             self._RightImageSequence = value
             if "RightImageSequence" not in self._dataset:
@@ -143,7 +143,7 @@ class StereoPairsSequenceItem:
 
     def add_RightImage(self, item: RightImageSequenceItem):
         if not isinstance(item, RightImageSequenceItem):
-            raise ValueError(f"Item must be an instance of RightImageSequenceItem")
+            raise ValueError("Item must be an instance of RightImageSequenceItem")
         self._RightImageSequence.append(item)
         if "RightImageSequence" not in self._dataset:
             self._dataset.RightImageSequence = pydicom.Sequence()

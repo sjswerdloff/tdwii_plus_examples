@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -132,7 +132,7 @@ class RadiopharmaceuticalInformationSequenceItem:
             if "RadionuclideCodeSequence" in self._dataset:
                 del self._dataset.RadionuclideCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RadionuclideCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RadionuclideCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RadionuclideCodeSequence = value
             if "RadionuclideCodeSequence" not in self._dataset:
@@ -142,7 +142,7 @@ class RadiopharmaceuticalInformationSequenceItem:
 
     def add_RadionuclideCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RadionuclideCodeSequence.append(item)
         if "RadionuclideCodeSequence" not in self._dataset:
             self._dataset.RadionuclideCodeSequence = pydicom.Sequence()
@@ -164,7 +164,7 @@ class RadiopharmaceuticalInformationSequenceItem:
             if "AdministrationRouteCodeSequence" in self._dataset:
                 del self._dataset.AdministrationRouteCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AdministrationRouteCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AdministrationRouteCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AdministrationRouteCodeSequence = value
             if "AdministrationRouteCodeSequence" not in self._dataset:
@@ -174,7 +174,7 @@ class RadiopharmaceuticalInformationSequenceItem:
 
     def add_AdministrationRouteCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AdministrationRouteCodeSequence.append(item)
         if "AdministrationRouteCodeSequence" not in self._dataset:
             self._dataset.AdministrationRouteCodeSequence = pydicom.Sequence()
@@ -196,7 +196,7 @@ class RadiopharmaceuticalInformationSequenceItem:
             if "RadiopharmaceuticalCodeSequence" in self._dataset:
                 del self._dataset.RadiopharmaceuticalCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RadiopharmaceuticalCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RadiopharmaceuticalCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RadiopharmaceuticalCodeSequence = value
             if "RadiopharmaceuticalCodeSequence" not in self._dataset:
@@ -206,7 +206,7 @@ class RadiopharmaceuticalInformationSequenceItem:
 
     def add_RadiopharmaceuticalCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RadiopharmaceuticalCodeSequence.append(item)
         if "RadiopharmaceuticalCodeSequence" not in self._dataset:
             self._dataset.RadiopharmaceuticalCodeSequence = pydicom.Sequence()
@@ -228,7 +228,7 @@ class RadiopharmaceuticalInformationSequenceItem:
             if "CalibrationDataSequence" in self._dataset:
                 del self._dataset.CalibrationDataSequence
         elif not isinstance(value, list) or not all(isinstance(item, CalibrationDataSequenceItem) for item in value):
-            raise ValueError(f"CalibrationDataSequence must be a list of CalibrationDataSequenceItem objects")
+            raise ValueError("CalibrationDataSequence must be a list of CalibrationDataSequenceItem objects")
         else:
             self._CalibrationDataSequence = value
             if "CalibrationDataSequence" not in self._dataset:
@@ -238,7 +238,7 @@ class RadiopharmaceuticalInformationSequenceItem:
 
     def add_CalibrationData(self, item: CalibrationDataSequenceItem):
         if not isinstance(item, CalibrationDataSequenceItem):
-            raise ValueError(f"Item must be an instance of CalibrationDataSequenceItem")
+            raise ValueError("Item must be an instance of CalibrationDataSequenceItem")
         self._CalibrationDataSequence.append(item)
         if "CalibrationDataSequence" not in self._dataset:
             self._dataset.CalibrationDataSequence = pydicom.Sequence()

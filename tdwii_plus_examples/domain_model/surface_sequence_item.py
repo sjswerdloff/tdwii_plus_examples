@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -40,7 +40,7 @@ class SurfaceSequenceItem:
             if "SegmentedPropertyCategoryCodeSequence" in self._dataset:
                 del self._dataset.SegmentedPropertyCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SegmentedPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SegmentedPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SegmentedPropertyCategoryCodeSequence = value
             if "SegmentedPropertyCategoryCodeSequence" not in self._dataset:
@@ -50,7 +50,7 @@ class SurfaceSequenceItem:
 
     def add_SegmentedPropertyCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SegmentedPropertyCategoryCodeSequence.append(item)
         if "SegmentedPropertyCategoryCodeSequence" not in self._dataset:
             self._dataset.SegmentedPropertyCategoryCodeSequence = pydicom.Sequence()
@@ -100,7 +100,7 @@ class SurfaceSequenceItem:
             if "SegmentedPropertyTypeCodeSequence" in self._dataset:
                 del self._dataset.SegmentedPropertyTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SegmentedPropertyTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SegmentedPropertyTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SegmentedPropertyTypeCodeSequence = value
             if "SegmentedPropertyTypeCodeSequence" not in self._dataset:
@@ -110,7 +110,7 @@ class SurfaceSequenceItem:
 
     def add_SegmentedPropertyTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SegmentedPropertyTypeCodeSequence.append(item)
         if "SegmentedPropertyTypeCodeSequence" not in self._dataset:
             self._dataset.SegmentedPropertyTypeCodeSequence = pydicom.Sequence()
@@ -258,7 +258,7 @@ class SurfaceSequenceItem:
             if "SurfacePointsSequence" in self._dataset:
                 del self._dataset.SurfacePointsSequence
         elif not isinstance(value, list) or not all(isinstance(item, SurfacePointsSequenceItem) for item in value):
-            raise ValueError(f"SurfacePointsSequence must be a list of SurfacePointsSequenceItem objects")
+            raise ValueError("SurfacePointsSequence must be a list of SurfacePointsSequenceItem objects")
         else:
             self._SurfacePointsSequence = value
             if "SurfacePointsSequence" not in self._dataset:
@@ -268,7 +268,7 @@ class SurfaceSequenceItem:
 
     def add_SurfacePoints(self, item: SurfacePointsSequenceItem):
         if not isinstance(item, SurfacePointsSequenceItem):
-            raise ValueError(f"Item must be an instance of SurfacePointsSequenceItem")
+            raise ValueError("Item must be an instance of SurfacePointsSequenceItem")
         self._SurfacePointsSequence.append(item)
         if "SurfacePointsSequence" not in self._dataset:
             self._dataset.SurfacePointsSequence = pydicom.Sequence()
@@ -290,7 +290,7 @@ class SurfaceSequenceItem:
             if "SurfacePointsNormalsSequence" in self._dataset:
                 del self._dataset.SurfacePointsNormalsSequence
         elif not isinstance(value, list) or not all(isinstance(item, SurfacePointsNormalsSequenceItem) for item in value):
-            raise ValueError(f"SurfacePointsNormalsSequence must be a list of SurfacePointsNormalsSequenceItem objects")
+            raise ValueError("SurfacePointsNormalsSequence must be a list of SurfacePointsNormalsSequenceItem objects")
         else:
             self._SurfacePointsNormalsSequence = value
             if "SurfacePointsNormalsSequence" not in self._dataset:
@@ -300,7 +300,7 @@ class SurfaceSequenceItem:
 
     def add_SurfacePointsNormals(self, item: SurfacePointsNormalsSequenceItem):
         if not isinstance(item, SurfacePointsNormalsSequenceItem):
-            raise ValueError(f"Item must be an instance of SurfacePointsNormalsSequenceItem")
+            raise ValueError("Item must be an instance of SurfacePointsNormalsSequenceItem")
         self._SurfacePointsNormalsSequence.append(item)
         if "SurfacePointsNormalsSequence" not in self._dataset:
             self._dataset.SurfacePointsNormalsSequence = pydicom.Sequence()
@@ -322,7 +322,7 @@ class SurfaceSequenceItem:
             if "SurfaceMeshPrimitivesSequence" in self._dataset:
                 del self._dataset.SurfaceMeshPrimitivesSequence
         elif not isinstance(value, list) or not all(isinstance(item, SurfaceMeshPrimitivesSequenceItem) for item in value):
-            raise ValueError(f"SurfaceMeshPrimitivesSequence must be a list of SurfaceMeshPrimitivesSequenceItem objects")
+            raise ValueError("SurfaceMeshPrimitivesSequence must be a list of SurfaceMeshPrimitivesSequenceItem objects")
         else:
             self._SurfaceMeshPrimitivesSequence = value
             if "SurfaceMeshPrimitivesSequence" not in self._dataset:
@@ -332,7 +332,7 @@ class SurfaceSequenceItem:
 
     def add_SurfaceMeshPrimitives(self, item: SurfaceMeshPrimitivesSequenceItem):
         if not isinstance(item, SurfaceMeshPrimitivesSequenceItem):
-            raise ValueError(f"Item must be an instance of SurfaceMeshPrimitivesSequenceItem")
+            raise ValueError("Item must be an instance of SurfaceMeshPrimitivesSequenceItem")
         self._SurfaceMeshPrimitivesSequence.append(item)
         if "SurfaceMeshPrimitivesSequence" not in self._dataset:
             self._dataset.SurfaceMeshPrimitivesSequence = pydicom.Sequence()
@@ -366,7 +366,8 @@ class SurfaceSequenceItem:
             isinstance(item, SurfaceProcessingAlgorithmIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SurfaceProcessingAlgorithmIdentificationSequence must be a list of SurfaceProcessingAlgorithmIdentificationSequenceItem objects"
+                "SurfaceProcessingAlgorithmIdentificationSequence must be a list of"
+                " SurfaceProcessingAlgorithmIdentificationSequenceItem objects"
             )
         else:
             self._SurfaceProcessingAlgorithmIdentificationSequence = value
@@ -377,7 +378,7 @@ class SurfaceSequenceItem:
 
     def add_SurfaceProcessingAlgorithmIdentification(self, item: SurfaceProcessingAlgorithmIdentificationSequenceItem):
         if not isinstance(item, SurfaceProcessingAlgorithmIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of SurfaceProcessingAlgorithmIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of SurfaceProcessingAlgorithmIdentificationSequenceItem")
         self._SurfaceProcessingAlgorithmIdentificationSequence.append(item)
         if "SurfaceProcessingAlgorithmIdentificationSequence" not in self._dataset:
             self._dataset.SurfaceProcessingAlgorithmIdentificationSequence = pydicom.Sequence()

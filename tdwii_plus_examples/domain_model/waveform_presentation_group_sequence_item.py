@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class WaveformPresentationGroupSequenceItem:
             if "ChannelDisplaySequence" in self._dataset:
                 del self._dataset.ChannelDisplaySequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelDisplaySequenceItem) for item in value):
-            raise ValueError(f"ChannelDisplaySequence must be a list of ChannelDisplaySequenceItem objects")
+            raise ValueError("ChannelDisplaySequence must be a list of ChannelDisplaySequenceItem objects")
         else:
             self._ChannelDisplaySequence = value
             if "ChannelDisplaySequence" not in self._dataset:
@@ -53,7 +53,7 @@ class WaveformPresentationGroupSequenceItem:
 
     def add_ChannelDisplay(self, item: ChannelDisplaySequenceItem):
         if not isinstance(item, ChannelDisplaySequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelDisplaySequenceItem")
+            raise ValueError("Item must be an instance of ChannelDisplaySequenceItem")
         self._ChannelDisplaySequence.append(item)
         if "ChannelDisplaySequence" not in self._dataset:
             self._dataset.ChannelDisplaySequence = pydicom.Sequence()

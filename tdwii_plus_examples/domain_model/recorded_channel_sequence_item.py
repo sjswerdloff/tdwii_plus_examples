@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -72,7 +72,7 @@ class RecordedChannelSequenceItem:
             isinstance(item, ReferencedMeasuredDoseReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedMeasuredDoseReferenceSequence must be a list of ReferencedMeasuredDoseReferenceSequenceItem objects"
+                "ReferencedMeasuredDoseReferenceSequence must be a list of ReferencedMeasuredDoseReferenceSequenceItem objects"
             )
         else:
             self._ReferencedMeasuredDoseReferenceSequence = value
@@ -83,7 +83,7 @@ class RecordedChannelSequenceItem:
 
     def add_ReferencedMeasuredDoseReference(self, item: ReferencedMeasuredDoseReferenceSequenceItem):
         if not isinstance(item, ReferencedMeasuredDoseReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedMeasuredDoseReferenceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedMeasuredDoseReferenceSequenceItem")
         self._ReferencedMeasuredDoseReferenceSequence.append(item)
         if "ReferencedMeasuredDoseReferenceSequence" not in self._dataset:
             self._dataset.ReferencedMeasuredDoseReferenceSequence = pydicom.Sequence()
@@ -113,7 +113,8 @@ class RecordedChannelSequenceItem:
             isinstance(item, ReferencedCalculatedDoseReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedCalculatedDoseReferenceSequence must be a list of ReferencedCalculatedDoseReferenceSequenceItem objects"
+                "ReferencedCalculatedDoseReferenceSequence must be a list of ReferencedCalculatedDoseReferenceSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedCalculatedDoseReferenceSequence = value
@@ -124,7 +125,7 @@ class RecordedChannelSequenceItem:
 
     def add_ReferencedCalculatedDoseReference(self, item: ReferencedCalculatedDoseReferenceSequenceItem):
         if not isinstance(item, ReferencedCalculatedDoseReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedCalculatedDoseReferenceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedCalculatedDoseReferenceSequenceItem")
         self._ReferencedCalculatedDoseReferenceSequence.append(item)
         if "ReferencedCalculatedDoseReferenceSequence" not in self._dataset:
             self._dataset.ReferencedCalculatedDoseReferenceSequence = pydicom.Sequence()
@@ -230,9 +231,7 @@ class RecordedChannelSequenceItem:
             if "RecordedSourceApplicatorSequence" in self._dataset:
                 del self._dataset.RecordedSourceApplicatorSequence
         elif not isinstance(value, list) or not all(isinstance(item, RecordedSourceApplicatorSequenceItem) for item in value):
-            raise ValueError(
-                f"RecordedSourceApplicatorSequence must be a list of RecordedSourceApplicatorSequenceItem objects"
-            )
+            raise ValueError("RecordedSourceApplicatorSequence must be a list of RecordedSourceApplicatorSequenceItem objects")
         else:
             self._RecordedSourceApplicatorSequence = value
             if "RecordedSourceApplicatorSequence" not in self._dataset:
@@ -242,7 +241,7 @@ class RecordedChannelSequenceItem:
 
     def add_RecordedSourceApplicator(self, item: RecordedSourceApplicatorSequenceItem):
         if not isinstance(item, RecordedSourceApplicatorSequenceItem):
-            raise ValueError(f"Item must be an instance of RecordedSourceApplicatorSequenceItem")
+            raise ValueError("Item must be an instance of RecordedSourceApplicatorSequenceItem")
         self._RecordedSourceApplicatorSequence.append(item)
         if "RecordedSourceApplicatorSequence" not in self._dataset:
             self._dataset.RecordedSourceApplicatorSequence = pydicom.Sequence()
@@ -264,7 +263,7 @@ class RecordedChannelSequenceItem:
             if "RecordedChannelShieldSequence" in self._dataset:
                 del self._dataset.RecordedChannelShieldSequence
         elif not isinstance(value, list) or not all(isinstance(item, RecordedChannelShieldSequenceItem) for item in value):
-            raise ValueError(f"RecordedChannelShieldSequence must be a list of RecordedChannelShieldSequenceItem objects")
+            raise ValueError("RecordedChannelShieldSequence must be a list of RecordedChannelShieldSequenceItem objects")
         else:
             self._RecordedChannelShieldSequence = value
             if "RecordedChannelShieldSequence" not in self._dataset:
@@ -274,7 +273,7 @@ class RecordedChannelSequenceItem:
 
     def add_RecordedChannelShield(self, item: RecordedChannelShieldSequenceItem):
         if not isinstance(item, RecordedChannelShieldSequenceItem):
-            raise ValueError(f"Item must be an instance of RecordedChannelShieldSequenceItem")
+            raise ValueError("Item must be an instance of RecordedChannelShieldSequenceItem")
         self._RecordedChannelShieldSequence.append(item)
         if "RecordedChannelShieldSequence" not in self._dataset:
             self._dataset.RecordedChannelShieldSequence = pydicom.Sequence()
@@ -299,7 +298,7 @@ class RecordedChannelSequenceItem:
             isinstance(item, BrachyControlPointDeliveredSequenceItem) for item in value
         ):
             raise ValueError(
-                f"BrachyControlPointDeliveredSequence must be a list of BrachyControlPointDeliveredSequenceItem objects"
+                "BrachyControlPointDeliveredSequence must be a list of BrachyControlPointDeliveredSequenceItem objects"
             )
         else:
             self._BrachyControlPointDeliveredSequence = value
@@ -310,7 +309,7 @@ class RecordedChannelSequenceItem:
 
     def add_BrachyControlPointDelivered(self, item: BrachyControlPointDeliveredSequenceItem):
         if not isinstance(item, BrachyControlPointDeliveredSequenceItem):
-            raise ValueError(f"Item must be an instance of BrachyControlPointDeliveredSequenceItem")
+            raise ValueError("Item must be an instance of BrachyControlPointDeliveredSequenceItem")
         self._BrachyControlPointDeliveredSequence.append(item)
         if "BrachyControlPointDeliveredSequence" not in self._dataset:
             self._dataset.BrachyControlPointDeliveredSequence = pydicom.Sequence()
@@ -400,7 +399,8 @@ class RecordedChannelSequenceItem:
             isinstance(item, PulseSpecificBrachyControlPointDeliveredSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PulseSpecificBrachyControlPointDeliveredSequence must be a list of PulseSpecificBrachyControlPointDeliveredSequenceItem objects"
+                "PulseSpecificBrachyControlPointDeliveredSequence must be a list of"
+                " PulseSpecificBrachyControlPointDeliveredSequenceItem objects"
             )
         else:
             self._PulseSpecificBrachyControlPointDeliveredSequence = value
@@ -411,7 +411,7 @@ class RecordedChannelSequenceItem:
 
     def add_PulseSpecificBrachyControlPointDelivered(self, item: PulseSpecificBrachyControlPointDeliveredSequenceItem):
         if not isinstance(item, PulseSpecificBrachyControlPointDeliveredSequenceItem):
-            raise ValueError(f"Item must be an instance of PulseSpecificBrachyControlPointDeliveredSequenceItem")
+            raise ValueError("Item must be an instance of PulseSpecificBrachyControlPointDeliveredSequenceItem")
         self._PulseSpecificBrachyControlPointDeliveredSequence.append(item)
         if "PulseSpecificBrachyControlPointDeliveredSequence" not in self._dataset:
             self._dataset.PulseSpecificBrachyControlPointDeliveredSequence = pydicom.Sequence()

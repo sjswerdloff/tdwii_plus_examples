@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -42,7 +42,7 @@ class AnnotationGroupSequenceItem:
             if "AnatomicRegionSequence" in self._dataset:
                 del self._dataset.AnatomicRegionSequence
         elif not isinstance(value, list) or not all(isinstance(item, AnatomicRegionSequenceItem) for item in value):
-            raise ValueError(f"AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
+            raise ValueError("AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
         else:
             self._AnatomicRegionSequence = value
             if "AnatomicRegionSequence" not in self._dataset:
@@ -52,7 +52,7 @@ class AnnotationGroupSequenceItem:
 
     def add_AnatomicRegion(self, item: AnatomicRegionSequenceItem):
         if not isinstance(item, AnatomicRegionSequenceItem):
-            raise ValueError(f"Item must be an instance of AnatomicRegionSequenceItem")
+            raise ValueError("Item must be an instance of AnatomicRegionSequenceItem")
         self._AnatomicRegionSequence.append(item)
         if "AnatomicRegionSequence" not in self._dataset:
             self._dataset.AnatomicRegionSequence = pydicom.Sequence()
@@ -74,9 +74,7 @@ class AnnotationGroupSequenceItem:
             if "PrimaryAnatomicStructureSequence" in self._dataset:
                 del self._dataset.PrimaryAnatomicStructureSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrimaryAnatomicStructureSequenceItem) for item in value):
-            raise ValueError(
-                f"PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects"
-            )
+            raise ValueError("PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects")
         else:
             self._PrimaryAnatomicStructureSequence = value
             if "PrimaryAnatomicStructureSequence" not in self._dataset:
@@ -86,7 +84,7 @@ class AnnotationGroupSequenceItem:
 
     def add_PrimaryAnatomicStructure(self, item: PrimaryAnatomicStructureSequenceItem):
         if not isinstance(item, PrimaryAnatomicStructureSequenceItem):
-            raise ValueError(f"Item must be an instance of PrimaryAnatomicStructureSequenceItem")
+            raise ValueError("Item must be an instance of PrimaryAnatomicStructureSequenceItem")
         self._PrimaryAnatomicStructureSequence.append(item)
         if "PrimaryAnatomicStructureSequence" not in self._dataset:
             self._dataset.PrimaryAnatomicStructureSequence = pydicom.Sequence()
@@ -178,7 +176,7 @@ class AnnotationGroupSequenceItem:
             if "MeasurementsSequence" in self._dataset:
                 del self._dataset.MeasurementsSequence
         elif not isinstance(value, list) or not all(isinstance(item, MeasurementsSequenceItem) for item in value):
-            raise ValueError(f"MeasurementsSequence must be a list of MeasurementsSequenceItem objects")
+            raise ValueError("MeasurementsSequence must be a list of MeasurementsSequenceItem objects")
         else:
             self._MeasurementsSequence = value
             if "MeasurementsSequence" not in self._dataset:
@@ -188,7 +186,7 @@ class AnnotationGroupSequenceItem:
 
     def add_Measurements(self, item: MeasurementsSequenceItem):
         if not isinstance(item, MeasurementsSequenceItem):
-            raise ValueError(f"Item must be an instance of MeasurementsSequenceItem")
+            raise ValueError("Item must be an instance of MeasurementsSequenceItem")
         self._MeasurementsSequence.append(item)
         if "MeasurementsSequence" not in self._dataset:
             self._dataset.MeasurementsSequence = pydicom.Sequence()
@@ -278,7 +276,8 @@ class AnnotationGroupSequenceItem:
             isinstance(item, AnnotationGroupAlgorithmIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"AnnotationGroupAlgorithmIdentificationSequence must be a list of AnnotationGroupAlgorithmIdentificationSequenceItem objects"
+                "AnnotationGroupAlgorithmIdentificationSequence must be a list of"
+                " AnnotationGroupAlgorithmIdentificationSequenceItem objects"
             )
         else:
             self._AnnotationGroupAlgorithmIdentificationSequence = value
@@ -289,7 +288,7 @@ class AnnotationGroupSequenceItem:
 
     def add_AnnotationGroupAlgorithmIdentification(self, item: AnnotationGroupAlgorithmIdentificationSequenceItem):
         if not isinstance(item, AnnotationGroupAlgorithmIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of AnnotationGroupAlgorithmIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of AnnotationGroupAlgorithmIdentificationSequenceItem")
         self._AnnotationGroupAlgorithmIdentificationSequence.append(item)
         if "AnnotationGroupAlgorithmIdentificationSequence" not in self._dataset:
             self._dataset.AnnotationGroupAlgorithmIdentificationSequence = pydicom.Sequence()
@@ -311,7 +310,7 @@ class AnnotationGroupSequenceItem:
             if "AnnotationPropertyCategoryCodeSequence" in self._dataset:
                 del self._dataset.AnnotationPropertyCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AnnotationPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AnnotationPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AnnotationPropertyCategoryCodeSequence = value
             if "AnnotationPropertyCategoryCodeSequence" not in self._dataset:
@@ -321,7 +320,7 @@ class AnnotationGroupSequenceItem:
 
     def add_AnnotationPropertyCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AnnotationPropertyCategoryCodeSequence.append(item)
         if "AnnotationPropertyCategoryCodeSequence" not in self._dataset:
             self._dataset.AnnotationPropertyCategoryCodeSequence = pydicom.Sequence()
@@ -343,7 +342,7 @@ class AnnotationGroupSequenceItem:
             if "AnnotationPropertyTypeCodeSequence" in self._dataset:
                 del self._dataset.AnnotationPropertyTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AnnotationPropertyTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AnnotationPropertyTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AnnotationPropertyTypeCodeSequence = value
             if "AnnotationPropertyTypeCodeSequence" not in self._dataset:
@@ -353,7 +352,7 @@ class AnnotationGroupSequenceItem:
 
     def add_AnnotationPropertyTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AnnotationPropertyTypeCodeSequence.append(item)
         if "AnnotationPropertyTypeCodeSequence" not in self._dataset:
             self._dataset.AnnotationPropertyTypeCodeSequence = pydicom.Sequence()

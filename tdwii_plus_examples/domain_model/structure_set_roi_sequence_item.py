@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class StructureSetROISequenceItem:
             if "DefinitionSourceSequence" in self._dataset:
                 del self._dataset.DefinitionSourceSequence
         elif not isinstance(value, list) or not all(isinstance(item, DefinitionSourceSequenceItem) for item in value):
-            raise ValueError(f"DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
+            raise ValueError("DefinitionSourceSequence must be a list of DefinitionSourceSequenceItem objects")
         else:
             self._DefinitionSourceSequence = value
             if "DefinitionSourceSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class StructureSetROISequenceItem:
 
     def add_DefinitionSource(self, item: DefinitionSourceSequenceItem):
         if not isinstance(item, DefinitionSourceSequenceItem):
-            raise ValueError(f"Item must be an instance of DefinitionSourceSequenceItem")
+            raise ValueError("Item must be an instance of DefinitionSourceSequenceItem")
         self._DefinitionSourceSequence.append(item)
         if "DefinitionSourceSequence" not in self._dataset:
             self._dataset.DefinitionSourceSequence = pydicom.Sequence()
@@ -75,7 +75,7 @@ class StructureSetROISequenceItem:
             if "DerivationCodeSequence" in self._dataset:
                 del self._dataset.DerivationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DerivationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DerivationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DerivationCodeSequence = value
             if "DerivationCodeSequence" not in self._dataset:
@@ -85,7 +85,7 @@ class StructureSetROISequenceItem:
 
     def add_DerivationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DerivationCodeSequence.append(item)
         if "DerivationCodeSequence" not in self._dataset:
             self._dataset.DerivationCodeSequence = pydicom.Sequence()
@@ -215,7 +215,8 @@ class StructureSetROISequenceItem:
             isinstance(item, ROIDerivationAlgorithmIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ROIDerivationAlgorithmIdentificationSequence must be a list of ROIDerivationAlgorithmIdentificationSequenceItem objects"
+                "ROIDerivationAlgorithmIdentificationSequence must be a list of"
+                " ROIDerivationAlgorithmIdentificationSequenceItem objects"
             )
         else:
             self._ROIDerivationAlgorithmIdentificationSequence = value
@@ -226,7 +227,7 @@ class StructureSetROISequenceItem:
 
     def add_ROIDerivationAlgorithmIdentification(self, item: ROIDerivationAlgorithmIdentificationSequenceItem):
         if not isinstance(item, ROIDerivationAlgorithmIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ROIDerivationAlgorithmIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ROIDerivationAlgorithmIdentificationSequenceItem")
         self._ROIDerivationAlgorithmIdentificationSequence.append(item)
         if "ROIDerivationAlgorithmIdentificationSequence" not in self._dataset:
             self._dataset.ROIDerivationAlgorithmIdentificationSequence = pydicom.Sequence()
@@ -262,7 +263,7 @@ class StructureSetROISequenceItem:
             if "ROICreatorSequence" in self._dataset:
                 del self._dataset.ROICreatorSequence
         elif not isinstance(value, list) or not all(isinstance(item, ROICreatorSequenceItem) for item in value):
-            raise ValueError(f"ROICreatorSequence must be a list of ROICreatorSequenceItem objects")
+            raise ValueError("ROICreatorSequence must be a list of ROICreatorSequenceItem objects")
         else:
             self._ROICreatorSequence = value
             if "ROICreatorSequence" not in self._dataset:
@@ -272,7 +273,7 @@ class StructureSetROISequenceItem:
 
     def add_ROICreator(self, item: ROICreatorSequenceItem):
         if not isinstance(item, ROICreatorSequenceItem):
-            raise ValueError(f"Item must be an instance of ROICreatorSequenceItem")
+            raise ValueError("Item must be an instance of ROICreatorSequenceItem")
         self._ROICreatorSequence.append(item)
         if "ROICreatorSequence" not in self._dataset:
             self._dataset.ROICreatorSequence = pydicom.Sequence()
@@ -294,7 +295,7 @@ class StructureSetROISequenceItem:
             if "RTProtocolCodeSequence" in self._dataset:
                 del self._dataset.RTProtocolCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTProtocolCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTProtocolCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTProtocolCodeSequence = value
             if "RTProtocolCodeSequence" not in self._dataset:
@@ -304,7 +305,7 @@ class StructureSetROISequenceItem:
 
     def add_RTProtocolCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTProtocolCodeSequence.append(item)
         if "RTProtocolCodeSequence" not in self._dataset:
             self._dataset.RTProtocolCodeSequence = pydicom.Sequence()
@@ -331,7 +332,7 @@ class StructureSetROISequenceItem:
             isinstance(item, ConceptualVolumeIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConceptualVolumeIdentificationSequence must be a list of ConceptualVolumeIdentificationSequenceItem objects"
+                "ConceptualVolumeIdentificationSequence must be a list of ConceptualVolumeIdentificationSequenceItem objects"
             )
         else:
             self._ConceptualVolumeIdentificationSequence = value
@@ -342,7 +343,7 @@ class StructureSetROISequenceItem:
 
     def add_ConceptualVolumeIdentification(self, item: ConceptualVolumeIdentificationSequenceItem):
         if not isinstance(item, ConceptualVolumeIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ConceptualVolumeIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ConceptualVolumeIdentificationSequenceItem")
         self._ConceptualVolumeIdentificationSequence.append(item)
         if "ConceptualVolumeIdentificationSequence" not in self._dataset:
             self._dataset.ConceptualVolumeIdentificationSequence = pydicom.Sequence()

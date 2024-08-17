@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class OverrideSequenceItem:
             if "OperatorIdentificationSequence" in self._dataset:
                 del self._dataset.OperatorIdentificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, OperatorIdentificationSequenceItem) for item in value):
-            raise ValueError(f"OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
+            raise ValueError("OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
         else:
             self._OperatorIdentificationSequence = value
             if "OperatorIdentificationSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class OverrideSequenceItem:
 
     def add_OperatorIdentification(self, item: OperatorIdentificationSequenceItem):
         if not isinstance(item, OperatorIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of OperatorIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of OperatorIdentificationSequenceItem")
         self._OperatorIdentificationSequence.append(item)
         if "OperatorIdentificationSequence" not in self._dataset:
             self._dataset.OperatorIdentificationSequence = pydicom.Sequence()

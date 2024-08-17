@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -36,7 +36,7 @@ class TreatmentToleranceViolationSequenceItem:
             if "OverrideSequence" in self._dataset:
                 del self._dataset.OverrideSequence
         elif not isinstance(value, list) or not all(isinstance(item, OverrideSequenceItem) for item in value):
-            raise ValueError(f"OverrideSequence must be a list of OverrideSequenceItem objects")
+            raise ValueError("OverrideSequence must be a list of OverrideSequenceItem objects")
         else:
             self._OverrideSequence = value
             if "OverrideSequence" not in self._dataset:
@@ -46,7 +46,7 @@ class TreatmentToleranceViolationSequenceItem:
 
     def add_Override(self, item: OverrideSequenceItem):
         if not isinstance(item, OverrideSequenceItem):
-            raise ValueError(f"Item must be an instance of OverrideSequenceItem")
+            raise ValueError("Item must be an instance of OverrideSequenceItem")
         self._OverrideSequence.append(item)
         if "OverrideSequence" not in self._dataset:
             self._dataset.OverrideSequence = pydicom.Sequence()
@@ -92,7 +92,8 @@ class TreatmentToleranceViolationSequenceItem:
             isinstance(item, TreatmentToleranceViolationAttributeSequenceItem) for item in value
         ):
             raise ValueError(
-                f"TreatmentToleranceViolationAttributeSequence must be a list of TreatmentToleranceViolationAttributeSequenceItem objects"
+                "TreatmentToleranceViolationAttributeSequence must be a list of"
+                " TreatmentToleranceViolationAttributeSequenceItem objects"
             )
         else:
             self._TreatmentToleranceViolationAttributeSequence = value
@@ -103,7 +104,7 @@ class TreatmentToleranceViolationSequenceItem:
 
     def add_TreatmentToleranceViolationAttribute(self, item: TreatmentToleranceViolationAttributeSequenceItem):
         if not isinstance(item, TreatmentToleranceViolationAttributeSequenceItem):
-            raise ValueError(f"Item must be an instance of TreatmentToleranceViolationAttributeSequenceItem")
+            raise ValueError("Item must be an instance of TreatmentToleranceViolationAttributeSequenceItem")
         self._TreatmentToleranceViolationAttributeSequence.append(item)
         if "TreatmentToleranceViolationAttributeSequence" not in self._dataset:
             self._dataset.TreatmentToleranceViolationAttributeSequence = pydicom.Sequence()
@@ -169,7 +170,7 @@ class TreatmentToleranceViolationSequenceItem:
             if "TreatmentToleranceViolationTypeCodeSequence" in self._dataset:
                 del self._dataset.TreatmentToleranceViolationTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TreatmentToleranceViolationTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TreatmentToleranceViolationTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TreatmentToleranceViolationTypeCodeSequence = value
             if "TreatmentToleranceViolationTypeCodeSequence" not in self._dataset:
@@ -179,7 +180,7 @@ class TreatmentToleranceViolationSequenceItem:
 
     def add_TreatmentToleranceViolationTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TreatmentToleranceViolationTypeCodeSequence.append(item)
         if "TreatmentToleranceViolationTypeCodeSequence" not in self._dataset:
             self._dataset.TreatmentToleranceViolationTypeCodeSequence = pydicom.Sequence()
@@ -203,7 +204,7 @@ class TreatmentToleranceViolationSequenceItem:
             if "TreatmentToleranceViolationCauseCodeSequence" in self._dataset:
                 del self._dataset.TreatmentToleranceViolationCauseCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TreatmentToleranceViolationCauseCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TreatmentToleranceViolationCauseCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TreatmentToleranceViolationCauseCodeSequence = value
             if "TreatmentToleranceViolationCauseCodeSequence" not in self._dataset:
@@ -213,7 +214,7 @@ class TreatmentToleranceViolationSequenceItem:
 
     def add_TreatmentToleranceViolationCauseCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TreatmentToleranceViolationCauseCodeSequence.append(item)
         if "TreatmentToleranceViolationCauseCodeSequence" not in self._dataset:
             self._dataset.TreatmentToleranceViolationCauseCodeSequence = pydicom.Sequence()

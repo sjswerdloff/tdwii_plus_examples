@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional  # noqa
 
 
 class CodeSequenceItem:
@@ -143,13 +143,13 @@ class CodeSequenceItem:
         if value is None:
             self._EquivalentCodeSequence = []
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"EquivalentCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("EquivalentCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._EquivalentCodeSequence = value
 
     def add_EquivalentCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._EquivalentCodeSequence.append(item)
 
     @property

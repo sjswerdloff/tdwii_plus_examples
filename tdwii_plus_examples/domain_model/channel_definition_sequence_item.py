@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -92,7 +92,7 @@ class ChannelDefinitionSequenceItem:
             if "ChannelSourceSequence" in self._dataset:
                 del self._dataset.ChannelSourceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelSourceSequenceItem) for item in value):
-            raise ValueError(f"ChannelSourceSequence must be a list of ChannelSourceSequenceItem objects")
+            raise ValueError("ChannelSourceSequence must be a list of ChannelSourceSequenceItem objects")
         else:
             self._ChannelSourceSequence = value
             if "ChannelSourceSequence" not in self._dataset:
@@ -102,7 +102,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_ChannelSource(self, item: ChannelSourceSequenceItem):
         if not isinstance(item, ChannelSourceSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelSourceSequenceItem")
+            raise ValueError("Item must be an instance of ChannelSourceSequenceItem")
         self._ChannelSourceSequence.append(item)
         if "ChannelSourceSequence" not in self._dataset:
             self._dataset.ChannelSourceSequence = pydicom.Sequence()
@@ -124,7 +124,7 @@ class ChannelDefinitionSequenceItem:
             if "ChannelSourceModifiersSequence" in self._dataset:
                 del self._dataset.ChannelSourceModifiersSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelSourceModifiersSequenceItem) for item in value):
-            raise ValueError(f"ChannelSourceModifiersSequence must be a list of ChannelSourceModifiersSequenceItem objects")
+            raise ValueError("ChannelSourceModifiersSequence must be a list of ChannelSourceModifiersSequenceItem objects")
         else:
             self._ChannelSourceModifiersSequence = value
             if "ChannelSourceModifiersSequence" not in self._dataset:
@@ -134,7 +134,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_ChannelSourceModifiers(self, item: ChannelSourceModifiersSequenceItem):
         if not isinstance(item, ChannelSourceModifiersSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelSourceModifiersSequenceItem")
+            raise ValueError("Item must be an instance of ChannelSourceModifiersSequenceItem")
         self._ChannelSourceModifiersSequence.append(item)
         if "ChannelSourceModifiersSequence" not in self._dataset:
             self._dataset.ChannelSourceModifiersSequence = pydicom.Sequence()
@@ -156,7 +156,7 @@ class ChannelDefinitionSequenceItem:
             if "SourceWaveformSequence" in self._dataset:
                 del self._dataset.SourceWaveformSequence
         elif not isinstance(value, list) or not all(isinstance(item, SourceWaveformSequenceItem) for item in value):
-            raise ValueError(f"SourceWaveformSequence must be a list of SourceWaveformSequenceItem objects")
+            raise ValueError("SourceWaveformSequence must be a list of SourceWaveformSequenceItem objects")
         else:
             self._SourceWaveformSequence = value
             if "SourceWaveformSequence" not in self._dataset:
@@ -166,7 +166,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_SourceWaveform(self, item: SourceWaveformSequenceItem):
         if not isinstance(item, SourceWaveformSequenceItem):
-            raise ValueError(f"Item must be an instance of SourceWaveformSequenceItem")
+            raise ValueError("Item must be an instance of SourceWaveformSequenceItem")
         self._SourceWaveformSequence.append(item)
         if "SourceWaveformSequence" not in self._dataset:
             self._dataset.SourceWaveformSequence = pydicom.Sequence()
@@ -216,7 +216,7 @@ class ChannelDefinitionSequenceItem:
             if "ChannelSensitivityUnitsSequence" in self._dataset:
                 del self._dataset.ChannelSensitivityUnitsSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelSensitivityUnitsSequenceItem) for item in value):
-            raise ValueError(f"ChannelSensitivityUnitsSequence must be a list of ChannelSensitivityUnitsSequenceItem objects")
+            raise ValueError("ChannelSensitivityUnitsSequence must be a list of ChannelSensitivityUnitsSequenceItem objects")
         else:
             self._ChannelSensitivityUnitsSequence = value
             if "ChannelSensitivityUnitsSequence" not in self._dataset:
@@ -226,7 +226,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_ChannelSensitivityUnits(self, item: ChannelSensitivityUnitsSequenceItem):
         if not isinstance(item, ChannelSensitivityUnitsSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelSensitivityUnitsSequenceItem")
+            raise ValueError("Item must be an instance of ChannelSensitivityUnitsSequenceItem")
         self._ChannelSensitivityUnitsSequence.append(item)
         if "ChannelSensitivityUnitsSequence" not in self._dataset:
             self._dataset.ChannelSensitivityUnitsSequence = pydicom.Sequence()
@@ -388,7 +388,7 @@ class ChannelDefinitionSequenceItem:
             if "ChannelImpedanceSequence" in self._dataset:
                 del self._dataset.ChannelImpedanceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelImpedanceSequenceItem) for item in value):
-            raise ValueError(f"ChannelImpedanceSequence must be a list of ChannelImpedanceSequenceItem objects")
+            raise ValueError("ChannelImpedanceSequence must be a list of ChannelImpedanceSequenceItem objects")
         else:
             self._ChannelImpedanceSequence = value
             if "ChannelImpedanceSequence" not in self._dataset:
@@ -398,7 +398,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_ChannelImpedance(self, item: ChannelImpedanceSequenceItem):
         if not isinstance(item, ChannelImpedanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelImpedanceSequenceItem")
+            raise ValueError("Item must be an instance of ChannelImpedanceSequenceItem")
         self._ChannelImpedanceSequence.append(item)
         if "ChannelImpedanceSequence" not in self._dataset:
             self._dataset.ChannelImpedanceSequence = pydicom.Sequence()
@@ -442,7 +442,8 @@ class ChannelDefinitionSequenceItem:
             isinstance(item, FilterLowFrequencyCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"FilterLowFrequencyCharacteristicsSequence must be a list of FilterLowFrequencyCharacteristicsSequenceItem objects"
+                "FilterLowFrequencyCharacteristicsSequence must be a list of FilterLowFrequencyCharacteristicsSequenceItem"
+                " objects"
             )
         else:
             self._FilterLowFrequencyCharacteristicsSequence = value
@@ -453,7 +454,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_FilterLowFrequencyCharacteristics(self, item: FilterLowFrequencyCharacteristicsSequenceItem):
         if not isinstance(item, FilterLowFrequencyCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of FilterLowFrequencyCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of FilterLowFrequencyCharacteristicsSequenceItem")
         self._FilterLowFrequencyCharacteristicsSequence.append(item)
         if "FilterLowFrequencyCharacteristicsSequence" not in self._dataset:
             self._dataset.FilterLowFrequencyCharacteristicsSequence = pydicom.Sequence()
@@ -485,7 +486,8 @@ class ChannelDefinitionSequenceItem:
             isinstance(item, FilterHighFrequencyCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"FilterHighFrequencyCharacteristicsSequence must be a list of FilterHighFrequencyCharacteristicsSequenceItem objects"
+                "FilterHighFrequencyCharacteristicsSequence must be a list of FilterHighFrequencyCharacteristicsSequenceItem"
+                " objects"
             )
         else:
             self._FilterHighFrequencyCharacteristicsSequence = value
@@ -496,7 +498,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_FilterHighFrequencyCharacteristics(self, item: FilterHighFrequencyCharacteristicsSequenceItem):
         if not isinstance(item, FilterHighFrequencyCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of FilterHighFrequencyCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of FilterHighFrequencyCharacteristicsSequenceItem")
         self._FilterHighFrequencyCharacteristicsSequence.append(item)
         if "FilterHighFrequencyCharacteristicsSequence" not in self._dataset:
             self._dataset.FilterHighFrequencyCharacteristicsSequence = pydicom.Sequence()
@@ -535,7 +537,7 @@ class ChannelDefinitionSequenceItem:
             isinstance(item, NotchFilterCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"NotchFilterCharacteristicsSequence must be a list of NotchFilterCharacteristicsSequenceItem objects"
+                "NotchFilterCharacteristicsSequence must be a list of NotchFilterCharacteristicsSequenceItem objects"
             )
         else:
             self._NotchFilterCharacteristicsSequence = value
@@ -546,7 +548,7 @@ class ChannelDefinitionSequenceItem:
 
     def add_NotchFilterCharacteristics(self, item: NotchFilterCharacteristicsSequenceItem):
         if not isinstance(item, NotchFilterCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of NotchFilterCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of NotchFilterCharacteristicsSequenceItem")
         self._NotchFilterCharacteristicsSequence.append(item)
         if "NotchFilterCharacteristicsSequence" not in self._dataset:
             self._dataset.NotchFilterCharacteristicsSequence = pydicom.Sequence()

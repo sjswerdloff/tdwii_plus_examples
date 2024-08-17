@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -71,7 +71,8 @@ class MultienergyCTProcessingSequenceItem:
             isinstance(item, DecompositionAlgorithmIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DecompositionAlgorithmIdentificationSequence must be a list of DecompositionAlgorithmIdentificationSequenceItem objects"
+                "DecompositionAlgorithmIdentificationSequence must be a list of"
+                " DecompositionAlgorithmIdentificationSequenceItem objects"
             )
         else:
             self._DecompositionAlgorithmIdentificationSequence = value
@@ -82,7 +83,7 @@ class MultienergyCTProcessingSequenceItem:
 
     def add_DecompositionAlgorithmIdentification(self, item: DecompositionAlgorithmIdentificationSequenceItem):
         if not isinstance(item, DecompositionAlgorithmIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of DecompositionAlgorithmIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of DecompositionAlgorithmIdentificationSequenceItem")
         self._DecompositionAlgorithmIdentificationSequence.append(item)
         if "DecompositionAlgorithmIdentificationSequence" not in self._dataset:
             self._dataset.DecompositionAlgorithmIdentificationSequence = pydicom.Sequence()
@@ -104,7 +105,7 @@ class MultienergyCTProcessingSequenceItem:
             if "DecompositionMaterialSequence" in self._dataset:
                 del self._dataset.DecompositionMaterialSequence
         elif not isinstance(value, list) or not all(isinstance(item, DecompositionMaterialSequenceItem) for item in value):
-            raise ValueError(f"DecompositionMaterialSequence must be a list of DecompositionMaterialSequenceItem objects")
+            raise ValueError("DecompositionMaterialSequence must be a list of DecompositionMaterialSequenceItem objects")
         else:
             self._DecompositionMaterialSequence = value
             if "DecompositionMaterialSequence" not in self._dataset:
@@ -114,7 +115,7 @@ class MultienergyCTProcessingSequenceItem:
 
     def add_DecompositionMaterial(self, item: DecompositionMaterialSequenceItem):
         if not isinstance(item, DecompositionMaterialSequenceItem):
-            raise ValueError(f"Item must be an instance of DecompositionMaterialSequenceItem")
+            raise ValueError("Item must be an instance of DecompositionMaterialSequenceItem")
         self._DecompositionMaterialSequence.append(item)
         if "DecompositionMaterialSequence" not in self._dataset:
             self._dataset.DecompositionMaterialSequence = pydicom.Sequence()

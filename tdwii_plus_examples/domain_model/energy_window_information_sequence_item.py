@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class EnergyWindowInformationSequenceItem:
             if "EnergyWindowRangeSequence" in self._dataset:
                 del self._dataset.EnergyWindowRangeSequence
         elif not isinstance(value, list) or not all(isinstance(item, EnergyWindowRangeSequenceItem) for item in value):
-            raise ValueError(f"EnergyWindowRangeSequence must be a list of EnergyWindowRangeSequenceItem objects")
+            raise ValueError("EnergyWindowRangeSequence must be a list of EnergyWindowRangeSequenceItem objects")
         else:
             self._EnergyWindowRangeSequence = value
             if "EnergyWindowRangeSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class EnergyWindowInformationSequenceItem:
 
     def add_EnergyWindowRange(self, item: EnergyWindowRangeSequenceItem):
         if not isinstance(item, EnergyWindowRangeSequenceItem):
-            raise ValueError(f"Item must be an instance of EnergyWindowRangeSequenceItem")
+            raise ValueError("Item must be an instance of EnergyWindowRangeSequenceItem")
         self._EnergyWindowRangeSequence.append(item)
         if "EnergyWindowRangeSequence" not in self._dataset:
             self._dataset.EnergyWindowRangeSequence = pydicom.Sequence()

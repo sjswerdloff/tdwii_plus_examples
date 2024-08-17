@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class VolumeCroppingSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class VolumeCroppingSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -91,7 +91,7 @@ class VolumeCroppingSequenceItem:
             if "ObliqueCroppingPlaneSequence" in self._dataset:
                 del self._dataset.ObliqueCroppingPlaneSequence
         elif not isinstance(value, list) or not all(isinstance(item, ObliqueCroppingPlaneSequenceItem) for item in value):
-            raise ValueError(f"ObliqueCroppingPlaneSequence must be a list of ObliqueCroppingPlaneSequenceItem objects")
+            raise ValueError("ObliqueCroppingPlaneSequence must be a list of ObliqueCroppingPlaneSequenceItem objects")
         else:
             self._ObliqueCroppingPlaneSequence = value
             if "ObliqueCroppingPlaneSequence" not in self._dataset:
@@ -101,7 +101,7 @@ class VolumeCroppingSequenceItem:
 
     def add_ObliqueCroppingPlane(self, item: ObliqueCroppingPlaneSequenceItem):
         if not isinstance(item, ObliqueCroppingPlaneSequenceItem):
-            raise ValueError(f"Item must be an instance of ObliqueCroppingPlaneSequenceItem")
+            raise ValueError("Item must be an instance of ObliqueCroppingPlaneSequenceItem")
         self._ObliqueCroppingPlaneSequence.append(item)
         if "ObliqueCroppingPlaneSequence" not in self._dataset:
             self._dataset.ObliqueCroppingPlaneSequence = pydicom.Sequence()

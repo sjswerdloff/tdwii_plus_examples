@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -253,7 +253,7 @@ class PresentationStateClassificationComponentSequenceItem:
             if "ComponentInputSequence" in self._dataset:
                 del self._dataset.ComponentInputSequence
         elif not isinstance(value, list) or not all(isinstance(item, ComponentInputSequenceItem) for item in value):
-            raise ValueError(f"ComponentInputSequence must be a list of ComponentInputSequenceItem objects")
+            raise ValueError("ComponentInputSequence must be a list of ComponentInputSequenceItem objects")
         else:
             self._ComponentInputSequence = value
             if "ComponentInputSequence" not in self._dataset:
@@ -263,7 +263,7 @@ class PresentationStateClassificationComponentSequenceItem:
 
     def add_ComponentInput(self, item: ComponentInputSequenceItem):
         if not isinstance(item, ComponentInputSequenceItem):
-            raise ValueError(f"Item must be an instance of ComponentInputSequenceItem")
+            raise ValueError("Item must be an instance of ComponentInputSequenceItem")
         self._ComponentInputSequence.append(item)
         if "ComponentInputSequence" not in self._dataset:
             self._dataset.ComponentInputSequence = pydicom.Sequence()

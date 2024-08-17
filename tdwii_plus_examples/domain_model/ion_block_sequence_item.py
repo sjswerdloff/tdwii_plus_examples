@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -212,7 +212,7 @@ class IonBlockSequenceItem:
             if "BlockSlabSequence" in self._dataset:
                 del self._dataset.BlockSlabSequence
         elif not isinstance(value, list) or not all(isinstance(item, BlockSlabSequenceItem) for item in value):
-            raise ValueError(f"BlockSlabSequence must be a list of BlockSlabSequenceItem objects")
+            raise ValueError("BlockSlabSequence must be a list of BlockSlabSequenceItem objects")
         else:
             self._BlockSlabSequence = value
             if "BlockSlabSequence" not in self._dataset:
@@ -222,7 +222,7 @@ class IonBlockSequenceItem:
 
     def add_BlockSlab(self, item: BlockSlabSequenceItem):
         if not isinstance(item, BlockSlabSequenceItem):
-            raise ValueError(f"Item must be an instance of BlockSlabSequenceItem")
+            raise ValueError("Item must be an instance of BlockSlabSequenceItem")
         self._BlockSlabSequence.append(item)
         if "BlockSlabSequence" not in self._dataset:
             self._dataset.BlockSlabSequence = pydicom.Sequence()

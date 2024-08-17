@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class PixelShiftSequenceItem:
             if "RegionPixelShiftSequence" in self._dataset:
                 del self._dataset.RegionPixelShiftSequence
         elif not isinstance(value, list) or not all(isinstance(item, RegionPixelShiftSequenceItem) for item in value):
-            raise ValueError(f"RegionPixelShiftSequence must be a list of RegionPixelShiftSequenceItem objects")
+            raise ValueError("RegionPixelShiftSequence must be a list of RegionPixelShiftSequenceItem objects")
         else:
             self._RegionPixelShiftSequence = value
             if "RegionPixelShiftSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class PixelShiftSequenceItem:
 
     def add_RegionPixelShift(self, item: RegionPixelShiftSequenceItem):
         if not isinstance(item, RegionPixelShiftSequenceItem):
-            raise ValueError(f"Item must be an instance of RegionPixelShiftSequenceItem")
+            raise ValueError("Item must be an instance of RegionPixelShiftSequenceItem")
         self._RegionPixelShiftSequence.append(item)
         if "RegionPixelShiftSequence" not in self._dataset:
             self._dataset.RegionPixelShiftSequence = pydicom.Sequence()

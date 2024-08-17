@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class KeratometryRightEyeSequenceItem:
             if "SteepKeratometricAxisSequence" in self._dataset:
                 del self._dataset.SteepKeratometricAxisSequence
         elif not isinstance(value, list) or not all(isinstance(item, SteepKeratometricAxisSequenceItem) for item in value):
-            raise ValueError(f"SteepKeratometricAxisSequence must be a list of SteepKeratometricAxisSequenceItem objects")
+            raise ValueError("SteepKeratometricAxisSequence must be a list of SteepKeratometricAxisSequenceItem objects")
         else:
             self._SteepKeratometricAxisSequence = value
             if "SteepKeratometricAxisSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class KeratometryRightEyeSequenceItem:
 
     def add_SteepKeratometricAxis(self, item: SteepKeratometricAxisSequenceItem):
         if not isinstance(item, SteepKeratometricAxisSequenceItem):
-            raise ValueError(f"Item must be an instance of SteepKeratometricAxisSequenceItem")
+            raise ValueError("Item must be an instance of SteepKeratometricAxisSequenceItem")
         self._SteepKeratometricAxisSequence.append(item)
         if "SteepKeratometricAxisSequence" not in self._dataset:
             self._dataset.SteepKeratometricAxisSequence = pydicom.Sequence()
@@ -63,7 +63,7 @@ class KeratometryRightEyeSequenceItem:
             if "FlatKeratometricAxisSequence" in self._dataset:
                 del self._dataset.FlatKeratometricAxisSequence
         elif not isinstance(value, list) or not all(isinstance(item, FlatKeratometricAxisSequenceItem) for item in value):
-            raise ValueError(f"FlatKeratometricAxisSequence must be a list of FlatKeratometricAxisSequenceItem objects")
+            raise ValueError("FlatKeratometricAxisSequence must be a list of FlatKeratometricAxisSequenceItem objects")
         else:
             self._FlatKeratometricAxisSequence = value
             if "FlatKeratometricAxisSequence" not in self._dataset:
@@ -73,7 +73,7 @@ class KeratometryRightEyeSequenceItem:
 
     def add_FlatKeratometricAxis(self, item: FlatKeratometricAxisSequenceItem):
         if not isinstance(item, FlatKeratometricAxisSequenceItem):
-            raise ValueError(f"Item must be an instance of FlatKeratometricAxisSequenceItem")
+            raise ValueError("Item must be an instance of FlatKeratometricAxisSequenceItem")
         self._FlatKeratometricAxisSequence.append(item)
         if "FlatKeratometricAxisSequence" not in self._dataset:
             self._dataset.FlatKeratometricAxisSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -85,7 +85,7 @@ class MRReceiveCoilSequenceItem:
             if "MultiCoilDefinitionSequence" in self._dataset:
                 del self._dataset.MultiCoilDefinitionSequence
         elif not isinstance(value, list) or not all(isinstance(item, MultiCoilDefinitionSequenceItem) for item in value):
-            raise ValueError(f"MultiCoilDefinitionSequence must be a list of MultiCoilDefinitionSequenceItem objects")
+            raise ValueError("MultiCoilDefinitionSequence must be a list of MultiCoilDefinitionSequenceItem objects")
         else:
             self._MultiCoilDefinitionSequence = value
             if "MultiCoilDefinitionSequence" not in self._dataset:
@@ -95,7 +95,7 @@ class MRReceiveCoilSequenceItem:
 
     def add_MultiCoilDefinition(self, item: MultiCoilDefinitionSequenceItem):
         if not isinstance(item, MultiCoilDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of MultiCoilDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of MultiCoilDefinitionSequenceItem")
         self._MultiCoilDefinitionSequence.append(item)
         if "MultiCoilDefinitionSequence" not in self._dataset:
             self._dataset.MultiCoilDefinitionSequence = pydicom.Sequence()

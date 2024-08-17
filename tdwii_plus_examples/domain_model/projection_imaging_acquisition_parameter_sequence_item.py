@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -54,7 +54,7 @@ class ProjectionImagingAcquisitionParameterSequenceItem:
             isinstance(item, ImagingDeviceLocationMatrixSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ImagingDeviceLocationMatrixSequence must be a list of ImagingDeviceLocationMatrixSequenceItem objects"
+                "ImagingDeviceLocationMatrixSequence must be a list of ImagingDeviceLocationMatrixSequenceItem objects"
             )
         else:
             self._ImagingDeviceLocationMatrixSequence = value
@@ -65,7 +65,7 @@ class ProjectionImagingAcquisitionParameterSequenceItem:
 
     def add_ImagingDeviceLocationMatrix(self, item: ImagingDeviceLocationMatrixSequenceItem):
         if not isinstance(item, ImagingDeviceLocationMatrixSequenceItem):
-            raise ValueError(f"Item must be an instance of ImagingDeviceLocationMatrixSequenceItem")
+            raise ValueError("Item must be an instance of ImagingDeviceLocationMatrixSequenceItem")
         self._ImagingDeviceLocationMatrixSequence.append(item)
         if "ImagingDeviceLocationMatrixSequence" not in self._dataset:
             self._dataset.ImagingDeviceLocationMatrixSequence = pydicom.Sequence()
@@ -92,7 +92,7 @@ class ProjectionImagingAcquisitionParameterSequenceItem:
             isinstance(item, ImagingDeviceLocationParameterSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ImagingDeviceLocationParameterSequence must be a list of ImagingDeviceLocationParameterSequenceItem objects"
+                "ImagingDeviceLocationParameterSequence must be a list of ImagingDeviceLocationParameterSequenceItem objects"
             )
         else:
             self._ImagingDeviceLocationParameterSequence = value
@@ -103,7 +103,7 @@ class ProjectionImagingAcquisitionParameterSequenceItem:
 
     def add_ImagingDeviceLocationParameter(self, item: ImagingDeviceLocationParameterSequenceItem):
         if not isinstance(item, ImagingDeviceLocationParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of ImagingDeviceLocationParameterSequenceItem")
+            raise ValueError("Item must be an instance of ImagingDeviceLocationParameterSequenceItem")
         self._ImagingDeviceLocationParameterSequence.append(item)
         if "ImagingDeviceLocationParameterSequence" not in self._dataset:
             self._dataset.ImagingDeviceLocationParameterSequence = pydicom.Sequence()
@@ -125,7 +125,7 @@ class ProjectionImagingAcquisitionParameterSequenceItem:
             if "ImagingApertureSequence" in self._dataset:
                 del self._dataset.ImagingApertureSequence
         elif not isinstance(value, list) or not all(isinstance(item, ImagingApertureSequenceItem) for item in value):
-            raise ValueError(f"ImagingApertureSequence must be a list of ImagingApertureSequenceItem objects")
+            raise ValueError("ImagingApertureSequence must be a list of ImagingApertureSequenceItem objects")
         else:
             self._ImagingApertureSequence = value
             if "ImagingApertureSequence" not in self._dataset:
@@ -135,7 +135,7 @@ class ProjectionImagingAcquisitionParameterSequenceItem:
 
     def add_ImagingAperture(self, item: ImagingApertureSequenceItem):
         if not isinstance(item, ImagingApertureSequenceItem):
-            raise ValueError(f"Item must be an instance of ImagingApertureSequenceItem")
+            raise ValueError("Item must be an instance of ImagingApertureSequenceItem")
         self._ImagingApertureSequence.append(item)
         if "ImagingApertureSequence" not in self._dataset:
             self._dataset.ImagingApertureSequence = pydicom.Sequence()

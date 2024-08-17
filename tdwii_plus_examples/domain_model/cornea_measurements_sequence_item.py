@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -36,7 +36,7 @@ class CorneaMeasurementsSequenceItem:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -46,7 +46,7 @@ class CorneaMeasurementsSequenceItem:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -84,7 +84,7 @@ class CorneaMeasurementsSequenceItem:
             if "SourceOfCorneaMeasurementDataCodeSequence" in self._dataset:
                 del self._dataset.SourceOfCorneaMeasurementDataCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SourceOfCorneaMeasurementDataCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SourceOfCorneaMeasurementDataCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SourceOfCorneaMeasurementDataCodeSequence = value
             if "SourceOfCorneaMeasurementDataCodeSequence" not in self._dataset:
@@ -94,7 +94,7 @@ class CorneaMeasurementsSequenceItem:
 
     def add_SourceOfCorneaMeasurementDataCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SourceOfCorneaMeasurementDataCodeSequence.append(item)
         if "SourceOfCorneaMeasurementDataCodeSequence" not in self._dataset:
             self._dataset.SourceOfCorneaMeasurementDataCodeSequence = pydicom.Sequence()
@@ -116,7 +116,7 @@ class CorneaMeasurementsSequenceItem:
             if "SteepCornealAxisSequence" in self._dataset:
                 del self._dataset.SteepCornealAxisSequence
         elif not isinstance(value, list) or not all(isinstance(item, SteepCornealAxisSequenceItem) for item in value):
-            raise ValueError(f"SteepCornealAxisSequence must be a list of SteepCornealAxisSequenceItem objects")
+            raise ValueError("SteepCornealAxisSequence must be a list of SteepCornealAxisSequenceItem objects")
         else:
             self._SteepCornealAxisSequence = value
             if "SteepCornealAxisSequence" not in self._dataset:
@@ -126,7 +126,7 @@ class CorneaMeasurementsSequenceItem:
 
     def add_SteepCornealAxis(self, item: SteepCornealAxisSequenceItem):
         if not isinstance(item, SteepCornealAxisSequenceItem):
-            raise ValueError(f"Item must be an instance of SteepCornealAxisSequenceItem")
+            raise ValueError("Item must be an instance of SteepCornealAxisSequenceItem")
         self._SteepCornealAxisSequence.append(item)
         if "SteepCornealAxisSequence" not in self._dataset:
             self._dataset.SteepCornealAxisSequence = pydicom.Sequence()
@@ -148,7 +148,7 @@ class CorneaMeasurementsSequenceItem:
             if "FlatCornealAxisSequence" in self._dataset:
                 del self._dataset.FlatCornealAxisSequence
         elif not isinstance(value, list) or not all(isinstance(item, FlatCornealAxisSequenceItem) for item in value):
-            raise ValueError(f"FlatCornealAxisSequence must be a list of FlatCornealAxisSequenceItem objects")
+            raise ValueError("FlatCornealAxisSequence must be a list of FlatCornealAxisSequenceItem objects")
         else:
             self._FlatCornealAxisSequence = value
             if "FlatCornealAxisSequence" not in self._dataset:
@@ -158,7 +158,7 @@ class CorneaMeasurementsSequenceItem:
 
     def add_FlatCornealAxis(self, item: FlatCornealAxisSequenceItem):
         if not isinstance(item, FlatCornealAxisSequenceItem):
-            raise ValueError(f"Item must be an instance of FlatCornealAxisSequenceItem")
+            raise ValueError("Item must be an instance of FlatCornealAxisSequenceItem")
         self._FlatCornealAxisSequence.append(item)
         if "FlatCornealAxisSequence" not in self._dataset:
             self._dataset.FlatCornealAxisSequence = pydicom.Sequence()
@@ -180,7 +180,7 @@ class CorneaMeasurementsSequenceItem:
             if "CorneaMeasurementMethodCodeSequence" in self._dataset:
                 del self._dataset.CorneaMeasurementMethodCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"CorneaMeasurementMethodCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("CorneaMeasurementMethodCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._CorneaMeasurementMethodCodeSequence = value
             if "CorneaMeasurementMethodCodeSequence" not in self._dataset:
@@ -190,7 +190,7 @@ class CorneaMeasurementsSequenceItem:
 
     def add_CorneaMeasurementMethodCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._CorneaMeasurementMethodCodeSequence.append(item)
         if "CorneaMeasurementMethodCodeSequence" not in self._dataset:
             self._dataset.CorneaMeasurementMethodCodeSequence = pydicom.Sequence()

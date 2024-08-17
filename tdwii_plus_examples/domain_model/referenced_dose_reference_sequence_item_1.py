@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -39,7 +39,8 @@ class ReferencedDoseReferenceSequenceItem:
             isinstance(item, BeamDoseVerificationControlPointSequenceItem) for item in value
         ):
             raise ValueError(
-                f"BeamDoseVerificationControlPointSequence must be a list of BeamDoseVerificationControlPointSequenceItem objects"
+                "BeamDoseVerificationControlPointSequence must be a list of BeamDoseVerificationControlPointSequenceItem"
+                " objects"
             )
         else:
             self._BeamDoseVerificationControlPointSequence = value
@@ -50,7 +51,7 @@ class ReferencedDoseReferenceSequenceItem:
 
     def add_BeamDoseVerificationControlPoint(self, item: BeamDoseVerificationControlPointSequenceItem):
         if not isinstance(item, BeamDoseVerificationControlPointSequenceItem):
-            raise ValueError(f"Item must be an instance of BeamDoseVerificationControlPointSequenceItem")
+            raise ValueError("Item must be an instance of BeamDoseVerificationControlPointSequenceItem")
         self._BeamDoseVerificationControlPointSequence.append(item)
         if "BeamDoseVerificationControlPointSequence" not in self._dataset:
             self._dataset.BeamDoseVerificationControlPointSequence = pydicom.Sequence()

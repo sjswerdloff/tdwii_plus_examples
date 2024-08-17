@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -61,9 +61,7 @@ class CTExposureSequenceItem:
             if "WaterEquivalentDiameterCalculationMethodCodeSequence" in self._dataset:
                 del self._dataset.WaterEquivalentDiameterCalculationMethodCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(
-                f"WaterEquivalentDiameterCalculationMethodCodeSequence must be a list of CodeSequenceItem objects"
-            )
+            raise ValueError("WaterEquivalentDiameterCalculationMethodCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._WaterEquivalentDiameterCalculationMethodCodeSequence = value
             if "WaterEquivalentDiameterCalculationMethodCodeSequence" not in self._dataset:
@@ -73,7 +71,7 @@ class CTExposureSequenceItem:
 
     def add_WaterEquivalentDiameterCalculationMethodCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._WaterEquivalentDiameterCalculationMethodCodeSequence.append(item)
         if "WaterEquivalentDiameterCalculationMethodCodeSequence" not in self._dataset:
             self._dataset.WaterEquivalentDiameterCalculationMethodCodeSequence = pydicom.Sequence()
@@ -165,7 +163,7 @@ class CTExposureSequenceItem:
             if "CTDIPhantomTypeCodeSequence" in self._dataset:
                 del self._dataset.CTDIPhantomTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"CTDIPhantomTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("CTDIPhantomTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._CTDIPhantomTypeCodeSequence = value
             if "CTDIPhantomTypeCodeSequence" not in self._dataset:
@@ -175,7 +173,7 @@ class CTExposureSequenceItem:
 
     def add_CTDIPhantomTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._CTDIPhantomTypeCodeSequence.append(item)
         if "CTDIPhantomTypeCodeSequence" not in self._dataset:
             self._dataset.CTDIPhantomTypeCodeSequence = pydicom.Sequence()

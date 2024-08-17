@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class MultiFramePresentationSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class MultiFramePresentationSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -63,7 +63,7 @@ class MultiFramePresentationSequenceItem:
             if "FrameDisplaySequence" in self._dataset:
                 del self._dataset.FrameDisplaySequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameDisplaySequenceItem) for item in value):
-            raise ValueError(f"FrameDisplaySequence must be a list of FrameDisplaySequenceItem objects")
+            raise ValueError("FrameDisplaySequence must be a list of FrameDisplaySequenceItem objects")
         else:
             self._FrameDisplaySequence = value
             if "FrameDisplaySequence" not in self._dataset:
@@ -73,7 +73,7 @@ class MultiFramePresentationSequenceItem:
 
     def add_FrameDisplay(self, item: FrameDisplaySequenceItem):
         if not isinstance(item, FrameDisplaySequenceItem):
-            raise ValueError(f"Item must be an instance of FrameDisplaySequenceItem")
+            raise ValueError("Item must be an instance of FrameDisplaySequenceItem")
         self._FrameDisplaySequence.append(item)
         if "FrameDisplaySequence" not in self._dataset:
             self._dataset.FrameDisplaySequence = pydicom.Sequence()

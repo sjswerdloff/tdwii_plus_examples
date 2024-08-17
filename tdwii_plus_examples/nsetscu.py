@@ -77,7 +77,7 @@ class NSetSCU:
         dest_ae_title = self.receiving_ae_title
         if receiving_ae_title is not None:
             dest_ae_title = receiving_ae_title
-        contexts_in_iods = [build_context(n_set_ds.AffectedSOPClassUID)]
+        contexts_in_iods = [build_context(n_set_ds.RequestedSOPClassUID)]
         assoc = ae.associate(
             tdwii_config.known_ae_ipaddr[dest_ae_title],
             tdwii_config.known_ae_port[dest_ae_title],
@@ -86,6 +86,8 @@ class NSetSCU:
         )
         success = False
         if assoc.is_established:
+            info_message = f"Association established with {dest_ae_title}"
+            logging.info(info_message)
             msg_id = 0
             success = False
             ups_responses = list()
@@ -95,10 +97,10 @@ class NSetSCU:
 
             responses = assoc.send_n_set(
                 n_set_ds,
-                n_set_ds.AffectedSOPClassUID,
-                n_set_ds.AffectedSOPInstanceUID,
+                n_set_ds.RequestedSOPClassUID,
+                n_set_ds.RequestedSOPInstanceUID,
                 msg_id=msg_id,
-                meta_uid=n_set_ds.AffectedSOPClassUID,
+                meta_uid=n_set_ds.RequestedSOPClassUID,
             )
             for status in responses:
                 if status and status.Status in [0xFF00, 0xFF01]:
@@ -110,11 +112,13 @@ class NSetSCU:
                     error_msg = f"No response at all from {dest_ae_title} to N-SET-RQ"
                     if status is not None:
                         error_msg = f"Failed with status {status.Status} \
-                            when trying to issue n-set for {n_set_ds.AffectedSOPInstanceUID} \
+                            when trying to issue n-set for {n_set_ds.RequestedSOPInstanceUID} \
                                 to {dest_ae_title}"
                     logging.error(error_msg)
 
             assoc.release()
+            info_message = f"Released association with {receiving_ae_title}"
+            logging.info(info_message)
         return success, ups_responses
 
 

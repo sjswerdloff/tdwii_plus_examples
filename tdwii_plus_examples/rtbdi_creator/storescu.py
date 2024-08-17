@@ -2,6 +2,7 @@
 import logging
 
 from pydicom import Dataset
+from pydicom.uid import ExplicitVRLittleEndian
 
 # from pydicom.errors import InvalidDicomError
 # from pydicom.uid import UID
@@ -32,7 +33,12 @@ class StoreSCU:
         dest_ae_title = self.receiving_ae_title
         if receiving_ae_title is not None:
             dest_ae_title = receiving_ae_title
-        contexts_in_iods = [build_context(x.SOPClassUID) for x in iods]
+        # Favouring ExplicitLittleEndian to avoid issues with QRSCP when there are private elements
+        # There is a catch-22 if you have privates *and* a string type element with length > 64K
+        # For RT SS with way too much data in the contours or RT Ion Plan with compensator voxel thickness with
+        # a large number of rows and columns... some of the elements can exceed 64K and then the explicit syntax
+        # doesn't have room in the 16 bit unsigned integer for lengths (in bytes) > 64k
+        contexts_in_iods = [build_context(x.SOPClassUID, transfer_syntax=[ExplicitVRLittleEndian]) for x in iods]
         assoc = ae.associate(
             tdwii_config.known_ae_ipaddr[dest_ae_title],
             tdwii_config.known_ae_port[dest_ae_title],
@@ -54,4 +60,10 @@ class StoreSCU:
                     logging.error(error_msg)
                     break
             assoc.release()
+        else:
+            assoc.rejected_contexts
+            error_msg = f"Failed to form association with {dest_ae_title}"
+            logging.error(error_msg)
+            logging.error("Rejected contexts:")
+            logging.error(assoc.rejected_contexts)
         return success

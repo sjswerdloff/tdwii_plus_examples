@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -66,7 +66,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "RefractiveStateSequence" in self._dataset:
                 del self._dataset.RefractiveStateSequence
         elif not isinstance(value, list) or not all(isinstance(item, RefractiveStateSequenceItem) for item in value):
-            raise ValueError(f"RefractiveStateSequence must be a list of RefractiveStateSequenceItem objects")
+            raise ValueError("RefractiveStateSequence must be a list of RefractiveStateSequenceItem objects")
         else:
             self._RefractiveStateSequence = value
             if "RefractiveStateSequence" not in self._dataset:
@@ -76,7 +76,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_RefractiveState(self, item: RefractiveStateSequenceItem):
         if not isinstance(item, RefractiveStateSequenceItem):
-            raise ValueError(f"Item must be an instance of RefractiveStateSequenceItem")
+            raise ValueError("Item must be an instance of RefractiveStateSequenceItem")
         self._RefractiveStateSequence.append(item)
         if "RefractiveStateSequence" not in self._dataset:
             self._dataset.RefractiveStateSequence = pydicom.Sequence()
@@ -98,7 +98,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "OphthalmicAxialLengthSequence" in self._dataset:
                 del self._dataset.OphthalmicAxialLengthSequence
         elif not isinstance(value, list) or not all(isinstance(item, OphthalmicAxialLengthSequenceItem) for item in value):
-            raise ValueError(f"OphthalmicAxialLengthSequence must be a list of OphthalmicAxialLengthSequenceItem objects")
+            raise ValueError("OphthalmicAxialLengthSequence must be a list of OphthalmicAxialLengthSequenceItem objects")
         else:
             self._OphthalmicAxialLengthSequence = value
             if "OphthalmicAxialLengthSequence" not in self._dataset:
@@ -108,7 +108,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_OphthalmicAxialLength(self, item: OphthalmicAxialLengthSequenceItem):
         if not isinstance(item, OphthalmicAxialLengthSequenceItem):
-            raise ValueError(f"Item must be an instance of OphthalmicAxialLengthSequenceItem")
+            raise ValueError("Item must be an instance of OphthalmicAxialLengthSequenceItem")
         self._OphthalmicAxialLengthSequence.append(item)
         if "OphthalmicAxialLengthSequence" not in self._dataset:
             self._dataset.OphthalmicAxialLengthSequence = pydicom.Sequence()
@@ -130,7 +130,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "IOLFormulaCodeSequence" in self._dataset:
                 del self._dataset.IOLFormulaCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"IOLFormulaCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("IOLFormulaCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._IOLFormulaCodeSequence = value
             if "IOLFormulaCodeSequence" not in self._dataset:
@@ -140,7 +140,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_IOLFormulaCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._IOLFormulaCodeSequence.append(item)
         if "IOLFormulaCodeSequence" not in self._dataset:
             self._dataset.IOLFormulaCodeSequence = pydicom.Sequence()
@@ -218,7 +218,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "RefractiveSurgeryTypeCodeSequence" in self._dataset:
                 del self._dataset.RefractiveSurgeryTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RefractiveSurgeryTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RefractiveSurgeryTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RefractiveSurgeryTypeCodeSequence = value
             if "RefractiveSurgeryTypeCodeSequence" not in self._dataset:
@@ -228,7 +228,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_RefractiveSurgeryTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RefractiveSurgeryTypeCodeSequence.append(item)
         if "RefractiveSurgeryTypeCodeSequence" not in self._dataset:
             self._dataset.RefractiveSurgeryTypeCodeSequence = pydicom.Sequence()
@@ -255,7 +255,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             isinstance(item, SurgicallyInducedAstigmatismSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SurgicallyInducedAstigmatismSequence must be a list of SurgicallyInducedAstigmatismSequenceItem objects"
+                "SurgicallyInducedAstigmatismSequence must be a list of SurgicallyInducedAstigmatismSequenceItem objects"
             )
         else:
             self._SurgicallyInducedAstigmatismSequence = value
@@ -266,7 +266,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_SurgicallyInducedAstigmatism(self, item: SurgicallyInducedAstigmatismSequenceItem):
         if not isinstance(item, SurgicallyInducedAstigmatismSequenceItem):
-            raise ValueError(f"Item must be an instance of SurgicallyInducedAstigmatismSequenceItem")
+            raise ValueError("Item must be an instance of SurgicallyInducedAstigmatismSequenceItem")
         self._SurgicallyInducedAstigmatismSequence.append(item)
         if "SurgicallyInducedAstigmatismSequence" not in self._dataset:
             self._dataset.SurgicallyInducedAstigmatismSequence = pydicom.Sequence()
@@ -310,7 +310,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             isinstance(item, ToricIOLPowerForExactEmmetropiaSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ToricIOLPowerForExactEmmetropiaSequence must be a list of ToricIOLPowerForExactEmmetropiaSequenceItem objects"
+                "ToricIOLPowerForExactEmmetropiaSequence must be a list of ToricIOLPowerForExactEmmetropiaSequenceItem objects"
             )
         else:
             self._ToricIOLPowerForExactEmmetropiaSequence = value
@@ -321,7 +321,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_ToricIOLPowerForExactEmmetropia(self, item: ToricIOLPowerForExactEmmetropiaSequenceItem):
         if not isinstance(item, ToricIOLPowerForExactEmmetropiaSequenceItem):
-            raise ValueError(f"Item must be an instance of ToricIOLPowerForExactEmmetropiaSequenceItem")
+            raise ValueError("Item must be an instance of ToricIOLPowerForExactEmmetropiaSequenceItem")
         self._ToricIOLPowerForExactEmmetropiaSequence.append(item)
         if "ToricIOLPowerForExactEmmetropiaSequence" not in self._dataset:
             self._dataset.ToricIOLPowerForExactEmmetropiaSequence = pydicom.Sequence()
@@ -355,7 +355,8 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             isinstance(item, ToricIOLPowerForExactTargetRefractionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ToricIOLPowerForExactTargetRefractionSequence must be a list of ToricIOLPowerForExactTargetRefractionSequenceItem objects"
+                "ToricIOLPowerForExactTargetRefractionSequence must be a list of"
+                " ToricIOLPowerForExactTargetRefractionSequenceItem objects"
             )
         else:
             self._ToricIOLPowerForExactTargetRefractionSequence = value
@@ -366,7 +367,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_ToricIOLPowerForExactTargetRefraction(self, item: ToricIOLPowerForExactTargetRefractionSequenceItem):
         if not isinstance(item, ToricIOLPowerForExactTargetRefractionSequenceItem):
-            raise ValueError(f"Item must be an instance of ToricIOLPowerForExactTargetRefractionSequenceItem")
+            raise ValueError("Item must be an instance of ToricIOLPowerForExactTargetRefractionSequenceItem")
         self._ToricIOLPowerForExactTargetRefractionSequence.append(item)
         if "ToricIOLPowerForExactTargetRefractionSequence" not in self._dataset:
             self._dataset.ToricIOLPowerForExactTargetRefractionSequence = pydicom.Sequence()
@@ -388,7 +389,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "IOLPowerSequence" in self._dataset:
                 del self._dataset.IOLPowerSequence
         elif not isinstance(value, list) or not all(isinstance(item, IOLPowerSequenceItem) for item in value):
-            raise ValueError(f"IOLPowerSequence must be a list of IOLPowerSequenceItem objects")
+            raise ValueError("IOLPowerSequence must be a list of IOLPowerSequenceItem objects")
         else:
             self._IOLPowerSequence = value
             if "IOLPowerSequence" not in self._dataset:
@@ -398,7 +399,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_IOLPower(self, item: IOLPowerSequenceItem):
         if not isinstance(item, IOLPowerSequenceItem):
-            raise ValueError(f"Item must be an instance of IOLPowerSequenceItem")
+            raise ValueError("Item must be an instance of IOLPowerSequenceItem")
         self._IOLPowerSequence.append(item)
         if "IOLPowerSequence" not in self._dataset:
             self._dataset.IOLPowerSequence = pydicom.Sequence()
@@ -420,7 +421,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "LensConstantSequence" in self._dataset:
                 del self._dataset.LensConstantSequence
         elif not isinstance(value, list) or not all(isinstance(item, LensConstantSequenceItem) for item in value):
-            raise ValueError(f"LensConstantSequence must be a list of LensConstantSequenceItem objects")
+            raise ValueError("LensConstantSequence must be a list of LensConstantSequenceItem objects")
         else:
             self._LensConstantSequence = value
             if "LensConstantSequence" not in self._dataset:
@@ -430,7 +431,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_LensConstant(self, item: LensConstantSequenceItem):
         if not isinstance(item, LensConstantSequenceItem):
-            raise ValueError(f"Item must be an instance of LensConstantSequenceItem")
+            raise ValueError("Item must be an instance of LensConstantSequenceItem")
         self._LensConstantSequence.append(item)
         if "LensConstantSequence" not in self._dataset:
             self._dataset.LensConstantSequence = pydicom.Sequence()
@@ -480,7 +481,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "KeratometryMeasurementTypeCodeSequence" in self._dataset:
                 del self._dataset.KeratometryMeasurementTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"KeratometryMeasurementTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("KeratometryMeasurementTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._KeratometryMeasurementTypeCodeSequence = value
             if "KeratometryMeasurementTypeCodeSequence" not in self._dataset:
@@ -490,7 +491,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_KeratometryMeasurementTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._KeratometryMeasurementTypeCodeSequence.append(item)
         if "KeratometryMeasurementTypeCodeSequence" not in self._dataset:
             self._dataset.KeratometryMeasurementTypeCodeSequence = pydicom.Sequence()
@@ -514,7 +515,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "RefractiveErrorBeforeRefractiveSurgeryCodeSequence" in self._dataset:
                 del self._dataset.RefractiveErrorBeforeRefractiveSurgeryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RefractiveErrorBeforeRefractiveSurgeryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RefractiveErrorBeforeRefractiveSurgeryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RefractiveErrorBeforeRefractiveSurgeryCodeSequence = value
             if "RefractiveErrorBeforeRefractiveSurgeryCodeSequence" not in self._dataset:
@@ -524,7 +525,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_RefractiveErrorBeforeRefractiveSurgeryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RefractiveErrorBeforeRefractiveSurgeryCodeSequence.append(item)
         if "RefractiveErrorBeforeRefractiveSurgeryCodeSequence" not in self._dataset:
             self._dataset.RefractiveErrorBeforeRefractiveSurgeryCodeSequence = pydicom.Sequence()
@@ -574,7 +575,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "LensThicknessSequence" in self._dataset:
                 del self._dataset.LensThicknessSequence
         elif not isinstance(value, list) or not all(isinstance(item, LensThicknessSequenceItem) for item in value):
-            raise ValueError(f"LensThicknessSequence must be a list of LensThicknessSequenceItem objects")
+            raise ValueError("LensThicknessSequence must be a list of LensThicknessSequenceItem objects")
         else:
             self._LensThicknessSequence = value
             if "LensThicknessSequence" not in self._dataset:
@@ -584,7 +585,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_LensThickness(self, item: LensThicknessSequenceItem):
         if not isinstance(item, LensThicknessSequenceItem):
-            raise ValueError(f"Item must be an instance of LensThicknessSequenceItem")
+            raise ValueError("Item must be an instance of LensThicknessSequenceItem")
         self._LensThicknessSequence.append(item)
         if "LensThicknessSequence" not in self._dataset:
             self._dataset.LensThicknessSequence = pydicom.Sequence()
@@ -606,7 +607,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "AnteriorChamberDepthSequence" in self._dataset:
                 del self._dataset.AnteriorChamberDepthSequence
         elif not isinstance(value, list) or not all(isinstance(item, AnteriorChamberDepthSequenceItem) for item in value):
-            raise ValueError(f"AnteriorChamberDepthSequence must be a list of AnteriorChamberDepthSequenceItem objects")
+            raise ValueError("AnteriorChamberDepthSequence must be a list of AnteriorChamberDepthSequenceItem objects")
         else:
             self._AnteriorChamberDepthSequence = value
             if "AnteriorChamberDepthSequence" not in self._dataset:
@@ -616,7 +617,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_AnteriorChamberDepth(self, item: AnteriorChamberDepthSequenceItem):
         if not isinstance(item, AnteriorChamberDepthSequenceItem):
-            raise ValueError(f"Item must be an instance of AnteriorChamberDepthSequenceItem")
+            raise ValueError("Item must be an instance of AnteriorChamberDepthSequenceItem")
         self._AnteriorChamberDepthSequence.append(item)
         if "AnteriorChamberDepthSequence" not in self._dataset:
             self._dataset.AnteriorChamberDepthSequence = pydicom.Sequence()
@@ -638,7 +639,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "CalculationCommentSequence" in self._dataset:
                 del self._dataset.CalculationCommentSequence
         elif not isinstance(value, list) or not all(isinstance(item, CalculationCommentSequenceItem) for item in value):
-            raise ValueError(f"CalculationCommentSequence must be a list of CalculationCommentSequenceItem objects")
+            raise ValueError("CalculationCommentSequence must be a list of CalculationCommentSequenceItem objects")
         else:
             self._CalculationCommentSequence = value
             if "CalculationCommentSequence" not in self._dataset:
@@ -648,7 +649,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_CalculationComment(self, item: CalculationCommentSequenceItem):
         if not isinstance(item, CalculationCommentSequenceItem):
-            raise ValueError(f"Item must be an instance of CalculationCommentSequenceItem")
+            raise ValueError("Item must be an instance of CalculationCommentSequenceItem")
         self._CalculationCommentSequence.append(item)
         if "CalculationCommentSequence" not in self._dataset:
             self._dataset.CalculationCommentSequence = pydicom.Sequence()
@@ -670,7 +671,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "CornealSizeSequence" in self._dataset:
                 del self._dataset.CornealSizeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CornealSizeSequenceItem) for item in value):
-            raise ValueError(f"CornealSizeSequence must be a list of CornealSizeSequenceItem objects")
+            raise ValueError("CornealSizeSequence must be a list of CornealSizeSequenceItem objects")
         else:
             self._CornealSizeSequence = value
             if "CornealSizeSequence" not in self._dataset:
@@ -680,7 +681,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_CornealSize(self, item: CornealSizeSequenceItem):
         if not isinstance(item, CornealSizeSequenceItem):
-            raise ValueError(f"Item must be an instance of CornealSizeSequenceItem")
+            raise ValueError("Item must be an instance of CornealSizeSequenceItem")
         self._CornealSizeSequence.append(item)
         if "CornealSizeSequence" not in self._dataset:
             self._dataset.CornealSizeSequence = pydicom.Sequence()
@@ -702,7 +703,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "SteepKeratometricAxisSequence" in self._dataset:
                 del self._dataset.SteepKeratometricAxisSequence
         elif not isinstance(value, list) or not all(isinstance(item, SteepKeratometricAxisSequenceItem) for item in value):
-            raise ValueError(f"SteepKeratometricAxisSequence must be a list of SteepKeratometricAxisSequenceItem objects")
+            raise ValueError("SteepKeratometricAxisSequence must be a list of SteepKeratometricAxisSequenceItem objects")
         else:
             self._SteepKeratometricAxisSequence = value
             if "SteepKeratometricAxisSequence" not in self._dataset:
@@ -712,7 +713,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_SteepKeratometricAxis(self, item: SteepKeratometricAxisSequenceItem):
         if not isinstance(item, SteepKeratometricAxisSequenceItem):
-            raise ValueError(f"Item must be an instance of SteepKeratometricAxisSequenceItem")
+            raise ValueError("Item must be an instance of SteepKeratometricAxisSequenceItem")
         self._SteepKeratometricAxisSequence.append(item)
         if "SteepKeratometricAxisSequence" not in self._dataset:
             self._dataset.SteepKeratometricAxisSequence = pydicom.Sequence()
@@ -734,7 +735,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "FlatKeratometricAxisSequence" in self._dataset:
                 del self._dataset.FlatKeratometricAxisSequence
         elif not isinstance(value, list) or not all(isinstance(item, FlatKeratometricAxisSequenceItem) for item in value):
-            raise ValueError(f"FlatKeratometricAxisSequence must be a list of FlatKeratometricAxisSequenceItem objects")
+            raise ValueError("FlatKeratometricAxisSequence must be a list of FlatKeratometricAxisSequenceItem objects")
         else:
             self._FlatKeratometricAxisSequence = value
             if "FlatKeratometricAxisSequence" not in self._dataset:
@@ -744,7 +745,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_FlatKeratometricAxis(self, item: FlatKeratometricAxisSequenceItem):
         if not isinstance(item, FlatKeratometricAxisSequenceItem):
-            raise ValueError(f"Item must be an instance of FlatKeratometricAxisSequenceItem")
+            raise ValueError("Item must be an instance of FlatKeratometricAxisSequenceItem")
         self._FlatKeratometricAxisSequence.append(item)
         if "FlatKeratometricAxisSequence" not in self._dataset:
             self._dataset.FlatKeratometricAxisSequence = pydicom.Sequence()
@@ -766,7 +767,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
             if "CorneaMeasurementsSequence" in self._dataset:
                 del self._dataset.CorneaMeasurementsSequence
         elif not isinstance(value, list) or not all(isinstance(item, CorneaMeasurementsSequenceItem) for item in value):
-            raise ValueError(f"CorneaMeasurementsSequence must be a list of CorneaMeasurementsSequenceItem objects")
+            raise ValueError("CorneaMeasurementsSequence must be a list of CorneaMeasurementsSequenceItem objects")
         else:
             self._CorneaMeasurementsSequence = value
             if "CorneaMeasurementsSequence" not in self._dataset:
@@ -776,7 +777,7 @@ class IntraocularLensCalculationsRightEyeSequenceItem:
 
     def add_CorneaMeasurements(self, item: CorneaMeasurementsSequenceItem):
         if not isinstance(item, CorneaMeasurementsSequenceItem):
-            raise ValueError(f"Item must be an instance of CorneaMeasurementsSequenceItem")
+            raise ValueError("Item must be an instance of CorneaMeasurementsSequenceItem")
         self._CorneaMeasurementsSequence.append(item)
         if "CorneaMeasurementsSequence" not in self._dataset:
             self._dataset.CorneaMeasurementsSequence = pydicom.Sequence()

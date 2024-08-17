@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -61,7 +61,7 @@ class ConceptualVolumeIdentificationSequenceItem:
             isinstance(item, OriginatingSOPInstanceReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
+                "OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
             )
         else:
             self._OriginatingSOPInstanceReferenceSequence = value
@@ -72,7 +72,7 @@ class ConceptualVolumeIdentificationSequenceItem:
 
     def add_OriginatingSOPInstanceReference(self, item: OriginatingSOPInstanceReferenceSequenceItem):
         if not isinstance(item, OriginatingSOPInstanceReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
+            raise ValueError("Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
         self._OriginatingSOPInstanceReferenceSequence.append(item)
         if "OriginatingSOPInstanceReferenceSequence" not in self._dataset:
             self._dataset.OriginatingSOPInstanceReferenceSequence = pydicom.Sequence()
@@ -97,7 +97,7 @@ class ConceptualVolumeIdentificationSequenceItem:
             isinstance(item, EquivalentConceptualVolumesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"EquivalentConceptualVolumesSequence must be a list of EquivalentConceptualVolumesSequenceItem objects"
+                "EquivalentConceptualVolumesSequence must be a list of EquivalentConceptualVolumesSequenceItem objects"
             )
         else:
             self._EquivalentConceptualVolumesSequence = value
@@ -108,7 +108,7 @@ class ConceptualVolumeIdentificationSequenceItem:
 
     def add_EquivalentConceptualVolumes(self, item: EquivalentConceptualVolumesSequenceItem):
         if not isinstance(item, EquivalentConceptualVolumesSequenceItem):
-            raise ValueError(f"Item must be an instance of EquivalentConceptualVolumesSequenceItem")
+            raise ValueError("Item must be an instance of EquivalentConceptualVolumesSequenceItem")
         self._EquivalentConceptualVolumesSequence.append(item)
         if "EquivalentConceptualVolumesSequence" not in self._dataset:
             self._dataset.EquivalentConceptualVolumesSequence = pydicom.Sequence()
@@ -133,7 +133,7 @@ class ConceptualVolumeIdentificationSequenceItem:
             isinstance(item, DerivationConceptualVolumeSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DerivationConceptualVolumeSequence must be a list of DerivationConceptualVolumeSequenceItem objects"
+                "DerivationConceptualVolumeSequence must be a list of DerivationConceptualVolumeSequenceItem objects"
             )
         else:
             self._DerivationConceptualVolumeSequence = value
@@ -144,7 +144,7 @@ class ConceptualVolumeIdentificationSequenceItem:
 
     def add_DerivationConceptualVolume(self, item: DerivationConceptualVolumeSequenceItem):
         if not isinstance(item, DerivationConceptualVolumeSequenceItem):
-            raise ValueError(f"Item must be an instance of DerivationConceptualVolumeSequenceItem")
+            raise ValueError("Item must be an instance of DerivationConceptualVolumeSequenceItem")
         self._DerivationConceptualVolumeSequence.append(item)
         if "DerivationConceptualVolumeSequence" not in self._dataset:
             self._dataset.DerivationConceptualVolumeSequence = pydicom.Sequence()

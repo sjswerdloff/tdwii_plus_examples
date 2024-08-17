@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -33,7 +33,7 @@ class OriginalAttributesSequenceItem:
             if "ModifiedAttributesSequence" in self._dataset:
                 del self._dataset.ModifiedAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, ModifiedAttributesSequenceItem) for item in value):
-            raise ValueError(f"ModifiedAttributesSequence must be a list of ModifiedAttributesSequenceItem objects")
+            raise ValueError("ModifiedAttributesSequence must be a list of ModifiedAttributesSequenceItem objects")
         else:
             self._ModifiedAttributesSequence = value
             if "ModifiedAttributesSequence" not in self._dataset:
@@ -43,7 +43,7 @@ class OriginalAttributesSequenceItem:
 
     def add_ModifiedAttributes(self, item: ModifiedAttributesSequenceItem):
         if not isinstance(item, ModifiedAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of ModifiedAttributesSequenceItem")
+            raise ValueError("Item must be an instance of ModifiedAttributesSequenceItem")
         self._ModifiedAttributesSequence.append(item)
         if "ModifiedAttributesSequence" not in self._dataset:
             self._dataset.ModifiedAttributesSequence = pydicom.Sequence()
@@ -73,7 +73,7 @@ class OriginalAttributesSequenceItem:
             isinstance(item, NonconformingModifiedAttributesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"NonconformingModifiedAttributesSequence must be a list of NonconformingModifiedAttributesSequenceItem objects"
+                "NonconformingModifiedAttributesSequence must be a list of NonconformingModifiedAttributesSequenceItem objects"
             )
         else:
             self._NonconformingModifiedAttributesSequence = value
@@ -84,7 +84,7 @@ class OriginalAttributesSequenceItem:
 
     def add_NonconformingModifiedAttributes(self, item: NonconformingModifiedAttributesSequenceItem):
         if not isinstance(item, NonconformingModifiedAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of NonconformingModifiedAttributesSequenceItem")
+            raise ValueError("Item must be an instance of NonconformingModifiedAttributesSequenceItem")
         self._NonconformingModifiedAttributesSequence.append(item)
         if "NonconformingModifiedAttributesSequence" not in self._dataset:
             self._dataset.NonconformingModifiedAttributesSequence = pydicom.Sequence()

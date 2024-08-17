@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -44,7 +44,7 @@ class FilterLookupTableSequenceItem:
             if "FrequencyEncodingCodeSequence" in self._dataset:
                 del self._dataset.FrequencyEncodingCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"FrequencyEncodingCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("FrequencyEncodingCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._FrequencyEncodingCodeSequence = value
             if "FrequencyEncodingCodeSequence" not in self._dataset:
@@ -54,7 +54,7 @@ class FilterLookupTableSequenceItem:
 
     def add_FrequencyEncodingCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._FrequencyEncodingCodeSequence.append(item)
         if "FrequencyEncodingCodeSequence" not in self._dataset:
             self._dataset.FrequencyEncodingCodeSequence = pydicom.Sequence()
@@ -76,7 +76,7 @@ class FilterLookupTableSequenceItem:
             if "MagnitudeEncodingCodeSequence" in self._dataset:
                 del self._dataset.MagnitudeEncodingCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MagnitudeEncodingCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MagnitudeEncodingCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MagnitudeEncodingCodeSequence = value
             if "MagnitudeEncodingCodeSequence" not in self._dataset:
@@ -86,7 +86,7 @@ class FilterLookupTableSequenceItem:
 
     def add_MagnitudeEncodingCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MagnitudeEncodingCodeSequence.append(item)
         if "MagnitudeEncodingCodeSequence" not in self._dataset:
             self._dataset.MagnitudeEncodingCodeSequence = pydicom.Sequence()

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -13,14 +13,14 @@ class AnalogFilterCharacteristicsSequenceItem:
 
     @property
     def AnalogFilterRollOff(self) -> Optional[Decimal]:
-        if "AnalogFilterRollOff" in self._dataset:
+        if "AnalogFilterRollOf" in self._dataset:
             return self._dataset.AnalogFilterRollOff
         return None
 
     @AnalogFilterRollOff.setter
     def AnalogFilterRollOff(self, value: Optional[Decimal]):
         if value is None:
-            if "AnalogFilterRollOff" in self._dataset:
+            if "AnalogFilterRollOf" in self._dataset:
                 del self._dataset.AnalogFilterRollOff
         else:
             self._dataset.AnalogFilterRollOff = value

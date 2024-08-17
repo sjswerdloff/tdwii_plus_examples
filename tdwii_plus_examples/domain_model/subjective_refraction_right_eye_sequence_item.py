@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -37,7 +37,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
             if "CylinderSequence" in self._dataset:
                 del self._dataset.CylinderSequence
         elif not isinstance(value, list) or not all(isinstance(item, CylinderSequenceItem) for item in value):
-            raise ValueError(f"CylinderSequence must be a list of CylinderSequenceItem objects")
+            raise ValueError("CylinderSequence must be a list of CylinderSequenceItem objects")
         else:
             self._CylinderSequence = value
             if "CylinderSequence" not in self._dataset:
@@ -47,7 +47,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
 
     def add_Cylinder(self, item: CylinderSequenceItem):
         if not isinstance(item, CylinderSequenceItem):
-            raise ValueError(f"Item must be an instance of CylinderSequenceItem")
+            raise ValueError("Item must be an instance of CylinderSequenceItem")
         self._CylinderSequence.append(item)
         if "CylinderSequence" not in self._dataset:
             self._dataset.CylinderSequence = pydicom.Sequence()
@@ -69,7 +69,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
             if "PrismSequence" in self._dataset:
                 del self._dataset.PrismSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrismSequenceItem) for item in value):
-            raise ValueError(f"PrismSequence must be a list of PrismSequenceItem objects")
+            raise ValueError("PrismSequence must be a list of PrismSequenceItem objects")
         else:
             self._PrismSequence = value
             if "PrismSequence" not in self._dataset:
@@ -79,7 +79,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
 
     def add_Prism(self, item: PrismSequenceItem):
         if not isinstance(item, PrismSequenceItem):
-            raise ValueError(f"Item must be an instance of PrismSequenceItem")
+            raise ValueError("Item must be an instance of PrismSequenceItem")
         self._PrismSequence.append(item)
         if "PrismSequence" not in self._dataset:
             self._dataset.PrismSequence = pydicom.Sequence()
@@ -101,7 +101,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
             if "AddNearSequence" in self._dataset:
                 del self._dataset.AddNearSequence
         elif not isinstance(value, list) or not all(isinstance(item, AddNearSequenceItem) for item in value):
-            raise ValueError(f"AddNearSequence must be a list of AddNearSequenceItem objects")
+            raise ValueError("AddNearSequence must be a list of AddNearSequenceItem objects")
         else:
             self._AddNearSequence = value
             if "AddNearSequence" not in self._dataset:
@@ -111,7 +111,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
 
     def add_AddNear(self, item: AddNearSequenceItem):
         if not isinstance(item, AddNearSequenceItem):
-            raise ValueError(f"Item must be an instance of AddNearSequenceItem")
+            raise ValueError("Item must be an instance of AddNearSequenceItem")
         self._AddNearSequence.append(item)
         if "AddNearSequence" not in self._dataset:
             self._dataset.AddNearSequence = pydicom.Sequence()
@@ -133,7 +133,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
             if "AddIntermediateSequence" in self._dataset:
                 del self._dataset.AddIntermediateSequence
         elif not isinstance(value, list) or not all(isinstance(item, AddIntermediateSequenceItem) for item in value):
-            raise ValueError(f"AddIntermediateSequence must be a list of AddIntermediateSequenceItem objects")
+            raise ValueError("AddIntermediateSequence must be a list of AddIntermediateSequenceItem objects")
         else:
             self._AddIntermediateSequence = value
             if "AddIntermediateSequence" not in self._dataset:
@@ -143,7 +143,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
 
     def add_AddIntermediate(self, item: AddIntermediateSequenceItem):
         if not isinstance(item, AddIntermediateSequenceItem):
-            raise ValueError(f"Item must be an instance of AddIntermediateSequenceItem")
+            raise ValueError("Item must be an instance of AddIntermediateSequenceItem")
         self._AddIntermediateSequence.append(item)
         if "AddIntermediateSequence" not in self._dataset:
             self._dataset.AddIntermediateSequence = pydicom.Sequence()
@@ -165,7 +165,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
             if "AddOtherSequence" in self._dataset:
                 del self._dataset.AddOtherSequence
         elif not isinstance(value, list) or not all(isinstance(item, AddOtherSequenceItem) for item in value):
-            raise ValueError(f"AddOtherSequence must be a list of AddOtherSequenceItem objects")
+            raise ValueError("AddOtherSequence must be a list of AddOtherSequenceItem objects")
         else:
             self._AddOtherSequence = value
             if "AddOtherSequence" not in self._dataset:
@@ -175,7 +175,7 @@ class SubjectiveRefractionRightEyeSequenceItem:
 
     def add_AddOther(self, item: AddOtherSequenceItem):
         if not isinstance(item, AddOtherSequenceItem):
-            raise ValueError(f"Item must be an instance of AddOtherSequenceItem")
+            raise ValueError("Item must be an instance of AddOtherSequenceItem")
         self._AddOtherSequence.append(item)
         if "AddOtherSequence" not in self._dataset:
             self._dataset.AddOtherSequence = pydicom.Sequence()

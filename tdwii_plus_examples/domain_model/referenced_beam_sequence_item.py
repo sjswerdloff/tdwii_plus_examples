@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -148,7 +148,8 @@ class ReferencedBeamSequenceItem:
             isinstance(item, RadiationDeviceConfigurationAndCommissioningKeySequenceItem) for item in value
         ):
             raise ValueError(
-                f"RadiationDeviceConfigurationAndCommissioningKeySequence must be a list of RadiationDeviceConfigurationAndCommissioningKeySequenceItem objects"
+                "RadiationDeviceConfigurationAndCommissioningKeySequence must be a list of"
+                " RadiationDeviceConfigurationAndCommissioningKeySequenceItem objects"
             )
         else:
             self._RadiationDeviceConfigurationAndCommissioningKeySequence = value
@@ -161,7 +162,7 @@ class ReferencedBeamSequenceItem:
         self, item: RadiationDeviceConfigurationAndCommissioningKeySequenceItem
     ):
         if not isinstance(item, RadiationDeviceConfigurationAndCommissioningKeySequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationDeviceConfigurationAndCommissioningKeySequenceItem")
+            raise ValueError("Item must be an instance of RadiationDeviceConfigurationAndCommissioningKeySequenceItem")
         self._RadiationDeviceConfigurationAndCommissioningKeySequence.append(item)
         if "RadiationDeviceConfigurationAndCommissioningKeySequence" not in self._dataset:
             self._dataset.RadiationDeviceConfigurationAndCommissioningKeySequence = pydicom.Sequence()
@@ -198,7 +199,7 @@ class ReferencedBeamSequenceItem:
                 del self._dataset.DoseCalibrationConditionsSequence
         elif not isinstance(value, list) or not all(isinstance(item, DoseCalibrationConditionsSequenceItem) for item in value):
             raise ValueError(
-                f"DoseCalibrationConditionsSequence must be a list of DoseCalibrationConditionsSequenceItem objects"
+                "DoseCalibrationConditionsSequence must be a list of DoseCalibrationConditionsSequenceItem objects"
             )
         else:
             self._DoseCalibrationConditionsSequence = value
@@ -209,7 +210,7 @@ class ReferencedBeamSequenceItem:
 
     def add_DoseCalibrationConditions(self, item: DoseCalibrationConditionsSequenceItem):
         if not isinstance(item, DoseCalibrationConditionsSequenceItem):
-            raise ValueError(f"Item must be an instance of DoseCalibrationConditionsSequenceItem")
+            raise ValueError("Item must be an instance of DoseCalibrationConditionsSequenceItem")
         self._DoseCalibrationConditionsSequence.append(item)
         if "DoseCalibrationConditionsSequence" not in self._dataset:
             self._dataset.DoseCalibrationConditionsSequence = pydicom.Sequence()

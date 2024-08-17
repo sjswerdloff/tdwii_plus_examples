@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -77,7 +77,7 @@ class ROIContourSequenceItem:
             if "ContourSequence" in self._dataset:
                 del self._dataset.ContourSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContourSequenceItem) for item in value):
-            raise ValueError(f"ContourSequence must be a list of ContourSequenceItem objects")
+            raise ValueError("ContourSequence must be a list of ContourSequenceItem objects")
         else:
             self._ContourSequence = value
             if "ContourSequence" not in self._dataset:
@@ -87,7 +87,7 @@ class ROIContourSequenceItem:
 
     def add_Contour(self, item: ContourSequenceItem):
         if not isinstance(item, ContourSequenceItem):
-            raise ValueError(f"Item must be an instance of ContourSequenceItem")
+            raise ValueError("Item must be an instance of ContourSequenceItem")
         self._ContourSequence.append(item)
         if "ContourSequence" not in self._dataset:
             self._dataset.ContourSequence = pydicom.Sequence()
@@ -117,7 +117,8 @@ class ROIContourSequenceItem:
             isinstance(item, SourcePixelPlanesCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SourcePixelPlanesCharacteristicsSequence must be a list of SourcePixelPlanesCharacteristicsSequenceItem objects"
+                "SourcePixelPlanesCharacteristicsSequence must be a list of SourcePixelPlanesCharacteristicsSequenceItem"
+                " objects"
             )
         else:
             self._SourcePixelPlanesCharacteristicsSequence = value
@@ -128,7 +129,7 @@ class ROIContourSequenceItem:
 
     def add_SourcePixelPlanesCharacteristics(self, item: SourcePixelPlanesCharacteristicsSequenceItem):
         if not isinstance(item, SourcePixelPlanesCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of SourcePixelPlanesCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of SourcePixelPlanesCharacteristicsSequenceItem")
         self._SourcePixelPlanesCharacteristicsSequence.append(item)
         if "SourcePixelPlanesCharacteristicsSequence" not in self._dataset:
             self._dataset.SourcePixelPlanesCharacteristicsSequence = pydicom.Sequence()
@@ -150,7 +151,7 @@ class ROIContourSequenceItem:
             if "SourceSeriesSequence" in self._dataset:
                 del self._dataset.SourceSeriesSequence
         elif not isinstance(value, list) or not all(isinstance(item, SourceSeriesSequenceItem) for item in value):
-            raise ValueError(f"SourceSeriesSequence must be a list of SourceSeriesSequenceItem objects")
+            raise ValueError("SourceSeriesSequence must be a list of SourceSeriesSequenceItem objects")
         else:
             self._SourceSeriesSequence = value
             if "SourceSeriesSequence" not in self._dataset:
@@ -160,7 +161,7 @@ class ROIContourSequenceItem:
 
     def add_SourceSeries(self, item: SourceSeriesSequenceItem):
         if not isinstance(item, SourceSeriesSequenceItem):
-            raise ValueError(f"Item must be an instance of SourceSeriesSequenceItem")
+            raise ValueError("Item must be an instance of SourceSeriesSequenceItem")
         self._SourceSeriesSequence.append(item)
         if "SourceSeriesSequence" not in self._dataset:
             self._dataset.SourceSeriesSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -61,7 +61,7 @@ class OphthalmicPatientClinicalInformationLeftEyeSequenceItem:
             if "VisualAcuityMeasurementSequence" in self._dataset:
                 del self._dataset.VisualAcuityMeasurementSequence
         elif not isinstance(value, list) or not all(isinstance(item, VisualAcuityMeasurementSequenceItem) for item in value):
-            raise ValueError(f"VisualAcuityMeasurementSequence must be a list of VisualAcuityMeasurementSequenceItem objects")
+            raise ValueError("VisualAcuityMeasurementSequence must be a list of VisualAcuityMeasurementSequenceItem objects")
         else:
             self._VisualAcuityMeasurementSequence = value
             if "VisualAcuityMeasurementSequence" not in self._dataset:
@@ -71,7 +71,7 @@ class OphthalmicPatientClinicalInformationLeftEyeSequenceItem:
 
     def add_VisualAcuityMeasurement(self, item: VisualAcuityMeasurementSequenceItem):
         if not isinstance(item, VisualAcuityMeasurementSequenceItem):
-            raise ValueError(f"Item must be an instance of VisualAcuityMeasurementSequenceItem")
+            raise ValueError("Item must be an instance of VisualAcuityMeasurementSequenceItem")
         self._VisualAcuityMeasurementSequence.append(item)
         if "VisualAcuityMeasurementSequence" not in self._dataset:
             self._dataset.VisualAcuityMeasurementSequence = pydicom.Sequence()
@@ -101,7 +101,8 @@ class OphthalmicPatientClinicalInformationLeftEyeSequenceItem:
             isinstance(item, RefractiveParametersUsedOnPatientSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RefractiveParametersUsedOnPatientSequence must be a list of RefractiveParametersUsedOnPatientSequenceItem objects"
+                "RefractiveParametersUsedOnPatientSequence must be a list of RefractiveParametersUsedOnPatientSequenceItem"
+                " objects"
             )
         else:
             self._RefractiveParametersUsedOnPatientSequence = value
@@ -112,7 +113,7 @@ class OphthalmicPatientClinicalInformationLeftEyeSequenceItem:
 
     def add_RefractiveParametersUsedOnPatient(self, item: RefractiveParametersUsedOnPatientSequenceItem):
         if not isinstance(item, RefractiveParametersUsedOnPatientSequenceItem):
-            raise ValueError(f"Item must be an instance of RefractiveParametersUsedOnPatientSequenceItem")
+            raise ValueError("Item must be an instance of RefractiveParametersUsedOnPatientSequenceItem")
         self._RefractiveParametersUsedOnPatientSequence.append(item)
         if "RefractiveParametersUsedOnPatientSequence" not in self._dataset:
             self._dataset.RefractiveParametersUsedOnPatientSequence = pydicom.Sequence()

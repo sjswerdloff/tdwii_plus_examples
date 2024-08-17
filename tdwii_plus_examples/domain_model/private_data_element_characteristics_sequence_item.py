@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -89,7 +89,7 @@ class PrivateDataElementCharacteristicsSequenceItem:
             if "DeidentificationActionSequence" in self._dataset:
                 del self._dataset.DeidentificationActionSequence
         elif not isinstance(value, list) or not all(isinstance(item, DeidentificationActionSequenceItem) for item in value):
-            raise ValueError(f"DeidentificationActionSequence must be a list of DeidentificationActionSequenceItem objects")
+            raise ValueError("DeidentificationActionSequence must be a list of DeidentificationActionSequenceItem objects")
         else:
             self._DeidentificationActionSequence = value
             if "DeidentificationActionSequence" not in self._dataset:
@@ -99,7 +99,7 @@ class PrivateDataElementCharacteristicsSequenceItem:
 
     def add_DeidentificationAction(self, item: DeidentificationActionSequenceItem):
         if not isinstance(item, DeidentificationActionSequenceItem):
-            raise ValueError(f"Item must be an instance of DeidentificationActionSequenceItem")
+            raise ValueError("Item must be an instance of DeidentificationActionSequenceItem")
         self._DeidentificationActionSequence.append(item)
         if "DeidentificationActionSequence" not in self._dataset:
             self._dataset.DeidentificationActionSequence = pydicom.Sequence()
@@ -126,7 +126,7 @@ class PrivateDataElementCharacteristicsSequenceItem:
             isinstance(item, PrivateDataElementDefinitionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PrivateDataElementDefinitionSequence must be a list of PrivateDataElementDefinitionSequenceItem objects"
+                "PrivateDataElementDefinitionSequence must be a list of PrivateDataElementDefinitionSequenceItem objects"
             )
         else:
             self._PrivateDataElementDefinitionSequence = value
@@ -137,7 +137,7 @@ class PrivateDataElementCharacteristicsSequenceItem:
 
     def add_PrivateDataElementDefinition(self, item: PrivateDataElementDefinitionSequenceItem):
         if not isinstance(item, PrivateDataElementDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of PrivateDataElementDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of PrivateDataElementDefinitionSequenceItem")
         self._PrivateDataElementDefinitionSequence.append(item)
         if "PrivateDataElementDefinitionSequence" not in self._dataset:
             self._dataset.PrivateDataElementDefinitionSequence = pydicom.Sequence()

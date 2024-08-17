@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -34,7 +34,7 @@ class ImagingApertureSequenceItem:
             isinstance(item, RTBeamLimitingDeviceOpeningSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTBeamLimitingDeviceOpeningSequence must be a list of RTBeamLimitingDeviceOpeningSequenceItem objects"
+                "RTBeamLimitingDeviceOpeningSequence must be a list of RTBeamLimitingDeviceOpeningSequenceItem objects"
             )
         else:
             self._RTBeamLimitingDeviceOpeningSequence = value
@@ -45,7 +45,7 @@ class ImagingApertureSequenceItem:
 
     def add_RTBeamLimitingDeviceOpening(self, item: RTBeamLimitingDeviceOpeningSequenceItem):
         if not isinstance(item, RTBeamLimitingDeviceOpeningSequenceItem):
-            raise ValueError(f"Item must be an instance of RTBeamLimitingDeviceOpeningSequenceItem")
+            raise ValueError("Item must be an instance of RTBeamLimitingDeviceOpeningSequenceItem")
         self._RTBeamLimitingDeviceOpeningSequence.append(item)
         if "RTBeamLimitingDeviceOpeningSequence" not in self._dataset:
             self._dataset.RTBeamLimitingDeviceOpeningSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -53,7 +53,7 @@ class PatientSupportPositionDeviceToleranceSequenceItem:
             isinstance(item, PatientSupportPositionToleranceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PatientSupportPositionToleranceSequence must be a list of PatientSupportPositionToleranceSequenceItem objects"
+                "PatientSupportPositionToleranceSequence must be a list of PatientSupportPositionToleranceSequenceItem objects"
             )
         else:
             self._PatientSupportPositionToleranceSequence = value
@@ -64,7 +64,7 @@ class PatientSupportPositionDeviceToleranceSequenceItem:
 
     def add_PatientSupportPositionTolerance(self, item: PatientSupportPositionToleranceSequenceItem):
         if not isinstance(item, PatientSupportPositionToleranceSequenceItem):
-            raise ValueError(f"Item must be an instance of PatientSupportPositionToleranceSequenceItem")
+            raise ValueError("Item must be an instance of PatientSupportPositionToleranceSequenceItem")
         self._PatientSupportPositionToleranceSequence.append(item)
         if "PatientSupportPositionToleranceSequence" not in self._dataset:
             self._dataset.PatientSupportPositionToleranceSequence = pydicom.Sequence()

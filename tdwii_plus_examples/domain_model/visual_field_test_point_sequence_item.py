@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -118,7 +118,7 @@ class VisualFieldTestPointSequenceItem:
             isinstance(item, VisualFieldTestPointNormalsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"VisualFieldTestPointNormalsSequence must be a list of VisualFieldTestPointNormalsSequenceItem objects"
+                "VisualFieldTestPointNormalsSequence must be a list of VisualFieldTestPointNormalsSequenceItem objects"
             )
         else:
             self._VisualFieldTestPointNormalsSequence = value
@@ -129,7 +129,7 @@ class VisualFieldTestPointSequenceItem:
 
     def add_VisualFieldTestPointNormals(self, item: VisualFieldTestPointNormalsSequenceItem):
         if not isinstance(item, VisualFieldTestPointNormalsSequenceItem):
-            raise ValueError(f"Item must be an instance of VisualFieldTestPointNormalsSequenceItem")
+            raise ValueError("Item must be an instance of VisualFieldTestPointNormalsSequenceItem")
         self._VisualFieldTestPointNormalsSequence.append(item)
         if "VisualFieldTestPointNormalsSequence" not in self._dataset:
             self._dataset.VisualFieldTestPointNormalsSequence = pydicom.Sequence()

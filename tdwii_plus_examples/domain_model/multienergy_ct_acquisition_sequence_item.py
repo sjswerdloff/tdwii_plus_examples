@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class MultienergyCTAcquisitionSequenceItem:
             if "CTAcquisitionDetailsSequence" in self._dataset:
                 del self._dataset.CTAcquisitionDetailsSequence
         elif not isinstance(value, list) or not all(isinstance(item, CTAcquisitionDetailsSequenceItem) for item in value):
-            raise ValueError(f"CTAcquisitionDetailsSequence must be a list of CTAcquisitionDetailsSequenceItem objects")
+            raise ValueError("CTAcquisitionDetailsSequence must be a list of CTAcquisitionDetailsSequenceItem objects")
         else:
             self._CTAcquisitionDetailsSequence = value
             if "CTAcquisitionDetailsSequence" not in self._dataset:
@@ -55,7 +55,7 @@ class MultienergyCTAcquisitionSequenceItem:
 
     def add_CTAcquisitionDetails(self, item: CTAcquisitionDetailsSequenceItem):
         if not isinstance(item, CTAcquisitionDetailsSequenceItem):
-            raise ValueError(f"Item must be an instance of CTAcquisitionDetailsSequenceItem")
+            raise ValueError("Item must be an instance of CTAcquisitionDetailsSequenceItem")
         self._CTAcquisitionDetailsSequence.append(item)
         if "CTAcquisitionDetailsSequence" not in self._dataset:
             self._dataset.CTAcquisitionDetailsSequence = pydicom.Sequence()
@@ -77,7 +77,7 @@ class MultienergyCTAcquisitionSequenceItem:
             if "CTGeometrySequence" in self._dataset:
                 del self._dataset.CTGeometrySequence
         elif not isinstance(value, list) or not all(isinstance(item, CTGeometrySequenceItem) for item in value):
-            raise ValueError(f"CTGeometrySequence must be a list of CTGeometrySequenceItem objects")
+            raise ValueError("CTGeometrySequence must be a list of CTGeometrySequenceItem objects")
         else:
             self._CTGeometrySequence = value
             if "CTGeometrySequence" not in self._dataset:
@@ -87,7 +87,7 @@ class MultienergyCTAcquisitionSequenceItem:
 
     def add_CTGeometry(self, item: CTGeometrySequenceItem):
         if not isinstance(item, CTGeometrySequenceItem):
-            raise ValueError(f"Item must be an instance of CTGeometrySequenceItem")
+            raise ValueError("Item must be an instance of CTGeometrySequenceItem")
         self._CTGeometrySequence.append(item)
         if "CTGeometrySequence" not in self._dataset:
             self._dataset.CTGeometrySequence = pydicom.Sequence()
@@ -109,7 +109,7 @@ class MultienergyCTAcquisitionSequenceItem:
             if "CTExposureSequence" in self._dataset:
                 del self._dataset.CTExposureSequence
         elif not isinstance(value, list) or not all(isinstance(item, CTExposureSequenceItem) for item in value):
-            raise ValueError(f"CTExposureSequence must be a list of CTExposureSequenceItem objects")
+            raise ValueError("CTExposureSequence must be a list of CTExposureSequenceItem objects")
         else:
             self._CTExposureSequence = value
             if "CTExposureSequence" not in self._dataset:
@@ -119,7 +119,7 @@ class MultienergyCTAcquisitionSequenceItem:
 
     def add_CTExposure(self, item: CTExposureSequenceItem):
         if not isinstance(item, CTExposureSequenceItem):
-            raise ValueError(f"Item must be an instance of CTExposureSequenceItem")
+            raise ValueError("Item must be an instance of CTExposureSequenceItem")
         self._CTExposureSequence.append(item)
         if "CTExposureSequence" not in self._dataset:
             self._dataset.CTExposureSequence = pydicom.Sequence()
@@ -141,7 +141,7 @@ class MultienergyCTAcquisitionSequenceItem:
             if "CTXRayDetailsSequence" in self._dataset:
                 del self._dataset.CTXRayDetailsSequence
         elif not isinstance(value, list) or not all(isinstance(item, CTXRayDetailsSequenceItem) for item in value):
-            raise ValueError(f"CTXRayDetailsSequence must be a list of CTXRayDetailsSequenceItem objects")
+            raise ValueError("CTXRayDetailsSequence must be a list of CTXRayDetailsSequenceItem objects")
         else:
             self._CTXRayDetailsSequence = value
             if "CTXRayDetailsSequence" not in self._dataset:
@@ -151,7 +151,7 @@ class MultienergyCTAcquisitionSequenceItem:
 
     def add_CTXRayDetails(self, item: CTXRayDetailsSequenceItem):
         if not isinstance(item, CTXRayDetailsSequenceItem):
-            raise ValueError(f"Item must be an instance of CTXRayDetailsSequenceItem")
+            raise ValueError("Item must be an instance of CTXRayDetailsSequenceItem")
         self._CTXRayDetailsSequence.append(item)
         if "CTXRayDetailsSequence" not in self._dataset:
             self._dataset.CTXRayDetailsSequence = pydicom.Sequence()
@@ -173,7 +173,7 @@ class MultienergyCTAcquisitionSequenceItem:
             if "MultienergyCTXRaySourceSequence" in self._dataset:
                 del self._dataset.MultienergyCTXRaySourceSequence
         elif not isinstance(value, list) or not all(isinstance(item, MultienergyCTXRaySourceSequenceItem) for item in value):
-            raise ValueError(f"MultienergyCTXRaySourceSequence must be a list of MultienergyCTXRaySourceSequenceItem objects")
+            raise ValueError("MultienergyCTXRaySourceSequence must be a list of MultienergyCTXRaySourceSequenceItem objects")
         else:
             self._MultienergyCTXRaySourceSequence = value
             if "MultienergyCTXRaySourceSequence" not in self._dataset:
@@ -183,7 +183,7 @@ class MultienergyCTAcquisitionSequenceItem:
 
     def add_MultienergyCTXRaySource(self, item: MultienergyCTXRaySourceSequenceItem):
         if not isinstance(item, MultienergyCTXRaySourceSequenceItem):
-            raise ValueError(f"Item must be an instance of MultienergyCTXRaySourceSequenceItem")
+            raise ValueError("Item must be an instance of MultienergyCTXRaySourceSequenceItem")
         self._MultienergyCTXRaySourceSequence.append(item)
         if "MultienergyCTXRaySourceSequence" not in self._dataset:
             self._dataset.MultienergyCTXRaySourceSequence = pydicom.Sequence()
@@ -206,7 +206,7 @@ class MultienergyCTAcquisitionSequenceItem:
                 del self._dataset.MultienergyCTXRayDetectorSequence
         elif not isinstance(value, list) or not all(isinstance(item, MultienergyCTXRayDetectorSequenceItem) for item in value):
             raise ValueError(
-                f"MultienergyCTXRayDetectorSequence must be a list of MultienergyCTXRayDetectorSequenceItem objects"
+                "MultienergyCTXRayDetectorSequence must be a list of MultienergyCTXRayDetectorSequenceItem objects"
             )
         else:
             self._MultienergyCTXRayDetectorSequence = value
@@ -217,7 +217,7 @@ class MultienergyCTAcquisitionSequenceItem:
 
     def add_MultienergyCTXRayDetector(self, item: MultienergyCTXRayDetectorSequenceItem):
         if not isinstance(item, MultienergyCTXRayDetectorSequenceItem):
-            raise ValueError(f"Item must be an instance of MultienergyCTXRayDetectorSequenceItem")
+            raise ValueError("Item must be an instance of MultienergyCTXRayDetectorSequenceItem")
         self._MultienergyCTXRayDetectorSequence.append(item)
         if "MultienergyCTXRayDetectorSequence" not in self._dataset:
             self._dataset.MultienergyCTXRayDetectorSequence = pydicom.Sequence()
@@ -239,7 +239,7 @@ class MultienergyCTAcquisitionSequenceItem:
             if "MultienergyCTPathSequence" in self._dataset:
                 del self._dataset.MultienergyCTPathSequence
         elif not isinstance(value, list) or not all(isinstance(item, MultienergyCTPathSequenceItem) for item in value):
-            raise ValueError(f"MultienergyCTPathSequence must be a list of MultienergyCTPathSequenceItem objects")
+            raise ValueError("MultienergyCTPathSequence must be a list of MultienergyCTPathSequenceItem objects")
         else:
             self._MultienergyCTPathSequence = value
             if "MultienergyCTPathSequence" not in self._dataset:
@@ -249,7 +249,7 @@ class MultienergyCTAcquisitionSequenceItem:
 
     def add_MultienergyCTPath(self, item: MultienergyCTPathSequenceItem):
         if not isinstance(item, MultienergyCTPathSequenceItem):
-            raise ValueError(f"Item must be an instance of MultienergyCTPathSequenceItem")
+            raise ValueError("Item must be an instance of MultienergyCTPathSequenceItem")
         self._MultienergyCTPathSequence.append(item)
         if "MultienergyCTPathSequence" not in self._dataset:
             self._dataset.MultienergyCTPathSequence = pydicom.Sequence()

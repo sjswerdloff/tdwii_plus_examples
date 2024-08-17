@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -148,7 +148,7 @@ class ApplicationSetupSequenceItem:
             if "BrachyAccessoryDeviceSequence" in self._dataset:
                 del self._dataset.BrachyAccessoryDeviceSequence
         elif not isinstance(value, list) or not all(isinstance(item, BrachyAccessoryDeviceSequenceItem) for item in value):
-            raise ValueError(f"BrachyAccessoryDeviceSequence must be a list of BrachyAccessoryDeviceSequenceItem objects")
+            raise ValueError("BrachyAccessoryDeviceSequence must be a list of BrachyAccessoryDeviceSequenceItem objects")
         else:
             self._BrachyAccessoryDeviceSequence = value
             if "BrachyAccessoryDeviceSequence" not in self._dataset:
@@ -158,7 +158,7 @@ class ApplicationSetupSequenceItem:
 
     def add_BrachyAccessoryDevice(self, item: BrachyAccessoryDeviceSequenceItem):
         if not isinstance(item, BrachyAccessoryDeviceSequenceItem):
-            raise ValueError(f"Item must be an instance of BrachyAccessoryDeviceSequenceItem")
+            raise ValueError("Item must be an instance of BrachyAccessoryDeviceSequenceItem")
         self._BrachyAccessoryDeviceSequence.append(item)
         if "BrachyAccessoryDeviceSequence" not in self._dataset:
             self._dataset.BrachyAccessoryDeviceSequence = pydicom.Sequence()
@@ -180,7 +180,7 @@ class ApplicationSetupSequenceItem:
             if "ChannelSequence" in self._dataset:
                 del self._dataset.ChannelSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelSequenceItem) for item in value):
-            raise ValueError(f"ChannelSequence must be a list of ChannelSequenceItem objects")
+            raise ValueError("ChannelSequence must be a list of ChannelSequenceItem objects")
         else:
             self._ChannelSequence = value
             if "ChannelSequence" not in self._dataset:
@@ -190,7 +190,7 @@ class ApplicationSetupSequenceItem:
 
     def add_Channel(self, item: ChannelSequenceItem):
         if not isinstance(item, ChannelSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelSequenceItem")
+            raise ValueError("Item must be an instance of ChannelSequenceItem")
         self._ChannelSequence.append(item)
         if "ChannelSequence" not in self._dataset:
             self._dataset.ChannelSequence = pydicom.Sequence()
@@ -212,9 +212,7 @@ class ApplicationSetupSequenceItem:
             if "ReferencedReferenceImageSequence" in self._dataset:
                 del self._dataset.ReferencedReferenceImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedReferenceImageSequenceItem) for item in value):
-            raise ValueError(
-                f"ReferencedReferenceImageSequence must be a list of ReferencedReferenceImageSequenceItem objects"
-            )
+            raise ValueError("ReferencedReferenceImageSequence must be a list of ReferencedReferenceImageSequenceItem objects")
         else:
             self._ReferencedReferenceImageSequence = value
             if "ReferencedReferenceImageSequence" not in self._dataset:
@@ -224,7 +222,7 @@ class ApplicationSetupSequenceItem:
 
     def add_ReferencedReferenceImage(self, item: ReferencedReferenceImageSequenceItem):
         if not isinstance(item, ReferencedReferenceImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedReferenceImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedReferenceImageSequenceItem")
         self._ReferencedReferenceImageSequence.append(item)
         if "ReferencedReferenceImageSequence" not in self._dataset:
             self._dataset.ReferencedReferenceImageSequence = pydicom.Sequence()

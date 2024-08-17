@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class MatrixRegistrationSequenceItem:
             if "MatrixSequence" in self._dataset:
                 del self._dataset.MatrixSequence
         elif not isinstance(value, list) or not all(isinstance(item, MatrixSequenceItem) for item in value):
-            raise ValueError(f"MatrixSequence must be a list of MatrixSequenceItem objects")
+            raise ValueError("MatrixSequence must be a list of MatrixSequenceItem objects")
         else:
             self._MatrixSequence = value
             if "MatrixSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class MatrixRegistrationSequenceItem:
 
     def add_Matrix(self, item: MatrixSequenceItem):
         if not isinstance(item, MatrixSequenceItem):
-            raise ValueError(f"Item must be an instance of MatrixSequenceItem")
+            raise ValueError("Item must be an instance of MatrixSequenceItem")
         self._MatrixSequence.append(item)
         if "MatrixSequence" not in self._dataset:
             self._dataset.MatrixSequence = pydicom.Sequence()
@@ -63,7 +63,7 @@ class MatrixRegistrationSequenceItem:
             if "RegistrationTypeCodeSequence" in self._dataset:
                 del self._dataset.RegistrationTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RegistrationTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RegistrationTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RegistrationTypeCodeSequence = value
             if "RegistrationTypeCodeSequence" not in self._dataset:
@@ -73,7 +73,7 @@ class MatrixRegistrationSequenceItem:
 
     def add_RegistrationTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RegistrationTypeCodeSequence.append(item)
         if "RegistrationTypeCodeSequence" not in self._dataset:
             self._dataset.RegistrationTypeCodeSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -41,7 +41,7 @@ class AdvancedBlendingSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -51,7 +51,7 @@ class AdvancedBlendingSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -101,7 +101,7 @@ class AdvancedBlendingSequenceItem:
             if "SoftcopyVOILUTSequence" in self._dataset:
                 del self._dataset.SoftcopyVOILUTSequence
         elif not isinstance(value, list) or not all(isinstance(item, SoftcopyVOILUTSequenceItem) for item in value):
-            raise ValueError(f"SoftcopyVOILUTSequence must be a list of SoftcopyVOILUTSequenceItem objects")
+            raise ValueError("SoftcopyVOILUTSequence must be a list of SoftcopyVOILUTSequenceItem objects")
         else:
             self._SoftcopyVOILUTSequence = value
             if "SoftcopyVOILUTSequence" not in self._dataset:
@@ -111,7 +111,7 @@ class AdvancedBlendingSequenceItem:
 
     def add_SoftcopyVOILUT(self, item: SoftcopyVOILUTSequenceItem):
         if not isinstance(item, SoftcopyVOILUTSequenceItem):
-            raise ValueError(f"Item must be an instance of SoftcopyVOILUTSequenceItem")
+            raise ValueError("Item must be an instance of SoftcopyVOILUTSequenceItem")
         self._SoftcopyVOILUTSequence.append(item)
         if "SoftcopyVOILUTSequence" not in self._dataset:
             self._dataset.SoftcopyVOILUTSequence = pydicom.Sequence()
@@ -133,7 +133,7 @@ class AdvancedBlendingSequenceItem:
             if "PaletteColorLookupTableSequence" in self._dataset:
                 del self._dataset.PaletteColorLookupTableSequence
         elif not isinstance(value, list) or not all(isinstance(item, PaletteColorLookupTableSequenceItem) for item in value):
-            raise ValueError(f"PaletteColorLookupTableSequence must be a list of PaletteColorLookupTableSequenceItem objects")
+            raise ValueError("PaletteColorLookupTableSequence must be a list of PaletteColorLookupTableSequenceItem objects")
         else:
             self._PaletteColorLookupTableSequence = value
             if "PaletteColorLookupTableSequence" not in self._dataset:
@@ -143,7 +143,7 @@ class AdvancedBlendingSequenceItem:
 
     def add_PaletteColorLookupTable(self, item: PaletteColorLookupTableSequenceItem):
         if not isinstance(item, PaletteColorLookupTableSequenceItem):
-            raise ValueError(f"Item must be an instance of PaletteColorLookupTableSequenceItem")
+            raise ValueError("Item must be an instance of PaletteColorLookupTableSequenceItem")
         self._PaletteColorLookupTableSequence.append(item)
         if "PaletteColorLookupTableSequence" not in self._dataset:
             self._dataset.PaletteColorLookupTableSequence = pydicom.Sequence()
@@ -170,7 +170,7 @@ class AdvancedBlendingSequenceItem:
             isinstance(item, ReferencedSpatialRegistrationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedSpatialRegistrationSequence must be a list of ReferencedSpatialRegistrationSequenceItem objects"
+                "ReferencedSpatialRegistrationSequence must be a list of ReferencedSpatialRegistrationSequenceItem objects"
             )
         else:
             self._ReferencedSpatialRegistrationSequence = value
@@ -181,7 +181,7 @@ class AdvancedBlendingSequenceItem:
 
     def add_ReferencedSpatialRegistration(self, item: ReferencedSpatialRegistrationSequenceItem):
         if not isinstance(item, ReferencedSpatialRegistrationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSpatialRegistrationSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSpatialRegistrationSequenceItem")
         self._ReferencedSpatialRegistrationSequence.append(item)
         if "ReferencedSpatialRegistrationSequence" not in self._dataset:
             self._dataset.ReferencedSpatialRegistrationSequence = pydicom.Sequence()
@@ -245,7 +245,7 @@ class AdvancedBlendingSequenceItem:
             if "ThresholdSequence" in self._dataset:
                 del self._dataset.ThresholdSequence
         elif not isinstance(value, list) or not all(isinstance(item, ThresholdSequenceItem) for item in value):
-            raise ValueError(f"ThresholdSequence must be a list of ThresholdSequenceItem objects")
+            raise ValueError("ThresholdSequence must be a list of ThresholdSequenceItem objects")
         else:
             self._ThresholdSequence = value
             if "ThresholdSequence" not in self._dataset:
@@ -255,7 +255,7 @@ class AdvancedBlendingSequenceItem:
 
     def add_Threshold(self, item: ThresholdSequenceItem):
         if not isinstance(item, ThresholdSequenceItem):
-            raise ValueError(f"Item must be an instance of ThresholdSequenceItem")
+            raise ValueError("Item must be an instance of ThresholdSequenceItem")
         self._ThresholdSequence.append(item)
         if "ThresholdSequence" not in self._dataset:
             self._dataset.ThresholdSequence = pydicom.Sequence()

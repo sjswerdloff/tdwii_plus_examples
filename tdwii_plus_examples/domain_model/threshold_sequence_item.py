@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class ThresholdSequenceItem:
             if "ThresholdValueSequence" in self._dataset:
                 del self._dataset.ThresholdValueSequence
         elif not isinstance(value, list) or not all(isinstance(item, ThresholdValueSequenceItem) for item in value):
-            raise ValueError(f"ThresholdValueSequence must be a list of ThresholdValueSequenceItem objects")
+            raise ValueError("ThresholdValueSequence must be a list of ThresholdValueSequenceItem objects")
         else:
             self._ThresholdValueSequence = value
             if "ThresholdValueSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class ThresholdSequenceItem:
 
     def add_ThresholdValue(self, item: ThresholdValueSequenceItem):
         if not isinstance(item, ThresholdValueSequenceItem):
-            raise ValueError(f"Item must be an instance of ThresholdValueSequenceItem")
+            raise ValueError("Item must be an instance of ThresholdValueSequenceItem")
         self._ThresholdValueSequence.append(item)
         if "ThresholdValueSequence" not in self._dataset:
             self._dataset.ThresholdValueSequence = pydicom.Sequence()

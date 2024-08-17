@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -53,7 +53,7 @@ class ConceptualVolumeSegmentationReferenceSequenceItem:
             isinstance(item, ReferencedDirectSegmentInstanceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedDirectSegmentInstanceSequence must be a list of ReferencedDirectSegmentInstanceSequenceItem objects"
+                "ReferencedDirectSegmentInstanceSequence must be a list of ReferencedDirectSegmentInstanceSequenceItem objects"
             )
         else:
             self._ReferencedDirectSegmentInstanceSequence = value
@@ -64,7 +64,7 @@ class ConceptualVolumeSegmentationReferenceSequenceItem:
 
     def add_ReferencedDirectSegmentInstance(self, item: ReferencedDirectSegmentInstanceSequenceItem):
         if not isinstance(item, ReferencedDirectSegmentInstanceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDirectSegmentInstanceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDirectSegmentInstanceSequenceItem")
         self._ReferencedDirectSegmentInstanceSequence.append(item)
         if "ReferencedDirectSegmentInstanceSequence" not in self._dataset:
             self._dataset.ReferencedDirectSegmentInstanceSequence = pydicom.Sequence()

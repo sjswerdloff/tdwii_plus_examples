@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -47,7 +47,7 @@ class VolumetricPresentationInputAnnotationSequenceItem:
             if "TextObjectSequence" in self._dataset:
                 del self._dataset.TextObjectSequence
         elif not isinstance(value, list) or not all(isinstance(item, TextObjectSequenceItem) for item in value):
-            raise ValueError(f"TextObjectSequence must be a list of TextObjectSequenceItem objects")
+            raise ValueError("TextObjectSequence must be a list of TextObjectSequenceItem objects")
         else:
             self._TextObjectSequence = value
             if "TextObjectSequence" not in self._dataset:
@@ -57,7 +57,7 @@ class VolumetricPresentationInputAnnotationSequenceItem:
 
     def add_TextObject(self, item: TextObjectSequenceItem):
         if not isinstance(item, TextObjectSequenceItem):
-            raise ValueError(f"Item must be an instance of TextObjectSequenceItem")
+            raise ValueError("Item must be an instance of TextObjectSequenceItem")
         self._TextObjectSequence.append(item)
         if "TextObjectSequence" not in self._dataset:
             self._dataset.TextObjectSequence = pydicom.Sequence()
@@ -96,7 +96,7 @@ class VolumetricPresentationInputAnnotationSequenceItem:
             isinstance(item, ReferencedStructuredContextSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedStructuredContextSequence must be a list of ReferencedStructuredContextSequenceItem objects"
+                "ReferencedStructuredContextSequence must be a list of ReferencedStructuredContextSequenceItem objects"
             )
         else:
             self._ReferencedStructuredContextSequence = value
@@ -107,7 +107,7 @@ class VolumetricPresentationInputAnnotationSequenceItem:
 
     def add_ReferencedStructuredContext(self, item: ReferencedStructuredContextSequenceItem):
         if not isinstance(item, ReferencedStructuredContextSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedStructuredContextSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedStructuredContextSequenceItem")
         self._ReferencedStructuredContextSequence.append(item)
         if "ReferencedStructuredContextSequence" not in self._dataset:
             self._dataset.ReferencedStructuredContextSequence = pydicom.Sequence()

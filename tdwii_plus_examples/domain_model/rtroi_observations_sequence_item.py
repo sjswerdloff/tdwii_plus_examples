@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -49,7 +49,7 @@ class RTROIObservationsSequenceItem:
             if "AnatomicRegionSequence" in self._dataset:
                 del self._dataset.AnatomicRegionSequence
         elif not isinstance(value, list) or not all(isinstance(item, AnatomicRegionSequenceItem) for item in value):
-            raise ValueError(f"AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
+            raise ValueError("AnatomicRegionSequence must be a list of AnatomicRegionSequenceItem objects")
         else:
             self._AnatomicRegionSequence = value
             if "AnatomicRegionSequence" not in self._dataset:
@@ -59,7 +59,7 @@ class RTROIObservationsSequenceItem:
 
     def add_AnatomicRegion(self, item: AnatomicRegionSequenceItem):
         if not isinstance(item, AnatomicRegionSequenceItem):
-            raise ValueError(f"Item must be an instance of AnatomicRegionSequenceItem")
+            raise ValueError("Item must be an instance of AnatomicRegionSequenceItem")
         self._AnatomicRegionSequence.append(item)
         if "AnatomicRegionSequence" not in self._dataset:
             self._dataset.AnatomicRegionSequence = pydicom.Sequence()
@@ -81,9 +81,7 @@ class RTROIObservationsSequenceItem:
             if "PrimaryAnatomicStructureSequence" in self._dataset:
                 del self._dataset.PrimaryAnatomicStructureSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrimaryAnatomicStructureSequenceItem) for item in value):
-            raise ValueError(
-                f"PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects"
-            )
+            raise ValueError("PrimaryAnatomicStructureSequence must be a list of PrimaryAnatomicStructureSequenceItem objects")
         else:
             self._PrimaryAnatomicStructureSequence = value
             if "PrimaryAnatomicStructureSequence" not in self._dataset:
@@ -93,7 +91,7 @@ class RTROIObservationsSequenceItem:
 
     def add_PrimaryAnatomicStructure(self, item: PrimaryAnatomicStructureSequenceItem):
         if not isinstance(item, PrimaryAnatomicStructureSequenceItem):
-            raise ValueError(f"Item must be an instance of PrimaryAnatomicStructureSequenceItem")
+            raise ValueError("Item must be an instance of PrimaryAnatomicStructureSequenceItem")
         self._PrimaryAnatomicStructureSequence.append(item)
         if "PrimaryAnatomicStructureSequence" not in self._dataset:
             self._dataset.PrimaryAnatomicStructureSequence = pydicom.Sequence()
@@ -115,7 +113,7 @@ class RTROIObservationsSequenceItem:
             if "SegmentedPropertyCategoryCodeSequence" in self._dataset:
                 del self._dataset.SegmentedPropertyCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SegmentedPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SegmentedPropertyCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SegmentedPropertyCategoryCodeSequence = value
             if "SegmentedPropertyCategoryCodeSequence" not in self._dataset:
@@ -125,7 +123,7 @@ class RTROIObservationsSequenceItem:
 
     def add_SegmentedPropertyCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SegmentedPropertyCategoryCodeSequence.append(item)
         if "SegmentedPropertyCategoryCodeSequence" not in self._dataset:
             self._dataset.SegmentedPropertyCategoryCodeSequence = pydicom.Sequence()
@@ -161,7 +159,7 @@ class RTROIObservationsSequenceItem:
             if "RTRelatedROISequence" in self._dataset:
                 del self._dataset.RTRelatedROISequence
         elif not isinstance(value, list) or not all(isinstance(item, RTRelatedROISequenceItem) for item in value):
-            raise ValueError(f"RTRelatedROISequence must be a list of RTRelatedROISequenceItem objects")
+            raise ValueError("RTRelatedROISequence must be a list of RTRelatedROISequenceItem objects")
         else:
             self._RTRelatedROISequence = value
             if "RTRelatedROISequence" not in self._dataset:
@@ -171,7 +169,7 @@ class RTROIObservationsSequenceItem:
 
     def add_RTRelatedROI(self, item: RTRelatedROISequenceItem):
         if not isinstance(item, RTRelatedROISequenceItem):
-            raise ValueError(f"Item must be an instance of RTRelatedROISequenceItem")
+            raise ValueError("Item must be an instance of RTRelatedROISequenceItem")
         self._RTRelatedROISequence.append(item)
         if "RTRelatedROISequence" not in self._dataset:
             self._dataset.RTRelatedROISequence = pydicom.Sequence()
@@ -193,7 +191,7 @@ class RTROIObservationsSequenceItem:
             if "ROIInterpreterSequence" in self._dataset:
                 del self._dataset.ROIInterpreterSequence
         elif not isinstance(value, list) or not all(isinstance(item, ROIInterpreterSequenceItem) for item in value):
-            raise ValueError(f"ROIInterpreterSequence must be a list of ROIInterpreterSequenceItem objects")
+            raise ValueError("ROIInterpreterSequence must be a list of ROIInterpreterSequenceItem objects")
         else:
             self._ROIInterpreterSequence = value
             if "ROIInterpreterSequence" not in self._dataset:
@@ -203,7 +201,7 @@ class RTROIObservationsSequenceItem:
 
     def add_ROIInterpreter(self, item: ROIInterpreterSequenceItem):
         if not isinstance(item, ROIInterpreterSequenceItem):
-            raise ValueError(f"Item must be an instance of ROIInterpreterSequenceItem")
+            raise ValueError("Item must be an instance of ROIInterpreterSequenceItem")
         self._ROIInterpreterSequence.append(item)
         if "ROIInterpreterSequence" not in self._dataset:
             self._dataset.ROIInterpreterSequence = pydicom.Sequence()
@@ -225,7 +223,7 @@ class RTROIObservationsSequenceItem:
             if "ROIObservationContextCodeSequence" in self._dataset:
                 del self._dataset.ROIObservationContextCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ROIObservationContextCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ROIObservationContextCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ROIObservationContextCodeSequence = value
             if "ROIObservationContextCodeSequence" not in self._dataset:
@@ -235,7 +233,7 @@ class RTROIObservationsSequenceItem:
 
     def add_ROIObservationContextCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ROIObservationContextCodeSequence.append(item)
         if "ROIObservationContextCodeSequence" not in self._dataset:
             self._dataset.ROIObservationContextCodeSequence = pydicom.Sequence()
@@ -285,7 +283,7 @@ class RTROIObservationsSequenceItem:
             if "RTROIIdentificationCodeSequence" in self._dataset:
                 del self._dataset.RTROIIdentificationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTROIIdentificationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTROIIdentificationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTROIIdentificationCodeSequence = value
             if "RTROIIdentificationCodeSequence" not in self._dataset:
@@ -295,7 +293,7 @@ class RTROIObservationsSequenceItem:
 
     def add_RTROIIdentificationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTROIIdentificationCodeSequence.append(item)
         if "RTROIIdentificationCodeSequence" not in self._dataset:
             self._dataset.RTROIIdentificationCodeSequence = pydicom.Sequence()
@@ -317,9 +315,7 @@ class RTROIObservationsSequenceItem:
             if "RelatedRTROIObservationsSequence" in self._dataset:
                 del self._dataset.RelatedRTROIObservationsSequence
         elif not isinstance(value, list) or not all(isinstance(item, RelatedRTROIObservationsSequenceItem) for item in value):
-            raise ValueError(
-                f"RelatedRTROIObservationsSequence must be a list of RelatedRTROIObservationsSequenceItem objects"
-            )
+            raise ValueError("RelatedRTROIObservationsSequence must be a list of RelatedRTROIObservationsSequenceItem objects")
         else:
             self._RelatedRTROIObservationsSequence = value
             if "RelatedRTROIObservationsSequence" not in self._dataset:
@@ -329,7 +325,7 @@ class RTROIObservationsSequenceItem:
 
     def add_RelatedRTROIObservations(self, item: RelatedRTROIObservationsSequenceItem):
         if not isinstance(item, RelatedRTROIObservationsSequenceItem):
-            raise ValueError(f"Item must be an instance of RelatedRTROIObservationsSequenceItem")
+            raise ValueError("Item must be an instance of RelatedRTROIObservationsSequenceItem")
         self._RelatedRTROIObservationsSequence.append(item)
         if "RelatedRTROIObservationsSequence" not in self._dataset:
             self._dataset.RelatedRTROIObservationsSequence = pydicom.Sequence()
@@ -379,7 +375,7 @@ class RTROIObservationsSequenceItem:
             if "ROIPhysicalPropertiesSequence" in self._dataset:
                 del self._dataset.ROIPhysicalPropertiesSequence
         elif not isinstance(value, list) or not all(isinstance(item, ROIPhysicalPropertiesSequenceItem) for item in value):
-            raise ValueError(f"ROIPhysicalPropertiesSequence must be a list of ROIPhysicalPropertiesSequenceItem objects")
+            raise ValueError("ROIPhysicalPropertiesSequence must be a list of ROIPhysicalPropertiesSequenceItem objects")
         else:
             self._ROIPhysicalPropertiesSequence = value
             if "ROIPhysicalPropertiesSequence" not in self._dataset:
@@ -389,7 +385,7 @@ class RTROIObservationsSequenceItem:
 
     def add_ROIPhysicalProperties(self, item: ROIPhysicalPropertiesSequenceItem):
         if not isinstance(item, ROIPhysicalPropertiesSequenceItem):
-            raise ValueError(f"Item must be an instance of ROIPhysicalPropertiesSequenceItem")
+            raise ValueError("Item must be an instance of ROIPhysicalPropertiesSequenceItem")
         self._ROIPhysicalPropertiesSequence.append(item)
         if "ROIPhysicalPropertiesSequence" not in self._dataset:
             self._dataset.ROIPhysicalPropertiesSequence = pydicom.Sequence()
@@ -425,7 +421,7 @@ class RTROIObservationsSequenceItem:
             if "TherapeuticRoleCategoryCodeSequence" in self._dataset:
                 del self._dataset.TherapeuticRoleCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TherapeuticRoleCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TherapeuticRoleCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TherapeuticRoleCategoryCodeSequence = value
             if "TherapeuticRoleCategoryCodeSequence" not in self._dataset:
@@ -435,7 +431,7 @@ class RTROIObservationsSequenceItem:
 
     def add_TherapeuticRoleCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TherapeuticRoleCategoryCodeSequence.append(item)
         if "TherapeuticRoleCategoryCodeSequence" not in self._dataset:
             self._dataset.TherapeuticRoleCategoryCodeSequence = pydicom.Sequence()
@@ -457,7 +453,7 @@ class RTROIObservationsSequenceItem:
             if "TherapeuticRoleTypeCodeSequence" in self._dataset:
                 del self._dataset.TherapeuticRoleTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TherapeuticRoleTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TherapeuticRoleTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TherapeuticRoleTypeCodeSequence = value
             if "TherapeuticRoleTypeCodeSequence" not in self._dataset:
@@ -467,7 +463,7 @@ class RTROIObservationsSequenceItem:
 
     def add_TherapeuticRoleTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TherapeuticRoleTypeCodeSequence.append(item)
         if "TherapeuticRoleTypeCodeSequence" not in self._dataset:
             self._dataset.TherapeuticRoleTypeCodeSequence = pydicom.Sequence()

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -92,7 +92,7 @@ class ContributingSourcesSequenceItem:
             if "OperatorIdentificationSequence" in self._dataset:
                 del self._dataset.OperatorIdentificationSequence
         elif not isinstance(value, list) or not all(isinstance(item, OperatorIdentificationSequenceItem) for item in value):
-            raise ValueError(f"OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
+            raise ValueError("OperatorIdentificationSequence must be a list of OperatorIdentificationSequenceItem objects")
         else:
             self._OperatorIdentificationSequence = value
             if "OperatorIdentificationSequence" not in self._dataset:
@@ -102,7 +102,7 @@ class ContributingSourcesSequenceItem:
 
     def add_OperatorIdentification(self, item: OperatorIdentificationSequenceItem):
         if not isinstance(item, OperatorIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of OperatorIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of OperatorIdentificationSequenceItem")
         self._OperatorIdentificationSequence.append(item)
         if "OperatorIdentificationSequence" not in self._dataset:
             self._dataset.OperatorIdentificationSequence = pydicom.Sequence()
@@ -272,7 +272,8 @@ class ContributingSourcesSequenceItem:
             isinstance(item, ContributingSOPInstancesReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ContributingSOPInstancesReferenceSequence must be a list of ContributingSOPInstancesReferenceSequenceItem objects"
+                "ContributingSOPInstancesReferenceSequence must be a list of ContributingSOPInstancesReferenceSequenceItem"
+                " objects"
             )
         else:
             self._ContributingSOPInstancesReferenceSequence = value
@@ -283,7 +284,7 @@ class ContributingSourcesSequenceItem:
 
     def add_ContributingSOPInstancesReference(self, item: ContributingSOPInstancesReferenceSequenceItem):
         if not isinstance(item, ContributingSOPInstancesReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of ContributingSOPInstancesReferenceSequenceItem")
+            raise ValueError("Item must be an instance of ContributingSOPInstancesReferenceSequenceItem")
         self._ContributingSOPInstancesReferenceSequence.append(item)
         if "ContributingSOPInstancesReferenceSequence" not in self._dataset:
             self._dataset.ContributingSOPInstancesReferenceSequence = pydicom.Sequence()
@@ -389,7 +390,7 @@ class ContributingSourcesSequenceItem:
             if "PerformedProtocolCodeSequence" in self._dataset:
                 del self._dataset.PerformedProtocolCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PerformedProtocolCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PerformedProtocolCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PerformedProtocolCodeSequence = value
             if "PerformedProtocolCodeSequence" not in self._dataset:
@@ -399,7 +400,7 @@ class ContributingSourcesSequenceItem:
 
     def add_PerformedProtocolCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PerformedProtocolCodeSequence.append(item)
         if "PerformedProtocolCodeSequence" not in self._dataset:
             self._dataset.PerformedProtocolCodeSequence = pydicom.Sequence()

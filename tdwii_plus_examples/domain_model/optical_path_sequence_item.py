@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -96,7 +96,7 @@ class OpticalPathSequenceItem:
             if "IlluminationTypeCodeSequence" in self._dataset:
                 del self._dataset.IlluminationTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"IlluminationTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("IlluminationTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._IlluminationTypeCodeSequence = value
             if "IlluminationTypeCodeSequence" not in self._dataset:
@@ -106,7 +106,7 @@ class OpticalPathSequenceItem:
 
     def add_IlluminationTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._IlluminationTypeCodeSequence.append(item)
         if "IlluminationTypeCodeSequence" not in self._dataset:
             self._dataset.IlluminationTypeCodeSequence = pydicom.Sequence()
@@ -128,7 +128,7 @@ class OpticalPathSequenceItem:
             if "LightPathFilterTypeStackCodeSequence" in self._dataset:
                 del self._dataset.LightPathFilterTypeStackCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"LightPathFilterTypeStackCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("LightPathFilterTypeStackCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._LightPathFilterTypeStackCodeSequence = value
             if "LightPathFilterTypeStackCodeSequence" not in self._dataset:
@@ -138,7 +138,7 @@ class OpticalPathSequenceItem:
 
     def add_LightPathFilterTypeStackCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._LightPathFilterTypeStackCodeSequence.append(item)
         if "LightPathFilterTypeStackCodeSequence" not in self._dataset:
             self._dataset.LightPathFilterTypeStackCodeSequence = pydicom.Sequence()
@@ -160,7 +160,7 @@ class OpticalPathSequenceItem:
             if "ImagePathFilterTypeStackCodeSequence" in self._dataset:
                 del self._dataset.ImagePathFilterTypeStackCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ImagePathFilterTypeStackCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ImagePathFilterTypeStackCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ImagePathFilterTypeStackCodeSequence = value
             if "ImagePathFilterTypeStackCodeSequence" not in self._dataset:
@@ -170,7 +170,7 @@ class OpticalPathSequenceItem:
 
     def add_ImagePathFilterTypeStackCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ImagePathFilterTypeStackCodeSequence.append(item)
         if "ImagePathFilterTypeStackCodeSequence" not in self._dataset:
             self._dataset.ImagePathFilterTypeStackCodeSequence = pydicom.Sequence()
@@ -192,7 +192,7 @@ class OpticalPathSequenceItem:
             if "LensesCodeSequence" in self._dataset:
                 del self._dataset.LensesCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"LensesCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("LensesCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._LensesCodeSequence = value
             if "LensesCodeSequence" not in self._dataset:
@@ -202,7 +202,7 @@ class OpticalPathSequenceItem:
 
     def add_LensesCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._LensesCodeSequence.append(item)
         if "LensesCodeSequence" not in self._dataset:
             self._dataset.LensesCodeSequence = pydicom.Sequence()
@@ -224,7 +224,7 @@ class OpticalPathSequenceItem:
             if "ChannelDescriptionCodeSequence" in self._dataset:
                 del self._dataset.ChannelDescriptionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ChannelDescriptionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ChannelDescriptionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ChannelDescriptionCodeSequence = value
             if "ChannelDescriptionCodeSequence" not in self._dataset:
@@ -234,7 +234,7 @@ class OpticalPathSequenceItem:
 
     def add_ChannelDescriptionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ChannelDescriptionCodeSequence.append(item)
         if "ChannelDescriptionCodeSequence" not in self._dataset:
             self._dataset.ChannelDescriptionCodeSequence = pydicom.Sequence()
@@ -298,7 +298,7 @@ class OpticalPathSequenceItem:
             if "IlluminatorTypeCodeSequence" in self._dataset:
                 del self._dataset.IlluminatorTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"IlluminatorTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("IlluminatorTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._IlluminatorTypeCodeSequence = value
             if "IlluminatorTypeCodeSequence" not in self._dataset:
@@ -308,7 +308,7 @@ class OpticalPathSequenceItem:
 
     def add_IlluminatorTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._IlluminatorTypeCodeSequence.append(item)
         if "IlluminatorTypeCodeSequence" not in self._dataset:
             self._dataset.IlluminatorTypeCodeSequence = pydicom.Sequence()
@@ -358,7 +358,7 @@ class OpticalPathSequenceItem:
             if "IlluminationColorCodeSequence" in self._dataset:
                 del self._dataset.IlluminationColorCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"IlluminationColorCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("IlluminationColorCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._IlluminationColorCodeSequence = value
             if "IlluminationColorCodeSequence" not in self._dataset:
@@ -368,7 +368,7 @@ class OpticalPathSequenceItem:
 
     def add_IlluminationColorCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._IlluminationColorCodeSequence.append(item)
         if "IlluminationColorCodeSequence" not in self._dataset:
             self._dataset.IlluminationColorCodeSequence = pydicom.Sequence()
@@ -432,7 +432,7 @@ class OpticalPathSequenceItem:
             if "PaletteColorLookupTableSequence" in self._dataset:
                 del self._dataset.PaletteColorLookupTableSequence
         elif not isinstance(value, list) or not all(isinstance(item, PaletteColorLookupTableSequenceItem) for item in value):
-            raise ValueError(f"PaletteColorLookupTableSequence must be a list of PaletteColorLookupTableSequenceItem objects")
+            raise ValueError("PaletteColorLookupTableSequence must be a list of PaletteColorLookupTableSequenceItem objects")
         else:
             self._PaletteColorLookupTableSequence = value
             if "PaletteColorLookupTableSequence" not in self._dataset:
@@ -442,7 +442,7 @@ class OpticalPathSequenceItem:
 
     def add_PaletteColorLookupTable(self, item: PaletteColorLookupTableSequenceItem):
         if not isinstance(item, PaletteColorLookupTableSequenceItem):
-            raise ValueError(f"Item must be an instance of PaletteColorLookupTableSequenceItem")
+            raise ValueError("Item must be an instance of PaletteColorLookupTableSequenceItem")
         self._PaletteColorLookupTableSequence.append(item)
         if "PaletteColorLookupTableSequence" not in self._dataset:
             self._dataset.PaletteColorLookupTableSequence = pydicom.Sequence()

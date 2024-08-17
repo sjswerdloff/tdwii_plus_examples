@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -47,7 +47,7 @@ class OutputInformationSequenceItem:
             if "DICOMStorageSequence" in self._dataset:
                 del self._dataset.DICOMStorageSequence
         elif not isinstance(value, list) or not all(isinstance(item, DICOMStorageSequenceItem) for item in value):
-            raise ValueError(f"DICOMStorageSequence must be a list of DICOMStorageSequenceItem objects")
+            raise ValueError("DICOMStorageSequence must be a list of DICOMStorageSequenceItem objects")
         else:
             self._DICOMStorageSequence = value
             if "DICOMStorageSequence" not in self._dataset:
@@ -57,7 +57,7 @@ class OutputInformationSequenceItem:
 
     def add_DICOMStorage(self, item: DICOMStorageSequenceItem):
         if not isinstance(item, DICOMStorageSequenceItem):
-            raise ValueError(f"Item must be an instance of DICOMStorageSequenceItem")
+            raise ValueError("Item must be an instance of DICOMStorageSequenceItem")
         self._DICOMStorageSequence.append(item)
         if "DICOMStorageSequence" not in self._dataset:
             self._dataset.DICOMStorageSequence = pydicom.Sequence()
@@ -79,7 +79,7 @@ class OutputInformationSequenceItem:
             if "STOWRSStorageSequence" in self._dataset:
                 del self._dataset.STOWRSStorageSequence
         elif not isinstance(value, list) or not all(isinstance(item, STOWRSStorageSequenceItem) for item in value):
-            raise ValueError(f"STOWRSStorageSequence must be a list of STOWRSStorageSequenceItem objects")
+            raise ValueError("STOWRSStorageSequence must be a list of STOWRSStorageSequenceItem objects")
         else:
             self._STOWRSStorageSequence = value
             if "STOWRSStorageSequence" not in self._dataset:
@@ -89,7 +89,7 @@ class OutputInformationSequenceItem:
 
     def add_STOWRSStorage(self, item: STOWRSStorageSequenceItem):
         if not isinstance(item, STOWRSStorageSequenceItem):
-            raise ValueError(f"Item must be an instance of STOWRSStorageSequenceItem")
+            raise ValueError("Item must be an instance of STOWRSStorageSequenceItem")
         self._STOWRSStorageSequence.append(item)
         if "STOWRSStorageSequence" not in self._dataset:
             self._dataset.STOWRSStorageSequence = pydicom.Sequence()
@@ -111,7 +111,7 @@ class OutputInformationSequenceItem:
             if "XDSStorageSequence" in self._dataset:
                 del self._dataset.XDSStorageSequence
         elif not isinstance(value, list) or not all(isinstance(item, XDSStorageSequenceItem) for item in value):
-            raise ValueError(f"XDSStorageSequence must be a list of XDSStorageSequenceItem objects")
+            raise ValueError("XDSStorageSequence must be a list of XDSStorageSequenceItem objects")
         else:
             self._XDSStorageSequence = value
             if "XDSStorageSequence" not in self._dataset:
@@ -121,7 +121,7 @@ class OutputInformationSequenceItem:
 
     def add_XDSStorage(self, item: XDSStorageSequenceItem):
         if not isinstance(item, XDSStorageSequenceItem):
-            raise ValueError(f"Item must be an instance of XDSStorageSequenceItem")
+            raise ValueError("Item must be an instance of XDSStorageSequenceItem")
         self._XDSStorageSequence.append(item)
         if "XDSStorageSequence" not in self._dataset:
             self._dataset.XDSStorageSequence = pydicom.Sequence()

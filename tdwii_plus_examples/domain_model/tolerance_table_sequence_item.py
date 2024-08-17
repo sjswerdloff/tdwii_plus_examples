@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -91,7 +91,7 @@ class ToleranceTableSequenceItem:
             isinstance(item, BeamLimitingDeviceToleranceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"BeamLimitingDeviceToleranceSequence must be a list of BeamLimitingDeviceToleranceSequenceItem objects"
+                "BeamLimitingDeviceToleranceSequence must be a list of BeamLimitingDeviceToleranceSequenceItem objects"
             )
         else:
             self._BeamLimitingDeviceToleranceSequence = value
@@ -102,7 +102,7 @@ class ToleranceTableSequenceItem:
 
     def add_BeamLimitingDeviceTolerance(self, item: BeamLimitingDeviceToleranceSequenceItem):
         if not isinstance(item, BeamLimitingDeviceToleranceSequenceItem):
-            raise ValueError(f"Item must be an instance of BeamLimitingDeviceToleranceSequenceItem")
+            raise ValueError("Item must be an instance of BeamLimitingDeviceToleranceSequenceItem")
         self._BeamLimitingDeviceToleranceSequence.append(item)
         if "BeamLimitingDeviceToleranceSequence" not in self._dataset:
             self._dataset.BeamLimitingDeviceToleranceSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -73,7 +73,7 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
             if "OphthalmicAxialLengthSelectionMethodCodeSequence" in self._dataset:
                 del self._dataset.OphthalmicAxialLengthSelectionMethodCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"OphthalmicAxialLengthSelectionMethodCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("OphthalmicAxialLengthSelectionMethodCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._OphthalmicAxialLengthSelectionMethodCodeSequence = value
             if "OphthalmicAxialLengthSelectionMethodCodeSequence" not in self._dataset:
@@ -83,7 +83,7 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
 
     def add_OphthalmicAxialLengthSelectionMethodCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._OphthalmicAxialLengthSelectionMethodCodeSequence.append(item)
         if "OphthalmicAxialLengthSelectionMethodCodeSequence" not in self._dataset:
             self._dataset.OphthalmicAxialLengthSelectionMethodCodeSequence = pydicom.Sequence()
@@ -117,7 +117,8 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
             isinstance(item, SelectedSegmentalOphthalmicAxialLengthSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SelectedSegmentalOphthalmicAxialLengthSequence must be a list of SelectedSegmentalOphthalmicAxialLengthSequenceItem objects"
+                "SelectedSegmentalOphthalmicAxialLengthSequence must be a list of"
+                " SelectedSegmentalOphthalmicAxialLengthSequenceItem objects"
             )
         else:
             self._SelectedSegmentalOphthalmicAxialLengthSequence = value
@@ -128,7 +129,7 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
 
     def add_SelectedSegmentalOphthalmicAxialLength(self, item: SelectedSegmentalOphthalmicAxialLengthSequenceItem):
         if not isinstance(item, SelectedSegmentalOphthalmicAxialLengthSequenceItem):
-            raise ValueError(f"Item must be an instance of SelectedSegmentalOphthalmicAxialLengthSequenceItem")
+            raise ValueError("Item must be an instance of SelectedSegmentalOphthalmicAxialLengthSequenceItem")
         self._SelectedSegmentalOphthalmicAxialLengthSequence.append(item)
         if "SelectedSegmentalOphthalmicAxialLengthSequence" not in self._dataset:
             self._dataset.SelectedSegmentalOphthalmicAxialLengthSequence = pydicom.Sequence()
@@ -160,7 +161,8 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
             isinstance(item, OphthalmicAxialLengthQualityMetricSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OphthalmicAxialLengthQualityMetricSequence must be a list of OphthalmicAxialLengthQualityMetricSequenceItem objects"
+                "OphthalmicAxialLengthQualityMetricSequence must be a list of OphthalmicAxialLengthQualityMetricSequenceItem"
+                " objects"
             )
         else:
             self._OphthalmicAxialLengthQualityMetricSequence = value
@@ -171,7 +173,7 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
 
     def add_OphthalmicAxialLengthQualityMetric(self, item: OphthalmicAxialLengthQualityMetricSequenceItem):
         if not isinstance(item, OphthalmicAxialLengthQualityMetricSequenceItem):
-            raise ValueError(f"Item must be an instance of OphthalmicAxialLengthQualityMetricSequenceItem")
+            raise ValueError("Item must be an instance of OphthalmicAxialLengthQualityMetricSequenceItem")
         self._OphthalmicAxialLengthQualityMetricSequence.append(item)
         if "OphthalmicAxialLengthQualityMetricSequence" not in self._dataset:
             self._dataset.OphthalmicAxialLengthQualityMetricSequence = pydicom.Sequence()
@@ -205,7 +207,8 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
             isinstance(item, ReferencedOphthalmicAxialLengthMeasurementQCImageSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedOphthalmicAxialLengthMeasurementQCImageSequence must be a list of ReferencedOphthalmicAxialLengthMeasurementQCImageSequenceItem objects"
+                "ReferencedOphthalmicAxialLengthMeasurementQCImageSequence must be a list of"
+                " ReferencedOphthalmicAxialLengthMeasurementQCImageSequenceItem objects"
             )
         else:
             self._ReferencedOphthalmicAxialLengthMeasurementQCImageSequence = value
@@ -220,7 +223,7 @@ class UltrasoundSelectedOphthalmicAxialLengthSequenceItem:
         self, item: ReferencedOphthalmicAxialLengthMeasurementQCImageSequenceItem
     ):
         if not isinstance(item, ReferencedOphthalmicAxialLengthMeasurementQCImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedOphthalmicAxialLengthMeasurementQCImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedOphthalmicAxialLengthMeasurementQCImageSequenceItem")
         self._ReferencedOphthalmicAxialLengthMeasurementQCImageSequence.append(item)
         if "ReferencedOphthalmicAxialLengthMeasurementQCImageSequence" not in self._dataset:
             self._dataset.ReferencedOphthalmicAxialLengthMeasurementQCImageSequence = pydicom.Sequence()

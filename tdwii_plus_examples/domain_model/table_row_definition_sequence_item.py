@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -30,7 +30,7 @@ class TableRowDefinitionSequenceItem:
             if "MeasurementUnitsCodeSequence" in self._dataset:
                 del self._dataset.MeasurementUnitsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MeasurementUnitsCodeSequence = value
             if "MeasurementUnitsCodeSequence" not in self._dataset:
@@ -40,7 +40,7 @@ class TableRowDefinitionSequenceItem:
 
     def add_MeasurementUnitsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MeasurementUnitsCodeSequence.append(item)
         if "MeasurementUnitsCodeSequence" not in self._dataset:
             self._dataset.MeasurementUnitsCodeSequence = pydicom.Sequence()
@@ -62,7 +62,7 @@ class TableRowDefinitionSequenceItem:
             if "ConceptNameCodeSequence" in self._dataset:
                 del self._dataset.ConceptNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptNameCodeSequence = value
             if "ConceptNameCodeSequence" not in self._dataset:
@@ -72,7 +72,7 @@ class TableRowDefinitionSequenceItem:
 
     def add_ConceptNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptNameCodeSequence.append(item)
         if "ConceptNameCodeSequence" not in self._dataset:
             self._dataset.ConceptNameCodeSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -59,7 +59,8 @@ class SourceConceptualVolumeSequenceItem:
             isinstance(item, ConceptualVolumeConstituentSegmentationReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConceptualVolumeConstituentSegmentationReferenceSequence must be a list of ConceptualVolumeConstituentSegmentationReferenceSequenceItem objects"
+                "ConceptualVolumeConstituentSegmentationReferenceSequence must be a list of"
+                " ConceptualVolumeConstituentSegmentationReferenceSequenceItem objects"
             )
         else:
             self._ConceptualVolumeConstituentSegmentationReferenceSequence = value
@@ -74,7 +75,7 @@ class SourceConceptualVolumeSequenceItem:
         self, item: ConceptualVolumeConstituentSegmentationReferenceSequenceItem
     ):
         if not isinstance(item, ConceptualVolumeConstituentSegmentationReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of ConceptualVolumeConstituentSegmentationReferenceSequenceItem")
+            raise ValueError("Item must be an instance of ConceptualVolumeConstituentSegmentationReferenceSequenceItem")
         self._ConceptualVolumeConstituentSegmentationReferenceSequence.append(item)
         if "ConceptualVolumeConstituentSegmentationReferenceSequence" not in self._dataset:
             self._dataset.ConceptualVolumeConstituentSegmentationReferenceSequence = pydicom.Sequence()

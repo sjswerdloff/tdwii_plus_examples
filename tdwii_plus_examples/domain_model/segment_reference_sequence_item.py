@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -47,7 +47,7 @@ class SegmentReferenceSequenceItem:
             if "DirectSegmentReferenceSequence" in self._dataset:
                 del self._dataset.DirectSegmentReferenceSequence
         elif not isinstance(value, list) or not all(isinstance(item, DirectSegmentReferenceSequenceItem) for item in value):
-            raise ValueError(f"DirectSegmentReferenceSequence must be a list of DirectSegmentReferenceSequenceItem objects")
+            raise ValueError("DirectSegmentReferenceSequence must be a list of DirectSegmentReferenceSequenceItem objects")
         else:
             self._DirectSegmentReferenceSequence = value
             if "DirectSegmentReferenceSequence" not in self._dataset:
@@ -57,7 +57,7 @@ class SegmentReferenceSequenceItem:
 
     def add_DirectSegmentReference(self, item: DirectSegmentReferenceSequenceItem):
         if not isinstance(item, DirectSegmentReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of DirectSegmentReferenceSequenceItem")
+            raise ValueError("Item must be an instance of DirectSegmentReferenceSequenceItem")
         self._DirectSegmentReferenceSequence.append(item)
         if "DirectSegmentReferenceSequence" not in self._dataset:
             self._dataset.DirectSegmentReferenceSequence = pydicom.Sequence()
@@ -82,7 +82,7 @@ class SegmentReferenceSequenceItem:
             isinstance(item, CombinationSegmentReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"CombinationSegmentReferenceSequence must be a list of CombinationSegmentReferenceSequenceItem objects"
+                "CombinationSegmentReferenceSequence must be a list of CombinationSegmentReferenceSequenceItem objects"
             )
         else:
             self._CombinationSegmentReferenceSequence = value
@@ -93,7 +93,7 @@ class SegmentReferenceSequenceItem:
 
     def add_CombinationSegmentReference(self, item: CombinationSegmentReferenceSequenceItem):
         if not isinstance(item, CombinationSegmentReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of CombinationSegmentReferenceSequenceItem")
+            raise ValueError("Item must be an instance of CombinationSegmentReferenceSequenceItem")
         self._CombinationSegmentReferenceSequence.append(item)
         if "CombinationSegmentReferenceSequence" not in self._dataset:
             self._dataset.CombinationSegmentReferenceSequence = pydicom.Sequence()

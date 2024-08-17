@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class PlanOverviewSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class PlanOverviewSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -95,7 +95,7 @@ class PlanOverviewSequenceItem:
             if "ReferencedStructureSetSequence" in self._dataset:
                 del self._dataset.ReferencedStructureSetSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedStructureSetSequenceItem) for item in value):
-            raise ValueError(f"ReferencedStructureSetSequence must be a list of ReferencedStructureSetSequenceItem objects")
+            raise ValueError("ReferencedStructureSetSequence must be a list of ReferencedStructureSetSequenceItem objects")
         else:
             self._ReferencedStructureSetSequence = value
             if "ReferencedStructureSetSequence" not in self._dataset:
@@ -105,7 +105,7 @@ class PlanOverviewSequenceItem:
 
     def add_ReferencedStructureSet(self, item: ReferencedStructureSetSequenceItem):
         if not isinstance(item, ReferencedStructureSetSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedStructureSetSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedStructureSetSequenceItem")
         self._ReferencedStructureSetSequence.append(item)
         if "ReferencedStructureSetSequence" not in self._dataset:
             self._dataset.ReferencedStructureSetSequence = pydicom.Sequence()
@@ -127,7 +127,7 @@ class PlanOverviewSequenceItem:
             if "PrescriptionOverviewSequence" in self._dataset:
                 del self._dataset.PrescriptionOverviewSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrescriptionOverviewSequenceItem) for item in value):
-            raise ValueError(f"PrescriptionOverviewSequence must be a list of PrescriptionOverviewSequenceItem objects")
+            raise ValueError("PrescriptionOverviewSequence must be a list of PrescriptionOverviewSequenceItem objects")
         else:
             self._PrescriptionOverviewSequence = value
             if "PrescriptionOverviewSequence" not in self._dataset:
@@ -137,7 +137,7 @@ class PlanOverviewSequenceItem:
 
     def add_PrescriptionOverview(self, item: PrescriptionOverviewSequenceItem):
         if not isinstance(item, PrescriptionOverviewSequenceItem):
-            raise ValueError(f"Item must be an instance of PrescriptionOverviewSequenceItem")
+            raise ValueError("Item must be an instance of PrescriptionOverviewSequenceItem")
         self._PrescriptionOverviewSequence.append(item)
         if "PrescriptionOverviewSequence" not in self._dataset:
             self._dataset.PrescriptionOverviewSequence = pydicom.Sequence()
@@ -201,7 +201,7 @@ class PlanOverviewSequenceItem:
             if "TreatmentSiteCodeSequence" in self._dataset:
                 del self._dataset.TreatmentSiteCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TreatmentSiteCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TreatmentSiteCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TreatmentSiteCodeSequence = value
             if "TreatmentSiteCodeSequence" not in self._dataset:
@@ -211,7 +211,7 @@ class PlanOverviewSequenceItem:
 
     def add_TreatmentSiteCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TreatmentSiteCodeSequence.append(item)
         if "TreatmentSiteCodeSequence" not in self._dataset:
             self._dataset.TreatmentSiteCodeSequence = pydicom.Sequence()

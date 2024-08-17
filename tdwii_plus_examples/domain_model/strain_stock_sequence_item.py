@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class StrainStockSequenceItem:
             if "StrainSourceRegistryCodeSequence" in self._dataset:
                 del self._dataset.StrainSourceRegistryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"StrainSourceRegistryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("StrainSourceRegistryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._StrainSourceRegistryCodeSequence = value
             if "StrainSourceRegistryCodeSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class StrainStockSequenceItem:
 
     def add_StrainSourceRegistryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._StrainSourceRegistryCodeSequence.append(item)
         if "StrainSourceRegistryCodeSequence" not in self._dataset:
             self._dataset.StrainSourceRegistryCodeSequence = pydicom.Sequence()

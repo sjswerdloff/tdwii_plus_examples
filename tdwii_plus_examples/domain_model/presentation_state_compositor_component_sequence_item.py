@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -32,7 +32,7 @@ class PresentationStateCompositorComponentSequenceItem:
                 del self._dataset.WeightingTransferFunctionSequence
         elif not isinstance(value, list) or not all(isinstance(item, WeightingTransferFunctionSequenceItem) for item in value):
             raise ValueError(
-                f"WeightingTransferFunctionSequence must be a list of WeightingTransferFunctionSequenceItem objects"
+                "WeightingTransferFunctionSequence must be a list of WeightingTransferFunctionSequenceItem objects"
             )
         else:
             self._WeightingTransferFunctionSequence = value
@@ -43,7 +43,7 @@ class PresentationStateCompositorComponentSequenceItem:
 
     def add_WeightingTransferFunction(self, item: WeightingTransferFunctionSequenceItem):
         if not isinstance(item, WeightingTransferFunctionSequenceItem):
-            raise ValueError(f"Item must be an instance of WeightingTransferFunctionSequenceItem")
+            raise ValueError("Item must be an instance of WeightingTransferFunctionSequenceItem")
         self._WeightingTransferFunctionSequence.append(item)
         if "WeightingTransferFunctionSequence" not in self._dataset:
             self._dataset.WeightingTransferFunctionSequence = pydicom.Sequence()

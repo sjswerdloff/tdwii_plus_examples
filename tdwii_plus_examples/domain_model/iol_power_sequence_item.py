@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class IOLPowerSequenceItem:
             if "ToricIOLPowerSequence" in self._dataset:
                 del self._dataset.ToricIOLPowerSequence
         elif not isinstance(value, list) or not all(isinstance(item, ToricIOLPowerSequenceItem) for item in value):
-            raise ValueError(f"ToricIOLPowerSequence must be a list of ToricIOLPowerSequenceItem objects")
+            raise ValueError("ToricIOLPowerSequence must be a list of ToricIOLPowerSequenceItem objects")
         else:
             self._ToricIOLPowerSequence = value
             if "ToricIOLPowerSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class IOLPowerSequenceItem:
 
     def add_ToricIOLPower(self, item: ToricIOLPowerSequenceItem):
         if not isinstance(item, ToricIOLPowerSequenceItem):
-            raise ValueError(f"Item must be an instance of ToricIOLPowerSequenceItem")
+            raise ValueError("Item must be an instance of ToricIOLPowerSequenceItem")
         self._ToricIOLPowerSequence.append(item)
         if "ToricIOLPowerSequence" not in self._dataset:
             self._dataset.ToricIOLPowerSequence = pydicom.Sequence()
@@ -63,7 +63,7 @@ class IOLPowerSequenceItem:
             if "PredictedToricErrorSequence" in self._dataset:
                 del self._dataset.PredictedToricErrorSequence
         elif not isinstance(value, list) or not all(isinstance(item, PredictedToricErrorSequenceItem) for item in value):
-            raise ValueError(f"PredictedToricErrorSequence must be a list of PredictedToricErrorSequenceItem objects")
+            raise ValueError("PredictedToricErrorSequence must be a list of PredictedToricErrorSequenceItem objects")
         else:
             self._PredictedToricErrorSequence = value
             if "PredictedToricErrorSequence" not in self._dataset:
@@ -73,7 +73,7 @@ class IOLPowerSequenceItem:
 
     def add_PredictedToricError(self, item: PredictedToricErrorSequenceItem):
         if not isinstance(item, PredictedToricErrorSequenceItem):
-            raise ValueError(f"Item must be an instance of PredictedToricErrorSequenceItem")
+            raise ValueError("Item must be an instance of PredictedToricErrorSequenceItem")
         self._PredictedToricErrorSequence.append(item)
         if "PredictedToricErrorSequence" not in self._dataset:
             self._dataset.PredictedToricErrorSequence = pydicom.Sequence()

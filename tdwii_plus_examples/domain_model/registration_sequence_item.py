@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -37,7 +37,7 @@ class RegistrationSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -47,7 +47,7 @@ class RegistrationSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -83,7 +83,7 @@ class RegistrationSequenceItem:
             if "UsedSegmentsSequence" in self._dataset:
                 del self._dataset.UsedSegmentsSequence
         elif not isinstance(value, list) or not all(isinstance(item, UsedSegmentsSequenceItem) for item in value):
-            raise ValueError(f"UsedSegmentsSequence must be a list of UsedSegmentsSequenceItem objects")
+            raise ValueError("UsedSegmentsSequence must be a list of UsedSegmentsSequenceItem objects")
         else:
             self._UsedSegmentsSequence = value
             if "UsedSegmentsSequence" not in self._dataset:
@@ -93,7 +93,7 @@ class RegistrationSequenceItem:
 
     def add_UsedSegments(self, item: UsedSegmentsSequenceItem):
         if not isinstance(item, UsedSegmentsSequenceItem):
-            raise ValueError(f"Item must be an instance of UsedSegmentsSequenceItem")
+            raise ValueError("Item must be an instance of UsedSegmentsSequenceItem")
         self._UsedSegmentsSequence.append(item)
         if "UsedSegmentsSequence" not in self._dataset:
             self._dataset.UsedSegmentsSequence = pydicom.Sequence()
@@ -115,7 +115,7 @@ class RegistrationSequenceItem:
             if "MatrixRegistrationSequence" in self._dataset:
                 del self._dataset.MatrixRegistrationSequence
         elif not isinstance(value, list) or not all(isinstance(item, MatrixRegistrationSequenceItem) for item in value):
-            raise ValueError(f"MatrixRegistrationSequence must be a list of MatrixRegistrationSequenceItem objects")
+            raise ValueError("MatrixRegistrationSequence must be a list of MatrixRegistrationSequenceItem objects")
         else:
             self._MatrixRegistrationSequence = value
             if "MatrixRegistrationSequence" not in self._dataset:
@@ -125,7 +125,7 @@ class RegistrationSequenceItem:
 
     def add_MatrixRegistration(self, item: MatrixRegistrationSequenceItem):
         if not isinstance(item, MatrixRegistrationSequenceItem):
-            raise ValueError(f"Item must be an instance of MatrixRegistrationSequenceItem")
+            raise ValueError("Item must be an instance of MatrixRegistrationSequenceItem")
         self._MatrixRegistrationSequence.append(item)
         if "MatrixRegistrationSequence" not in self._dataset:
             self._dataset.MatrixRegistrationSequence = pydicom.Sequence()
@@ -147,7 +147,7 @@ class RegistrationSequenceItem:
             if "UsedFiducialsSequence" in self._dataset:
                 del self._dataset.UsedFiducialsSequence
         elif not isinstance(value, list) or not all(isinstance(item, UsedFiducialsSequenceItem) for item in value):
-            raise ValueError(f"UsedFiducialsSequence must be a list of UsedFiducialsSequenceItem objects")
+            raise ValueError("UsedFiducialsSequence must be a list of UsedFiducialsSequenceItem objects")
         else:
             self._UsedFiducialsSequence = value
             if "UsedFiducialsSequence" not in self._dataset:
@@ -157,7 +157,7 @@ class RegistrationSequenceItem:
 
     def add_UsedFiducials(self, item: UsedFiducialsSequenceItem):
         if not isinstance(item, UsedFiducialsSequenceItem):
-            raise ValueError(f"Item must be an instance of UsedFiducialsSequenceItem")
+            raise ValueError("Item must be an instance of UsedFiducialsSequenceItem")
         self._UsedFiducialsSequence.append(item)
         if "UsedFiducialsSequence" not in self._dataset:
             self._dataset.UsedFiducialsSequence = pydicom.Sequence()
@@ -179,7 +179,7 @@ class RegistrationSequenceItem:
             if "UsedRTStructureSetROISequence" in self._dataset:
                 del self._dataset.UsedRTStructureSetROISequence
         elif not isinstance(value, list) or not all(isinstance(item, UsedRTStructureSetROISequenceItem) for item in value):
-            raise ValueError(f"UsedRTStructureSetROISequence must be a list of UsedRTStructureSetROISequenceItem objects")
+            raise ValueError("UsedRTStructureSetROISequence must be a list of UsedRTStructureSetROISequenceItem objects")
         else:
             self._UsedRTStructureSetROISequence = value
             if "UsedRTStructureSetROISequence" not in self._dataset:
@@ -189,7 +189,7 @@ class RegistrationSequenceItem:
 
     def add_UsedRTStructureSetROI(self, item: UsedRTStructureSetROISequenceItem):
         if not isinstance(item, UsedRTStructureSetROISequenceItem):
-            raise ValueError(f"Item must be an instance of UsedRTStructureSetROISequenceItem")
+            raise ValueError("Item must be an instance of UsedRTStructureSetROISequenceItem")
         self._UsedRTStructureSetROISequence.append(item)
         if "UsedRTStructureSetROISequence" not in self._dataset:
             self._dataset.UsedRTStructureSetROISequence = pydicom.Sequence()

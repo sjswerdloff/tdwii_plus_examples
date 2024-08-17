@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -183,7 +183,7 @@ class TextObjectSequenceItem:
             if "TextStyleSequence" in self._dataset:
                 del self._dataset.TextStyleSequence
         elif not isinstance(value, list) or not all(isinstance(item, TextStyleSequenceItem) for item in value):
-            raise ValueError(f"TextStyleSequence must be a list of TextStyleSequenceItem objects")
+            raise ValueError("TextStyleSequence must be a list of TextStyleSequenceItem objects")
         else:
             self._TextStyleSequence = value
             if "TextStyleSequence" not in self._dataset:
@@ -193,7 +193,7 @@ class TextObjectSequenceItem:
 
     def add_TextStyle(self, item: TextStyleSequenceItem):
         if not isinstance(item, TextStyleSequenceItem):
-            raise ValueError(f"Item must be an instance of TextStyleSequenceItem")
+            raise ValueError("Item must be an instance of TextStyleSequenceItem")
         self._TextStyleSequence.append(item)
         if "TextStyleSequence" not in self._dataset:
             self._dataset.TextStyleSequence = pydicom.Sequence()

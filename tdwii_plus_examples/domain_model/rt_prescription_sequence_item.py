@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -61,7 +61,7 @@ class RTPrescriptionSequenceItem:
             isinstance(item, PatientTreatmentOrientationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PatientTreatmentOrientationSequence must be a list of PatientTreatmentOrientationSequenceItem objects"
+                "PatientTreatmentOrientationSequence must be a list of PatientTreatmentOrientationSequenceItem objects"
             )
         else:
             self._PatientTreatmentOrientationSequence = value
@@ -72,7 +72,7 @@ class RTPrescriptionSequenceItem:
 
     def add_PatientTreatmentOrientation(self, item: PatientTreatmentOrientationSequenceItem):
         if not isinstance(item, PatientTreatmentOrientationSequenceItem):
-            raise ValueError(f"Item must be an instance of PatientTreatmentOrientationSequenceItem")
+            raise ValueError("Item must be an instance of PatientTreatmentOrientationSequenceItem")
         self._PatientTreatmentOrientationSequence.append(item)
         if "PatientTreatmentOrientationSequence" not in self._dataset:
             self._dataset.PatientTreatmentOrientationSequence = pydicom.Sequence()
@@ -167,7 +167,7 @@ class RTPrescriptionSequenceItem:
             isinstance(item, ReferencedRTTreatmentPhaseSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedRTTreatmentPhaseSequence must be a list of ReferencedRTTreatmentPhaseSequenceItem objects"
+                "ReferencedRTTreatmentPhaseSequence must be a list of ReferencedRTTreatmentPhaseSequenceItem objects"
             )
         else:
             self._ReferencedRTTreatmentPhaseSequence = value
@@ -178,7 +178,7 @@ class RTPrescriptionSequenceItem:
 
     def add_ReferencedRTTreatmentPhase(self, item: ReferencedRTTreatmentPhaseSequenceItem):
         if not isinstance(item, ReferencedRTTreatmentPhaseSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTTreatmentPhaseSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTTreatmentPhaseSequenceItem")
         self._ReferencedRTTreatmentPhaseSequence.append(item)
         if "ReferencedRTTreatmentPhaseSequence" not in self._dataset:
             self._dataset.ReferencedRTTreatmentPhaseSequence = pydicom.Sequence()
@@ -228,7 +228,7 @@ class RTPrescriptionSequenceItem:
             if "RTAnatomicPrescriptionSequence" in self._dataset:
                 del self._dataset.RTAnatomicPrescriptionSequence
         elif not isinstance(value, list) or not all(isinstance(item, RTAnatomicPrescriptionSequenceItem) for item in value):
-            raise ValueError(f"RTAnatomicPrescriptionSequence must be a list of RTAnatomicPrescriptionSequenceItem objects")
+            raise ValueError("RTAnatomicPrescriptionSequence must be a list of RTAnatomicPrescriptionSequenceItem objects")
         else:
             self._RTAnatomicPrescriptionSequence = value
             if "RTAnatomicPrescriptionSequence" not in self._dataset:
@@ -238,7 +238,7 @@ class RTPrescriptionSequenceItem:
 
     def add_RTAnatomicPrescription(self, item: RTAnatomicPrescriptionSequenceItem):
         if not isinstance(item, RTAnatomicPrescriptionSequenceItem):
-            raise ValueError(f"Item must be an instance of RTAnatomicPrescriptionSequenceItem")
+            raise ValueError("Item must be an instance of RTAnatomicPrescriptionSequenceItem")
         self._RTAnatomicPrescriptionSequence.append(item)
         if "RTAnatomicPrescriptionSequence" not in self._dataset:
             self._dataset.RTAnatomicPrescriptionSequence = pydicom.Sequence()
@@ -274,7 +274,7 @@ class RTPrescriptionSequenceItem:
             if "PriorTreatmentReferenceSequence" in self._dataset:
                 del self._dataset.PriorTreatmentReferenceSequence
         elif not isinstance(value, list) or not all(isinstance(item, PriorTreatmentReferenceSequenceItem) for item in value):
-            raise ValueError(f"PriorTreatmentReferenceSequence must be a list of PriorTreatmentReferenceSequenceItem objects")
+            raise ValueError("PriorTreatmentReferenceSequence must be a list of PriorTreatmentReferenceSequenceItem objects")
         else:
             self._PriorTreatmentReferenceSequence = value
             if "PriorTreatmentReferenceSequence" not in self._dataset:
@@ -284,7 +284,7 @@ class RTPrescriptionSequenceItem:
 
     def add_PriorTreatmentReference(self, item: PriorTreatmentReferenceSequenceItem):
         if not isinstance(item, PriorTreatmentReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of PriorTreatmentReferenceSequenceItem")
+            raise ValueError("Item must be an instance of PriorTreatmentReferenceSequenceItem")
         self._PriorTreatmentReferenceSequence.append(item)
         if "PriorTreatmentReferenceSequence" not in self._dataset:
             self._dataset.PriorTreatmentReferenceSequence = pydicom.Sequence()
@@ -311,7 +311,7 @@ class RTPrescriptionSequenceItem:
             isinstance(item, ReferencedDosimetricObjectivesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedDosimetricObjectivesSequence must be a list of ReferencedDosimetricObjectivesSequenceItem objects"
+                "ReferencedDosimetricObjectivesSequence must be a list of ReferencedDosimetricObjectivesSequenceItem objects"
             )
         else:
             self._ReferencedDosimetricObjectivesSequence = value
@@ -322,7 +322,7 @@ class RTPrescriptionSequenceItem:
 
     def add_ReferencedDosimetricObjectives(self, item: ReferencedDosimetricObjectivesSequenceItem):
         if not isinstance(item, ReferencedDosimetricObjectivesSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDosimetricObjectivesSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDosimetricObjectivesSequenceItem")
         self._ReferencedDosimetricObjectivesSequence.append(item)
         if "ReferencedDosimetricObjectivesSequence" not in self._dataset:
             self._dataset.ReferencedDosimetricObjectivesSequence = pydicom.Sequence()
@@ -344,9 +344,7 @@ class RTPrescriptionSequenceItem:
             if "PlanningInputInformationSequence" in self._dataset:
                 del self._dataset.PlanningInputInformationSequence
         elif not isinstance(value, list) or not all(isinstance(item, PlanningInputInformationSequenceItem) for item in value):
-            raise ValueError(
-                f"PlanningInputInformationSequence must be a list of PlanningInputInformationSequenceItem objects"
-            )
+            raise ValueError("PlanningInputInformationSequence must be a list of PlanningInputInformationSequenceItem objects")
         else:
             self._PlanningInputInformationSequence = value
             if "PlanningInputInformationSequence" not in self._dataset:
@@ -356,7 +354,7 @@ class RTPrescriptionSequenceItem:
 
     def add_PlanningInputInformation(self, item: PlanningInputInformationSequenceItem):
         if not isinstance(item, PlanningInputInformationSequenceItem):
-            raise ValueError(f"Item must be an instance of PlanningInputInformationSequenceItem")
+            raise ValueError("Item must be an instance of PlanningInputInformationSequenceItem")
         self._PlanningInputInformationSequence.append(item)
         if "PlanningInputInformationSequence" not in self._dataset:
             self._dataset.PlanningInputInformationSequence = pydicom.Sequence()
@@ -378,7 +376,7 @@ class RTPrescriptionSequenceItem:
             if "FractionPatternSequence" in self._dataset:
                 del self._dataset.FractionPatternSequence
         elif not isinstance(value, list) or not all(isinstance(item, FractionPatternSequenceItem) for item in value):
-            raise ValueError(f"FractionPatternSequence must be a list of FractionPatternSequenceItem objects")
+            raise ValueError("FractionPatternSequence must be a list of FractionPatternSequenceItem objects")
         else:
             self._FractionPatternSequence = value
             if "FractionPatternSequence" not in self._dataset:
@@ -388,7 +386,7 @@ class RTPrescriptionSequenceItem:
 
     def add_FractionPattern(self, item: FractionPatternSequenceItem):
         if not isinstance(item, FractionPatternSequenceItem):
-            raise ValueError(f"Item must be an instance of FractionPatternSequenceItem")
+            raise ValueError("Item must be an instance of FractionPatternSequenceItem")
         self._FractionPatternSequence.append(item)
         if "FractionPatternSequence" not in self._dataset:
             self._dataset.FractionPatternSequence = pydicom.Sequence()
@@ -480,7 +478,7 @@ class RTPrescriptionSequenceItem:
             if "RTTreatmentTechniqueCodeSequence" in self._dataset:
                 del self._dataset.RTTreatmentTechniqueCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RTTreatmentTechniqueCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RTTreatmentTechniqueCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RTTreatmentTechniqueCodeSequence = value
             if "RTTreatmentTechniqueCodeSequence" not in self._dataset:
@@ -490,7 +488,7 @@ class RTPrescriptionSequenceItem:
 
     def add_RTTreatmentTechniqueCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RTTreatmentTechniqueCodeSequence.append(item)
         if "RTTreatmentTechniqueCodeSequence" not in self._dataset:
             self._dataset.RTTreatmentTechniqueCodeSequence = pydicom.Sequence()
@@ -512,7 +510,7 @@ class RTPrescriptionSequenceItem:
             if "PrescriptionNotesSequence" in self._dataset:
                 del self._dataset.PrescriptionNotesSequence
         elif not isinstance(value, list) or not all(isinstance(item, PrescriptionNotesSequenceItem) for item in value):
-            raise ValueError(f"PrescriptionNotesSequence must be a list of PrescriptionNotesSequenceItem objects")
+            raise ValueError("PrescriptionNotesSequence must be a list of PrescriptionNotesSequenceItem objects")
         else:
             self._PrescriptionNotesSequence = value
             if "PrescriptionNotesSequence" not in self._dataset:
@@ -522,7 +520,7 @@ class RTPrescriptionSequenceItem:
 
     def add_PrescriptionNotes(self, item: PrescriptionNotesSequenceItem):
         if not isinstance(item, PrescriptionNotesSequenceItem):
-            raise ValueError(f"Item must be an instance of PrescriptionNotesSequenceItem")
+            raise ValueError("Item must be an instance of PrescriptionNotesSequenceItem")
         self._PrescriptionNotesSequence.append(item)
         if "PrescriptionNotesSequence" not in self._dataset:
             self._dataset.PrescriptionNotesSequence = pydicom.Sequence()
@@ -545,7 +543,7 @@ class RTPrescriptionSequenceItem:
                 del self._dataset.FractionBasedRelationshipSequence
         elif not isinstance(value, list) or not all(isinstance(item, FractionBasedRelationshipSequenceItem) for item in value):
             raise ValueError(
-                f"FractionBasedRelationshipSequence must be a list of FractionBasedRelationshipSequenceItem objects"
+                "FractionBasedRelationshipSequence must be a list of FractionBasedRelationshipSequenceItem objects"
             )
         else:
             self._FractionBasedRelationshipSequence = value
@@ -556,7 +554,7 @@ class RTPrescriptionSequenceItem:
 
     def add_FractionBasedRelationship(self, item: FractionBasedRelationshipSequenceItem):
         if not isinstance(item, FractionBasedRelationshipSequenceItem):
-            raise ValueError(f"Item must be an instance of FractionBasedRelationshipSequenceItem")
+            raise ValueError("Item must be an instance of FractionBasedRelationshipSequenceItem")
         self._FractionBasedRelationshipSequence.append(item)
         if "FractionBasedRelationshipSequence" not in self._dataset:
             self._dataset.FractionBasedRelationshipSequence = pydicom.Sequence()
@@ -578,7 +576,7 @@ class RTPrescriptionSequenceItem:
             if "DeliveryTimeStructureCodeSequence" in self._dataset:
                 del self._dataset.DeliveryTimeStructureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DeliveryTimeStructureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DeliveryTimeStructureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DeliveryTimeStructureCodeSequence = value
             if "DeliveryTimeStructureCodeSequence" not in self._dataset:
@@ -588,7 +586,7 @@ class RTPrescriptionSequenceItem:
 
     def add_DeliveryTimeStructureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DeliveryTimeStructureCodeSequence.append(item)
         if "DeliveryTimeStructureCodeSequence" not in self._dataset:
             self._dataset.DeliveryTimeStructureCodeSequence = pydicom.Sequence()

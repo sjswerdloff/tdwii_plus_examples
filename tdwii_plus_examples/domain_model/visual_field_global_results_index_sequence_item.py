@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -31,7 +31,7 @@ class VisualFieldGlobalResultsIndexSequenceItem:
             if "DataObservationSequence" in self._dataset:
                 del self._dataset.DataObservationSequence
         elif not isinstance(value, list) or not all(isinstance(item, DataObservationSequenceItem) for item in value):
-            raise ValueError(f"DataObservationSequence must be a list of DataObservationSequenceItem objects")
+            raise ValueError("DataObservationSequence must be a list of DataObservationSequenceItem objects")
         else:
             self._DataObservationSequence = value
             if "DataObservationSequence" not in self._dataset:
@@ -41,7 +41,7 @@ class VisualFieldGlobalResultsIndexSequenceItem:
 
     def add_DataObservation(self, item: DataObservationSequenceItem):
         if not isinstance(item, DataObservationSequenceItem):
-            raise ValueError(f"Item must be an instance of DataObservationSequenceItem")
+            raise ValueError("Item must be an instance of DataObservationSequenceItem")
         self._DataObservationSequence.append(item)
         if "DataObservationSequence" not in self._dataset:
             self._dataset.DataObservationSequence = pydicom.Sequence()
@@ -77,7 +77,7 @@ class VisualFieldGlobalResultsIndexSequenceItem:
             if "IndexProbabilitySequence" in self._dataset:
                 del self._dataset.IndexProbabilitySequence
         elif not isinstance(value, list) or not all(isinstance(item, IndexProbabilitySequenceItem) for item in value):
-            raise ValueError(f"IndexProbabilitySequence must be a list of IndexProbabilitySequenceItem objects")
+            raise ValueError("IndexProbabilitySequence must be a list of IndexProbabilitySequenceItem objects")
         else:
             self._IndexProbabilitySequence = value
             if "IndexProbabilitySequence" not in self._dataset:
@@ -87,7 +87,7 @@ class VisualFieldGlobalResultsIndexSequenceItem:
 
     def add_IndexProbability(self, item: IndexProbabilitySequenceItem):
         if not isinstance(item, IndexProbabilitySequenceItem):
-            raise ValueError(f"Item must be an instance of IndexProbabilitySequenceItem")
+            raise ValueError("Item must be an instance of IndexProbabilitySequenceItem")
         self._IndexProbabilitySequence.append(item)
         if "IndexProbabilitySequence" not in self._dataset:
             self._dataset.IndexProbabilitySequence = pydicom.Sequence()

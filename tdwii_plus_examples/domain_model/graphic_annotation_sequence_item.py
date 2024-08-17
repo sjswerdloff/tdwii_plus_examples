@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class GraphicAnnotationSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class GraphicAnnotationSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -81,7 +81,7 @@ class GraphicAnnotationSequenceItem:
             if "TextObjectSequence" in self._dataset:
                 del self._dataset.TextObjectSequence
         elif not isinstance(value, list) or not all(isinstance(item, TextObjectSequenceItem) for item in value):
-            raise ValueError(f"TextObjectSequence must be a list of TextObjectSequenceItem objects")
+            raise ValueError("TextObjectSequence must be a list of TextObjectSequenceItem objects")
         else:
             self._TextObjectSequence = value
             if "TextObjectSequence" not in self._dataset:
@@ -91,7 +91,7 @@ class GraphicAnnotationSequenceItem:
 
     def add_TextObject(self, item: TextObjectSequenceItem):
         if not isinstance(item, TextObjectSequenceItem):
-            raise ValueError(f"Item must be an instance of TextObjectSequenceItem")
+            raise ValueError("Item must be an instance of TextObjectSequenceItem")
         self._TextObjectSequence.append(item)
         if "TextObjectSequence" not in self._dataset:
             self._dataset.TextObjectSequence = pydicom.Sequence()
@@ -113,7 +113,7 @@ class GraphicAnnotationSequenceItem:
             if "GraphicObjectSequence" in self._dataset:
                 del self._dataset.GraphicObjectSequence
         elif not isinstance(value, list) or not all(isinstance(item, GraphicObjectSequenceItem) for item in value):
-            raise ValueError(f"GraphicObjectSequence must be a list of GraphicObjectSequenceItem objects")
+            raise ValueError("GraphicObjectSequence must be a list of GraphicObjectSequenceItem objects")
         else:
             self._GraphicObjectSequence = value
             if "GraphicObjectSequence" not in self._dataset:
@@ -123,7 +123,7 @@ class GraphicAnnotationSequenceItem:
 
     def add_GraphicObject(self, item: GraphicObjectSequenceItem):
         if not isinstance(item, GraphicObjectSequenceItem):
-            raise ValueError(f"Item must be an instance of GraphicObjectSequenceItem")
+            raise ValueError("Item must be an instance of GraphicObjectSequenceItem")
         self._GraphicObjectSequence.append(item)
         if "GraphicObjectSequence" not in self._dataset:
             self._dataset.GraphicObjectSequence = pydicom.Sequence()
@@ -145,7 +145,7 @@ class GraphicAnnotationSequenceItem:
             if "CompoundGraphicSequence" in self._dataset:
                 del self._dataset.CompoundGraphicSequence
         elif not isinstance(value, list) or not all(isinstance(item, CompoundGraphicSequenceItem) for item in value):
-            raise ValueError(f"CompoundGraphicSequence must be a list of CompoundGraphicSequenceItem objects")
+            raise ValueError("CompoundGraphicSequence must be a list of CompoundGraphicSequenceItem objects")
         else:
             self._CompoundGraphicSequence = value
             if "CompoundGraphicSequence" not in self._dataset:
@@ -155,7 +155,7 @@ class GraphicAnnotationSequenceItem:
 
     def add_CompoundGraphic(self, item: CompoundGraphicSequenceItem):
         if not isinstance(item, CompoundGraphicSequenceItem):
-            raise ValueError(f"Item must be an instance of CompoundGraphicSequenceItem")
+            raise ValueError("Item must be an instance of CompoundGraphicSequenceItem")
         self._CompoundGraphicSequence.append(item)
         if "CompoundGraphicSequence" not in self._dataset:
             self._dataset.CompoundGraphicSequence = pydicom.Sequence()

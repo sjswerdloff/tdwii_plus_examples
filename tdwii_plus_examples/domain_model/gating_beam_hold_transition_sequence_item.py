@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -60,7 +60,7 @@ class GatingBeamHoldTransitionSequenceItem:
                 del self._dataset.BeamHoldOriginatingDeviceSequence
         elif not isinstance(value, list) or not all(isinstance(item, BeamHoldOriginatingDeviceSequenceItem) for item in value):
             raise ValueError(
-                f"BeamHoldOriginatingDeviceSequence must be a list of BeamHoldOriginatingDeviceSequenceItem objects"
+                "BeamHoldOriginatingDeviceSequence must be a list of BeamHoldOriginatingDeviceSequenceItem objects"
             )
         else:
             self._BeamHoldOriginatingDeviceSequence = value
@@ -71,7 +71,7 @@ class GatingBeamHoldTransitionSequenceItem:
 
     def add_BeamHoldOriginatingDevice(self, item: BeamHoldOriginatingDeviceSequenceItem):
         if not isinstance(item, BeamHoldOriginatingDeviceSequenceItem):
-            raise ValueError(f"Item must be an instance of BeamHoldOriginatingDeviceSequenceItem")
+            raise ValueError("Item must be an instance of BeamHoldOriginatingDeviceSequenceItem")
         self._BeamHoldOriginatingDeviceSequence.append(item)
         if "BeamHoldOriginatingDeviceSequence" not in self._dataset:
             self._dataset.BeamHoldOriginatingDeviceSequence = pydicom.Sequence()

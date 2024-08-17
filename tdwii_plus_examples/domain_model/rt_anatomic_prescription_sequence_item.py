@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -63,7 +63,7 @@ class RTAnatomicPrescriptionSequenceItem:
             if "ConceptualVolumeSequence" in self._dataset:
                 del self._dataset.ConceptualVolumeSequence
         elif not isinstance(value, list) or not all(isinstance(item, ConceptualVolumeSequenceItem) for item in value):
-            raise ValueError(f"ConceptualVolumeSequence must be a list of ConceptualVolumeSequenceItem objects")
+            raise ValueError("ConceptualVolumeSequence must be a list of ConceptualVolumeSequenceItem objects")
         else:
             self._ConceptualVolumeSequence = value
             if "ConceptualVolumeSequence" not in self._dataset:
@@ -73,7 +73,7 @@ class RTAnatomicPrescriptionSequenceItem:
 
     def add_ConceptualVolume(self, item: ConceptualVolumeSequenceItem):
         if not isinstance(item, ConceptualVolumeSequenceItem):
-            raise ValueError(f"Item must be an instance of ConceptualVolumeSequenceItem")
+            raise ValueError("Item must be an instance of ConceptualVolumeSequenceItem")
         self._ConceptualVolumeSequence.append(item)
         if "ConceptualVolumeSequence" not in self._dataset:
             self._dataset.ConceptualVolumeSequence = pydicom.Sequence()
@@ -137,7 +137,7 @@ class RTAnatomicPrescriptionSequenceItem:
             if "TherapeuticRoleCategoryCodeSequence" in self._dataset:
                 del self._dataset.TherapeuticRoleCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TherapeuticRoleCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TherapeuticRoleCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TherapeuticRoleCategoryCodeSequence = value
             if "TherapeuticRoleCategoryCodeSequence" not in self._dataset:
@@ -147,7 +147,7 @@ class RTAnatomicPrescriptionSequenceItem:
 
     def add_TherapeuticRoleCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TherapeuticRoleCategoryCodeSequence.append(item)
         if "TherapeuticRoleCategoryCodeSequence" not in self._dataset:
             self._dataset.TherapeuticRoleCategoryCodeSequence = pydicom.Sequence()
@@ -169,7 +169,7 @@ class RTAnatomicPrescriptionSequenceItem:
             if "TherapeuticRoleTypeCodeSequence" in self._dataset:
                 del self._dataset.TherapeuticRoleTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"TherapeuticRoleTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("TherapeuticRoleTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._TherapeuticRoleTypeCodeSequence = value
             if "TherapeuticRoleTypeCodeSequence" not in self._dataset:
@@ -179,7 +179,7 @@ class RTAnatomicPrescriptionSequenceItem:
 
     def add_TherapeuticRoleTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._TherapeuticRoleTypeCodeSequence.append(item)
         if "TherapeuticRoleTypeCodeSequence" not in self._dataset:
             self._dataset.TherapeuticRoleTypeCodeSequence = pydicom.Sequence()
@@ -215,7 +215,7 @@ class RTAnatomicPrescriptionSequenceItem:
             if "ConceptualVolumeCategoryCodeSequence" in self._dataset:
                 del self._dataset.ConceptualVolumeCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptualVolumeCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptualVolumeCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptualVolumeCategoryCodeSequence = value
             if "ConceptualVolumeCategoryCodeSequence" not in self._dataset:
@@ -225,7 +225,7 @@ class RTAnatomicPrescriptionSequenceItem:
 
     def add_ConceptualVolumeCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptualVolumeCategoryCodeSequence.append(item)
         if "ConceptualVolumeCategoryCodeSequence" not in self._dataset:
             self._dataset.ConceptualVolumeCategoryCodeSequence = pydicom.Sequence()
@@ -261,7 +261,7 @@ class RTAnatomicPrescriptionSequenceItem:
             if "ConceptualVolumeTypeCodeSequence" in self._dataset:
                 del self._dataset.ConceptualVolumeTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptualVolumeTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptualVolumeTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptualVolumeTypeCodeSequence = value
             if "ConceptualVolumeTypeCodeSequence" not in self._dataset:
@@ -271,7 +271,7 @@ class RTAnatomicPrescriptionSequenceItem:
 
     def add_ConceptualVolumeTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptualVolumeTypeCodeSequence.append(item)
         if "ConceptualVolumeTypeCodeSequence" not in self._dataset:
             self._dataset.ConceptualVolumeTypeCodeSequence = pydicom.Sequence()
@@ -295,7 +295,7 @@ class RTAnatomicPrescriptionSequenceItem:
             if "ConceptualVolumeTypeModifierCodeSequence" in self._dataset:
                 del self._dataset.ConceptualVolumeTypeModifierCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptualVolumeTypeModifierCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptualVolumeTypeModifierCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptualVolumeTypeModifierCodeSequence = value
             if "ConceptualVolumeTypeModifierCodeSequence" not in self._dataset:
@@ -305,7 +305,7 @@ class RTAnatomicPrescriptionSequenceItem:
 
     def add_ConceptualVolumeTypeModifierCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptualVolumeTypeModifierCodeSequence.append(item)
         if "ConceptualVolumeTypeModifierCodeSequence" not in self._dataset:
             self._dataset.ConceptualVolumeTypeModifierCodeSequence = pydicom.Sequence()

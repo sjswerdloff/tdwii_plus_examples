@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -43,7 +43,7 @@ class AutorefractionRightEyeSequenceItem:
             if "CylinderSequence" in self._dataset:
                 del self._dataset.CylinderSequence
         elif not isinstance(value, list) or not all(isinstance(item, CylinderSequenceItem) for item in value):
-            raise ValueError(f"CylinderSequence must be a list of CylinderSequenceItem objects")
+            raise ValueError("CylinderSequence must be a list of CylinderSequenceItem objects")
         else:
             self._CylinderSequence = value
             if "CylinderSequence" not in self._dataset:
@@ -53,7 +53,7 @@ class AutorefractionRightEyeSequenceItem:
 
     def add_Cylinder(self, item: CylinderSequenceItem):
         if not isinstance(item, CylinderSequenceItem):
-            raise ValueError(f"Item must be an instance of CylinderSequenceItem")
+            raise ValueError("Item must be an instance of CylinderSequenceItem")
         self._CylinderSequence.append(item)
         if "CylinderSequence" not in self._dataset:
             self._dataset.CylinderSequence = pydicom.Sequence()

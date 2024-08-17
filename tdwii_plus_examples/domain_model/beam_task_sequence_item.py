@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -189,7 +189,7 @@ class BeamTaskSequenceItem:
                 del self._dataset.DeliveryVerificationImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, DeliveryVerificationImageSequenceItem) for item in value):
             raise ValueError(
-                f"DeliveryVerificationImageSequence must be a list of DeliveryVerificationImageSequenceItem objects"
+                "DeliveryVerificationImageSequence must be a list of DeliveryVerificationImageSequenceItem objects"
             )
         else:
             self._DeliveryVerificationImageSequence = value
@@ -200,7 +200,7 @@ class BeamTaskSequenceItem:
 
     def add_DeliveryVerificationImage(self, item: DeliveryVerificationImageSequenceItem):
         if not isinstance(item, DeliveryVerificationImageSequenceItem):
-            raise ValueError(f"Item must be an instance of DeliveryVerificationImageSequenceItem")
+            raise ValueError("Item must be an instance of DeliveryVerificationImageSequenceItem")
         self._DeliveryVerificationImageSequence.append(item)
         if "DeliveryVerificationImageSequence" not in self._dataset:
             self._dataset.DeliveryVerificationImageSequence = pydicom.Sequence()
@@ -320,7 +320,7 @@ class BeamTaskSequenceItem:
             if "DeviceMotionControlSequence" in self._dataset:
                 del self._dataset.DeviceMotionControlSequence
         elif not isinstance(value, list) or not all(isinstance(item, DeviceMotionControlSequenceItem) for item in value):
-            raise ValueError(f"DeviceMotionControlSequence must be a list of DeviceMotionControlSequenceItem objects")
+            raise ValueError("DeviceMotionControlSequence must be a list of DeviceMotionControlSequenceItem objects")
         else:
             self._DeviceMotionControlSequence = value
             if "DeviceMotionControlSequence" not in self._dataset:
@@ -330,7 +330,7 @@ class BeamTaskSequenceItem:
 
     def add_DeviceMotionControl(self, item: DeviceMotionControlSequenceItem):
         if not isinstance(item, DeviceMotionControlSequenceItem):
-            raise ValueError(f"Item must be an instance of DeviceMotionControlSequenceItem")
+            raise ValueError("Item must be an instance of DeviceMotionControlSequenceItem")
         self._DeviceMotionControlSequence.append(item)
         if "DeviceMotionControlSequence" not in self._dataset:
             self._dataset.DeviceMotionControlSequence = pydicom.Sequence()

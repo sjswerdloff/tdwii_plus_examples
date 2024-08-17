@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -44,7 +44,7 @@ class AcquisitionTaskSequenceItem:
             isinstance(item, RTAcquisitionPatientPositionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTAcquisitionPatientPositionSequence must be a list of RTAcquisitionPatientPositionSequenceItem objects"
+                "RTAcquisitionPatientPositionSequence must be a list of RTAcquisitionPatientPositionSequenceItem objects"
             )
         else:
             self._RTAcquisitionPatientPositionSequence = value
@@ -55,7 +55,7 @@ class AcquisitionTaskSequenceItem:
 
     def add_RTAcquisitionPatientPosition(self, item: RTAcquisitionPatientPositionSequenceItem):
         if not isinstance(item, RTAcquisitionPatientPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of RTAcquisitionPatientPositionSequenceItem")
+            raise ValueError("Item must be an instance of RTAcquisitionPatientPositionSequenceItem")
         self._RTAcquisitionPatientPositionSequence.append(item)
         if "RTAcquisitionPatientPositionSequence" not in self._dataset:
             self._dataset.RTAcquisitionPatientPositionSequence = pydicom.Sequence()
@@ -77,7 +77,7 @@ class AcquisitionTaskSequenceItem:
             if "AcquisitionTaskWorkitemCodeSequence" in self._dataset:
                 del self._dataset.AcquisitionTaskWorkitemCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AcquisitionTaskWorkitemCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AcquisitionTaskWorkitemCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AcquisitionTaskWorkitemCodeSequence = value
             if "AcquisitionTaskWorkitemCodeSequence" not in self._dataset:
@@ -87,7 +87,7 @@ class AcquisitionTaskSequenceItem:
 
     def add_AcquisitionTaskWorkitemCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AcquisitionTaskWorkitemCodeSequence.append(item)
         if "AcquisitionTaskWorkitemCodeSequence" not in self._dataset:
             self._dataset.AcquisitionTaskWorkitemCodeSequence = pydicom.Sequence()
@@ -109,7 +109,7 @@ class AcquisitionTaskSequenceItem:
             if "AcquisitionSubtaskSequence" in self._dataset:
                 del self._dataset.AcquisitionSubtaskSequence
         elif not isinstance(value, list) or not all(isinstance(item, AcquisitionSubtaskSequenceItem) for item in value):
-            raise ValueError(f"AcquisitionSubtaskSequence must be a list of AcquisitionSubtaskSequenceItem objects")
+            raise ValueError("AcquisitionSubtaskSequence must be a list of AcquisitionSubtaskSequenceItem objects")
         else:
             self._AcquisitionSubtaskSequence = value
             if "AcquisitionSubtaskSequence" not in self._dataset:
@@ -119,7 +119,7 @@ class AcquisitionTaskSequenceItem:
 
     def add_AcquisitionSubtask(self, item: AcquisitionSubtaskSequenceItem):
         if not isinstance(item, AcquisitionSubtaskSequenceItem):
-            raise ValueError(f"Item must be an instance of AcquisitionSubtaskSequenceItem")
+            raise ValueError("Item must be an instance of AcquisitionSubtaskSequenceItem")
         self._AcquisitionSubtaskSequence.append(item)
         if "AcquisitionSubtaskSequence" not in self._dataset:
             self._dataset.AcquisitionSubtaskSequence = pydicom.Sequence()
@@ -160,7 +160,7 @@ class AcquisitionTaskSequenceItem:
             isinstance(item, AcquisitionTaskApplicabilitySequenceItem) for item in value
         ):
             raise ValueError(
-                f"AcquisitionTaskApplicabilitySequence must be a list of AcquisitionTaskApplicabilitySequenceItem objects"
+                "AcquisitionTaskApplicabilitySequence must be a list of AcquisitionTaskApplicabilitySequenceItem objects"
             )
         else:
             self._AcquisitionTaskApplicabilitySequence = value
@@ -171,7 +171,7 @@ class AcquisitionTaskSequenceItem:
 
     def add_AcquisitionTaskApplicability(self, item: AcquisitionTaskApplicabilitySequenceItem):
         if not isinstance(item, AcquisitionTaskApplicabilitySequenceItem):
-            raise ValueError(f"Item must be an instance of AcquisitionTaskApplicabilitySequenceItem")
+            raise ValueError("Item must be an instance of AcquisitionTaskApplicabilitySequenceItem")
         self._AcquisitionTaskApplicabilitySequence.append(item)
         if "AcquisitionTaskApplicabilitySequence" not in self._dataset:
             self._dataset.AcquisitionTaskApplicabilitySequence = pydicom.Sequence()

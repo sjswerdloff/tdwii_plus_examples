@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class DeformableRegistrationSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -55,7 +55,7 @@ class DeformableRegistrationSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -94,7 +94,7 @@ class DeformableRegistrationSequenceItem:
             isinstance(item, DeformableRegistrationGridSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DeformableRegistrationGridSequence must be a list of DeformableRegistrationGridSequenceItem objects"
+                "DeformableRegistrationGridSequence must be a list of DeformableRegistrationGridSequenceItem objects"
             )
         else:
             self._DeformableRegistrationGridSequence = value
@@ -105,7 +105,7 @@ class DeformableRegistrationSequenceItem:
 
     def add_DeformableRegistrationGrid(self, item: DeformableRegistrationGridSequenceItem):
         if not isinstance(item, DeformableRegistrationGridSequenceItem):
-            raise ValueError(f"Item must be an instance of DeformableRegistrationGridSequenceItem")
+            raise ValueError("Item must be an instance of DeformableRegistrationGridSequenceItem")
         self._DeformableRegistrationGridSequence.append(item)
         if "DeformableRegistrationGridSequence" not in self._dataset:
             self._dataset.DeformableRegistrationGridSequence = pydicom.Sequence()
@@ -135,7 +135,8 @@ class DeformableRegistrationSequenceItem:
             isinstance(item, PreDeformationMatrixRegistrationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PreDeformationMatrixRegistrationSequence must be a list of PreDeformationMatrixRegistrationSequenceItem objects"
+                "PreDeformationMatrixRegistrationSequence must be a list of PreDeformationMatrixRegistrationSequenceItem"
+                " objects"
             )
         else:
             self._PreDeformationMatrixRegistrationSequence = value
@@ -146,7 +147,7 @@ class DeformableRegistrationSequenceItem:
 
     def add_PreDeformationMatrixRegistration(self, item: PreDeformationMatrixRegistrationSequenceItem):
         if not isinstance(item, PreDeformationMatrixRegistrationSequenceItem):
-            raise ValueError(f"Item must be an instance of PreDeformationMatrixRegistrationSequenceItem")
+            raise ValueError("Item must be an instance of PreDeformationMatrixRegistrationSequenceItem")
         self._PreDeformationMatrixRegistrationSequence.append(item)
         if "PreDeformationMatrixRegistrationSequence" not in self._dataset:
             self._dataset.PreDeformationMatrixRegistrationSequence = pydicom.Sequence()
@@ -176,7 +177,8 @@ class DeformableRegistrationSequenceItem:
             isinstance(item, PostDeformationMatrixRegistrationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PostDeformationMatrixRegistrationSequence must be a list of PostDeformationMatrixRegistrationSequenceItem objects"
+                "PostDeformationMatrixRegistrationSequence must be a list of PostDeformationMatrixRegistrationSequenceItem"
+                " objects"
             )
         else:
             self._PostDeformationMatrixRegistrationSequence = value
@@ -187,7 +189,7 @@ class DeformableRegistrationSequenceItem:
 
     def add_PostDeformationMatrixRegistration(self, item: PostDeformationMatrixRegistrationSequenceItem):
         if not isinstance(item, PostDeformationMatrixRegistrationSequenceItem):
-            raise ValueError(f"Item must be an instance of PostDeformationMatrixRegistrationSequenceItem")
+            raise ValueError("Item must be an instance of PostDeformationMatrixRegistrationSequenceItem")
         self._PostDeformationMatrixRegistrationSequence.append(item)
         if "PostDeformationMatrixRegistrationSequence" not in self._dataset:
             self._dataset.PostDeformationMatrixRegistrationSequence = pydicom.Sequence()
@@ -209,7 +211,7 @@ class DeformableRegistrationSequenceItem:
             if "RegistrationTypeCodeSequence" in self._dataset:
                 del self._dataset.RegistrationTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RegistrationTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RegistrationTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RegistrationTypeCodeSequence = value
             if "RegistrationTypeCodeSequence" not in self._dataset:
@@ -219,7 +221,7 @@ class DeformableRegistrationSequenceItem:
 
     def add_RegistrationTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RegistrationTypeCodeSequence.append(item)
         if "RegistrationTypeCodeSequence" not in self._dataset:
             self._dataset.RegistrationTypeCodeSequence = pydicom.Sequence()
@@ -241,7 +243,7 @@ class DeformableRegistrationSequenceItem:
             if "UsedFiducialsSequence" in self._dataset:
                 del self._dataset.UsedFiducialsSequence
         elif not isinstance(value, list) or not all(isinstance(item, UsedFiducialsSequenceItem) for item in value):
-            raise ValueError(f"UsedFiducialsSequence must be a list of UsedFiducialsSequenceItem objects")
+            raise ValueError("UsedFiducialsSequence must be a list of UsedFiducialsSequenceItem objects")
         else:
             self._UsedFiducialsSequence = value
             if "UsedFiducialsSequence" not in self._dataset:
@@ -251,7 +253,7 @@ class DeformableRegistrationSequenceItem:
 
     def add_UsedFiducials(self, item: UsedFiducialsSequenceItem):
         if not isinstance(item, UsedFiducialsSequenceItem):
-            raise ValueError(f"Item must be an instance of UsedFiducialsSequenceItem")
+            raise ValueError("Item must be an instance of UsedFiducialsSequenceItem")
         self._UsedFiducialsSequence.append(item)
         if "UsedFiducialsSequence" not in self._dataset:
             self._dataset.UsedFiducialsSequence = pydicom.Sequence()

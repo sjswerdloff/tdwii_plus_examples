@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class ReferencedTreatmentRecordSequenceItem:
             if "ReferencedBeamSequence" in self._dataset:
                 del self._dataset.ReferencedBeamSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedBeamSequenceItem) for item in value):
-            raise ValueError(f"ReferencedBeamSequence must be a list of ReferencedBeamSequenceItem objects")
+            raise ValueError("ReferencedBeamSequence must be a list of ReferencedBeamSequenceItem objects")
         else:
             self._ReferencedBeamSequence = value
             if "ReferencedBeamSequence" not in self._dataset:
@@ -67,7 +67,7 @@ class ReferencedTreatmentRecordSequenceItem:
 
     def add_ReferencedBeam(self, item: ReferencedBeamSequenceItem):
         if not isinstance(item, ReferencedBeamSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedBeamSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedBeamSequenceItem")
         self._ReferencedBeamSequence.append(item)
         if "ReferencedBeamSequence" not in self._dataset:
             self._dataset.ReferencedBeamSequence = pydicom.Sequence()

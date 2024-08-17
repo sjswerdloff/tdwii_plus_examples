@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class CodingSchemeIdentificationSequenceItem:
             if "CodingSchemeResourcesSequence" in self._dataset:
                 del self._dataset.CodingSchemeResourcesSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodingSchemeResourcesSequenceItem) for item in value):
-            raise ValueError(f"CodingSchemeResourcesSequence must be a list of CodingSchemeResourcesSequenceItem objects")
+            raise ValueError("CodingSchemeResourcesSequence must be a list of CodingSchemeResourcesSequenceItem objects")
         else:
             self._CodingSchemeResourcesSequence = value
             if "CodingSchemeResourcesSequence" not in self._dataset:
@@ -67,7 +67,7 @@ class CodingSchemeIdentificationSequenceItem:
 
     def add_CodingSchemeResources(self, item: CodingSchemeResourcesSequenceItem):
         if not isinstance(item, CodingSchemeResourcesSequenceItem):
-            raise ValueError(f"Item must be an instance of CodingSchemeResourcesSequenceItem")
+            raise ValueError("Item must be an instance of CodingSchemeResourcesSequenceItem")
         self._CodingSchemeResourcesSequence.append(item)
         if "CodingSchemeResourcesSequence" not in self._dataset:
             self._dataset.CodingSchemeResourcesSequence = pydicom.Sequence()

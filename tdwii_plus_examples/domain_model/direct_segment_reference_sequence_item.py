@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -41,7 +41,7 @@ class DirectSegmentReferenceSequenceItem:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -51,7 +51,7 @@ class DirectSegmentReferenceSequenceItem:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -137,7 +137,7 @@ class DirectSegmentReferenceSequenceItem:
             isinstance(item, OriginatingSOPInstanceReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
+                "OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
             )
         else:
             self._OriginatingSOPInstanceReferenceSequence = value
@@ -148,7 +148,7 @@ class DirectSegmentReferenceSequenceItem:
 
     def add_OriginatingSOPInstanceReference(self, item: OriginatingSOPInstanceReferenceSequenceItem):
         if not isinstance(item, OriginatingSOPInstanceReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
+            raise ValueError("Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
         self._OriginatingSOPInstanceReferenceSequence.append(item)
         if "OriginatingSOPInstanceReferenceSequence" not in self._dataset:
             self._dataset.OriginatingSOPInstanceReferenceSequence = pydicom.Sequence()
@@ -173,7 +173,7 @@ class DirectSegmentReferenceSequenceItem:
             isinstance(item, EquivalentConceptualVolumesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"EquivalentConceptualVolumesSequence must be a list of EquivalentConceptualVolumesSequenceItem objects"
+                "EquivalentConceptualVolumesSequence must be a list of EquivalentConceptualVolumesSequenceItem objects"
             )
         else:
             self._EquivalentConceptualVolumesSequence = value
@@ -184,7 +184,7 @@ class DirectSegmentReferenceSequenceItem:
 
     def add_EquivalentConceptualVolumes(self, item: EquivalentConceptualVolumesSequenceItem):
         if not isinstance(item, EquivalentConceptualVolumesSequenceItem):
-            raise ValueError(f"Item must be an instance of EquivalentConceptualVolumesSequenceItem")
+            raise ValueError("Item must be an instance of EquivalentConceptualVolumesSequenceItem")
         self._EquivalentConceptualVolumesSequence.append(item)
         if "EquivalentConceptualVolumesSequence" not in self._dataset:
             self._dataset.EquivalentConceptualVolumesSequence = pydicom.Sequence()
@@ -209,7 +209,7 @@ class DirectSegmentReferenceSequenceItem:
             isinstance(item, DerivationConceptualVolumeSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DerivationConceptualVolumeSequence must be a list of DerivationConceptualVolumeSequenceItem objects"
+                "DerivationConceptualVolumeSequence must be a list of DerivationConceptualVolumeSequenceItem objects"
             )
         else:
             self._DerivationConceptualVolumeSequence = value
@@ -220,7 +220,7 @@ class DirectSegmentReferenceSequenceItem:
 
     def add_DerivationConceptualVolume(self, item: DerivationConceptualVolumeSequenceItem):
         if not isinstance(item, DerivationConceptualVolumeSequenceItem):
-            raise ValueError(f"Item must be an instance of DerivationConceptualVolumeSequenceItem")
+            raise ValueError("Item must be an instance of DerivationConceptualVolumeSequenceItem")
         self._DerivationConceptualVolumeSequence.append(item)
         if "DerivationConceptualVolumeSequence" not in self._dataset:
             self._dataset.DerivationConceptualVolumeSequence = pydicom.Sequence()

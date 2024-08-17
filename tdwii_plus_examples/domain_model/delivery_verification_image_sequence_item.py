@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -74,7 +74,7 @@ class DeliveryVerificationImageSequenceItem:
             if "RelatedReferenceRTImageSequence" in self._dataset:
                 del self._dataset.RelatedReferenceRTImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, RelatedReferenceRTImageSequenceItem) for item in value):
-            raise ValueError(f"RelatedReferenceRTImageSequence must be a list of RelatedReferenceRTImageSequenceItem objects")
+            raise ValueError("RelatedReferenceRTImageSequence must be a list of RelatedReferenceRTImageSequenceItem objects")
         else:
             self._RelatedReferenceRTImageSequence = value
             if "RelatedReferenceRTImageSequence" not in self._dataset:
@@ -84,7 +84,7 @@ class DeliveryVerificationImageSequenceItem:
 
     def add_RelatedReferenceRTImage(self, item: RelatedReferenceRTImageSequenceItem):
         if not isinstance(item, RelatedReferenceRTImageSequenceItem):
-            raise ValueError(f"Item must be an instance of RelatedReferenceRTImageSequenceItem")
+            raise ValueError("Item must be an instance of RelatedReferenceRTImageSequenceItem")
         self._RelatedReferenceRTImageSequence.append(item)
         if "RelatedReferenceRTImageSequence" not in self._dataset:
             self._dataset.RelatedReferenceRTImageSequence = pydicom.Sequence()

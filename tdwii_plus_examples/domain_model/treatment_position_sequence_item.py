@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -65,7 +65,7 @@ class TreatmentPositionSequenceItem:
             isinstance(item, PatientLocationCoordinatesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PatientLocationCoordinatesSequence must be a list of PatientLocationCoordinatesSequenceItem objects"
+                "PatientLocationCoordinatesSequence must be a list of PatientLocationCoordinatesSequenceItem objects"
             )
         else:
             self._PatientLocationCoordinatesSequence = value
@@ -76,7 +76,7 @@ class TreatmentPositionSequenceItem:
 
     def add_PatientLocationCoordinates(self, item: PatientLocationCoordinatesSequenceItem):
         if not isinstance(item, PatientLocationCoordinatesSequenceItem):
-            raise ValueError(f"Item must be an instance of PatientLocationCoordinatesSequenceItem")
+            raise ValueError("Item must be an instance of PatientLocationCoordinatesSequenceItem")
         self._PatientLocationCoordinatesSequence.append(item)
         if "PatientLocationCoordinatesSequence" not in self._dataset:
             self._dataset.PatientLocationCoordinatesSequence = pydicom.Sequence()
@@ -98,7 +98,7 @@ class TreatmentPositionSequenceItem:
             if "PatientSupportPositionSequence" in self._dataset:
                 del self._dataset.PatientSupportPositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, PatientSupportPositionSequenceItem) for item in value):
-            raise ValueError(f"PatientSupportPositionSequence must be a list of PatientSupportPositionSequenceItem objects")
+            raise ValueError("PatientSupportPositionSequence must be a list of PatientSupportPositionSequenceItem objects")
         else:
             self._PatientSupportPositionSequence = value
             if "PatientSupportPositionSequence" not in self._dataset:
@@ -108,7 +108,7 @@ class TreatmentPositionSequenceItem:
 
     def add_PatientSupportPosition(self, item: PatientSupportPositionSequenceItem):
         if not isinstance(item, PatientSupportPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of PatientSupportPositionSequenceItem")
+            raise ValueError("Item must be an instance of PatientSupportPositionSequenceItem")
         self._PatientSupportPositionSequence.append(item)
         if "PatientSupportPositionSequence" not in self._dataset:
             self._dataset.PatientSupportPositionSequence = pydicom.Sequence()

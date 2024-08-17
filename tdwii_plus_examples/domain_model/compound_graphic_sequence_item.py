@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -119,7 +119,7 @@ class CompoundGraphicSequenceItem:
             if "TextStyleSequence" in self._dataset:
                 del self._dataset.TextStyleSequence
         elif not isinstance(value, list) or not all(isinstance(item, TextStyleSequenceItem) for item in value):
-            raise ValueError(f"TextStyleSequence must be a list of TextStyleSequenceItem objects")
+            raise ValueError("TextStyleSequence must be a list of TextStyleSequenceItem objects")
         else:
             self._TextStyleSequence = value
             if "TextStyleSequence" not in self._dataset:
@@ -129,7 +129,7 @@ class CompoundGraphicSequenceItem:
 
     def add_TextStyle(self, item: TextStyleSequenceItem):
         if not isinstance(item, TextStyleSequenceItem):
-            raise ValueError(f"Item must be an instance of TextStyleSequenceItem")
+            raise ValueError("Item must be an instance of TextStyleSequenceItem")
         self._TextStyleSequence.append(item)
         if "TextStyleSequence" not in self._dataset:
             self._dataset.TextStyleSequence = pydicom.Sequence()
@@ -151,7 +151,7 @@ class CompoundGraphicSequenceItem:
             if "LineStyleSequence" in self._dataset:
                 del self._dataset.LineStyleSequence
         elif not isinstance(value, list) or not all(isinstance(item, LineStyleSequenceItem) for item in value):
-            raise ValueError(f"LineStyleSequence must be a list of LineStyleSequenceItem objects")
+            raise ValueError("LineStyleSequence must be a list of LineStyleSequenceItem objects")
         else:
             self._LineStyleSequence = value
             if "LineStyleSequence" not in self._dataset:
@@ -161,7 +161,7 @@ class CompoundGraphicSequenceItem:
 
     def add_LineStyle(self, item: LineStyleSequenceItem):
         if not isinstance(item, LineStyleSequenceItem):
-            raise ValueError(f"Item must be an instance of LineStyleSequenceItem")
+            raise ValueError("Item must be an instance of LineStyleSequenceItem")
         self._LineStyleSequence.append(item)
         if "LineStyleSequence" not in self._dataset:
             self._dataset.LineStyleSequence = pydicom.Sequence()
@@ -183,7 +183,7 @@ class CompoundGraphicSequenceItem:
             if "FillStyleSequence" in self._dataset:
                 del self._dataset.FillStyleSequence
         elif not isinstance(value, list) or not all(isinstance(item, FillStyleSequenceItem) for item in value):
-            raise ValueError(f"FillStyleSequence must be a list of FillStyleSequenceItem objects")
+            raise ValueError("FillStyleSequence must be a list of FillStyleSequenceItem objects")
         else:
             self._FillStyleSequence = value
             if "FillStyleSequence" not in self._dataset:
@@ -193,7 +193,7 @@ class CompoundGraphicSequenceItem:
 
     def add_FillStyle(self, item: FillStyleSequenceItem):
         if not isinstance(item, FillStyleSequenceItem):
-            raise ValueError(f"Item must be an instance of FillStyleSequenceItem")
+            raise ValueError("Item must be an instance of FillStyleSequenceItem")
         self._FillStyleSequence.append(item)
         if "FillStyleSequence" not in self._dataset:
             self._dataset.FillStyleSequence = pydicom.Sequence()
@@ -313,7 +313,7 @@ class CompoundGraphicSequenceItem:
             if "MajorTicksSequence" in self._dataset:
                 del self._dataset.MajorTicksSequence
         elif not isinstance(value, list) or not all(isinstance(item, MajorTicksSequenceItem) for item in value):
-            raise ValueError(f"MajorTicksSequence must be a list of MajorTicksSequenceItem objects")
+            raise ValueError("MajorTicksSequence must be a list of MajorTicksSequenceItem objects")
         else:
             self._MajorTicksSequence = value
             if "MajorTicksSequence" not in self._dataset:
@@ -323,7 +323,7 @@ class CompoundGraphicSequenceItem:
 
     def add_MajorTicks(self, item: MajorTicksSequenceItem):
         if not isinstance(item, MajorTicksSequenceItem):
-            raise ValueError(f"Item must be an instance of MajorTicksSequenceItem")
+            raise ValueError("Item must be an instance of MajorTicksSequenceItem")
         self._MajorTicksSequence.append(item)
         if "MajorTicksSequence" not in self._dataset:
             self._dataset.MajorTicksSequence = pydicom.Sequence()

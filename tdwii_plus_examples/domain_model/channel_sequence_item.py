@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -382,7 +382,7 @@ class ChannelSequenceItem:
             if "ChannelShieldSequence" in self._dataset:
                 del self._dataset.ChannelShieldSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelShieldSequenceItem) for item in value):
-            raise ValueError(f"ChannelShieldSequence must be a list of ChannelShieldSequenceItem objects")
+            raise ValueError("ChannelShieldSequence must be a list of ChannelShieldSequenceItem objects")
         else:
             self._ChannelShieldSequence = value
             if "ChannelShieldSequence" not in self._dataset:
@@ -392,7 +392,7 @@ class ChannelSequenceItem:
 
     def add_ChannelShield(self, item: ChannelShieldSequenceItem):
         if not isinstance(item, ChannelShieldSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelShieldSequenceItem")
+            raise ValueError("Item must be an instance of ChannelShieldSequenceItem")
         self._ChannelShieldSequence.append(item)
         if "ChannelShieldSequence" not in self._dataset:
             self._dataset.ChannelShieldSequence = pydicom.Sequence()
@@ -428,7 +428,7 @@ class ChannelSequenceItem:
             if "BrachyControlPointSequence" in self._dataset:
                 del self._dataset.BrachyControlPointSequence
         elif not isinstance(value, list) or not all(isinstance(item, BrachyControlPointSequenceItem) for item in value):
-            raise ValueError(f"BrachyControlPointSequence must be a list of BrachyControlPointSequenceItem objects")
+            raise ValueError("BrachyControlPointSequence must be a list of BrachyControlPointSequenceItem objects")
         else:
             self._BrachyControlPointSequence = value
             if "BrachyControlPointSequence" not in self._dataset:
@@ -438,7 +438,7 @@ class ChannelSequenceItem:
 
     def add_BrachyControlPoint(self, item: BrachyControlPointSequenceItem):
         if not isinstance(item, BrachyControlPointSequenceItem):
-            raise ValueError(f"Item must be an instance of BrachyControlPointSequenceItem")
+            raise ValueError("Item must be an instance of BrachyControlPointSequenceItem")
         self._BrachyControlPointSequence.append(item)
         if "BrachyControlPointSequence" not in self._dataset:
             self._dataset.BrachyControlPointSequence = pydicom.Sequence()

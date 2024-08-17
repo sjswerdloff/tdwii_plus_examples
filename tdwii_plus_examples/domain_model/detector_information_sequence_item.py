@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -254,7 +254,7 @@ class DetectorInformationSequenceItem:
             if "ViewCodeSequence" in self._dataset:
                 del self._dataset.ViewCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ViewCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ViewCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ViewCodeSequence = value
             if "ViewCodeSequence" not in self._dataset:
@@ -264,7 +264,7 @@ class DetectorInformationSequenceItem:
 
     def add_ViewCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ViewCodeSequence.append(item)
         if "ViewCodeSequence" not in self._dataset:
             self._dataset.ViewCodeSequence = pydicom.Sequence()

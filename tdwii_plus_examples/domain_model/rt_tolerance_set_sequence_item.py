@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -49,9 +49,7 @@ class RTToleranceSetSequenceItem:
             if "AttributeToleranceValuesSequence" in self._dataset:
                 del self._dataset.AttributeToleranceValuesSequence
         elif not isinstance(value, list) or not all(isinstance(item, AttributeToleranceValuesSequenceItem) for item in value):
-            raise ValueError(
-                f"AttributeToleranceValuesSequence must be a list of AttributeToleranceValuesSequenceItem objects"
-            )
+            raise ValueError("AttributeToleranceValuesSequence must be a list of AttributeToleranceValuesSequenceItem objects")
         else:
             self._AttributeToleranceValuesSequence = value
             if "AttributeToleranceValuesSequence" not in self._dataset:
@@ -61,7 +59,7 @@ class RTToleranceSetSequenceItem:
 
     def add_AttributeToleranceValues(self, item: AttributeToleranceValuesSequenceItem):
         if not isinstance(item, AttributeToleranceValuesSequenceItem):
-            raise ValueError(f"Item must be an instance of AttributeToleranceValuesSequenceItem")
+            raise ValueError("Item must be an instance of AttributeToleranceValuesSequenceItem")
         self._AttributeToleranceValuesSequence.append(item)
         if "AttributeToleranceValuesSequence" not in self._dataset:
             self._dataset.AttributeToleranceValuesSequence = pydicom.Sequence()
@@ -109,7 +107,8 @@ class RTToleranceSetSequenceItem:
             isinstance(item, PatientSupportPositionDeviceToleranceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PatientSupportPositionDeviceToleranceSequence must be a list of PatientSupportPositionDeviceToleranceSequenceItem objects"
+                "PatientSupportPositionDeviceToleranceSequence must be a list of"
+                " PatientSupportPositionDeviceToleranceSequenceItem objects"
             )
         else:
             self._PatientSupportPositionDeviceToleranceSequence = value
@@ -120,7 +119,7 @@ class RTToleranceSetSequenceItem:
 
     def add_PatientSupportPositionDeviceTolerance(self, item: PatientSupportPositionDeviceToleranceSequenceItem):
         if not isinstance(item, PatientSupportPositionDeviceToleranceSequenceItem):
-            raise ValueError(f"Item must be an instance of PatientSupportPositionDeviceToleranceSequenceItem")
+            raise ValueError("Item must be an instance of PatientSupportPositionDeviceToleranceSequenceItem")
         self._PatientSupportPositionDeviceToleranceSequence.append(item)
         if "PatientSupportPositionDeviceToleranceSequence" not in self._dataset:
             self._dataset.PatientSupportPositionDeviceToleranceSequence = pydicom.Sequence()

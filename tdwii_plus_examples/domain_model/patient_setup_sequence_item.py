@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -94,7 +94,7 @@ class PatientSetupSequenceItem:
             if "FixationDeviceSequence" in self._dataset:
                 del self._dataset.FixationDeviceSequence
         elif not isinstance(value, list) or not all(isinstance(item, FixationDeviceSequenceItem) for item in value):
-            raise ValueError(f"FixationDeviceSequence must be a list of FixationDeviceSequenceItem objects")
+            raise ValueError("FixationDeviceSequence must be a list of FixationDeviceSequenceItem objects")
         else:
             self._FixationDeviceSequence = value
             if "FixationDeviceSequence" not in self._dataset:
@@ -104,7 +104,7 @@ class PatientSetupSequenceItem:
 
     def add_FixationDevice(self, item: FixationDeviceSequenceItem):
         if not isinstance(item, FixationDeviceSequenceItem):
-            raise ValueError(f"Item must be an instance of FixationDeviceSequenceItem")
+            raise ValueError("Item must be an instance of FixationDeviceSequenceItem")
         self._FixationDeviceSequence.append(item)
         if "FixationDeviceSequence" not in self._dataset:
             self._dataset.FixationDeviceSequence = pydicom.Sequence()
@@ -126,7 +126,7 @@ class PatientSetupSequenceItem:
             if "ShieldingDeviceSequence" in self._dataset:
                 del self._dataset.ShieldingDeviceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ShieldingDeviceSequenceItem) for item in value):
-            raise ValueError(f"ShieldingDeviceSequence must be a list of ShieldingDeviceSequenceItem objects")
+            raise ValueError("ShieldingDeviceSequence must be a list of ShieldingDeviceSequenceItem objects")
         else:
             self._ShieldingDeviceSequence = value
             if "ShieldingDeviceSequence" not in self._dataset:
@@ -136,7 +136,7 @@ class PatientSetupSequenceItem:
 
     def add_ShieldingDevice(self, item: ShieldingDeviceSequenceItem):
         if not isinstance(item, ShieldingDeviceSequenceItem):
-            raise ValueError(f"Item must be an instance of ShieldingDeviceSequenceItem")
+            raise ValueError("Item must be an instance of ShieldingDeviceSequenceItem")
         self._ShieldingDeviceSequence.append(item)
         if "ShieldingDeviceSequence" not in self._dataset:
             self._dataset.ShieldingDeviceSequence = pydicom.Sequence()
@@ -186,7 +186,7 @@ class PatientSetupSequenceItem:
             if "SetupDeviceSequence" in self._dataset:
                 del self._dataset.SetupDeviceSequence
         elif not isinstance(value, list) or not all(isinstance(item, SetupDeviceSequenceItem) for item in value):
-            raise ValueError(f"SetupDeviceSequence must be a list of SetupDeviceSequenceItem objects")
+            raise ValueError("SetupDeviceSequence must be a list of SetupDeviceSequenceItem objects")
         else:
             self._SetupDeviceSequence = value
             if "SetupDeviceSequence" not in self._dataset:
@@ -196,7 +196,7 @@ class PatientSetupSequenceItem:
 
     def add_SetupDevice(self, item: SetupDeviceSequenceItem):
         if not isinstance(item, SetupDeviceSequenceItem):
-            raise ValueError(f"Item must be an instance of SetupDeviceSequenceItem")
+            raise ValueError("Item must be an instance of SetupDeviceSequenceItem")
         self._SetupDeviceSequence.append(item)
         if "SetupDeviceSequence" not in self._dataset:
             self._dataset.SetupDeviceSequence = pydicom.Sequence()
@@ -260,7 +260,7 @@ class PatientSetupSequenceItem:
             if "ReferencedSetupImageSequence" in self._dataset:
                 del self._dataset.ReferencedSetupImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSetupImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSetupImageSequence must be a list of ReferencedSetupImageSequenceItem objects")
+            raise ValueError("ReferencedSetupImageSequence must be a list of ReferencedSetupImageSequenceItem objects")
         else:
             self._ReferencedSetupImageSequence = value
             if "ReferencedSetupImageSequence" not in self._dataset:
@@ -270,7 +270,7 @@ class PatientSetupSequenceItem:
 
     def add_ReferencedSetupImage(self, item: ReferencedSetupImageSequenceItem):
         if not isinstance(item, ReferencedSetupImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSetupImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSetupImageSequenceItem")
         self._ReferencedSetupImageSequence.append(item)
         if "ReferencedSetupImageSequence" not in self._dataset:
             self._dataset.ReferencedSetupImageSequence = pydicom.Sequence()
@@ -292,7 +292,7 @@ class PatientSetupSequenceItem:
             if "MotionSynchronizationSequence" in self._dataset:
                 del self._dataset.MotionSynchronizationSequence
         elif not isinstance(value, list) or not all(isinstance(item, MotionSynchronizationSequenceItem) for item in value):
-            raise ValueError(f"MotionSynchronizationSequence must be a list of MotionSynchronizationSequenceItem objects")
+            raise ValueError("MotionSynchronizationSequence must be a list of MotionSynchronizationSequenceItem objects")
         else:
             self._MotionSynchronizationSequence = value
             if "MotionSynchronizationSequence" not in self._dataset:
@@ -302,7 +302,7 @@ class PatientSetupSequenceItem:
 
     def add_MotionSynchronization(self, item: MotionSynchronizationSequenceItem):
         if not isinstance(item, MotionSynchronizationSequenceItem):
-            raise ValueError(f"Item must be an instance of MotionSynchronizationSequenceItem")
+            raise ValueError("Item must be an instance of MotionSynchronizationSequenceItem")
         self._MotionSynchronizationSequence.append(item)
         if "MotionSynchronizationSequence" not in self._dataset:
             self._dataset.MotionSynchronizationSequence = pydicom.Sequence()

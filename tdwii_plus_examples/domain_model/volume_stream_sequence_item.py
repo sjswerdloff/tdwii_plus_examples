@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,8 @@ class VolumeStreamSequenceItem:
             isinstance(item, PresentationStateClassificationComponentSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PresentationStateClassificationComponentSequence must be a list of PresentationStateClassificationComponentSequenceItem objects"
+                "PresentationStateClassificationComponentSequence must be a list of"
+                " PresentationStateClassificationComponentSequenceItem objects"
             )
         else:
             self._PresentationStateClassificationComponentSequence = value
@@ -68,7 +69,7 @@ class VolumeStreamSequenceItem:
 
     def add_PresentationStateClassificationComponent(self, item: PresentationStateClassificationComponentSequenceItem):
         if not isinstance(item, PresentationStateClassificationComponentSequenceItem):
-            raise ValueError(f"Item must be an instance of PresentationStateClassificationComponentSequenceItem")
+            raise ValueError("Item must be an instance of PresentationStateClassificationComponentSequenceItem")
         self._PresentationStateClassificationComponentSequence.append(item)
         if "PresentationStateClassificationComponentSequence" not in self._dataset:
             self._dataset.PresentationStateClassificationComponentSequence = pydicom.Sequence()

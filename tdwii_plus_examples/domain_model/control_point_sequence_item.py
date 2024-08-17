@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -47,7 +47,7 @@ class ControlPointSequenceItem:
             isinstance(item, EnhancedRTBeamLimitingOpeningSequenceItem) for item in value
         ):
             raise ValueError(
-                f"EnhancedRTBeamLimitingOpeningSequence must be a list of EnhancedRTBeamLimitingOpeningSequenceItem objects"
+                "EnhancedRTBeamLimitingOpeningSequence must be a list of EnhancedRTBeamLimitingOpeningSequenceItem objects"
             )
         else:
             self._EnhancedRTBeamLimitingOpeningSequence = value
@@ -58,7 +58,7 @@ class ControlPointSequenceItem:
 
     def add_EnhancedRTBeamLimitingOpening(self, item: EnhancedRTBeamLimitingOpeningSequenceItem):
         if not isinstance(item, EnhancedRTBeamLimitingOpeningSequenceItem):
-            raise ValueError(f"Item must be an instance of EnhancedRTBeamLimitingOpeningSequenceItem")
+            raise ValueError("Item must be an instance of EnhancedRTBeamLimitingOpeningSequenceItem")
         self._EnhancedRTBeamLimitingOpeningSequence.append(item)
         if "EnhancedRTBeamLimitingOpeningSequence" not in self._dataset:
             self._dataset.EnhancedRTBeamLimitingOpeningSequence = pydicom.Sequence()
@@ -122,7 +122,7 @@ class ControlPointSequenceItem:
             if "WedgePositionSequence" in self._dataset:
                 del self._dataset.WedgePositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, WedgePositionSequenceItem) for item in value):
-            raise ValueError(f"WedgePositionSequence must be a list of WedgePositionSequenceItem objects")
+            raise ValueError("WedgePositionSequence must be a list of WedgePositionSequenceItem objects")
         else:
             self._WedgePositionSequence = value
             if "WedgePositionSequence" not in self._dataset:
@@ -132,7 +132,7 @@ class ControlPointSequenceItem:
 
     def add_WedgePosition(self, item: WedgePositionSequenceItem):
         if not isinstance(item, WedgePositionSequenceItem):
-            raise ValueError(f"Item must be an instance of WedgePositionSequenceItem")
+            raise ValueError("Item must be an instance of WedgePositionSequenceItem")
         self._WedgePositionSequence.append(item)
         if "WedgePositionSequence" not in self._dataset:
             self._dataset.WedgePositionSequence = pydicom.Sequence()
@@ -157,7 +157,7 @@ class ControlPointSequenceItem:
             isinstance(item, BeamLimitingDevicePositionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"BeamLimitingDevicePositionSequence must be a list of BeamLimitingDevicePositionSequenceItem objects"
+                "BeamLimitingDevicePositionSequence must be a list of BeamLimitingDevicePositionSequenceItem objects"
             )
         else:
             self._BeamLimitingDevicePositionSequence = value
@@ -168,7 +168,7 @@ class ControlPointSequenceItem:
 
     def add_BeamLimitingDevicePosition(self, item: BeamLimitingDevicePositionSequenceItem):
         if not isinstance(item, BeamLimitingDevicePositionSequenceItem):
-            raise ValueError(f"Item must be an instance of BeamLimitingDevicePositionSequenceItem")
+            raise ValueError("Item must be an instance of BeamLimitingDevicePositionSequenceItem")
         self._BeamLimitingDevicePositionSequence.append(item)
         if "BeamLimitingDevicePositionSequence" not in self._dataset:
             self._dataset.BeamLimitingDevicePositionSequence = pydicom.Sequence()
@@ -526,7 +526,7 @@ class ControlPointSequenceItem:
             if "ReferencedDoseReferenceSequence" in self._dataset:
                 del self._dataset.ReferencedDoseReferenceSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDoseReferenceSequenceItem) for item in value):
-            raise ValueError(f"ReferencedDoseReferenceSequence must be a list of ReferencedDoseReferenceSequenceItem objects")
+            raise ValueError("ReferencedDoseReferenceSequence must be a list of ReferencedDoseReferenceSequenceItem objects")
         else:
             self._ReferencedDoseReferenceSequence = value
             if "ReferencedDoseReferenceSequence" not in self._dataset:
@@ -536,7 +536,7 @@ class ControlPointSequenceItem:
 
     def add_ReferencedDoseReference(self, item: ReferencedDoseReferenceSequenceItem):
         if not isinstance(item, ReferencedDoseReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDoseReferenceSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDoseReferenceSequenceItem")
         self._ReferencedDoseReferenceSequence.append(item)
         if "ReferencedDoseReferenceSequence" not in self._dataset:
             self._dataset.ReferencedDoseReferenceSequence = pydicom.Sequence()
@@ -558,7 +558,7 @@ class ControlPointSequenceItem:
             if "ReferencedDoseSequence" in self._dataset:
                 del self._dataset.ReferencedDoseSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDoseSequenceItem) for item in value):
-            raise ValueError(f"ReferencedDoseSequence must be a list of ReferencedDoseSequenceItem objects")
+            raise ValueError("ReferencedDoseSequence must be a list of ReferencedDoseSequenceItem objects")
         else:
             self._ReferencedDoseSequence = value
             if "ReferencedDoseSequence" not in self._dataset:
@@ -568,7 +568,7 @@ class ControlPointSequenceItem:
 
     def add_ReferencedDose(self, item: ReferencedDoseSequenceItem):
         if not isinstance(item, ReferencedDoseSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDoseSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDoseSequenceItem")
         self._ReferencedDoseSequence.append(item)
         if "ReferencedDoseSequence" not in self._dataset:
             self._dataset.ReferencedDoseSequence = pydicom.Sequence()

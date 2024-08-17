@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -67,7 +67,7 @@ class RTRadiationTaskSequenceItem:
             if "DeviceMotionControlSequence" in self._dataset:
                 del self._dataset.DeviceMotionControlSequence
         elif not isinstance(value, list) or not all(isinstance(item, DeviceMotionControlSequenceItem) for item in value):
-            raise ValueError(f"DeviceMotionControlSequence must be a list of DeviceMotionControlSequenceItem objects")
+            raise ValueError("DeviceMotionControlSequence must be a list of DeviceMotionControlSequenceItem objects")
         else:
             self._DeviceMotionControlSequence = value
             if "DeviceMotionControlSequence" not in self._dataset:
@@ -77,7 +77,7 @@ class RTRadiationTaskSequenceItem:
 
     def add_DeviceMotionControl(self, item: DeviceMotionControlSequenceItem):
         if not isinstance(item, DeviceMotionControlSequenceItem):
-            raise ValueError(f"Item must be an instance of DeviceMotionControlSequenceItem")
+            raise ValueError("Item must be an instance of DeviceMotionControlSequenceItem")
         self._DeviceMotionControlSequence.append(item)
         if "DeviceMotionControlSequence" not in self._dataset:
             self._dataset.DeviceMotionControlSequence = pydicom.Sequence()
@@ -99,7 +99,7 @@ class RTRadiationTaskSequenceItem:
             if "ReferencedRTRadiationSequence" in self._dataset:
                 del self._dataset.ReferencedRTRadiationSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedRTRadiationSequenceItem) for item in value):
-            raise ValueError(f"ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
+            raise ValueError("ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
         else:
             self._ReferencedRTRadiationSequence = value
             if "ReferencedRTRadiationSequence" not in self._dataset:
@@ -109,7 +109,7 @@ class RTRadiationTaskSequenceItem:
 
     def add_ReferencedRTRadiation(self, item: ReferencedRTRadiationSequenceItem):
         if not isinstance(item, ReferencedRTRadiationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTRadiationSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTRadiationSequenceItem")
         self._ReferencedRTRadiationSequence.append(item)
         if "ReferencedRTRadiationSequence" not in self._dataset:
             self._dataset.ReferencedRTRadiationSequence = pydicom.Sequence()
@@ -164,7 +164,7 @@ class RTRadiationTaskSequenceItem:
             isinstance(item, RTDeliveryStartPatientPositionSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RTDeliveryStartPatientPositionSequence must be a list of RTDeliveryStartPatientPositionSequenceItem objects"
+                "RTDeliveryStartPatientPositionSequence must be a list of RTDeliveryStartPatientPositionSequenceItem objects"
             )
         else:
             self._RTDeliveryStartPatientPositionSequence = value
@@ -175,7 +175,7 @@ class RTRadiationTaskSequenceItem:
 
     def add_RTDeliveryStartPatientPosition(self, item: RTDeliveryStartPatientPositionSequenceItem):
         if not isinstance(item, RTDeliveryStartPatientPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of RTDeliveryStartPatientPositionSequenceItem")
+            raise ValueError("Item must be an instance of RTDeliveryStartPatientPositionSequenceItem")
         self._RTDeliveryStartPatientPositionSequence.append(item)
         if "RTDeliveryStartPatientPositionSequence" not in self._dataset:
             self._dataset.RTDeliveryStartPatientPositionSequence = pydicom.Sequence()
@@ -205,7 +205,8 @@ class RTRadiationTaskSequenceItem:
             isinstance(item, ReferencedRTTreatmentPreparationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedRTTreatmentPreparationSequence must be a list of ReferencedRTTreatmentPreparationSequenceItem objects"
+                "ReferencedRTTreatmentPreparationSequence must be a list of ReferencedRTTreatmentPreparationSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedRTTreatmentPreparationSequence = value
@@ -216,7 +217,7 @@ class RTRadiationTaskSequenceItem:
 
     def add_ReferencedRTTreatmentPreparation(self, item: ReferencedRTTreatmentPreparationSequenceItem):
         if not isinstance(item, ReferencedRTTreatmentPreparationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTTreatmentPreparationSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTTreatmentPreparationSequenceItem")
         self._ReferencedRTTreatmentPreparationSequence.append(item)
         if "ReferencedRTTreatmentPreparationSequence" not in self._dataset:
             self._dataset.ReferencedRTTreatmentPreparationSequence = pydicom.Sequence()

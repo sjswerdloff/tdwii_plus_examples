@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,8 @@ class EquivalentConceptualVolumesSequenceItem:
             isinstance(item, EquivalentConceptualVolumeInstanceReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"EquivalentConceptualVolumeInstanceReferenceSequence must be a list of EquivalentConceptualVolumeInstanceReferenceSequenceItem objects"
+                "EquivalentConceptualVolumeInstanceReferenceSequence must be a list of"
+                " EquivalentConceptualVolumeInstanceReferenceSequenceItem objects"
             )
         else:
             self._EquivalentConceptualVolumeInstanceReferenceSequence = value
@@ -56,7 +57,7 @@ class EquivalentConceptualVolumesSequenceItem:
 
     def add_EquivalentConceptualVolumeInstanceReference(self, item: EquivalentConceptualVolumeInstanceReferenceSequenceItem):
         if not isinstance(item, EquivalentConceptualVolumeInstanceReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of EquivalentConceptualVolumeInstanceReferenceSequenceItem")
+            raise ValueError("Item must be an instance of EquivalentConceptualVolumeInstanceReferenceSequenceItem")
         self._EquivalentConceptualVolumeInstanceReferenceSequence.append(item)
         if "EquivalentConceptualVolumeInstanceReferenceSequence" not in self._dataset:
             self._dataset.EquivalentConceptualVolumeInstanceReferenceSequence = pydicom.Sequence()

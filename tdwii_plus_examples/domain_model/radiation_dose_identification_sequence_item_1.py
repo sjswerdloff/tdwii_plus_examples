@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -71,7 +71,7 @@ class RadiationDoseIdentificationSequenceItem:
             if "ConceptualVolumeSequence" in self._dataset:
                 del self._dataset.ConceptualVolumeSequence
         elif not isinstance(value, list) or not all(isinstance(item, ConceptualVolumeSequenceItem) for item in value):
-            raise ValueError(f"ConceptualVolumeSequence must be a list of ConceptualVolumeSequenceItem objects")
+            raise ValueError("ConceptualVolumeSequence must be a list of ConceptualVolumeSequenceItem objects")
         else:
             self._ConceptualVolumeSequence = value
             if "ConceptualVolumeSequence" not in self._dataset:
@@ -81,7 +81,7 @@ class RadiationDoseIdentificationSequenceItem:
 
     def add_ConceptualVolume(self, item: ConceptualVolumeSequenceItem):
         if not isinstance(item, ConceptualVolumeSequenceItem):
-            raise ValueError(f"Item must be an instance of ConceptualVolumeSequenceItem")
+            raise ValueError("Item must be an instance of ConceptualVolumeSequenceItem")
         self._ConceptualVolumeSequence.append(item)
         if "ConceptualVolumeSequence" not in self._dataset:
             self._dataset.ConceptualVolumeSequence = pydicom.Sequence()

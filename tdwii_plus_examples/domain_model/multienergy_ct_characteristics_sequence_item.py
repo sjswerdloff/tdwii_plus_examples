@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -47,7 +47,7 @@ class MultienergyCTCharacteristicsSequenceItem:
             if "DerivationAlgorithmSequence" in self._dataset:
                 del self._dataset.DerivationAlgorithmSequence
         elif not isinstance(value, list) or not all(isinstance(item, DerivationAlgorithmSequenceItem) for item in value):
-            raise ValueError(f"DerivationAlgorithmSequence must be a list of DerivationAlgorithmSequenceItem objects")
+            raise ValueError("DerivationAlgorithmSequence must be a list of DerivationAlgorithmSequenceItem objects")
         else:
             self._DerivationAlgorithmSequence = value
             if "DerivationAlgorithmSequence" not in self._dataset:
@@ -57,7 +57,7 @@ class MultienergyCTCharacteristicsSequenceItem:
 
     def add_DerivationAlgorithm(self, item: DerivationAlgorithmSequenceItem):
         if not isinstance(item, DerivationAlgorithmSequenceItem):
-            raise ValueError(f"Item must be an instance of DerivationAlgorithmSequenceItem")
+            raise ValueError("Item must be an instance of DerivationAlgorithmSequenceItem")
         self._DerivationAlgorithmSequence.append(item)
         if "DerivationAlgorithmSequence" not in self._dataset:
             self._dataset.DerivationAlgorithmSequence = pydicom.Sequence()
@@ -84,7 +84,7 @@ class MultienergyCTCharacteristicsSequenceItem:
             isinstance(item, PerformedProcessingParametersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PerformedProcessingParametersSequence must be a list of PerformedProcessingParametersSequenceItem objects"
+                "PerformedProcessingParametersSequence must be a list of PerformedProcessingParametersSequenceItem objects"
             )
         else:
             self._PerformedProcessingParametersSequence = value
@@ -95,7 +95,7 @@ class MultienergyCTCharacteristicsSequenceItem:
 
     def add_PerformedProcessingParameters(self, item: PerformedProcessingParametersSequenceItem):
         if not isinstance(item, PerformedProcessingParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of PerformedProcessingParametersSequenceItem")
+            raise ValueError("Item must be an instance of PerformedProcessingParametersSequenceItem")
         self._PerformedProcessingParametersSequence.append(item)
         if "PerformedProcessingParametersSequence" not in self._dataset:
             self._dataset.PerformedProcessingParametersSequence = pydicom.Sequence()

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -44,7 +44,7 @@ class TransformationAlgorithmSequenceItem:
             if "AlgorithmFamilyCodeSequence" in self._dataset:
                 del self._dataset.AlgorithmFamilyCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AlgorithmFamilyCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AlgorithmFamilyCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AlgorithmFamilyCodeSequence = value
             if "AlgorithmFamilyCodeSequence" not in self._dataset:
@@ -54,7 +54,7 @@ class TransformationAlgorithmSequenceItem:
 
     def add_AlgorithmFamilyCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AlgorithmFamilyCodeSequence.append(item)
         if "AlgorithmFamilyCodeSequence" not in self._dataset:
             self._dataset.AlgorithmFamilyCodeSequence = pydicom.Sequence()
@@ -76,7 +76,7 @@ class TransformationAlgorithmSequenceItem:
             if "AlgorithmNameCodeSequence" in self._dataset:
                 del self._dataset.AlgorithmNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AlgorithmNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AlgorithmNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AlgorithmNameCodeSequence = value
             if "AlgorithmNameCodeSequence" not in self._dataset:
@@ -86,7 +86,7 @@ class TransformationAlgorithmSequenceItem:
 
     def add_AlgorithmNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AlgorithmNameCodeSequence.append(item)
         if "AlgorithmNameCodeSequence" not in self._dataset:
             self._dataset.AlgorithmNameCodeSequence = pydicom.Sequence()

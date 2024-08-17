@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -91,7 +91,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "ReferencedImageSequence" in self._dataset:
                 del self._dataset.ReferencedImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedImageSequenceItem) for item in value):
-            raise ValueError(f"ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
+            raise ValueError("ReferencedImageSequence must be a list of ReferencedImageSequenceItem objects")
         else:
             self._ReferencedImageSequence = value
             if "ReferencedImageSequence" not in self._dataset:
@@ -101,7 +101,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_ReferencedImage(self, item: ReferencedImageSequenceItem):
         if not isinstance(item, ReferencedImageSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedImageSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedImageSequenceItem")
         self._ReferencedImageSequence.append(item)
         if "ReferencedImageSequence" not in self._dataset:
             self._dataset.ReferencedImageSequence = pydicom.Sequence()
@@ -123,7 +123,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "DerivationImageSequence" in self._dataset:
                 del self._dataset.DerivationImageSequence
         elif not isinstance(value, list) or not all(isinstance(item, DerivationImageSequenceItem) for item in value):
-            raise ValueError(f"DerivationImageSequence must be a list of DerivationImageSequenceItem objects")
+            raise ValueError("DerivationImageSequence must be a list of DerivationImageSequenceItem objects")
         else:
             self._DerivationImageSequence = value
             if "DerivationImageSequence" not in self._dataset:
@@ -133,7 +133,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_DerivationImage(self, item: DerivationImageSequenceItem):
         if not isinstance(item, DerivationImageSequenceItem):
-            raise ValueError(f"Item must be an instance of DerivationImageSequenceItem")
+            raise ValueError("Item must be an instance of DerivationImageSequenceItem")
         self._DerivationImageSequence.append(item)
         if "DerivationImageSequence" not in self._dataset:
             self._dataset.DerivationImageSequence = pydicom.Sequence()
@@ -155,7 +155,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "CardiacSynchronizationSequence" in self._dataset:
                 del self._dataset.CardiacSynchronizationSequence
         elif not isinstance(value, list) or not all(isinstance(item, CardiacSynchronizationSequenceItem) for item in value):
-            raise ValueError(f"CardiacSynchronizationSequence must be a list of CardiacSynchronizationSequenceItem objects")
+            raise ValueError("CardiacSynchronizationSequence must be a list of CardiacSynchronizationSequenceItem objects")
         else:
             self._CardiacSynchronizationSequence = value
             if "CardiacSynchronizationSequence" not in self._dataset:
@@ -165,7 +165,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_CardiacSynchronization(self, item: CardiacSynchronizationSequenceItem):
         if not isinstance(item, CardiacSynchronizationSequenceItem):
-            raise ValueError(f"Item must be an instance of CardiacSynchronizationSequenceItem")
+            raise ValueError("Item must be an instance of CardiacSynchronizationSequenceItem")
         self._CardiacSynchronizationSequence.append(item)
         if "CardiacSynchronizationSequence" not in self._dataset:
             self._dataset.CardiacSynchronizationSequence = pydicom.Sequence()
@@ -187,7 +187,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "ContrastBolusUsageSequence" in self._dataset:
                 del self._dataset.ContrastBolusUsageSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContrastBolusUsageSequenceItem) for item in value):
-            raise ValueError(f"ContrastBolusUsageSequence must be a list of ContrastBolusUsageSequenceItem objects")
+            raise ValueError("ContrastBolusUsageSequence must be a list of ContrastBolusUsageSequenceItem objects")
         else:
             self._ContrastBolusUsageSequence = value
             if "ContrastBolusUsageSequence" not in self._dataset:
@@ -197,7 +197,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_ContrastBolusUsage(self, item: ContrastBolusUsageSequenceItem):
         if not isinstance(item, ContrastBolusUsageSequenceItem):
-            raise ValueError(f"Item must be an instance of ContrastBolusUsageSequenceItem")
+            raise ValueError("Item must be an instance of ContrastBolusUsageSequenceItem")
         self._ContrastBolusUsageSequence.append(item)
         if "ContrastBolusUsageSequence" not in self._dataset:
             self._dataset.ContrastBolusUsageSequence = pydicom.Sequence()
@@ -219,7 +219,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "PositionerPositionSequence" in self._dataset:
                 del self._dataset.PositionerPositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, PositionerPositionSequenceItem) for item in value):
-            raise ValueError(f"PositionerPositionSequence must be a list of PositionerPositionSequenceItem objects")
+            raise ValueError("PositionerPositionSequence must be a list of PositionerPositionSequenceItem objects")
         else:
             self._PositionerPositionSequence = value
             if "PositionerPositionSequence" not in self._dataset:
@@ -229,7 +229,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_PositionerPosition(self, item: PositionerPositionSequenceItem):
         if not isinstance(item, PositionerPositionSequenceItem):
-            raise ValueError(f"Item must be an instance of PositionerPositionSequenceItem")
+            raise ValueError("Item must be an instance of PositionerPositionSequenceItem")
         self._PositionerPositionSequence.append(item)
         if "PositionerPositionSequence" not in self._dataset:
             self._dataset.PositionerPositionSequence = pydicom.Sequence()
@@ -251,7 +251,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "TablePositionSequence" in self._dataset:
                 del self._dataset.TablePositionSequence
         elif not isinstance(value, list) or not all(isinstance(item, TablePositionSequenceItem) for item in value):
-            raise ValueError(f"TablePositionSequence must be a list of TablePositionSequenceItem objects")
+            raise ValueError("TablePositionSequence must be a list of TablePositionSequenceItem objects")
         else:
             self._TablePositionSequence = value
             if "TablePositionSequence" not in self._dataset:
@@ -261,7 +261,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_TablePosition(self, item: TablePositionSequenceItem):
         if not isinstance(item, TablePositionSequenceItem):
-            raise ValueError(f"Item must be an instance of TablePositionSequenceItem")
+            raise ValueError("Item must be an instance of TablePositionSequenceItem")
         self._TablePositionSequence.append(item)
         if "TablePositionSequence" not in self._dataset:
             self._dataset.TablePositionSequence = pydicom.Sequence()
@@ -283,7 +283,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "CollimatorShapeSequence" in self._dataset:
                 del self._dataset.CollimatorShapeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CollimatorShapeSequenceItem) for item in value):
-            raise ValueError(f"CollimatorShapeSequence must be a list of CollimatorShapeSequenceItem objects")
+            raise ValueError("CollimatorShapeSequence must be a list of CollimatorShapeSequenceItem objects")
         else:
             self._CollimatorShapeSequence = value
             if "CollimatorShapeSequence" not in self._dataset:
@@ -293,7 +293,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_CollimatorShape(self, item: CollimatorShapeSequenceItem):
         if not isinstance(item, CollimatorShapeSequenceItem):
-            raise ValueError(f"Item must be an instance of CollimatorShapeSequenceItem")
+            raise ValueError("Item must be an instance of CollimatorShapeSequenceItem")
         self._CollimatorShapeSequence.append(item)
         if "CollimatorShapeSequence" not in self._dataset:
             self._dataset.CollimatorShapeSequence = pydicom.Sequence()
@@ -316,7 +316,7 @@ class SharedFunctionalGroupsSequenceItem:
                 del self._dataset.XAXRFFrameCharacteristicsSequence
         elif not isinstance(value, list) or not all(isinstance(item, XAXRFFrameCharacteristicsSequenceItem) for item in value):
             raise ValueError(
-                f"XAXRFFrameCharacteristicsSequence must be a list of XAXRFFrameCharacteristicsSequenceItem objects"
+                "XAXRFFrameCharacteristicsSequence must be a list of XAXRFFrameCharacteristicsSequenceItem objects"
             )
         else:
             self._XAXRFFrameCharacteristicsSequence = value
@@ -327,7 +327,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_XAXRFFrameCharacteristics(self, item: XAXRFFrameCharacteristicsSequenceItem):
         if not isinstance(item, XAXRFFrameCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of XAXRFFrameCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of XAXRFFrameCharacteristicsSequenceItem")
         self._XAXRFFrameCharacteristicsSequence.append(item)
         if "XAXRFFrameCharacteristicsSequence" not in self._dataset:
             self._dataset.XAXRFFrameCharacteristicsSequence = pydicom.Sequence()
@@ -349,7 +349,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FrameAcquisitionSequence" in self._dataset:
                 del self._dataset.FrameAcquisitionSequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameAcquisitionSequenceItem) for item in value):
-            raise ValueError(f"FrameAcquisitionSequence must be a list of FrameAcquisitionSequenceItem objects")
+            raise ValueError("FrameAcquisitionSequence must be a list of FrameAcquisitionSequenceItem objects")
         else:
             self._FrameAcquisitionSequence = value
             if "FrameAcquisitionSequence" not in self._dataset:
@@ -359,7 +359,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FrameAcquisition(self, item: FrameAcquisitionSequenceItem):
         if not isinstance(item, FrameAcquisitionSequenceItem):
-            raise ValueError(f"Item must be an instance of FrameAcquisitionSequenceItem")
+            raise ValueError("Item must be an instance of FrameAcquisitionSequenceItem")
         self._FrameAcquisitionSequence.append(item)
         if "FrameAcquisitionSequence" not in self._dataset:
             self._dataset.FrameAcquisitionSequence = pydicom.Sequence()
@@ -381,7 +381,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FieldOfViewSequence" in self._dataset:
                 del self._dataset.FieldOfViewSequence
         elif not isinstance(value, list) or not all(isinstance(item, FieldOfViewSequenceItem) for item in value):
-            raise ValueError(f"FieldOfViewSequence must be a list of FieldOfViewSequenceItem objects")
+            raise ValueError("FieldOfViewSequence must be a list of FieldOfViewSequenceItem objects")
         else:
             self._FieldOfViewSequence = value
             if "FieldOfViewSequence" not in self._dataset:
@@ -391,7 +391,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FieldOfView(self, item: FieldOfViewSequenceItem):
         if not isinstance(item, FieldOfViewSequenceItem):
-            raise ValueError(f"Item must be an instance of FieldOfViewSequenceItem")
+            raise ValueError("Item must be an instance of FieldOfViewSequenceItem")
         self._FieldOfViewSequence.append(item)
         if "FieldOfViewSequence" not in self._dataset:
             self._dataset.FieldOfViewSequence = pydicom.Sequence()
@@ -418,7 +418,7 @@ class SharedFunctionalGroupsSequenceItem:
             isinstance(item, ExposureControlSensingRegionsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ExposureControlSensingRegionsSequence must be a list of ExposureControlSensingRegionsSequenceItem objects"
+                "ExposureControlSensingRegionsSequence must be a list of ExposureControlSensingRegionsSequenceItem objects"
             )
         else:
             self._ExposureControlSensingRegionsSequence = value
@@ -429,7 +429,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_ExposureControlSensingRegions(self, item: ExposureControlSensingRegionsSequenceItem):
         if not isinstance(item, ExposureControlSensingRegionsSequenceItem):
-            raise ValueError(f"Item must be an instance of ExposureControlSensingRegionsSequenceItem")
+            raise ValueError("Item must be an instance of ExposureControlSensingRegionsSequenceItem")
         self._ExposureControlSensingRegionsSequence.append(item)
         if "ExposureControlSensingRegionsSequence" not in self._dataset:
             self._dataset.ExposureControlSensingRegionsSequence = pydicom.Sequence()
@@ -451,7 +451,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FrameDetectorParametersSequence" in self._dataset:
                 del self._dataset.FrameDetectorParametersSequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameDetectorParametersSequenceItem) for item in value):
-            raise ValueError(f"FrameDetectorParametersSequence must be a list of FrameDetectorParametersSequenceItem objects")
+            raise ValueError("FrameDetectorParametersSequence must be a list of FrameDetectorParametersSequenceItem objects")
         else:
             self._FrameDetectorParametersSequence = value
             if "FrameDetectorParametersSequence" not in self._dataset:
@@ -461,7 +461,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FrameDetectorParameters(self, item: FrameDetectorParametersSequenceItem):
         if not isinstance(item, FrameDetectorParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of FrameDetectorParametersSequenceItem")
+            raise ValueError("Item must be an instance of FrameDetectorParametersSequenceItem")
         self._FrameDetectorParametersSequence.append(item)
         if "FrameDetectorParametersSequence" not in self._dataset:
             self._dataset.FrameDetectorParametersSequence = pydicom.Sequence()
@@ -483,7 +483,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "CalibrationSequence" in self._dataset:
                 del self._dataset.CalibrationSequence
         elif not isinstance(value, list) or not all(isinstance(item, CalibrationSequenceItem) for item in value):
-            raise ValueError(f"CalibrationSequence must be a list of CalibrationSequenceItem objects")
+            raise ValueError("CalibrationSequence must be a list of CalibrationSequenceItem objects")
         else:
             self._CalibrationSequence = value
             if "CalibrationSequence" not in self._dataset:
@@ -493,7 +493,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_Calibration(self, item: CalibrationSequenceItem):
         if not isinstance(item, CalibrationSequenceItem):
-            raise ValueError(f"Item must be an instance of CalibrationSequenceItem")
+            raise ValueError("Item must be an instance of CalibrationSequenceItem")
         self._CalibrationSequence.append(item)
         if "CalibrationSequence" not in self._dataset:
             self._dataset.CalibrationSequence = pydicom.Sequence()
@@ -515,7 +515,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "ObjectThicknessSequence" in self._dataset:
                 del self._dataset.ObjectThicknessSequence
         elif not isinstance(value, list) or not all(isinstance(item, ObjectThicknessSequenceItem) for item in value):
-            raise ValueError(f"ObjectThicknessSequence must be a list of ObjectThicknessSequenceItem objects")
+            raise ValueError("ObjectThicknessSequence must be a list of ObjectThicknessSequenceItem objects")
         else:
             self._ObjectThicknessSequence = value
             if "ObjectThicknessSequence" not in self._dataset:
@@ -525,7 +525,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_ObjectThickness(self, item: ObjectThicknessSequenceItem):
         if not isinstance(item, ObjectThicknessSequenceItem):
-            raise ValueError(f"Item must be an instance of ObjectThicknessSequenceItem")
+            raise ValueError("Item must be an instance of ObjectThicknessSequenceItem")
         self._ObjectThicknessSequence.append(item)
         if "ObjectThicknessSequence" not in self._dataset:
             self._dataset.ObjectThicknessSequence = pydicom.Sequence()
@@ -547,7 +547,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FrameDisplayShutterSequence" in self._dataset:
                 del self._dataset.FrameDisplayShutterSequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameDisplayShutterSequenceItem) for item in value):
-            raise ValueError(f"FrameDisplayShutterSequence must be a list of FrameDisplayShutterSequenceItem objects")
+            raise ValueError("FrameDisplayShutterSequence must be a list of FrameDisplayShutterSequenceItem objects")
         else:
             self._FrameDisplayShutterSequence = value
             if "FrameDisplayShutterSequence" not in self._dataset:
@@ -557,7 +557,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FrameDisplayShutter(self, item: FrameDisplayShutterSequenceItem):
         if not isinstance(item, FrameDisplayShutterSequenceItem):
-            raise ValueError(f"Item must be an instance of FrameDisplayShutterSequenceItem")
+            raise ValueError("Item must be an instance of FrameDisplayShutterSequenceItem")
         self._FrameDisplayShutterSequence.append(item)
         if "FrameDisplayShutterSequence" not in self._dataset:
             self._dataset.FrameDisplayShutterSequence = pydicom.Sequence()
@@ -579,7 +579,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "XRayGeometrySequence" in self._dataset:
                 del self._dataset.XRayGeometrySequence
         elif not isinstance(value, list) or not all(isinstance(item, XRayGeometrySequenceItem) for item in value):
-            raise ValueError(f"XRayGeometrySequence must be a list of XRayGeometrySequenceItem objects")
+            raise ValueError("XRayGeometrySequence must be a list of XRayGeometrySequenceItem objects")
         else:
             self._XRayGeometrySequence = value
             if "XRayGeometrySequence" not in self._dataset:
@@ -589,7 +589,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_XRayGeometry(self, item: XRayGeometrySequenceItem):
         if not isinstance(item, XRayGeometrySequenceItem):
-            raise ValueError(f"Item must be an instance of XRayGeometrySequenceItem")
+            raise ValueError("Item must be an instance of XRayGeometrySequenceItem")
         self._XRayGeometrySequence.append(item)
         if "XRayGeometrySequence" not in self._dataset:
             self._dataset.XRayGeometrySequence = pydicom.Sequence()
@@ -616,7 +616,7 @@ class SharedFunctionalGroupsSequenceItem:
             isinstance(item, IrradiationEventIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"IrradiationEventIdentificationSequence must be a list of IrradiationEventIdentificationSequenceItem objects"
+                "IrradiationEventIdentificationSequence must be a list of IrradiationEventIdentificationSequenceItem objects"
             )
         else:
             self._IrradiationEventIdentificationSequence = value
@@ -627,7 +627,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_IrradiationEventIdentification(self, item: IrradiationEventIdentificationSequenceItem):
         if not isinstance(item, IrradiationEventIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of IrradiationEventIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of IrradiationEventIdentificationSequenceItem")
         self._IrradiationEventIdentificationSequence.append(item)
         if "IrradiationEventIdentificationSequence" not in self._dataset:
             self._dataset.IrradiationEventIdentificationSequence = pydicom.Sequence()
@@ -649,7 +649,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FrameAnatomySequence" in self._dataset:
                 del self._dataset.FrameAnatomySequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameAnatomySequenceItem) for item in value):
-            raise ValueError(f"FrameAnatomySequence must be a list of FrameAnatomySequenceItem objects")
+            raise ValueError("FrameAnatomySequence must be a list of FrameAnatomySequenceItem objects")
         else:
             self._FrameAnatomySequence = value
             if "FrameAnatomySequence" not in self._dataset:
@@ -659,7 +659,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FrameAnatomy(self, item: FrameAnatomySequenceItem):
         if not isinstance(item, FrameAnatomySequenceItem):
-            raise ValueError(f"Item must be an instance of FrameAnatomySequenceItem")
+            raise ValueError("Item must be an instance of FrameAnatomySequenceItem")
         self._FrameAnatomySequence.append(item)
         if "FrameAnatomySequence" not in self._dataset:
             self._dataset.FrameAnatomySequence = pydicom.Sequence()
@@ -681,7 +681,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FrameContentSequence" in self._dataset:
                 del self._dataset.FrameContentSequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameContentSequenceItem) for item in value):
-            raise ValueError(f"FrameContentSequence must be a list of FrameContentSequenceItem objects")
+            raise ValueError("FrameContentSequence must be a list of FrameContentSequenceItem objects")
         else:
             self._FrameContentSequence = value
             if "FrameContentSequence" not in self._dataset:
@@ -691,7 +691,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FrameContent(self, item: FrameContentSequenceItem):
         if not isinstance(item, FrameContentSequenceItem):
-            raise ValueError(f"Item must be an instance of FrameContentSequenceItem")
+            raise ValueError("Item must be an instance of FrameContentSequenceItem")
         self._FrameContentSequence.append(item)
         if "FrameContentSequence" not in self._dataset:
             self._dataset.FrameContentSequence = pydicom.Sequence()
@@ -716,7 +716,7 @@ class SharedFunctionalGroupsSequenceItem:
             isinstance(item, RespiratorySynchronizationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RespiratorySynchronizationSequence must be a list of RespiratorySynchronizationSequenceItem objects"
+                "RespiratorySynchronizationSequence must be a list of RespiratorySynchronizationSequenceItem objects"
             )
         else:
             self._RespiratorySynchronizationSequence = value
@@ -727,7 +727,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_RespiratorySynchronization(self, item: RespiratorySynchronizationSequenceItem):
         if not isinstance(item, RespiratorySynchronizationSequenceItem):
-            raise ValueError(f"Item must be an instance of RespiratorySynchronizationSequenceItem")
+            raise ValueError("Item must be an instance of RespiratorySynchronizationSequenceItem")
         self._RespiratorySynchronizationSequence.append(item)
         if "RespiratorySynchronizationSequence" not in self._dataset:
             self._dataset.RespiratorySynchronizationSequence = pydicom.Sequence()
@@ -750,7 +750,7 @@ class SharedFunctionalGroupsSequenceItem:
                 del self._dataset.PatientOrientationInFrameSequence
         elif not isinstance(value, list) or not all(isinstance(item, PatientOrientationInFrameSequenceItem) for item in value):
             raise ValueError(
-                f"PatientOrientationInFrameSequence must be a list of PatientOrientationInFrameSequenceItem objects"
+                "PatientOrientationInFrameSequence must be a list of PatientOrientationInFrameSequenceItem objects"
             )
         else:
             self._PatientOrientationInFrameSequence = value
@@ -761,7 +761,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_PatientOrientationInFrame(self, item: PatientOrientationInFrameSequenceItem):
         if not isinstance(item, PatientOrientationInFrameSequenceItem):
-            raise ValueError(f"Item must be an instance of PatientOrientationInFrameSequenceItem")
+            raise ValueError("Item must be an instance of PatientOrientationInFrameSequenceItem")
         self._PatientOrientationInFrameSequence.append(item)
         if "PatientOrientationInFrameSequence" not in self._dataset:
             self._dataset.PatientOrientationInFrameSequence = pydicom.Sequence()
@@ -783,7 +783,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FrameVOILUTSequence" in self._dataset:
                 del self._dataset.FrameVOILUTSequence
         elif not isinstance(value, list) or not all(isinstance(item, FrameVOILUTSequenceItem) for item in value):
-            raise ValueError(f"FrameVOILUTSequence must be a list of FrameVOILUTSequenceItem objects")
+            raise ValueError("FrameVOILUTSequence must be a list of FrameVOILUTSequenceItem objects")
         else:
             self._FrameVOILUTSequence = value
             if "FrameVOILUTSequence" not in self._dataset:
@@ -793,7 +793,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FrameVOILUT(self, item: FrameVOILUTSequenceItem):
         if not isinstance(item, FrameVOILUTSequenceItem):
-            raise ValueError(f"Item must be an instance of FrameVOILUTSequenceItem")
+            raise ValueError("Item must be an instance of FrameVOILUTSequenceItem")
         self._FrameVOILUTSequence.append(item)
         if "FrameVOILUTSequence" not in self._dataset:
             self._dataset.FrameVOILUTSequence = pydicom.Sequence()
@@ -815,7 +815,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FramePixelShiftSequence" in self._dataset:
                 del self._dataset.FramePixelShiftSequence
         elif not isinstance(value, list) or not all(isinstance(item, FramePixelShiftSequenceItem) for item in value):
-            raise ValueError(f"FramePixelShiftSequence must be a list of FramePixelShiftSequenceItem objects")
+            raise ValueError("FramePixelShiftSequence must be a list of FramePixelShiftSequenceItem objects")
         else:
             self._FramePixelShiftSequence = value
             if "FramePixelShiftSequence" not in self._dataset:
@@ -825,7 +825,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FramePixelShift(self, item: FramePixelShiftSequenceItem):
         if not isinstance(item, FramePixelShiftSequenceItem):
-            raise ValueError(f"Item must be an instance of FramePixelShiftSequenceItem")
+            raise ValueError("Item must be an instance of FramePixelShiftSequenceItem")
         self._FramePixelShiftSequence.append(item)
         if "FramePixelShiftSequence" not in self._dataset:
             self._dataset.FramePixelShiftSequence = pydicom.Sequence()
@@ -852,7 +852,7 @@ class SharedFunctionalGroupsSequenceItem:
             isinstance(item, PixelIntensityRelationshipLUTSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PixelIntensityRelationshipLUTSequence must be a list of PixelIntensityRelationshipLUTSequenceItem objects"
+                "PixelIntensityRelationshipLUTSequence must be a list of PixelIntensityRelationshipLUTSequenceItem objects"
             )
         else:
             self._PixelIntensityRelationshipLUTSequence = value
@@ -863,7 +863,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_PixelIntensityRelationshipLUT(self, item: PixelIntensityRelationshipLUTSequenceItem):
         if not isinstance(item, PixelIntensityRelationshipLUTSequenceItem):
-            raise ValueError(f"Item must be an instance of PixelIntensityRelationshipLUTSequenceItem")
+            raise ValueError("Item must be an instance of PixelIntensityRelationshipLUTSequenceItem")
         self._PixelIntensityRelationshipLUTSequence.append(item)
         if "PixelIntensityRelationshipLUTSequence" not in self._dataset:
             self._dataset.PixelIntensityRelationshipLUTSequence = pydicom.Sequence()
@@ -885,9 +885,7 @@ class SharedFunctionalGroupsSequenceItem:
             if "FramePixelDataPropertiesSequence" in self._dataset:
                 del self._dataset.FramePixelDataPropertiesSequence
         elif not isinstance(value, list) or not all(isinstance(item, FramePixelDataPropertiesSequenceItem) for item in value):
-            raise ValueError(
-                f"FramePixelDataPropertiesSequence must be a list of FramePixelDataPropertiesSequenceItem objects"
-            )
+            raise ValueError("FramePixelDataPropertiesSequence must be a list of FramePixelDataPropertiesSequenceItem objects")
         else:
             self._FramePixelDataPropertiesSequence = value
             if "FramePixelDataPropertiesSequence" not in self._dataset:
@@ -897,7 +895,7 @@ class SharedFunctionalGroupsSequenceItem:
 
     def add_FramePixelDataProperties(self, item: FramePixelDataPropertiesSequenceItem):
         if not isinstance(item, FramePixelDataPropertiesSequenceItem):
-            raise ValueError(f"Item must be an instance of FramePixelDataPropertiesSequenceItem")
+            raise ValueError("Item must be an instance of FramePixelDataPropertiesSequenceItem")
         self._FramePixelDataPropertiesSequence.append(item)
         if "FramePixelDataPropertiesSequence" not in self._dataset:
             self._dataset.FramePixelDataPropertiesSequence = pydicom.Sequence()

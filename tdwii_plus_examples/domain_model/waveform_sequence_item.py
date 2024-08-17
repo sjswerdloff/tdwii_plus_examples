@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -142,7 +142,7 @@ class WaveformSequenceItem:
             if "ChannelDefinitionSequence" in self._dataset:
                 del self._dataset.ChannelDefinitionSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChannelDefinitionSequenceItem) for item in value):
-            raise ValueError(f"ChannelDefinitionSequence must be a list of ChannelDefinitionSequenceItem objects")
+            raise ValueError("ChannelDefinitionSequence must be a list of ChannelDefinitionSequenceItem objects")
         else:
             self._ChannelDefinitionSequence = value
             if "ChannelDefinitionSequence" not in self._dataset:
@@ -152,7 +152,7 @@ class WaveformSequenceItem:
 
     def add_ChannelDefinition(self, item: ChannelDefinitionSequenceItem):
         if not isinstance(item, ChannelDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of ChannelDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of ChannelDefinitionSequenceItem")
         self._ChannelDefinitionSequence.append(item)
         if "ChannelDefinitionSequence" not in self._dataset:
             self._dataset.ChannelDefinitionSequence = pydicom.Sequence()

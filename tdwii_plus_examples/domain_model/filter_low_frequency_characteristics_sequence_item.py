@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -111,7 +111,7 @@ class FilterLowFrequencyCharacteristicsSequenceItem:
             isinstance(item, AnalogFilterCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"AnalogFilterCharacteristicsSequence must be a list of AnalogFilterCharacteristicsSequenceItem objects"
+                "AnalogFilterCharacteristicsSequence must be a list of AnalogFilterCharacteristicsSequenceItem objects"
             )
         else:
             self._AnalogFilterCharacteristicsSequence = value
@@ -122,7 +122,7 @@ class FilterLowFrequencyCharacteristicsSequenceItem:
 
     def add_AnalogFilterCharacteristics(self, item: AnalogFilterCharacteristicsSequenceItem):
         if not isinstance(item, AnalogFilterCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of AnalogFilterCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of AnalogFilterCharacteristicsSequenceItem")
         self._AnalogFilterCharacteristicsSequence.append(item)
         if "AnalogFilterCharacteristicsSequence" not in self._dataset:
             self._dataset.AnalogFilterCharacteristicsSequence = pydicom.Sequence()
@@ -149,7 +149,7 @@ class FilterLowFrequencyCharacteristicsSequenceItem:
             isinstance(item, DigitalFilterCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DigitalFilterCharacteristicsSequence must be a list of DigitalFilterCharacteristicsSequenceItem objects"
+                "DigitalFilterCharacteristicsSequence must be a list of DigitalFilterCharacteristicsSequenceItem objects"
             )
         else:
             self._DigitalFilterCharacteristicsSequence = value
@@ -160,7 +160,7 @@ class FilterLowFrequencyCharacteristicsSequenceItem:
 
     def add_DigitalFilterCharacteristics(self, item: DigitalFilterCharacteristicsSequenceItem):
         if not isinstance(item, DigitalFilterCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of DigitalFilterCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of DigitalFilterCharacteristicsSequenceItem")
         self._DigitalFilterCharacteristicsSequence.append(item)
         if "DigitalFilterCharacteristicsSequence" not in self._dataset:
             self._dataset.DigitalFilterCharacteristicsSequence = pydicom.Sequence()
@@ -196,7 +196,7 @@ class FilterLowFrequencyCharacteristicsSequenceItem:
             if "FilterLookupTableSequence" in self._dataset:
                 del self._dataset.FilterLookupTableSequence
         elif not isinstance(value, list) or not all(isinstance(item, FilterLookupTableSequenceItem) for item in value):
-            raise ValueError(f"FilterLookupTableSequence must be a list of FilterLookupTableSequenceItem objects")
+            raise ValueError("FilterLookupTableSequence must be a list of FilterLookupTableSequenceItem objects")
         else:
             self._FilterLookupTableSequence = value
             if "FilterLookupTableSequence" not in self._dataset:
@@ -206,7 +206,7 @@ class FilterLowFrequencyCharacteristicsSequenceItem:
 
     def add_FilterLookupTable(self, item: FilterLookupTableSequenceItem):
         if not isinstance(item, FilterLookupTableSequenceItem):
-            raise ValueError(f"Item must be an instance of FilterLookupTableSequenceItem")
+            raise ValueError("Item must be an instance of FilterLookupTableSequenceItem")
         self._FilterLookupTableSequence.append(item)
         if "FilterLookupTableSequence" not in self._dataset:
             self._dataset.FilterLookupTableSequence = pydicom.Sequence()

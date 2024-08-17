@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class TreatmentPositionGroupSequenceItem:
             if "ReferencedRTRadiationSequence" in self._dataset:
                 del self._dataset.ReferencedRTRadiationSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedRTRadiationSequenceItem) for item in value):
-            raise ValueError(f"ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
+            raise ValueError("ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
         else:
             self._ReferencedRTRadiationSequence = value
             if "ReferencedRTRadiationSequence" not in self._dataset:
@@ -67,7 +67,7 @@ class TreatmentPositionGroupSequenceItem:
 
     def add_ReferencedRTRadiation(self, item: ReferencedRTRadiationSequenceItem):
         if not isinstance(item, ReferencedRTRadiationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTRadiationSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTRadiationSequenceItem")
         self._ReferencedRTRadiationSequence.append(item)
         if "ReferencedRTRadiationSequence" not in self._dataset:
             self._dataset.ReferencedRTRadiationSequence = pydicom.Sequence()

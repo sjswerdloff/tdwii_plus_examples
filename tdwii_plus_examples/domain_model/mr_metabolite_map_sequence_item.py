@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class MRMetaboliteMapSequenceItem:
             if "MetaboliteMapCodeSequence" in self._dataset:
                 del self._dataset.MetaboliteMapCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MetaboliteMapCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MetaboliteMapCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MetaboliteMapCodeSequence = value
             if "MetaboliteMapCodeSequence" not in self._dataset:
@@ -55,7 +55,7 @@ class MRMetaboliteMapSequenceItem:
 
     def add_MetaboliteMapCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MetaboliteMapCodeSequence.append(item)
         if "MetaboliteMapCodeSequence" not in self._dataset:
             self._dataset.MetaboliteMapCodeSequence = pydicom.Sequence()
@@ -77,7 +77,7 @@ class MRMetaboliteMapSequenceItem:
             if "ChemicalShiftSequence" in self._dataset:
                 del self._dataset.ChemicalShiftSequence
         elif not isinstance(value, list) or not all(isinstance(item, ChemicalShiftSequenceItem) for item in value):
-            raise ValueError(f"ChemicalShiftSequence must be a list of ChemicalShiftSequenceItem objects")
+            raise ValueError("ChemicalShiftSequence must be a list of ChemicalShiftSequenceItem objects")
         else:
             self._ChemicalShiftSequence = value
             if "ChemicalShiftSequence" not in self._dataset:
@@ -87,7 +87,7 @@ class MRMetaboliteMapSequenceItem:
 
     def add_ChemicalShift(self, item: ChemicalShiftSequenceItem):
         if not isinstance(item, ChemicalShiftSequenceItem):
-            raise ValueError(f"Item must be an instance of ChemicalShiftSequenceItem")
+            raise ValueError("Item must be an instance of ChemicalShiftSequenceItem")
         self._ChemicalShiftSequence.append(item)
         if "ChemicalShiftSequence" not in self._dataset:
             self._dataset.ChemicalShiftSequence = pydicom.Sequence()

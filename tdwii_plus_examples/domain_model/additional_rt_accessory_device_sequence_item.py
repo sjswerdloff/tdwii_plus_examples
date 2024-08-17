@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -41,7 +41,8 @@ class AdditionalRTAccessoryDeviceSequenceItem:
             isinstance(item, DeviceSpecificAcquisitionParameterSequenceItem) for item in value
         ):
             raise ValueError(
-                f"DeviceSpecificAcquisitionParameterSequence must be a list of DeviceSpecificAcquisitionParameterSequenceItem objects"
+                "DeviceSpecificAcquisitionParameterSequence must be a list of DeviceSpecificAcquisitionParameterSequenceItem"
+                " objects"
             )
         else:
             self._DeviceSpecificAcquisitionParameterSequence = value
@@ -52,7 +53,7 @@ class AdditionalRTAccessoryDeviceSequenceItem:
 
     def add_DeviceSpecificAcquisitionParameter(self, item: DeviceSpecificAcquisitionParameterSequenceItem):
         if not isinstance(item, DeviceSpecificAcquisitionParameterSequenceItem):
-            raise ValueError(f"Item must be an instance of DeviceSpecificAcquisitionParameterSequenceItem")
+            raise ValueError("Item must be an instance of DeviceSpecificAcquisitionParameterSequenceItem")
         self._DeviceSpecificAcquisitionParameterSequence.append(item)
         if "DeviceSpecificAcquisitionParameterSequence" not in self._dataset:
             self._dataset.DeviceSpecificAcquisitionParameterSequence = pydicom.Sequence()

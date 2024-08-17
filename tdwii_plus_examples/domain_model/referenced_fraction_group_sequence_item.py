@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -33,7 +33,7 @@ class ReferencedFractionGroupSequenceItem:
             if "ReferencedBeamSequence" in self._dataset:
                 del self._dataset.ReferencedBeamSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedBeamSequenceItem) for item in value):
-            raise ValueError(f"ReferencedBeamSequence must be a list of ReferencedBeamSequenceItem objects")
+            raise ValueError("ReferencedBeamSequence must be a list of ReferencedBeamSequenceItem objects")
         else:
             self._ReferencedBeamSequence = value
             if "ReferencedBeamSequence" not in self._dataset:
@@ -43,7 +43,7 @@ class ReferencedFractionGroupSequenceItem:
 
     def add_ReferencedBeam(self, item: ReferencedBeamSequenceItem):
         if not isinstance(item, ReferencedBeamSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedBeamSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedBeamSequenceItem")
         self._ReferencedBeamSequence.append(item)
         if "ReferencedBeamSequence" not in self._dataset:
             self._dataset.ReferencedBeamSequence = pydicom.Sequence()
@@ -73,7 +73,8 @@ class ReferencedFractionGroupSequenceItem:
             isinstance(item, ReferencedBrachyApplicationSetupSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedBrachyApplicationSetupSequence must be a list of ReferencedBrachyApplicationSetupSequenceItem objects"
+                "ReferencedBrachyApplicationSetupSequence must be a list of ReferencedBrachyApplicationSetupSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedBrachyApplicationSetupSequence = value
@@ -84,7 +85,7 @@ class ReferencedFractionGroupSequenceItem:
 
     def add_ReferencedBrachyApplicationSetup(self, item: ReferencedBrachyApplicationSetupSequenceItem):
         if not isinstance(item, ReferencedBrachyApplicationSetupSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedBrachyApplicationSetupSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedBrachyApplicationSetupSequenceItem")
         self._ReferencedBrachyApplicationSetupSequence.append(item)
         if "ReferencedBrachyApplicationSetupSequence" not in self._dataset:
             self._dataset.ReferencedBrachyApplicationSetupSequence = pydicom.Sequence()

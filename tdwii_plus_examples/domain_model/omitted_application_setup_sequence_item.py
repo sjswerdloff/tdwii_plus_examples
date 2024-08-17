@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class OmittedApplicationSetupSequenceItem:
             if "OmittedChannelSequence" in self._dataset:
                 del self._dataset.OmittedChannelSequence
         elif not isinstance(value, list) or not all(isinstance(item, OmittedChannelSequenceItem) for item in value):
-            raise ValueError(f"OmittedChannelSequence must be a list of OmittedChannelSequenceItem objects")
+            raise ValueError("OmittedChannelSequence must be a list of OmittedChannelSequenceItem objects")
         else:
             self._OmittedChannelSequence = value
             if "OmittedChannelSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class OmittedApplicationSetupSequenceItem:
 
     def add_OmittedChannel(self, item: OmittedChannelSequenceItem):
         if not isinstance(item, OmittedChannelSequenceItem):
-            raise ValueError(f"Item must be an instance of OmittedChannelSequenceItem")
+            raise ValueError("Item must be an instance of OmittedChannelSequenceItem")
         self._OmittedChannelSequence.append(item)
         if "OmittedChannelSequence" not in self._dataset:
             self._dataset.OmittedChannelSequence = pydicom.Sequence()

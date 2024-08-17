@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -496,7 +496,7 @@ class RenditionSelectionDocument:
             isinstance(item, CodingSchemeIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"CodingSchemeIdentificationSequence must be a list of CodingSchemeIdentificationSequenceItem objects"
+                "CodingSchemeIdentificationSequence must be a list of CodingSchemeIdentificationSequenceItem objects"
             )
         else:
             self._CodingSchemeIdentificationSequence = value
@@ -507,7 +507,7 @@ class RenditionSelectionDocument:
 
     def add_CodingSchemeIdentification(self, item: CodingSchemeIdentificationSequenceItem):
         if not isinstance(item, CodingSchemeIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of CodingSchemeIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of CodingSchemeIdentificationSequenceItem")
         self._CodingSchemeIdentificationSequence.append(item)
         if "CodingSchemeIdentificationSequence" not in self._dataset:
             self._dataset.CodingSchemeIdentificationSequence = pydicom.Sequence()
@@ -532,7 +532,7 @@ class RenditionSelectionDocument:
             isinstance(item, ContextGroupIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ContextGroupIdentificationSequence must be a list of ContextGroupIdentificationSequenceItem objects"
+                "ContextGroupIdentificationSequence must be a list of ContextGroupIdentificationSequenceItem objects"
             )
         else:
             self._ContextGroupIdentificationSequence = value
@@ -543,7 +543,7 @@ class RenditionSelectionDocument:
 
     def add_ContextGroupIdentification(self, item: ContextGroupIdentificationSequenceItem):
         if not isinstance(item, ContextGroupIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ContextGroupIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ContextGroupIdentificationSequenceItem")
         self._ContextGroupIdentificationSequence.append(item)
         if "ContextGroupIdentificationSequence" not in self._dataset:
             self._dataset.ContextGroupIdentificationSequence = pydicom.Sequence()
@@ -570,7 +570,7 @@ class RenditionSelectionDocument:
             isinstance(item, MappingResourceIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"MappingResourceIdentificationSequence must be a list of MappingResourceIdentificationSequenceItem objects"
+                "MappingResourceIdentificationSequence must be a list of MappingResourceIdentificationSequenceItem objects"
             )
         else:
             self._MappingResourceIdentificationSequence = value
@@ -581,7 +581,7 @@ class RenditionSelectionDocument:
 
     def add_MappingResourceIdentification(self, item: MappingResourceIdentificationSequenceItem):
         if not isinstance(item, MappingResourceIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of MappingResourceIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of MappingResourceIdentificationSequenceItem")
         self._MappingResourceIdentificationSequence.append(item)
         if "MappingResourceIdentificationSequence" not in self._dataset:
             self._dataset.MappingResourceIdentificationSequence = pydicom.Sequence()
@@ -625,7 +625,8 @@ class RenditionSelectionDocument:
             isinstance(item, PrivateDataElementCharacteristicsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PrivateDataElementCharacteristicsSequence must be a list of PrivateDataElementCharacteristicsSequenceItem objects"
+                "PrivateDataElementCharacteristicsSequence must be a list of PrivateDataElementCharacteristicsSequenceItem"
+                " objects"
             )
         else:
             self._PrivateDataElementCharacteristicsSequence = value
@@ -636,7 +637,7 @@ class RenditionSelectionDocument:
 
     def add_PrivateDataElementCharacteristics(self, item: PrivateDataElementCharacteristicsSequenceItem):
         if not isinstance(item, PrivateDataElementCharacteristicsSequenceItem):
-            raise ValueError(f"Item must be an instance of PrivateDataElementCharacteristicsSequenceItem")
+            raise ValueError("Item must be an instance of PrivateDataElementCharacteristicsSequenceItem")
         self._PrivateDataElementCharacteristicsSequence.append(item)
         if "PrivateDataElementCharacteristicsSequence" not in self._dataset:
             self._dataset.PrivateDataElementCharacteristicsSequence = pydicom.Sequence()
@@ -673,7 +674,7 @@ class RenditionSelectionDocument:
                 del self._dataset.ReferencedDefinedProtocolSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedDefinedProtocolSequenceItem) for item in value):
             raise ValueError(
-                f"ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
+                "ReferencedDefinedProtocolSequence must be a list of ReferencedDefinedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedDefinedProtocolSequence = value
@@ -684,7 +685,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedDefinedProtocol(self, item: ReferencedDefinedProtocolSequenceItem):
         if not isinstance(item, ReferencedDefinedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedDefinedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedDefinedProtocolSequenceItem")
         self._ReferencedDefinedProtocolSequence.append(item)
         if "ReferencedDefinedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedDefinedProtocolSequence = pydicom.Sequence()
@@ -709,7 +710,7 @@ class RenditionSelectionDocument:
             isinstance(item, ReferencedPerformedProtocolSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
+                "ReferencedPerformedProtocolSequence must be a list of ReferencedPerformedProtocolSequenceItem objects"
             )
         else:
             self._ReferencedPerformedProtocolSequence = value
@@ -720,7 +721,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedPerformedProtocol(self, item: ReferencedPerformedProtocolSequenceItem):
         if not isinstance(item, ReferencedPerformedProtocolSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProtocolSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPerformedProtocolSequenceItem")
         self._ReferencedPerformedProtocolSequence.append(item)
         if "ReferencedPerformedProtocolSequence" not in self._dataset:
             self._dataset.ReferencedPerformedProtocolSequence = pydicom.Sequence()
@@ -742,7 +743,7 @@ class RenditionSelectionDocument:
             if "ContributingEquipmentSequence" in self._dataset:
                 del self._dataset.ContributingEquipmentSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContributingEquipmentSequenceItem) for item in value):
-            raise ValueError(f"ContributingEquipmentSequence must be a list of ContributingEquipmentSequenceItem objects")
+            raise ValueError("ContributingEquipmentSequence must be a list of ContributingEquipmentSequenceItem objects")
         else:
             self._ContributingEquipmentSequence = value
             if "ContributingEquipmentSequence" not in self._dataset:
@@ -752,7 +753,7 @@ class RenditionSelectionDocument:
 
     def add_ContributingEquipment(self, item: ContributingEquipmentSequenceItem):
         if not isinstance(item, ContributingEquipmentSequenceItem):
-            raise ValueError(f"Item must be an instance of ContributingEquipmentSequenceItem")
+            raise ValueError("Item must be an instance of ContributingEquipmentSequenceItem")
         self._ContributingEquipmentSequence.append(item)
         if "ContributingEquipmentSequence" not in self._dataset:
             self._dataset.ContributingEquipmentSequence = pydicom.Sequence()
@@ -791,7 +792,7 @@ class RenditionSelectionDocument:
             isinstance(item, ConversionSourceAttributesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConversionSourceAttributesSequence must be a list of ConversionSourceAttributesSequenceItem objects"
+                "ConversionSourceAttributesSequence must be a list of ConversionSourceAttributesSequenceItem objects"
             )
         else:
             self._ConversionSourceAttributesSequence = value
@@ -802,7 +803,7 @@ class RenditionSelectionDocument:
 
     def add_ConversionSourceAttributes(self, item: ConversionSourceAttributesSequenceItem):
         if not isinstance(item, ConversionSourceAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of ConversionSourceAttributesSequenceItem")
+            raise ValueError("Item must be an instance of ConversionSourceAttributesSequenceItem")
         self._ConversionSourceAttributesSequence.append(item)
         if "ConversionSourceAttributesSequence" not in self._dataset:
             self._dataset.ConversionSourceAttributesSequence = pydicom.Sequence()
@@ -843,7 +844,7 @@ class RenditionSelectionDocument:
             isinstance(item, HL7StructuredDocumentReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"HL7StructuredDocumentReferenceSequence must be a list of HL7StructuredDocumentReferenceSequenceItem objects"
+                "HL7StructuredDocumentReferenceSequence must be a list of HL7StructuredDocumentReferenceSequenceItem objects"
             )
         else:
             self._HL7StructuredDocumentReferenceSequence = value
@@ -854,7 +855,7 @@ class RenditionSelectionDocument:
 
     def add_HL7StructuredDocumentReference(self, item: HL7StructuredDocumentReferenceSequenceItem):
         if not isinstance(item, HL7StructuredDocumentReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of HL7StructuredDocumentReferenceSequenceItem")
+            raise ValueError("Item must be an instance of HL7StructuredDocumentReferenceSequenceItem")
         self._HL7StructuredDocumentReferenceSequence.append(item)
         if "HL7StructuredDocumentReferenceSequence" not in self._dataset:
             self._dataset.HL7StructuredDocumentReferenceSequence = pydicom.Sequence()
@@ -932,7 +933,7 @@ class RenditionSelectionDocument:
             if "EncryptedAttributesSequence" in self._dataset:
                 del self._dataset.EncryptedAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, EncryptedAttributesSequenceItem) for item in value):
-            raise ValueError(f"EncryptedAttributesSequence must be a list of EncryptedAttributesSequenceItem objects")
+            raise ValueError("EncryptedAttributesSequence must be a list of EncryptedAttributesSequenceItem objects")
         else:
             self._EncryptedAttributesSequence = value
             if "EncryptedAttributesSequence" not in self._dataset:
@@ -942,7 +943,7 @@ class RenditionSelectionDocument:
 
     def add_EncryptedAttributes(self, item: EncryptedAttributesSequenceItem):
         if not isinstance(item, EncryptedAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of EncryptedAttributesSequenceItem")
+            raise ValueError("Item must be an instance of EncryptedAttributesSequenceItem")
         self._EncryptedAttributesSequence.append(item)
         if "EncryptedAttributesSequence" not in self._dataset:
             self._dataset.EncryptedAttributesSequence = pydicom.Sequence()
@@ -964,7 +965,7 @@ class RenditionSelectionDocument:
             if "OriginalAttributesSequence" in self._dataset:
                 del self._dataset.OriginalAttributesSequence
         elif not isinstance(value, list) or not all(isinstance(item, OriginalAttributesSequenceItem) for item in value):
-            raise ValueError(f"OriginalAttributesSequence must be a list of OriginalAttributesSequenceItem objects")
+            raise ValueError("OriginalAttributesSequence must be a list of OriginalAttributesSequenceItem objects")
         else:
             self._OriginalAttributesSequence = value
             if "OriginalAttributesSequence" not in self._dataset:
@@ -974,7 +975,7 @@ class RenditionSelectionDocument:
 
     def add_OriginalAttributes(self, item: OriginalAttributesSequenceItem):
         if not isinstance(item, OriginalAttributesSequenceItem):
-            raise ValueError(f"Item must be an instance of OriginalAttributesSequenceItem")
+            raise ValueError("Item must be an instance of OriginalAttributesSequenceItem")
         self._OriginalAttributesSequence.append(item)
         if "OriginalAttributesSequence" not in self._dataset:
             self._dataset.OriginalAttributesSequence = pydicom.Sequence()
@@ -1024,7 +1025,7 @@ class RenditionSelectionDocument:
             if "MACParametersSequence" in self._dataset:
                 del self._dataset.MACParametersSequence
         elif not isinstance(value, list) or not all(isinstance(item, MACParametersSequenceItem) for item in value):
-            raise ValueError(f"MACParametersSequence must be a list of MACParametersSequenceItem objects")
+            raise ValueError("MACParametersSequence must be a list of MACParametersSequenceItem objects")
         else:
             self._MACParametersSequence = value
             if "MACParametersSequence" not in self._dataset:
@@ -1034,7 +1035,7 @@ class RenditionSelectionDocument:
 
     def add_MACParameters(self, item: MACParametersSequenceItem):
         if not isinstance(item, MACParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of MACParametersSequenceItem")
+            raise ValueError("Item must be an instance of MACParametersSequenceItem")
         self._MACParametersSequence.append(item)
         if "MACParametersSequence" not in self._dataset:
             self._dataset.MACParametersSequence = pydicom.Sequence()
@@ -1056,7 +1057,7 @@ class RenditionSelectionDocument:
             if "DigitalSignaturesSequence" in self._dataset:
                 del self._dataset.DigitalSignaturesSequence
         elif not isinstance(value, list) or not all(isinstance(item, DigitalSignaturesSequenceItem) for item in value):
-            raise ValueError(f"DigitalSignaturesSequence must be a list of DigitalSignaturesSequenceItem objects")
+            raise ValueError("DigitalSignaturesSequence must be a list of DigitalSignaturesSequenceItem objects")
         else:
             self._DigitalSignaturesSequence = value
             if "DigitalSignaturesSequence" not in self._dataset:
@@ -1066,7 +1067,7 @@ class RenditionSelectionDocument:
 
     def add_DigitalSignatures(self, item: DigitalSignaturesSequenceItem):
         if not isinstance(item, DigitalSignaturesSequenceItem):
-            raise ValueError(f"Item must be an instance of DigitalSignaturesSequenceItem")
+            raise ValueError("Item must be an instance of DigitalSignaturesSequenceItem")
         self._DigitalSignaturesSequence.append(item)
         if "DigitalSignaturesSequence" not in self._dataset:
             self._dataset.DigitalSignaturesSequence = pydicom.Sequence()
@@ -1158,7 +1159,7 @@ class RenditionSelectionDocument:
             if "AdmittingDiagnosesCodeSequence" in self._dataset:
                 del self._dataset.AdmittingDiagnosesCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"AdmittingDiagnosesCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("AdmittingDiagnosesCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._AdmittingDiagnosesCodeSequence = value
             if "AdmittingDiagnosesCodeSequence" not in self._dataset:
@@ -1168,7 +1169,7 @@ class RenditionSelectionDocument:
 
     def add_AdmittingDiagnosesCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._AdmittingDiagnosesCodeSequence.append(item)
         if "AdmittingDiagnosesCodeSequence" not in self._dataset:
             self._dataset.AdmittingDiagnosesCodeSequence = pydicom.Sequence()
@@ -1218,7 +1219,7 @@ class RenditionSelectionDocument:
             if "PatientSizeCodeSequence" in self._dataset:
                 del self._dataset.PatientSizeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientSizeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientSizeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientSizeCodeSequence = value
             if "PatientSizeCodeSequence" not in self._dataset:
@@ -1228,7 +1229,7 @@ class RenditionSelectionDocument:
 
     def add_PatientSizeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientSizeCodeSequence.append(item)
         if "PatientSizeCodeSequence" not in self._dataset:
             self._dataset.PatientSizeCodeSequence = pydicom.Sequence()
@@ -1432,7 +1433,7 @@ class RenditionSelectionDocument:
             if "ReasonForVisitCodeSequence" in self._dataset:
                 del self._dataset.ReasonForVisitCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForVisitCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForVisitCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForVisitCodeSequence = value
             if "ReasonForVisitCodeSequence" not in self._dataset:
@@ -1442,7 +1443,7 @@ class RenditionSelectionDocument:
 
     def add_ReasonForVisitCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForVisitCodeSequence.append(item)
         if "ReasonForVisitCodeSequence" not in self._dataset:
             self._dataset.ReasonForVisitCodeSequence = pydicom.Sequence()
@@ -1478,7 +1479,7 @@ class RenditionSelectionDocument:
             if "IssuerOfAdmissionIDSequence" in self._dataset:
                 del self._dataset.IssuerOfAdmissionIDSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfAdmissionIDSequenceItem) for item in value):
-            raise ValueError(f"IssuerOfAdmissionIDSequence must be a list of IssuerOfAdmissionIDSequenceItem objects")
+            raise ValueError("IssuerOfAdmissionIDSequence must be a list of IssuerOfAdmissionIDSequenceItem objects")
         else:
             self._IssuerOfAdmissionIDSequence = value
             if "IssuerOfAdmissionIDSequence" not in self._dataset:
@@ -1488,7 +1489,7 @@ class RenditionSelectionDocument:
 
     def add_IssuerOfAdmissionID(self, item: IssuerOfAdmissionIDSequenceItem):
         if not isinstance(item, IssuerOfAdmissionIDSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfAdmissionIDSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfAdmissionIDSequenceItem")
         self._IssuerOfAdmissionIDSequence.append(item)
         if "IssuerOfAdmissionIDSequence" not in self._dataset:
             self._dataset.IssuerOfAdmissionIDSequence = pydicom.Sequence()
@@ -1538,9 +1539,7 @@ class RenditionSelectionDocument:
             if "IssuerOfServiceEpisodeIDSequence" in self._dataset:
                 del self._dataset.IssuerOfServiceEpisodeIDSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfServiceEpisodeIDSequenceItem) for item in value):
-            raise ValueError(
-                f"IssuerOfServiceEpisodeIDSequence must be a list of IssuerOfServiceEpisodeIDSequenceItem objects"
-            )
+            raise ValueError("IssuerOfServiceEpisodeIDSequence must be a list of IssuerOfServiceEpisodeIDSequenceItem objects")
         else:
             self._IssuerOfServiceEpisodeIDSequence = value
             if "IssuerOfServiceEpisodeIDSequence" not in self._dataset:
@@ -1550,7 +1549,7 @@ class RenditionSelectionDocument:
 
     def add_IssuerOfServiceEpisodeID(self, item: IssuerOfServiceEpisodeIDSequenceItem):
         if not isinstance(item, IssuerOfServiceEpisodeIDSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfServiceEpisodeIDSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfServiceEpisodeIDSequenceItem")
         self._IssuerOfServiceEpisodeIDSequence.append(item)
         if "IssuerOfServiceEpisodeIDSequence" not in self._dataset:
             self._dataset.IssuerOfServiceEpisodeIDSequence = pydicom.Sequence()
@@ -1642,7 +1641,7 @@ class RenditionSelectionDocument:
             if "SeriesDescriptionCodeSequence" in self._dataset:
                 del self._dataset.SeriesDescriptionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"SeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("SeriesDescriptionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._SeriesDescriptionCodeSequence = value
             if "SeriesDescriptionCodeSequence" not in self._dataset:
@@ -1652,7 +1651,7 @@ class RenditionSelectionDocument:
 
     def add_SeriesDescriptionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._SeriesDescriptionCodeSequence.append(item)
         if "SeriesDescriptionCodeSequence" not in self._dataset:
             self._dataset.SeriesDescriptionCodeSequence = pydicom.Sequence()
@@ -1682,7 +1681,8 @@ class RenditionSelectionDocument:
             isinstance(item, ReferencedPerformedProcedureStepSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem objects"
+                "ReferencedPerformedProcedureStepSequence must be a list of ReferencedPerformedProcedureStepSequenceItem"
+                " objects"
             )
         else:
             self._ReferencedPerformedProcedureStepSequence = value
@@ -1693,7 +1693,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedPerformedProcedureStep(self, item: ReferencedPerformedProcedureStepSequenceItem):
         if not isinstance(item, ReferencedPerformedProcedureStepSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPerformedProcedureStepSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPerformedProcedureStepSequenceItem")
         self._ReferencedPerformedProcedureStepSequence.append(item)
         if "ReferencedPerformedProcedureStepSequence" not in self._dataset:
             self._dataset.ReferencedPerformedProcedureStepSequence = pydicom.Sequence()
@@ -1843,7 +1843,7 @@ class RenditionSelectionDocument:
             if "InstitutionalDepartmentTypeCodeSequence" in self._dataset:
                 del self._dataset.InstitutionalDepartmentTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InstitutionalDepartmentTypeCodeSequence = value
             if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
@@ -1853,7 +1853,7 @@ class RenditionSelectionDocument:
 
     def add_InstitutionalDepartmentTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InstitutionalDepartmentTypeCodeSequence.append(item)
         if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
             self._dataset.InstitutionalDepartmentTypeCodeSequence = pydicom.Sequence()
@@ -1931,7 +1931,7 @@ class RenditionSelectionDocument:
             if "UDISequence" in self._dataset:
                 del self._dataset.UDISequence
         elif not isinstance(value, list) or not all(isinstance(item, UDISequenceItem) for item in value):
-            raise ValueError(f"UDISequence must be a list of UDISequenceItem objects")
+            raise ValueError("UDISequence must be a list of UDISequenceItem objects")
         else:
             self._UDISequence = value
             if "UDISequence" not in self._dataset:
@@ -1941,7 +1941,7 @@ class RenditionSelectionDocument:
 
     def add_UDI(self, item: UDISequenceItem):
         if not isinstance(item, UDISequenceItem):
-            raise ValueError(f"Item must be an instance of UDISequenceItem")
+            raise ValueError("Item must be an instance of UDISequenceItem")
         self._UDISequence.append(item)
         if "UDISequence" not in self._dataset:
             self._dataset.UDISequence = pydicom.Sequence()
@@ -2117,7 +2117,7 @@ class RenditionSelectionDocument:
             if "ReferencedRequestSequence" in self._dataset:
                 del self._dataset.ReferencedRequestSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedRequestSequenceItem) for item in value):
-            raise ValueError(f"ReferencedRequestSequence must be a list of ReferencedRequestSequenceItem objects")
+            raise ValueError("ReferencedRequestSequence must be a list of ReferencedRequestSequenceItem objects")
         else:
             self._ReferencedRequestSequence = value
             if "ReferencedRequestSequence" not in self._dataset:
@@ -2127,7 +2127,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedRequest(self, item: ReferencedRequestSequenceItem):
         if not isinstance(item, ReferencedRequestSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRequestSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRequestSequenceItem")
         self._ReferencedRequestSequence.append(item)
         if "ReferencedRequestSequence" not in self._dataset:
             self._dataset.ReferencedRequestSequence = pydicom.Sequence()
@@ -2157,7 +2157,8 @@ class RenditionSelectionDocument:
             isinstance(item, CurrentRequestedProcedureEvidenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"CurrentRequestedProcedureEvidenceSequence must be a list of CurrentRequestedProcedureEvidenceSequenceItem objects"
+                "CurrentRequestedProcedureEvidenceSequence must be a list of CurrentRequestedProcedureEvidenceSequenceItem"
+                " objects"
             )
         else:
             self._CurrentRequestedProcedureEvidenceSequence = value
@@ -2168,7 +2169,7 @@ class RenditionSelectionDocument:
 
     def add_CurrentRequestedProcedureEvidence(self, item: CurrentRequestedProcedureEvidenceSequenceItem):
         if not isinstance(item, CurrentRequestedProcedureEvidenceSequenceItem):
-            raise ValueError(f"Item must be an instance of CurrentRequestedProcedureEvidenceSequenceItem")
+            raise ValueError("Item must be an instance of CurrentRequestedProcedureEvidenceSequenceItem")
         self._CurrentRequestedProcedureEvidenceSequence.append(item)
         if "CurrentRequestedProcedureEvidenceSequence" not in self._dataset:
             self._dataset.CurrentRequestedProcedureEvidenceSequence = pydicom.Sequence()
@@ -2190,7 +2191,7 @@ class RenditionSelectionDocument:
             if "IdenticalDocumentsSequence" in self._dataset:
                 del self._dataset.IdenticalDocumentsSequence
         elif not isinstance(value, list) or not all(isinstance(item, IdenticalDocumentsSequenceItem) for item in value):
-            raise ValueError(f"IdenticalDocumentsSequence must be a list of IdenticalDocumentsSequenceItem objects")
+            raise ValueError("IdenticalDocumentsSequence must be a list of IdenticalDocumentsSequenceItem objects")
         else:
             self._IdenticalDocumentsSequence = value
             if "IdenticalDocumentsSequence" not in self._dataset:
@@ -2200,7 +2201,7 @@ class RenditionSelectionDocument:
 
     def add_IdenticalDocuments(self, item: IdenticalDocumentsSequenceItem):
         if not isinstance(item, IdenticalDocumentsSequenceItem):
-            raise ValueError(f"Item must be an instance of IdenticalDocumentsSequenceItem")
+            raise ValueError("Item must be an instance of IdenticalDocumentsSequenceItem")
         self._IdenticalDocumentsSequence.append(item)
         if "IdenticalDocumentsSequence" not in self._dataset:
             self._dataset.IdenticalDocumentsSequence = pydicom.Sequence()
@@ -2222,7 +2223,7 @@ class RenditionSelectionDocument:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -2232,7 +2233,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -2282,7 +2283,7 @@ class RenditionSelectionDocument:
             if "ConceptNameCodeSequence" in self._dataset:
                 del self._dataset.ConceptNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptNameCodeSequence = value
             if "ConceptNameCodeSequence" not in self._dataset:
@@ -2292,7 +2293,7 @@ class RenditionSelectionDocument:
 
     def add_ConceptNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptNameCodeSequence.append(item)
         if "ConceptNameCodeSequence" not in self._dataset:
             self._dataset.ConceptNameCodeSequence = pydicom.Sequence()
@@ -2468,7 +2469,7 @@ class RenditionSelectionDocument:
             if "ConceptCodeSequence" in self._dataset:
                 del self._dataset.ConceptCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptCodeSequence = value
             if "ConceptCodeSequence" not in self._dataset:
@@ -2478,7 +2479,7 @@ class RenditionSelectionDocument:
 
     def add_ConceptCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptCodeSequence.append(item)
         if "ConceptCodeSequence" not in self._dataset:
             self._dataset.ConceptCodeSequence = pydicom.Sequence()
@@ -2514,7 +2515,7 @@ class RenditionSelectionDocument:
             if "MeasuredValueSequence" in self._dataset:
                 del self._dataset.MeasuredValueSequence
         elif not isinstance(value, list) or not all(isinstance(item, MeasuredValueSequenceItem) for item in value):
-            raise ValueError(f"MeasuredValueSequence must be a list of MeasuredValueSequenceItem objects")
+            raise ValueError("MeasuredValueSequence must be a list of MeasuredValueSequenceItem objects")
         else:
             self._MeasuredValueSequence = value
             if "MeasuredValueSequence" not in self._dataset:
@@ -2524,7 +2525,7 @@ class RenditionSelectionDocument:
 
     def add_MeasuredValue(self, item: MeasuredValueSequenceItem):
         if not isinstance(item, MeasuredValueSequenceItem):
-            raise ValueError(f"Item must be an instance of MeasuredValueSequenceItem")
+            raise ValueError("Item must be an instance of MeasuredValueSequenceItem")
         self._MeasuredValueSequence.append(item)
         if "MeasuredValueSequence" not in self._dataset:
             self._dataset.MeasuredValueSequence = pydicom.Sequence()
@@ -2546,7 +2547,7 @@ class RenditionSelectionDocument:
             if "NumericValueQualifierCodeSequence" in self._dataset:
                 del self._dataset.NumericValueQualifierCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"NumericValueQualifierCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("NumericValueQualifierCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._NumericValueQualifierCodeSequence = value
             if "NumericValueQualifierCodeSequence" not in self._dataset:
@@ -2556,7 +2557,7 @@ class RenditionSelectionDocument:
 
     def add_NumericValueQualifierCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._NumericValueQualifierCodeSequence.append(item)
         if "NumericValueQualifierCodeSequence" not in self._dataset:
             self._dataset.NumericValueQualifierCodeSequence = pydicom.Sequence()
@@ -2578,7 +2579,7 @@ class RenditionSelectionDocument:
             if "ContentTemplateSequence" in self._dataset:
                 del self._dataset.ContentTemplateSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContentTemplateSequenceItem) for item in value):
-            raise ValueError(f"ContentTemplateSequence must be a list of ContentTemplateSequenceItem objects")
+            raise ValueError("ContentTemplateSequence must be a list of ContentTemplateSequenceItem objects")
         else:
             self._ContentTemplateSequence = value
             if "ContentTemplateSequence" not in self._dataset:
@@ -2588,7 +2589,7 @@ class RenditionSelectionDocument:
 
     def add_ContentTemplate(self, item: ContentTemplateSequenceItem):
         if not isinstance(item, ContentTemplateSequenceItem):
-            raise ValueError(f"Item must be an instance of ContentTemplateSequenceItem")
+            raise ValueError("Item must be an instance of ContentTemplateSequenceItem")
         self._ContentTemplateSequence.append(item)
         if "ContentTemplateSequence" not in self._dataset:
             self._dataset.ContentTemplateSequence = pydicom.Sequence()
@@ -2610,7 +2611,7 @@ class RenditionSelectionDocument:
             if "ContentSequence" in self._dataset:
                 del self._dataset.ContentSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContentSequenceItem) for item in value):
-            raise ValueError(f"ContentSequence must be a list of ContentSequenceItem objects")
+            raise ValueError("ContentSequence must be a list of ContentSequenceItem objects")
         else:
             self._ContentSequence = value
             if "ContentSequence" not in self._dataset:
@@ -2620,7 +2621,7 @@ class RenditionSelectionDocument:
 
     def add_Content(self, item: ContentSequenceItem):
         if not isinstance(item, ContentSequenceItem):
-            raise ValueError(f"Item must be an instance of ContentSequenceItem")
+            raise ValueError("Item must be an instance of ContentSequenceItem")
         self._ContentSequence.append(item)
         if "ContentSequence" not in self._dataset:
             self._dataset.ContentSequence = pydicom.Sequence()
@@ -2642,7 +2643,7 @@ class RenditionSelectionDocument:
             if "TabulatedValuesSequence" in self._dataset:
                 del self._dataset.TabulatedValuesSequence
         elif not isinstance(value, list) or not all(isinstance(item, TabulatedValuesSequenceItem) for item in value):
-            raise ValueError(f"TabulatedValuesSequence must be a list of TabulatedValuesSequenceItem objects")
+            raise ValueError("TabulatedValuesSequence must be a list of TabulatedValuesSequenceItem objects")
         else:
             self._TabulatedValuesSequence = value
             if "TabulatedValuesSequence" not in self._dataset:
@@ -2652,7 +2653,7 @@ class RenditionSelectionDocument:
 
     def add_TabulatedValues(self, item: TabulatedValuesSequenceItem):
         if not isinstance(item, TabulatedValuesSequenceItem):
-            raise ValueError(f"Item must be an instance of TabulatedValuesSequenceItem")
+            raise ValueError("Item must be an instance of TabulatedValuesSequenceItem")
         self._TabulatedValuesSequence.append(item)
         if "TabulatedValuesSequence" not in self._dataset:
             self._dataset.TabulatedValuesSequence = pydicom.Sequence()
@@ -2744,7 +2745,7 @@ class RenditionSelectionDocument:
             if "ReferencedPatientSequence" in self._dataset:
                 del self._dataset.ReferencedPatientSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedPatientSequenceItem) for item in value):
-            raise ValueError(f"ReferencedPatientSequence must be a list of ReferencedPatientSequenceItem objects")
+            raise ValueError("ReferencedPatientSequence must be a list of ReferencedPatientSequenceItem objects")
         else:
             self._ReferencedPatientSequence = value
             if "ReferencedPatientSequence" not in self._dataset:
@@ -2754,7 +2755,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedPatient(self, item: ReferencedPatientSequenceItem):
         if not isinstance(item, ReferencedPatientSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPatientSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPatientSequenceItem")
         self._ReferencedPatientSequence.append(item)
         if "ReferencedPatientSequence" not in self._dataset:
             self._dataset.ReferencedPatientSequence = pydicom.Sequence()
@@ -2835,7 +2836,7 @@ class RenditionSelectionDocument:
             isinstance(item, IssuerOfPatientIDQualifiersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
+                "IssuerOfPatientIDQualifiersSequence must be a list of IssuerOfPatientIDQualifiersSequenceItem objects"
             )
         else:
             self._IssuerOfPatientIDQualifiersSequence = value
@@ -2846,7 +2847,7 @@ class RenditionSelectionDocument:
 
     def add_IssuerOfPatientIDQualifiers(self, item: IssuerOfPatientIDQualifiersSequenceItem):
         if not isinstance(item, IssuerOfPatientIDQualifiersSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfPatientIDQualifiersSequenceItem")
         self._IssuerOfPatientIDQualifiersSequence.append(item)
         if "IssuerOfPatientIDQualifiersSequence" not in self._dataset:
             self._dataset.IssuerOfPatientIDQualifiersSequence = pydicom.Sequence()
@@ -2876,7 +2877,8 @@ class RenditionSelectionDocument:
             isinstance(item, SourcePatientGroupIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"SourcePatientGroupIdentificationSequence must be a list of SourcePatientGroupIdentificationSequenceItem objects"
+                "SourcePatientGroupIdentificationSequence must be a list of SourcePatientGroupIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._SourcePatientGroupIdentificationSequence = value
@@ -2887,7 +2889,7 @@ class RenditionSelectionDocument:
 
     def add_SourcePatientGroupIdentification(self, item: SourcePatientGroupIdentificationSequenceItem):
         if not isinstance(item, SourcePatientGroupIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of SourcePatientGroupIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of SourcePatientGroupIdentificationSequenceItem")
         self._SourcePatientGroupIdentificationSequence.append(item)
         if "SourcePatientGroupIdentificationSequence" not in self._dataset:
             self._dataset.SourcePatientGroupIdentificationSequence = pydicom.Sequence()
@@ -2914,7 +2916,7 @@ class RenditionSelectionDocument:
             isinstance(item, GroupOfPatientsIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"GroupOfPatientsIdentificationSequence must be a list of GroupOfPatientsIdentificationSequenceItem objects"
+                "GroupOfPatientsIdentificationSequence must be a list of GroupOfPatientsIdentificationSequenceItem objects"
             )
         else:
             self._GroupOfPatientsIdentificationSequence = value
@@ -2925,7 +2927,7 @@ class RenditionSelectionDocument:
 
     def add_GroupOfPatientsIdentification(self, item: GroupOfPatientsIdentificationSequenceItem):
         if not isinstance(item, GroupOfPatientsIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of GroupOfPatientsIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of GroupOfPatientsIdentificationSequenceItem")
         self._GroupOfPatientsIdentificationSequence.append(item)
         if "GroupOfPatientsIdentificationSequence" not in self._dataset:
             self._dataset.GroupOfPatientsIdentificationSequence = pydicom.Sequence()
@@ -3073,7 +3075,7 @@ class RenditionSelectionDocument:
             if "StrainStockSequence" in self._dataset:
                 del self._dataset.StrainStockSequence
         elif not isinstance(value, list) or not all(isinstance(item, StrainStockSequenceItem) for item in value):
-            raise ValueError(f"StrainStockSequence must be a list of StrainStockSequenceItem objects")
+            raise ValueError("StrainStockSequence must be a list of StrainStockSequenceItem objects")
         else:
             self._StrainStockSequence = value
             if "StrainStockSequence" not in self._dataset:
@@ -3083,7 +3085,7 @@ class RenditionSelectionDocument:
 
     def add_StrainStock(self, item: StrainStockSequenceItem):
         if not isinstance(item, StrainStockSequenceItem):
-            raise ValueError(f"Item must be an instance of StrainStockSequenceItem")
+            raise ValueError("Item must be an instance of StrainStockSequenceItem")
         self._StrainStockSequence.append(item)
         if "StrainStockSequence" not in self._dataset:
             self._dataset.StrainStockSequence = pydicom.Sequence()
@@ -3119,7 +3121,7 @@ class RenditionSelectionDocument:
             if "StrainCodeSequence" in self._dataset:
                 del self._dataset.StrainCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"StrainCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("StrainCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._StrainCodeSequence = value
             if "StrainCodeSequence" not in self._dataset:
@@ -3129,7 +3131,7 @@ class RenditionSelectionDocument:
 
     def add_StrainCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._StrainCodeSequence.append(item)
         if "StrainCodeSequence" not in self._dataset:
             self._dataset.StrainCodeSequence = pydicom.Sequence()
@@ -3151,7 +3153,7 @@ class RenditionSelectionDocument:
             if "GeneticModificationsSequence" in self._dataset:
                 del self._dataset.GeneticModificationsSequence
         elif not isinstance(value, list) or not all(isinstance(item, GeneticModificationsSequenceItem) for item in value):
-            raise ValueError(f"GeneticModificationsSequence must be a list of GeneticModificationsSequenceItem objects")
+            raise ValueError("GeneticModificationsSequence must be a list of GeneticModificationsSequenceItem objects")
         else:
             self._GeneticModificationsSequence = value
             if "GeneticModificationsSequence" not in self._dataset:
@@ -3161,7 +3163,7 @@ class RenditionSelectionDocument:
 
     def add_GeneticModifications(self, item: GeneticModificationsSequenceItem):
         if not isinstance(item, GeneticModificationsSequenceItem):
-            raise ValueError(f"Item must be an instance of GeneticModificationsSequenceItem")
+            raise ValueError("Item must be an instance of GeneticModificationsSequenceItem")
         self._GeneticModificationsSequence.append(item)
         if "GeneticModificationsSequence" not in self._dataset:
             self._dataset.GeneticModificationsSequence = pydicom.Sequence()
@@ -3197,7 +3199,7 @@ class RenditionSelectionDocument:
             if "OtherPatientIDsSequence" in self._dataset:
                 del self._dataset.OtherPatientIDsSequence
         elif not isinstance(value, list) or not all(isinstance(item, OtherPatientIDsSequenceItem) for item in value):
-            raise ValueError(f"OtherPatientIDsSequence must be a list of OtherPatientIDsSequenceItem objects")
+            raise ValueError("OtherPatientIDsSequence must be a list of OtherPatientIDsSequenceItem objects")
         else:
             self._OtherPatientIDsSequence = value
             if "OtherPatientIDsSequence" not in self._dataset:
@@ -3207,7 +3209,7 @@ class RenditionSelectionDocument:
 
     def add_OtherPatientIDs(self, item: OtherPatientIDsSequenceItem):
         if not isinstance(item, OtherPatientIDsSequenceItem):
-            raise ValueError(f"Item must be an instance of OtherPatientIDsSequenceItem")
+            raise ValueError("Item must be an instance of OtherPatientIDsSequenceItem")
         self._OtherPatientIDsSequence.append(item)
         if "OtherPatientIDsSequence" not in self._dataset:
             self._dataset.OtherPatientIDsSequence = pydicom.Sequence()
@@ -3229,7 +3231,7 @@ class RenditionSelectionDocument:
             if "ReferencedPatientPhotoSequence" in self._dataset:
                 del self._dataset.ReferencedPatientPhotoSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedPatientPhotoSequenceItem) for item in value):
-            raise ValueError(f"ReferencedPatientPhotoSequence must be a list of ReferencedPatientPhotoSequenceItem objects")
+            raise ValueError("ReferencedPatientPhotoSequence must be a list of ReferencedPatientPhotoSequenceItem objects")
         else:
             self._ReferencedPatientPhotoSequence = value
             if "ReferencedPatientPhotoSequence" not in self._dataset:
@@ -3239,7 +3241,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedPatientPhoto(self, item: ReferencedPatientPhotoSequenceItem):
         if not isinstance(item, ReferencedPatientPhotoSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPatientPhotoSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPatientPhotoSequenceItem")
         self._ReferencedPatientPhotoSequence.append(item)
         if "ReferencedPatientPhotoSequence" not in self._dataset:
             self._dataset.ReferencedPatientPhotoSequence = pydicom.Sequence()
@@ -3289,7 +3291,7 @@ class RenditionSelectionDocument:
             if "PatientSpeciesCodeSequence" in self._dataset:
                 del self._dataset.PatientSpeciesCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientSpeciesCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientSpeciesCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientSpeciesCodeSequence = value
             if "PatientSpeciesCodeSequence" not in self._dataset:
@@ -3299,7 +3301,7 @@ class RenditionSelectionDocument:
 
     def add_PatientSpeciesCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientSpeciesCodeSequence.append(item)
         if "PatientSpeciesCodeSequence" not in self._dataset:
             self._dataset.PatientSpeciesCodeSequence = pydicom.Sequence()
@@ -3335,7 +3337,7 @@ class RenditionSelectionDocument:
             if "PatientBreedCodeSequence" in self._dataset:
                 del self._dataset.PatientBreedCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PatientBreedCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PatientBreedCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PatientBreedCodeSequence = value
             if "PatientBreedCodeSequence" not in self._dataset:
@@ -3345,7 +3347,7 @@ class RenditionSelectionDocument:
 
     def add_PatientBreedCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PatientBreedCodeSequence.append(item)
         if "PatientBreedCodeSequence" not in self._dataset:
             self._dataset.PatientBreedCodeSequence = pydicom.Sequence()
@@ -3367,7 +3369,7 @@ class RenditionSelectionDocument:
             if "BreedRegistrationSequence" in self._dataset:
                 del self._dataset.BreedRegistrationSequence
         elif not isinstance(value, list) or not all(isinstance(item, BreedRegistrationSequenceItem) for item in value):
-            raise ValueError(f"BreedRegistrationSequence must be a list of BreedRegistrationSequenceItem objects")
+            raise ValueError("BreedRegistrationSequence must be a list of BreedRegistrationSequenceItem objects")
         else:
             self._BreedRegistrationSequence = value
             if "BreedRegistrationSequence" not in self._dataset:
@@ -3377,7 +3379,7 @@ class RenditionSelectionDocument:
 
     def add_BreedRegistration(self, item: BreedRegistrationSequenceItem):
         if not isinstance(item, BreedRegistrationSequenceItem):
-            raise ValueError(f"Item must be an instance of BreedRegistrationSequenceItem")
+            raise ValueError("Item must be an instance of BreedRegistrationSequenceItem")
         self._BreedRegistrationSequence.append(item)
         if "BreedRegistrationSequence" not in self._dataset:
             self._dataset.BreedRegistrationSequence = pydicom.Sequence()
@@ -3483,7 +3485,7 @@ class RenditionSelectionDocument:
             if "DeidentificationMethodCodeSequence" in self._dataset:
                 del self._dataset.DeidentificationMethodCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"DeidentificationMethodCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("DeidentificationMethodCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._DeidentificationMethodCodeSequence = value
             if "DeidentificationMethodCodeSequence" not in self._dataset:
@@ -3493,7 +3495,7 @@ class RenditionSelectionDocument:
 
     def add_DeidentificationMethodCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._DeidentificationMethodCodeSequence.append(item)
         if "DeidentificationMethodCodeSequence" not in self._dataset:
             self._dataset.DeidentificationMethodCodeSequence = pydicom.Sequence()
@@ -3571,7 +3573,7 @@ class RenditionSelectionDocument:
             if "ClinicalTrialTimePointTypeCodeSequence" in self._dataset:
                 del self._dataset.ClinicalTrialTimePointTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ClinicalTrialTimePointTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ClinicalTrialTimePointTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ClinicalTrialTimePointTypeCodeSequence = value
             if "ClinicalTrialTimePointTypeCodeSequence" not in self._dataset:
@@ -3581,7 +3583,7 @@ class RenditionSelectionDocument:
 
     def add_ClinicalTrialTimePointTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ClinicalTrialTimePointTypeCodeSequence.append(item)
         if "ClinicalTrialTimePointTypeCodeSequence" not in self._dataset:
             self._dataset.ClinicalTrialTimePointTypeCodeSequence = pydicom.Sequence()
@@ -3620,7 +3622,7 @@ class RenditionSelectionDocument:
             isinstance(item, ConsentForClinicalTrialUseSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConsentForClinicalTrialUseSequence must be a list of ConsentForClinicalTrialUseSequenceItem objects"
+                "ConsentForClinicalTrialUseSequence must be a list of ConsentForClinicalTrialUseSequenceItem objects"
             )
         else:
             self._ConsentForClinicalTrialUseSequence = value
@@ -3631,7 +3633,7 @@ class RenditionSelectionDocument:
 
     def add_ConsentForClinicalTrialUse(self, item: ConsentForClinicalTrialUseSequenceItem):
         if not isinstance(item, ConsentForClinicalTrialUseSequenceItem):
-            raise ValueError(f"Item must be an instance of ConsentForClinicalTrialUseSequenceItem")
+            raise ValueError("Item must be an instance of ConsentForClinicalTrialUseSequenceItem")
         self._ConsentForClinicalTrialUseSequence.append(item)
         if "ConsentForClinicalTrialUseSequence" not in self._dataset:
             self._dataset.ConsentForClinicalTrialUseSequence = pydicom.Sequence()
@@ -3695,7 +3697,7 @@ class RenditionSelectionDocument:
             if "IssuerOfAccessionNumberSequence" in self._dataset:
                 del self._dataset.IssuerOfAccessionNumberSequence
         elif not isinstance(value, list) or not all(isinstance(item, IssuerOfAccessionNumberSequenceItem) for item in value):
-            raise ValueError(f"IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
+            raise ValueError("IssuerOfAccessionNumberSequence must be a list of IssuerOfAccessionNumberSequenceItem objects")
         else:
             self._IssuerOfAccessionNumberSequence = value
             if "IssuerOfAccessionNumberSequence" not in self._dataset:
@@ -3705,7 +3707,7 @@ class RenditionSelectionDocument:
 
     def add_IssuerOfAccessionNumber(self, item: IssuerOfAccessionNumberSequenceItem):
         if not isinstance(item, IssuerOfAccessionNumberSequenceItem):
-            raise ValueError(f"Item must be an instance of IssuerOfAccessionNumberSequenceItem")
+            raise ValueError("Item must be an instance of IssuerOfAccessionNumberSequenceItem")
         self._IssuerOfAccessionNumberSequence.append(item)
         if "IssuerOfAccessionNumberSequence" not in self._dataset:
             self._dataset.IssuerOfAccessionNumberSequence = pydicom.Sequence()
@@ -3749,7 +3751,8 @@ class RenditionSelectionDocument:
             isinstance(item, ReferringPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferringPhysicianIdentificationSequence must be a list of ReferringPhysicianIdentificationSequenceItem objects"
+                "ReferringPhysicianIdentificationSequence must be a list of ReferringPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._ReferringPhysicianIdentificationSequence = value
@@ -3760,7 +3763,7 @@ class RenditionSelectionDocument:
 
     def add_ReferringPhysicianIdentification(self, item: ReferringPhysicianIdentificationSequenceItem):
         if not isinstance(item, ReferringPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferringPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ReferringPhysicianIdentificationSequenceItem")
         self._ReferringPhysicianIdentificationSequence.append(item)
         if "ReferringPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.ReferringPhysicianIdentificationSequence = pydicom.Sequence()
@@ -3804,7 +3807,8 @@ class RenditionSelectionDocument:
             isinstance(item, ConsultingPhysicianIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConsultingPhysicianIdentificationSequence must be a list of ConsultingPhysicianIdentificationSequenceItem objects"
+                "ConsultingPhysicianIdentificationSequence must be a list of ConsultingPhysicianIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._ConsultingPhysicianIdentificationSequence = value
@@ -3815,7 +3819,7 @@ class RenditionSelectionDocument:
 
     def add_ConsultingPhysicianIdentification(self, item: ConsultingPhysicianIdentificationSequenceItem):
         if not isinstance(item, ConsultingPhysicianIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of ConsultingPhysicianIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of ConsultingPhysicianIdentificationSequenceItem")
         self._ConsultingPhysicianIdentificationSequence.append(item)
         if "ConsultingPhysicianIdentificationSequence" not in self._dataset:
             self._dataset.ConsultingPhysicianIdentificationSequence = pydicom.Sequence()
@@ -3851,7 +3855,7 @@ class RenditionSelectionDocument:
             if "ProcedureCodeSequence" in self._dataset:
                 del self._dataset.ProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ProcedureCodeSequence = value
             if "ProcedureCodeSequence" not in self._dataset:
@@ -3861,7 +3865,7 @@ class RenditionSelectionDocument:
 
     def add_ProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ProcedureCodeSequence.append(item)
         if "ProcedureCodeSequence" not in self._dataset:
             self._dataset.ProcedureCodeSequence = pydicom.Sequence()
@@ -3905,7 +3909,8 @@ class RenditionSelectionDocument:
             isinstance(item, PhysiciansOfRecordIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PhysiciansOfRecordIdentificationSequence must be a list of PhysiciansOfRecordIdentificationSequenceItem objects"
+                "PhysiciansOfRecordIdentificationSequence must be a list of PhysiciansOfRecordIdentificationSequenceItem"
+                " objects"
             )
         else:
             self._PhysiciansOfRecordIdentificationSequence = value
@@ -3916,7 +3921,7 @@ class RenditionSelectionDocument:
 
     def add_PhysiciansOfRecordIdentification(self, item: PhysiciansOfRecordIdentificationSequenceItem):
         if not isinstance(item, PhysiciansOfRecordIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PhysiciansOfRecordIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PhysiciansOfRecordIdentificationSequenceItem")
         self._PhysiciansOfRecordIdentificationSequence.append(item)
         if "PhysiciansOfRecordIdentificationSequence" not in self._dataset:
             self._dataset.PhysiciansOfRecordIdentificationSequence = pydicom.Sequence()
@@ -3962,7 +3967,8 @@ class RenditionSelectionDocument:
             isinstance(item, PhysiciansReadingStudyIdentificationSequenceItem) for item in value
         ):
             raise ValueError(
-                f"PhysiciansReadingStudyIdentificationSequence must be a list of PhysiciansReadingStudyIdentificationSequenceItem objects"
+                "PhysiciansReadingStudyIdentificationSequence must be a list of"
+                " PhysiciansReadingStudyIdentificationSequenceItem objects"
             )
         else:
             self._PhysiciansReadingStudyIdentificationSequence = value
@@ -3973,7 +3979,7 @@ class RenditionSelectionDocument:
 
     def add_PhysiciansReadingStudyIdentification(self, item: PhysiciansReadingStudyIdentificationSequenceItem):
         if not isinstance(item, PhysiciansReadingStudyIdentificationSequenceItem):
-            raise ValueError(f"Item must be an instance of PhysiciansReadingStudyIdentificationSequenceItem")
+            raise ValueError("Item must be an instance of PhysiciansReadingStudyIdentificationSequenceItem")
         self._PhysiciansReadingStudyIdentificationSequence.append(item)
         if "PhysiciansReadingStudyIdentificationSequence" not in self._dataset:
             self._dataset.PhysiciansReadingStudyIdentificationSequence = pydicom.Sequence()
@@ -3995,7 +4001,7 @@ class RenditionSelectionDocument:
             if "ReferencedStudySequence" in self._dataset:
                 del self._dataset.ReferencedStudySequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedStudySequenceItem) for item in value):
-            raise ValueError(f"ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
+            raise ValueError("ReferencedStudySequence must be a list of ReferencedStudySequenceItem objects")
         else:
             self._ReferencedStudySequence = value
             if "ReferencedStudySequence" not in self._dataset:
@@ -4005,7 +4011,7 @@ class RenditionSelectionDocument:
 
     def add_ReferencedStudy(self, item: ReferencedStudySequenceItem):
         if not isinstance(item, ReferencedStudySequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedStudySequenceItem")
+            raise ValueError("Item must be an instance of ReferencedStudySequenceItem")
         self._ReferencedStudySequence.append(item)
         if "ReferencedStudySequence" not in self._dataset:
             self._dataset.ReferencedStudySequence = pydicom.Sequence()
@@ -4069,7 +4075,7 @@ class RenditionSelectionDocument:
             if "RequestingServiceCodeSequence" in self._dataset:
                 del self._dataset.RequestingServiceCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"RequestingServiceCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("RequestingServiceCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._RequestingServiceCodeSequence = value
             if "RequestingServiceCodeSequence" not in self._dataset:
@@ -4079,7 +4085,7 @@ class RenditionSelectionDocument:
 
     def add_RequestingServiceCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._RequestingServiceCodeSequence.append(item)
         if "RequestingServiceCodeSequence" not in self._dataset:
             self._dataset.RequestingServiceCodeSequence = pydicom.Sequence()
@@ -4103,7 +4109,7 @@ class RenditionSelectionDocument:
             if "ReasonForPerformedProcedureCodeSequence" in self._dataset:
                 del self._dataset.ReasonForPerformedProcedureCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ReasonForPerformedProcedureCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ReasonForPerformedProcedureCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ReasonForPerformedProcedureCodeSequence = value
             if "ReasonForPerformedProcedureCodeSequence" not in self._dataset:
@@ -4113,7 +4119,7 @@ class RenditionSelectionDocument:
 
     def add_ReasonForPerformedProcedureCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ReasonForPerformedProcedureCodeSequence.append(item)
         if "ReasonForPerformedProcedureCodeSequence" not in self._dataset:
             self._dataset.ReasonForPerformedProcedureCodeSequence = pydicom.Sequence()
@@ -4196,7 +4202,7 @@ class RenditionSelectionDocument:
             isinstance(item, OtherClinicalTrialProtocolIDsSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OtherClinicalTrialProtocolIDsSequence must be a list of OtherClinicalTrialProtocolIDsSequenceItem objects"
+                "OtherClinicalTrialProtocolIDsSequence must be a list of OtherClinicalTrialProtocolIDsSequenceItem objects"
             )
         else:
             self._OtherClinicalTrialProtocolIDsSequence = value
@@ -4207,7 +4213,7 @@ class RenditionSelectionDocument:
 
     def add_OtherClinicalTrialProtocolIDs(self, item: OtherClinicalTrialProtocolIDsSequenceItem):
         if not isinstance(item, OtherClinicalTrialProtocolIDsSequenceItem):
-            raise ValueError(f"Item must be an instance of OtherClinicalTrialProtocolIDsSequenceItem")
+            raise ValueError("Item must be an instance of OtherClinicalTrialProtocolIDsSequenceItem")
         self._OtherClinicalTrialProtocolIDsSequence.append(item)
         if "OtherClinicalTrialProtocolIDsSequence" not in self._dataset:
             self._dataset.OtherClinicalTrialProtocolIDsSequence = pydicom.Sequence()

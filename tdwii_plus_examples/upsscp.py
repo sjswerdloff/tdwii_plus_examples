@@ -18,6 +18,8 @@ from pynetdicom import (
 from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from tdwii_plus_examples import upsdb
 from tdwii_plus_examples.handlers import (
@@ -80,6 +82,72 @@ def _log_config(config, logger):
         logger.debug(f"    {ae_title}: ({addr}, {port})")
 
     logger.debug("")
+
+
+def clean(db_path, instance_path, logger):
+    """Remove all entries from the database and delete the corresponding
+    stored instances.
+
+    Parameters
+    ----------
+    db_path : str
+        The database path to use with create_engine().
+    instance_path : str
+        The instance storage path.
+    logger : logging.Logger
+        The application logger.
+
+    Returns
+    -------
+    bool
+        ``True`` if the storage directory and database were both cleaned
+        successfully, ``False`` otherwise.
+    """
+    engine = create_engine(db_path)
+    with engine.connect() as conn:  # noqa: F841
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        query_success = True
+        try:
+            fpaths = [ii.filename for ii in session.query(upsdb.Instance).all()]
+        except Exception as exc:
+            logger.error("Exception raised while querying the database")
+            logger.exception(exc)
+            session.rollback()
+            query_success = False
+        finally:
+            session.close()
+
+        if not query_success:
+            return False
+
+        storage_cleaned = True
+        for fpath in fpaths:
+            try:
+                os.remove(os.path.join(instance_path, fpath))
+            except Exception as exc:
+                logger.error(f"Unable to delete the instance at '{fpath}'")
+                logger.exception(exc)
+                storage_cleaned = False
+
+        if storage_cleaned:
+            logger.info("Storage directory cleaned successfully")
+        else:
+            logger.error("Failed to clean storage directory")
+
+        database_cleaned = False
+        try:
+            upsdb.clear(session)
+            database_cleaned = True
+            logger.info("Database cleaned successfully")
+        except Exception as exc:
+            logger.error("Failed to clean the database")
+            logger.exception(exc)
+            session.rollback()
+        finally:
+            session.close()
+
+        return database_cleaned and storage_cleaned
 
 
 def _setup_argparser():
@@ -272,10 +340,10 @@ def main(args=None):
         if response != "yes":
             sys.exit()
 
-        # if clean(db_path, instance_dir, APP_LOGGER):
-        #     sys.exit()
-        # else:
-        #     sys.exit(1)
+        if clean(db_path, instance_dir, APP_LOGGER):
+            sys.exit()
+        else:
+            sys.exit(1)
 
     # Try to create the instance storage directory
     os.makedirs(instance_dir, exist_ok=True)

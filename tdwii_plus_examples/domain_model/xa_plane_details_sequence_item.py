@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -100,7 +100,7 @@ class XAPlaneDetailsSequenceItem:
             if "XRayFilterDetailsSequence" in self._dataset:
                 del self._dataset.XRayFilterDetailsSequence
         elif not isinstance(value, list) or not all(isinstance(item, XRayFilterDetailsSequenceItem) for item in value):
-            raise ValueError(f"XRayFilterDetailsSequence must be a list of XRayFilterDetailsSequenceItem objects")
+            raise ValueError("XRayFilterDetailsSequence must be a list of XRayFilterDetailsSequenceItem objects")
         else:
             self._XRayFilterDetailsSequence = value
             if "XRayFilterDetailsSequence" not in self._dataset:
@@ -110,7 +110,7 @@ class XAPlaneDetailsSequenceItem:
 
     def add_XRayFilterDetails(self, item: XRayFilterDetailsSequenceItem):
         if not isinstance(item, XRayFilterDetailsSequenceItem):
-            raise ValueError(f"Item must be an instance of XRayFilterDetailsSequenceItem")
+            raise ValueError("Item must be an instance of XRayFilterDetailsSequenceItem")
         self._XRayFilterDetailsSequence.append(item)
         if "XRayFilterDetailsSequence" not in self._dataset:
             self._dataset.XRayFilterDetailsSequence = pydicom.Sequence()

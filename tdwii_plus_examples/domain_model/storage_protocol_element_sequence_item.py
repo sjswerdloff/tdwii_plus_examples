@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -155,7 +155,7 @@ class StorageProtocolElementSequenceItem:
             if "OutputInformationSequence" in self._dataset:
                 del self._dataset.OutputInformationSequence
         elif not isinstance(value, list) or not all(isinstance(item, OutputInformationSequenceItem) for item in value):
-            raise ValueError(f"OutputInformationSequence must be a list of OutputInformationSequenceItem objects")
+            raise ValueError("OutputInformationSequence must be a list of OutputInformationSequenceItem objects")
         else:
             self._OutputInformationSequence = value
             if "OutputInformationSequence" not in self._dataset:
@@ -165,7 +165,7 @@ class StorageProtocolElementSequenceItem:
 
     def add_OutputInformation(self, item: OutputInformationSequenceItem):
         if not isinstance(item, OutputInformationSequenceItem):
-            raise ValueError(f"Item must be an instance of OutputInformationSequenceItem")
+            raise ValueError("Item must be an instance of OutputInformationSequenceItem")
         self._OutputInformationSequence.append(item)
         if "OutputInformationSequence" not in self._dataset:
             self._dataset.OutputInformationSequence = pydicom.Sequence()

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -58,7 +58,7 @@ class GatedInformationSequenceItem:
             if "DataInformationSequence" in self._dataset:
                 del self._dataset.DataInformationSequence
         elif not isinstance(value, list) or not all(isinstance(item, DataInformationSequenceItem) for item in value):
-            raise ValueError(f"DataInformationSequence must be a list of DataInformationSequenceItem objects")
+            raise ValueError("DataInformationSequence must be a list of DataInformationSequenceItem objects")
         else:
             self._DataInformationSequence = value
             if "DataInformationSequence" not in self._dataset:
@@ -68,7 +68,7 @@ class GatedInformationSequenceItem:
 
     def add_DataInformation(self, item: DataInformationSequenceItem):
         if not isinstance(item, DataInformationSequenceItem):
-            raise ValueError(f"Item must be an instance of DataInformationSequenceItem")
+            raise ValueError("Item must be an instance of DataInformationSequenceItem")
         self._DataInformationSequence.append(item)
         if "DataInformationSequence" not in self._dataset:
             self._dataset.DataInformationSequence = pydicom.Sequence()

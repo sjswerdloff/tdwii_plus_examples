@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -76,7 +76,7 @@ class ReferencedImageSequenceItem:
             isinstance(item, ReferencedPresentationStateSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ReferencedPresentationStateSequence must be a list of ReferencedPresentationStateSequenceItem objects"
+                "ReferencedPresentationStateSequence must be a list of ReferencedPresentationStateSequenceItem objects"
             )
         else:
             self._ReferencedPresentationStateSequence = value
@@ -87,7 +87,7 @@ class ReferencedImageSequenceItem:
 
     def add_ReferencedPresentationState(self, item: ReferencedPresentationStateSequenceItem):
         if not isinstance(item, ReferencedPresentationStateSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedPresentationStateSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedPresentationStateSequenceItem")
         self._ReferencedPresentationStateSequence.append(item)
         if "ReferencedPresentationStateSequence" not in self._dataset:
             self._dataset.ReferencedPresentationStateSequence = pydicom.Sequence()

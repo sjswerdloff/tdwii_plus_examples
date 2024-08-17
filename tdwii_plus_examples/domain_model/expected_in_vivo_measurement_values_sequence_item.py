@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class ExpectedInVivoMeasurementValuesSequenceItem:
             if "MetersetToDoseMappingSequence" in self._dataset:
                 del self._dataset.MetersetToDoseMappingSequence
         elif not isinstance(value, list) or not all(isinstance(item, MetersetToDoseMappingSequenceItem) for item in value):
-            raise ValueError(f"MetersetToDoseMappingSequence must be a list of MetersetToDoseMappingSequenceItem objects")
+            raise ValueError("MetersetToDoseMappingSequence must be a list of MetersetToDoseMappingSequenceItem objects")
         else:
             self._MetersetToDoseMappingSequence = value
             if "MetersetToDoseMappingSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class ExpectedInVivoMeasurementValuesSequenceItem:
 
     def add_MetersetToDoseMapping(self, item: MetersetToDoseMappingSequenceItem):
         if not isinstance(item, MetersetToDoseMappingSequenceItem):
-            raise ValueError(f"Item must be an instance of MetersetToDoseMappingSequenceItem")
+            raise ValueError("Item must be an instance of MetersetToDoseMappingSequenceItem")
         self._MetersetToDoseMappingSequence.append(item)
         if "MetersetToDoseMappingSequence" not in self._dataset:
             self._dataset.MetersetToDoseMappingSequence = pydicom.Sequence()

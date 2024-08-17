@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -85,7 +85,7 @@ class FractionPatternSequenceItem:
             if "WeekdayFractionPatternSequence" in self._dataset:
                 del self._dataset.WeekdayFractionPatternSequence
         elif not isinstance(value, list) or not all(isinstance(item, WeekdayFractionPatternSequenceItem) for item in value):
-            raise ValueError(f"WeekdayFractionPatternSequence must be a list of WeekdayFractionPatternSequenceItem objects")
+            raise ValueError("WeekdayFractionPatternSequence must be a list of WeekdayFractionPatternSequenceItem objects")
         else:
             self._WeekdayFractionPatternSequence = value
             if "WeekdayFractionPatternSequence" not in self._dataset:
@@ -95,7 +95,7 @@ class FractionPatternSequenceItem:
 
     def add_WeekdayFractionPattern(self, item: WeekdayFractionPatternSequenceItem):
         if not isinstance(item, WeekdayFractionPatternSequenceItem):
-            raise ValueError(f"Item must be an instance of WeekdayFractionPatternSequenceItem")
+            raise ValueError("Item must be an instance of WeekdayFractionPatternSequenceItem")
         self._WeekdayFractionPatternSequence.append(item)
         if "WeekdayFractionPatternSequence" not in self._dataset:
             self._dataset.WeekdayFractionPatternSequence = pydicom.Sequence()

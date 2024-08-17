@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class SurfaceMeshPrimitivesSequenceItem:
             if "TriangleStripSequence" in self._dataset:
                 del self._dataset.TriangleStripSequence
         elif not isinstance(value, list) or not all(isinstance(item, TriangleStripSequenceItem) for item in value):
-            raise ValueError(f"TriangleStripSequence must be a list of TriangleStripSequenceItem objects")
+            raise ValueError("TriangleStripSequence must be a list of TriangleStripSequenceItem objects")
         else:
             self._TriangleStripSequence = value
             if "TriangleStripSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class SurfaceMeshPrimitivesSequenceItem:
 
     def add_TriangleStrip(self, item: TriangleStripSequenceItem):
         if not isinstance(item, TriangleStripSequenceItem):
-            raise ValueError(f"Item must be an instance of TriangleStripSequenceItem")
+            raise ValueError("Item must be an instance of TriangleStripSequenceItem")
         self._TriangleStripSequence.append(item)
         if "TriangleStripSequence" not in self._dataset:
             self._dataset.TriangleStripSequence = pydicom.Sequence()
@@ -67,7 +67,7 @@ class SurfaceMeshPrimitivesSequenceItem:
             if "TriangleFanSequence" in self._dataset:
                 del self._dataset.TriangleFanSequence
         elif not isinstance(value, list) or not all(isinstance(item, TriangleFanSequenceItem) for item in value):
-            raise ValueError(f"TriangleFanSequence must be a list of TriangleFanSequenceItem objects")
+            raise ValueError("TriangleFanSequence must be a list of TriangleFanSequenceItem objects")
         else:
             self._TriangleFanSequence = value
             if "TriangleFanSequence" not in self._dataset:
@@ -77,7 +77,7 @@ class SurfaceMeshPrimitivesSequenceItem:
 
     def add_TriangleFan(self, item: TriangleFanSequenceItem):
         if not isinstance(item, TriangleFanSequenceItem):
-            raise ValueError(f"Item must be an instance of TriangleFanSequenceItem")
+            raise ValueError("Item must be an instance of TriangleFanSequenceItem")
         self._TriangleFanSequence.append(item)
         if "TriangleFanSequence" not in self._dataset:
             self._dataset.TriangleFanSequence = pydicom.Sequence()
@@ -99,7 +99,7 @@ class SurfaceMeshPrimitivesSequenceItem:
             if "LineSequence" in self._dataset:
                 del self._dataset.LineSequence
         elif not isinstance(value, list) or not all(isinstance(item, LineSequenceItem) for item in value):
-            raise ValueError(f"LineSequence must be a list of LineSequenceItem objects")
+            raise ValueError("LineSequence must be a list of LineSequenceItem objects")
         else:
             self._LineSequence = value
             if "LineSequence" not in self._dataset:
@@ -109,7 +109,7 @@ class SurfaceMeshPrimitivesSequenceItem:
 
     def add_Line(self, item: LineSequenceItem):
         if not isinstance(item, LineSequenceItem):
-            raise ValueError(f"Item must be an instance of LineSequenceItem")
+            raise ValueError("Item must be an instance of LineSequenceItem")
         self._LineSequence.append(item)
         if "LineSequence" not in self._dataset:
             self._dataset.LineSequence = pydicom.Sequence()
@@ -131,7 +131,7 @@ class SurfaceMeshPrimitivesSequenceItem:
             if "FacetSequence" in self._dataset:
                 del self._dataset.FacetSequence
         elif not isinstance(value, list) or not all(isinstance(item, FacetSequenceItem) for item in value):
-            raise ValueError(f"FacetSequence must be a list of FacetSequenceItem objects")
+            raise ValueError("FacetSequence must be a list of FacetSequenceItem objects")
         else:
             self._FacetSequence = value
             if "FacetSequence" not in self._dataset:
@@ -141,7 +141,7 @@ class SurfaceMeshPrimitivesSequenceItem:
 
     def add_Facet(self, item: FacetSequenceItem):
         if not isinstance(item, FacetSequenceItem):
-            raise ValueError(f"Item must be an instance of FacetSequenceItem")
+            raise ValueError("Item must be an instance of FacetSequenceItem")
         self._FacetSequence.append(item)
         if "FacetSequence" not in self._dataset:
             self._dataset.FacetSequence = pydicom.Sequence()

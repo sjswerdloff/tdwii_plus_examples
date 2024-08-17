@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -107,7 +107,7 @@ class BrachyControlPointSequenceItem:
             isinstance(item, BrachyReferencedDoseReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"BrachyReferencedDoseReferenceSequence must be a list of BrachyReferencedDoseReferenceSequenceItem objects"
+                "BrachyReferencedDoseReferenceSequence must be a list of BrachyReferencedDoseReferenceSequenceItem objects"
             )
         else:
             self._BrachyReferencedDoseReferenceSequence = value
@@ -118,7 +118,7 @@ class BrachyControlPointSequenceItem:
 
     def add_BrachyReferencedDoseReference(self, item: BrachyReferencedDoseReferenceSequenceItem):
         if not isinstance(item, BrachyReferencedDoseReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of BrachyReferencedDoseReferenceSequenceItem")
+            raise ValueError("Item must be an instance of BrachyReferencedDoseReferenceSequenceItem")
         self._BrachyReferencedDoseReferenceSequence.append(item)
         if "BrachyReferencedDoseReferenceSequence" not in self._dataset:
             self._dataset.BrachyReferencedDoseReferenceSequence = pydicom.Sequence()

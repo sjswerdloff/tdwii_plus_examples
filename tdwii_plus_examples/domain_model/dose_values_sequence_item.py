@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class DoseValuesSequenceItem:
             if "MetersetToDoseMappingSequence" in self._dataset:
                 del self._dataset.MetersetToDoseMappingSequence
         elif not isinstance(value, list) or not all(isinstance(item, MetersetToDoseMappingSequenceItem) for item in value):
-            raise ValueError(f"MetersetToDoseMappingSequence must be a list of MetersetToDoseMappingSequenceItem objects")
+            raise ValueError("MetersetToDoseMappingSequence must be a list of MetersetToDoseMappingSequenceItem objects")
         else:
             self._MetersetToDoseMappingSequence = value
             if "MetersetToDoseMappingSequence" not in self._dataset:
@@ -55,7 +55,7 @@ class DoseValuesSequenceItem:
 
     def add_MetersetToDoseMapping(self, item: MetersetToDoseMappingSequenceItem):
         if not isinstance(item, MetersetToDoseMappingSequenceItem):
-            raise ValueError(f"Item must be an instance of MetersetToDoseMappingSequenceItem")
+            raise ValueError("Item must be an instance of MetersetToDoseMappingSequenceItem")
         self._MetersetToDoseMappingSequence.append(item)
         if "MetersetToDoseMappingSequence" not in self._dataset:
             self._dataset.MetersetToDoseMappingSequence = pydicom.Sequence()
@@ -93,7 +93,7 @@ class DoseValuesSequenceItem:
             if "EffectiveDoseCalculationMethodCategoryCodeSequence" in self._dataset:
                 del self._dataset.EffectiveDoseCalculationMethodCategoryCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"EffectiveDoseCalculationMethodCategoryCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("EffectiveDoseCalculationMethodCategoryCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._EffectiveDoseCalculationMethodCategoryCodeSequence = value
             if "EffectiveDoseCalculationMethodCategoryCodeSequence" not in self._dataset:
@@ -103,7 +103,7 @@ class DoseValuesSequenceItem:
 
     def add_EffectiveDoseCalculationMethodCategoryCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._EffectiveDoseCalculationMethodCategoryCodeSequence.append(item)
         if "EffectiveDoseCalculationMethodCategoryCodeSequence" not in self._dataset:
             self._dataset.EffectiveDoseCalculationMethodCategoryCodeSequence = pydicom.Sequence()

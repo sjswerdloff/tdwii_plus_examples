@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -57,7 +57,7 @@ class ReferencedRTPlanSequenceItem:
             if "ReferencedFractionGroupSequence" in self._dataset:
                 del self._dataset.ReferencedFractionGroupSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedFractionGroupSequenceItem) for item in value):
-            raise ValueError(f"ReferencedFractionGroupSequence must be a list of ReferencedFractionGroupSequenceItem objects")
+            raise ValueError("ReferencedFractionGroupSequence must be a list of ReferencedFractionGroupSequenceItem objects")
         else:
             self._ReferencedFractionGroupSequence = value
             if "ReferencedFractionGroupSequence" not in self._dataset:
@@ -67,7 +67,7 @@ class ReferencedRTPlanSequenceItem:
 
     def add_ReferencedFractionGroup(self, item: ReferencedFractionGroupSequenceItem):
         if not isinstance(item, ReferencedFractionGroupSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedFractionGroupSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedFractionGroupSequenceItem")
         self._ReferencedFractionGroupSequence.append(item)
         if "ReferencedFractionGroupSequence" not in self._dataset:
             self._dataset.ReferencedFractionGroupSequence = pydicom.Sequence()

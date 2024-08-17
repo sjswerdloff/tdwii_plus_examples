@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -29,7 +29,7 @@ class PertinentOtherEvidenceSequenceItem:
             if "ReferencedSeriesSequence" in self._dataset:
                 del self._dataset.ReferencedSeriesSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSeriesSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSeriesSequence must be a list of ReferencedSeriesSequenceItem objects")
+            raise ValueError("ReferencedSeriesSequence must be a list of ReferencedSeriesSequenceItem objects")
         else:
             self._ReferencedSeriesSequence = value
             if "ReferencedSeriesSequence" not in self._dataset:
@@ -39,7 +39,7 @@ class PertinentOtherEvidenceSequenceItem:
 
     def add_ReferencedSeries(self, item: ReferencedSeriesSequenceItem):
         if not isinstance(item, ReferencedSeriesSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSeriesSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSeriesSequenceItem")
         self._ReferencedSeriesSequence.append(item)
         if "ReferencedSeriesSequence" not in self._dataset:
             self._dataset.ReferencedSeriesSequence = pydicom.Sequence()

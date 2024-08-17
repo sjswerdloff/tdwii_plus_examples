@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -36,7 +36,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
             if "ReferencedSOPSequence" in self._dataset:
                 del self._dataset.ReferencedSOPSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedSOPSequenceItem) for item in value):
-            raise ValueError(f"ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
+            raise ValueError("ReferencedSOPSequence must be a list of ReferencedSOPSequenceItem objects")
         else:
             self._ReferencedSOPSequence = value
             if "ReferencedSOPSequence" not in self._dataset:
@@ -46,7 +46,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
 
     def add_ReferencedSOP(self, item: ReferencedSOPSequenceItem):
         if not isinstance(item, ReferencedSOPSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedSOPSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedSOPSequenceItem")
         self._ReferencedSOPSequence.append(item)
         if "ReferencedSOPSequence" not in self._dataset:
             self._dataset.ReferencedSOPSequence = pydicom.Sequence()
@@ -68,7 +68,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
             if "ContentItemModifierSequence" in self._dataset:
                 del self._dataset.ContentItemModifierSequence
         elif not isinstance(value, list) or not all(isinstance(item, ContentItemModifierSequenceItem) for item in value):
-            raise ValueError(f"ContentItemModifierSequence must be a list of ContentItemModifierSequenceItem objects")
+            raise ValueError("ContentItemModifierSequence must be a list of ContentItemModifierSequenceItem objects")
         else:
             self._ContentItemModifierSequence = value
             if "ContentItemModifierSequence" not in self._dataset:
@@ -78,7 +78,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
 
     def add_ContentItemModifier(self, item: ContentItemModifierSequenceItem):
         if not isinstance(item, ContentItemModifierSequenceItem):
-            raise ValueError(f"Item must be an instance of ContentItemModifierSequenceItem")
+            raise ValueError("Item must be an instance of ContentItemModifierSequenceItem")
         self._ContentItemModifierSequence.append(item)
         if "ContentItemModifierSequence" not in self._dataset:
             self._dataset.ContentItemModifierSequence = pydicom.Sequence()
@@ -100,7 +100,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
             if "MeasurementUnitsCodeSequence" in self._dataset:
                 del self._dataset.MeasurementUnitsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MeasurementUnitsCodeSequence = value
             if "MeasurementUnitsCodeSequence" not in self._dataset:
@@ -110,7 +110,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
 
     def add_MeasurementUnitsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MeasurementUnitsCodeSequence.append(item)
         if "MeasurementUnitsCodeSequence" not in self._dataset:
             self._dataset.MeasurementUnitsCodeSequence = pydicom.Sequence()
@@ -174,7 +174,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
             if "ConceptNameCodeSequence" in self._dataset:
                 del self._dataset.ConceptNameCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptNameCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptNameCodeSequence = value
             if "ConceptNameCodeSequence" not in self._dataset:
@@ -184,7 +184,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
 
     def add_ConceptNameCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptNameCodeSequence.append(item)
         if "ConceptNameCodeSequence" not in self._dataset:
             self._dataset.ConceptNameCodeSequence = pydicom.Sequence()
@@ -332,7 +332,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
             if "ConceptCodeSequence" in self._dataset:
                 del self._dataset.ConceptCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"ConceptCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("ConceptCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._ConceptCodeSequence = value
             if "ConceptCodeSequence" not in self._dataset:
@@ -342,7 +342,7 @@ class PatientTreatmentPreparationProcedureParameterSequenceItem:
 
     def add_ConceptCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._ConceptCodeSequence.append(item)
         if "ConceptCodeSequence" not in self._dataset:
             self._dataset.ConceptCodeSequence = pydicom.Sequence()

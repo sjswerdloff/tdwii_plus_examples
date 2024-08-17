@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class ConceptualVolumeConstituentSequenceItem:
             isinstance(item, OriginatingSOPInstanceReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
+                "OriginatingSOPInstanceReferenceSequence must be a list of OriginatingSOPInstanceReferenceSequenceItem objects"
             )
         else:
             self._OriginatingSOPInstanceReferenceSequence = value
@@ -56,7 +56,7 @@ class ConceptualVolumeConstituentSequenceItem:
 
     def add_OriginatingSOPInstanceReference(self, item: OriginatingSOPInstanceReferenceSequenceItem):
         if not isinstance(item, OriginatingSOPInstanceReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
+            raise ValueError("Item must be an instance of OriginatingSOPInstanceReferenceSequenceItem")
         self._OriginatingSOPInstanceReferenceSequence.append(item)
         if "OriginatingSOPInstanceReferenceSequence" not in self._dataset:
             self._dataset.OriginatingSOPInstanceReferenceSequence = pydicom.Sequence()
@@ -104,7 +104,8 @@ class ConceptualVolumeConstituentSequenceItem:
             isinstance(item, ConceptualVolumeConstituentSegmentationReferenceSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ConceptualVolumeConstituentSegmentationReferenceSequence must be a list of ConceptualVolumeConstituentSegmentationReferenceSequenceItem objects"
+                "ConceptualVolumeConstituentSegmentationReferenceSequence must be a list of"
+                " ConceptualVolumeConstituentSegmentationReferenceSequenceItem objects"
             )
         else:
             self._ConceptualVolumeConstituentSegmentationReferenceSequence = value
@@ -119,7 +120,7 @@ class ConceptualVolumeConstituentSequenceItem:
         self, item: ConceptualVolumeConstituentSegmentationReferenceSequenceItem
     ):
         if not isinstance(item, ConceptualVolumeConstituentSegmentationReferenceSequenceItem):
-            raise ValueError(f"Item must be an instance of ConceptualVolumeConstituentSegmentationReferenceSequenceItem")
+            raise ValueError("Item must be an instance of ConceptualVolumeConstituentSegmentationReferenceSequenceItem")
         self._ConceptualVolumeConstituentSegmentationReferenceSequence.append(item)
         if "ConceptualVolumeConstituentSegmentationReferenceSequence" not in self._dataset:
             self._dataset.ConceptualVolumeConstituentSegmentationReferenceSequence = pydicom.Sequence()

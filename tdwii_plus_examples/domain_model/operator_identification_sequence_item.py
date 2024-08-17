@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -59,7 +59,7 @@ class OperatorIdentificationSequenceItem:
             if "InstitutionCodeSequence" in self._dataset:
                 del self._dataset.InstitutionCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InstitutionCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InstitutionCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InstitutionCodeSequence = value
             if "InstitutionCodeSequence" not in self._dataset:
@@ -69,7 +69,7 @@ class OperatorIdentificationSequenceItem:
 
     def add_InstitutionCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InstitutionCodeSequence.append(item)
         if "InstitutionCodeSequence" not in self._dataset:
             self._dataset.InstitutionCodeSequence = pydicom.Sequence()
@@ -107,7 +107,7 @@ class OperatorIdentificationSequenceItem:
             if "InstitutionalDepartmentTypeCodeSequence" in self._dataset:
                 del self._dataset.InstitutionalDepartmentTypeCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("InstitutionalDepartmentTypeCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._InstitutionalDepartmentTypeCodeSequence = value
             if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
@@ -117,7 +117,7 @@ class OperatorIdentificationSequenceItem:
 
     def add_InstitutionalDepartmentTypeCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._InstitutionalDepartmentTypeCodeSequence.append(item)
         if "InstitutionalDepartmentTypeCodeSequence" not in self._dataset:
             self._dataset.InstitutionalDepartmentTypeCodeSequence = pydicom.Sequence()
@@ -139,7 +139,7 @@ class OperatorIdentificationSequenceItem:
             if "PersonIdentificationCodeSequence" in self._dataset:
                 del self._dataset.PersonIdentificationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"PersonIdentificationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("PersonIdentificationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._PersonIdentificationCodeSequence = value
             if "PersonIdentificationCodeSequence" not in self._dataset:
@@ -149,7 +149,7 @@ class OperatorIdentificationSequenceItem:
 
     def add_PersonIdentificationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._PersonIdentificationCodeSequence.append(item)
         if "PersonIdentificationCodeSequence" not in self._dataset:
             self._dataset.PersonIdentificationCodeSequence = pydicom.Sequence()

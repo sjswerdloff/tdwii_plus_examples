@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -35,7 +35,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
             if "EnergyDerivationCodeSequence" in self._dataset:
                 del self._dataset.EnergyDerivationCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"EnergyDerivationCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("EnergyDerivationCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._EnergyDerivationCodeSequence = value
             if "EnergyDerivationCodeSequence" not in self._dataset:
@@ -45,7 +45,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
 
     def add_EnergyDerivationCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._EnergyDerivationCodeSequence.append(item)
         if "EnergyDerivationCodeSequence" not in self._dataset:
             self._dataset.EnergyDerivationCodeSequence = pydicom.Sequence()
@@ -95,7 +95,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
             if "DeliveryRateUnitSequence" in self._dataset:
                 del self._dataset.DeliveryRateUnitSequence
         elif not isinstance(value, list) or not all(isinstance(item, DeliveryRateUnitSequenceItem) for item in value):
-            raise ValueError(f"DeliveryRateUnitSequence must be a list of DeliveryRateUnitSequenceItem objects")
+            raise ValueError("DeliveryRateUnitSequence must be a list of DeliveryRateUnitSequenceItem objects")
         else:
             self._DeliveryRateUnitSequence = value
             if "DeliveryRateUnitSequence" not in self._dataset:
@@ -105,7 +105,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
 
     def add_DeliveryRateUnit(self, item: DeliveryRateUnitSequenceItem):
         if not isinstance(item, DeliveryRateUnitSequenceItem):
-            raise ValueError(f"Item must be an instance of DeliveryRateUnitSequenceItem")
+            raise ValueError("Item must be an instance of DeliveryRateUnitSequenceItem")
         self._DeliveryRateUnitSequence.append(item)
         if "DeliveryRateUnitSequence" not in self._dataset:
             self._dataset.DeliveryRateUnitSequence = pydicom.Sequence()
@@ -127,7 +127,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
             if "RadiationDosimeterUnitSequence" in self._dataset:
                 del self._dataset.RadiationDosimeterUnitSequence
         elif not isinstance(value, list) or not all(isinstance(item, RadiationDosimeterUnitSequenceItem) for item in value):
-            raise ValueError(f"RadiationDosimeterUnitSequence must be a list of RadiationDosimeterUnitSequenceItem objects")
+            raise ValueError("RadiationDosimeterUnitSequence must be a list of RadiationDosimeterUnitSequenceItem objects")
         else:
             self._RadiationDosimeterUnitSequence = value
             if "RadiationDosimeterUnitSequence" not in self._dataset:
@@ -137,7 +137,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
 
     def add_RadiationDosimeterUnit(self, item: RadiationDosimeterUnitSequenceItem):
         if not isinstance(item, RadiationDosimeterUnitSequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationDosimeterUnitSequenceItem")
+            raise ValueError("Item must be an instance of RadiationDosimeterUnitSequenceItem")
         self._RadiationDosimeterUnitSequence.append(item)
         if "RadiationDosimeterUnitSequence" not in self._dataset:
             self._dataset.RadiationDosimeterUnitSequence = pydicom.Sequence()
@@ -159,7 +159,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
             if "RadiationGenerationModeSequence" in self._dataset:
                 del self._dataset.RadiationGenerationModeSequence
         elif not isinstance(value, list) or not all(isinstance(item, RadiationGenerationModeSequenceItem) for item in value):
-            raise ValueError(f"RadiationGenerationModeSequence must be a list of RadiationGenerationModeSequenceItem objects")
+            raise ValueError("RadiationGenerationModeSequence must be a list of RadiationGenerationModeSequenceItem objects")
         else:
             self._RadiationGenerationModeSequence = value
             if "RadiationGenerationModeSequence" not in self._dataset:
@@ -169,7 +169,7 @@ class RTImageFrameMVRadiationAcquisitionSequenceItem:
 
     def add_RadiationGenerationMode(self, item: RadiationGenerationModeSequenceItem):
         if not isinstance(item, RadiationGenerationModeSequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationGenerationModeSequenceItem")
+            raise ValueError("Item must be an instance of RadiationGenerationModeSequenceItem")
         self._RadiationGenerationModeSequence.append(item)
         if "RadiationGenerationModeSequence" not in self._dataset:
             self._dataset.RadiationGenerationModeSequence = pydicom.Sequence()

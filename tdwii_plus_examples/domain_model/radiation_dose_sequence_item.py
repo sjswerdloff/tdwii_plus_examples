@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -42,7 +42,7 @@ class RadiationDoseSequenceItem:
             isinstance(item, RadiationDoseValuesParametersSequenceItem) for item in value
         ):
             raise ValueError(
-                f"RadiationDoseValuesParametersSequence must be a list of RadiationDoseValuesParametersSequenceItem objects"
+                "RadiationDoseValuesParametersSequence must be a list of RadiationDoseValuesParametersSequenceItem objects"
             )
         else:
             self._RadiationDoseValuesParametersSequence = value
@@ -53,7 +53,7 @@ class RadiationDoseSequenceItem:
 
     def add_RadiationDoseValuesParameters(self, item: RadiationDoseValuesParametersSequenceItem):
         if not isinstance(item, RadiationDoseValuesParametersSequenceItem):
-            raise ValueError(f"Item must be an instance of RadiationDoseValuesParametersSequenceItem")
+            raise ValueError("Item must be an instance of RadiationDoseValuesParametersSequenceItem")
         self._RadiationDoseValuesParametersSequence.append(item)
         if "RadiationDoseValuesParametersSequence" not in self._dataset:
             self._dataset.RadiationDoseValuesParametersSequence = pydicom.Sequence()
@@ -83,7 +83,7 @@ class RadiationDoseSequenceItem:
             isinstance(item, ExpectedInVivoMeasurementValuesSequenceItem) for item in value
         ):
             raise ValueError(
-                f"ExpectedInVivoMeasurementValuesSequence must be a list of ExpectedInVivoMeasurementValuesSequenceItem objects"
+                "ExpectedInVivoMeasurementValuesSequence must be a list of ExpectedInVivoMeasurementValuesSequenceItem objects"
             )
         else:
             self._ExpectedInVivoMeasurementValuesSequence = value
@@ -94,7 +94,7 @@ class RadiationDoseSequenceItem:
 
     def add_ExpectedInVivoMeasurementValues(self, item: ExpectedInVivoMeasurementValuesSequenceItem):
         if not isinstance(item, ExpectedInVivoMeasurementValuesSequenceItem):
-            raise ValueError(f"Item must be an instance of ExpectedInVivoMeasurementValuesSequenceItem")
+            raise ValueError("Item must be an instance of ExpectedInVivoMeasurementValuesSequenceItem")
         self._ExpectedInVivoMeasurementValuesSequence.append(item)
         if "ExpectedInVivoMeasurementValuesSequence" not in self._dataset:
             self._dataset.ExpectedInVivoMeasurementValuesSequence = pydicom.Sequence()
@@ -116,7 +116,7 @@ class RadiationDoseSequenceItem:
             if "ReferencedRTRadiationSequence" in self._dataset:
                 del self._dataset.ReferencedRTRadiationSequence
         elif not isinstance(value, list) or not all(isinstance(item, ReferencedRTRadiationSequenceItem) for item in value):
-            raise ValueError(f"ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
+            raise ValueError("ReferencedRTRadiationSequence must be a list of ReferencedRTRadiationSequenceItem objects")
         else:
             self._ReferencedRTRadiationSequence = value
             if "ReferencedRTRadiationSequence" not in self._dataset:
@@ -126,7 +126,7 @@ class RadiationDoseSequenceItem:
 
     def add_ReferencedRTRadiation(self, item: ReferencedRTRadiationSequenceItem):
         if not isinstance(item, ReferencedRTRadiationSequenceItem):
-            raise ValueError(f"Item must be an instance of ReferencedRTRadiationSequenceItem")
+            raise ValueError("Item must be an instance of ReferencedRTRadiationSequenceItem")
         self._ReferencedRTRadiationSequence.append(item)
         if "ReferencedRTRadiationSequence" not in self._dataset:
             self._dataset.ReferencedRTRadiationSequence = pydicom.Sequence()

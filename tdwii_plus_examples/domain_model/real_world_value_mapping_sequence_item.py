@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa
 
 import pydicom
 
@@ -45,7 +45,7 @@ class RealWorldValueMappingSequenceItem:
             if "MeasurementUnitsCodeSequence" in self._dataset:
                 del self._dataset.MeasurementUnitsCodeSequence
         elif not isinstance(value, list) or not all(isinstance(item, CodeSequenceItem) for item in value):
-            raise ValueError(f"MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
+            raise ValueError("MeasurementUnitsCodeSequence must be a list of CodeSequenceItem objects")
         else:
             self._MeasurementUnitsCodeSequence = value
             if "MeasurementUnitsCodeSequence" not in self._dataset:
@@ -55,7 +55,7 @@ class RealWorldValueMappingSequenceItem:
 
     def add_MeasurementUnitsCode(self, item: CodeSequenceItem):
         if not isinstance(item, CodeSequenceItem):
-            raise ValueError(f"Item must be an instance of CodeSequenceItem")
+            raise ValueError("Item must be an instance of CodeSequenceItem")
         self._MeasurementUnitsCodeSequence.append(item)
         if "MeasurementUnitsCodeSequence" not in self._dataset:
             self._dataset.MeasurementUnitsCodeSequence = pydicom.Sequence()
@@ -161,7 +161,7 @@ class RealWorldValueMappingSequenceItem:
             if "QuantityDefinitionSequence" in self._dataset:
                 del self._dataset.QuantityDefinitionSequence
         elif not isinstance(value, list) or not all(isinstance(item, QuantityDefinitionSequenceItem) for item in value):
-            raise ValueError(f"QuantityDefinitionSequence must be a list of QuantityDefinitionSequenceItem objects")
+            raise ValueError("QuantityDefinitionSequence must be a list of QuantityDefinitionSequenceItem objects")
         else:
             self._QuantityDefinitionSequence = value
             if "QuantityDefinitionSequence" not in self._dataset:
@@ -171,7 +171,7 @@ class RealWorldValueMappingSequenceItem:
 
     def add_QuantityDefinition(self, item: QuantityDefinitionSequenceItem):
         if not isinstance(item, QuantityDefinitionSequenceItem):
-            raise ValueError(f"Item must be an instance of QuantityDefinitionSequenceItem")
+            raise ValueError("Item must be an instance of QuantityDefinitionSequenceItem")
         self._QuantityDefinitionSequence.append(item)
         if "QuantityDefinitionSequence" not in self._dataset:
             self._dataset.QuantityDefinitionSequence = pydicom.Sequence()
