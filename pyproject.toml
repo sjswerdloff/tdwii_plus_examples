@@ -11,10 +11,12 @@ packages = [{include = "tdwii_plus_examples"}]
 python = ">=3.10, <3.11"
 pydicom = "^2.4.0"
 pynetdicom = "^2.1.0"
+pyside6 = "^6.6.0"
 sqlalchemy = { version = "^2.0"}
-
 tomlkit  = "*"
 toml  = "*"
+tomli = "*"
+
 # ----- #
 # Tests #
 # ----- #
@@ -40,7 +42,7 @@ doc8 = { version = "*", optional = true }            # groups = ["dev", "all"]
 # readme-renderer = { version = "*", optional = true } # groups = ["dev", "all"]
 # tabulate = { version = "*", optional = true }        # groups = ["dev", "all", "doctests"]
 # pyoxidizer = { version = "*", optional = true }      # groups = ["dev", "all", "build"]
-pyside6 = "^6.6.0"
+
 
 
 [tool.poetry.extras]

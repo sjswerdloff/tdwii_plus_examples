@@ -945,7 +945,7 @@ files = [
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
@@ -1002,4 +1002,4 @@ tests = ["dill", "flake8", "pylint", "pytest", "pytest-rerunfailures", "pytest-s
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10, <3.11"
-content-hash = "c9da4d1af37898b8574723b4e0e3c67a6c9d5198f31149bc25f8fd9f941c44a0"
+content-hash = "7e530eb677e760858100de4053821b28b5d132740827c0e23725ac0cf312f83b"
