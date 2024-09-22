@@ -13,9 +13,8 @@ pydicom = "^2.4.0"
 pynetdicom = "^2.1.0"
 sqlalchemy = { version = "^2.0"}
 
-tomlkit = { version = "*", optional = true }    # groups = ["all", "dev"]
-toml = { version = "*", optional = true }       # groups = ["all", "dev"]
-
+tomlkit  = "*"
+toml  = "*"
 # ----- #
 # Tests #
 # ----- #
