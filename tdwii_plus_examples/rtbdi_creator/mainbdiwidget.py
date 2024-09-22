@@ -187,6 +187,7 @@ class MainBDIWidget(QWidget):
             self._command_outcome_message(success=success, command_name="N-CREATE")
 
     def _command_outcome_message(self, success: bool, command_name: str, text: str = None):
+        app = QApplication.instance()
         # apparently a known defect, see:
         # https://stackoverflow.com/questions/76869543/why-cant-i-change-the-window-icon-on-a-qmessagebox-with-seticon-in-pyside6
         app.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)

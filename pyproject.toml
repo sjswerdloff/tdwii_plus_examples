@@ -27,7 +27,8 @@ pytest-sugar = { version = "*", optional = true }         # groups = ["all", "te
 # psutil = { version = "*", optional = true }               # groups = ["all", "tests"]
 pylint = { version = "*", optional = true }               # groups = ["all", "tests"]
 pytest-rerunfailures = { version = "*", optional = true } # groups = ["all", "tests"]
-
+pytest-qt = { version = "*", optional = true }              # groups = ["all", "tests"]
+pytest-mock = { version = "*", optional = true }              # groups = ["all", "tests"]
 
 # ---------------- #
 # Development Only #
@@ -43,7 +44,14 @@ doc8 = { version = "*", optional = true }            # groups = ["dev", "all"]
 # tabulate = { version = "*", optional = true }        # groups = ["dev", "all", "doctests"]
 # pyoxidizer = { version = "*", optional = true }      # groups = ["dev", "all", "build"]
 
-
+[tool.pytest.ini_options]
+addopts = [
+    "-v",
+    "-ra",
+    "--tb=short",
+    "-p", "pytest-qt"
+]
+testpaths = ["tests"]
 
 [tool.poetry.extras]
 

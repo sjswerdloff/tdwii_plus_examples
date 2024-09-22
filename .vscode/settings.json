@@ -55,6 +55,7 @@
         "pushd",
         "pyenv",
         "qrscp",
+        "qtbot",
         "qtreewidgetitem",
         "queryfile",
         "repval",
