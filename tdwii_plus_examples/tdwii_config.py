@@ -22,7 +22,7 @@ def load_machine_map(path_to_machine_map=None):
     if path_to_machine_map is not None:
         machine_to_ae_config_file = path_to_machine_map
     else:
-        machine_to_ae_config_file = "MachineToAE.json"
+        machine_to_ae_config_file = "MachineMap.json"
     with open(machine_to_ae_config_file, "r") as f:
         machine_to_ae_list = json.load(f)
     for machine in machine_to_ae_list:
