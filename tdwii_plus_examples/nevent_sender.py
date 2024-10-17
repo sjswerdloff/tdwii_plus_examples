@@ -195,7 +195,7 @@ def _setup_argparser():
         metavar="[s]econds",
         help="timeout for ACSE messages (default: 30 s)",
         type=float,
-        default=30,
+        default=300,
     )
     net_opts.add_argument(
         "-td",
@@ -203,7 +203,7 @@ def _setup_argparser():
         metavar="[s]econds",
         help="timeout for DIMSE messages (default: 30 s)",
         type=float,
-        default=30,
+        default=300,
     )
     net_opts.add_argument(
         "-tn",
@@ -211,7 +211,7 @@ def _setup_argparser():
         metavar="[s]econds",
         help="timeout for the network (default: 30 s)",
         type=float,
-        default=30,
+        default=300,
     )
     net_opts.add_argument(
         "-pdu",

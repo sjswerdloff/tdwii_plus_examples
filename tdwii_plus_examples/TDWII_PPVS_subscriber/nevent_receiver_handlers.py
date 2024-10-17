@@ -151,6 +151,6 @@ def handle_nevent(event, event_response_cb, cli_config, logger):
         logger.warning("Not a UPS Event")
 
     logger.info("Finished Processing N-EVENT-REPORT-RQ")
-    yield 0  # Number of suboperations remaining
+    yield 0  # Number of sub-operations remaining
     #  If a rsp dataset of None is provided below, the underlying handler and dimse primitive in pynetdicom raises an error
     yield 0  # Status

@@ -1,14 +1,24 @@
+from pathlib import Path
+
 import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QFileDialog  # , QMessageBox
 from pytestqt.qtbot import QtBot
 
 from tdwii_plus_examples.rtbdi_creator.mainbdiwidget import MainBDIWidget
+from tdwii_plus_examples.tests.gui.mock_dicom_server import start_mock_server
 
-PATH_TO_PLAN = "/Users/stuartswerdloff/Downloads/Breast_ProNova/RP1.2.752.243.1.1.20240618125727890.2330.42704_ims_pvt.dcm"
-PATH_TO_BDI_DIR = "/Users/stuartswerdloff/BDIFolder"
+PATH_TO_PLAN = str(Path("~/Downloads/Breast_ProNova/RP1.2.752.243.1.1.20240618125727890.2330.42704_ims_pvt.dcm").expanduser())
+PATH_TO_BDI_DIR = str(Path("~/BDIFolder").expanduser())
 MOVE_SCP_TITLE = "OST"
 BDI_FILE_NAME = "test_bdi.dcm"
+
+
+@pytest.fixture(scope="module")
+def mock_dicom_server():
+    server = start_mock_server()
+    yield server
+    server.stop()
 
 
 @pytest.fixture(scope="session")
@@ -78,7 +88,7 @@ def test_fraction_number_change(main_window, qtbot):
     assert main_window.ui.double_spin_box_fraction_number.value() == 2
 
 
-def test_export_bdi_button_click(main_window, qtbot, mocker):
+def test_export_bdi_button_click(main_window, qtbot, mocker, mock_dicom_server):
     """Test the export BDI button click."""
     # Mock the imported functions
     mock_load_plan = mocker.patch("tdwii_plus_examples.rtbdi_creator.mainbdiwidget.load_plan")
