@@ -489,7 +489,7 @@ def search(model, identifier, session):
     for elem in identifier:
         kw = elem.keyword
         if kw != "QueryRetrieveLevel" and kw not in _ATTRIBUTES:
-            if elem.tag.element == 0: # deletion by name fails for group length elements
+            if elem.tag.element == 0:  # deletion by name fails for group length elements
                 del identifier[elem.tag]
             else:
                 delattr(identifier, kw)
