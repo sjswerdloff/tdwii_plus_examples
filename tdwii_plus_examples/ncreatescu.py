@@ -293,7 +293,7 @@ def main(args=None):
         for fpath in lfiles:
             APP_LOGGER.info(f"Sending file: {fpath}")
             try:
-                ds = dcmread(fpath)
+                ds = dcmread(fpath, force=True) # set force flag to allow raw DICOM files 
                 status = assoc.send_n_create(
                     ds,
                     UnifiedProcedureStepPush,
