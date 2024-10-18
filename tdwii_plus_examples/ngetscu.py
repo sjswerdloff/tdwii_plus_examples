@@ -15,14 +15,19 @@ def nget_ups(
     attribute_list: List[DataElement], ups_instance_uid: str, scu_ae_title: str, scp_ae_title: str
 ) -> Iterator[tuple[Dataset, Dataset | None]]:
     """Perform UPS N-GET-RQ and return responses that have UPS content
+    Only zero or one UPS should be returned from the TMS
+    Disallowed attributes will be stripped silently before querying the TMS
 
     Args:
-        ds_query (pydicom.Dataset): query content/request
+        attribute_list (List[DataElement]): A list of BaseTag, i.e. the integer tag values
+            that the SCP is to populate in the N-GET-RSP
+        ups_instance_uid (str): The SOP Instance UID of the UPS being queried
         scu_ae_title (str): The AE Title for the SCU (the requestor), typically the PPVS or TDS
-        scp_ae_title (str): The AE Title for the SCP (being queried), the TMS
+        scp_ae_title (str): The AE Title for the SCP (being queried), i.e. the TMS
 
-    Yields:
-        Iterator[tuple[Dataset, Dataset | None]]: status,response_content tuples
+
+    Returns:
+        Iterator[tuple[Dataset, Dataset | None]]: An iterator whose items are a UPS response, i.e. a UPS Push instance
     """
     ae = pynetdicom.AE(ae_title=scu_ae_title)
     ae.requested_contexts = UnifiedProcedurePresentationContexts
@@ -37,7 +42,7 @@ def nget_ups(
     disallowed_tags = set([0x00080016, 0x00080018, 0x00081195])
     identifier_list.difference_update(disallowed_tags)
     for tag in identifier_list:
-        print(tag)
+        logging.info(tag)
 
     assoc = ae.associate(ae_config.known_ae_ipaddr[scp_ae_title], ae_config.known_ae_port[scp_ae_title], ae_title=scp_ae_title)
     if assoc.is_established:
