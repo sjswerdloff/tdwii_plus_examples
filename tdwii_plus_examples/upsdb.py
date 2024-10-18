@@ -489,7 +489,10 @@ def search(model, identifier, session):
     for elem in identifier:
         kw = elem.keyword
         if kw != "QueryRetrieveLevel" and kw not in _ATTRIBUTES:
-            delattr(identifier, kw)
+            if elem.tag.element == 0:  # deletion by name fails for group length elements
+                del identifier[elem.tag]
+            else:
+                delattr(identifier, kw)
 
     if model in _C_GET or model in _C_MOVE:
         # Part 4, C.2.2.1.2: remove required keys from C-GET/C-MOVE

@@ -357,7 +357,17 @@ def handle_nget(event, db_path, cli_config, logger):
     addr, port = requestor.address, requestor.port
     logger.info(f"Received N-GET request from {addr}:{port} at {timestamp}")
 
-    model = event.request.AffectedSOPClassUID
+    model = event.request.RequestedSOPClassUID
+    if len(model) == 0:
+        print("Requested SOP Class UID not provided")
+    # need to manipulate the content of the request
+    # also need to validate the content and reject if it's not DICOM conformant and IHE-RO
+    # TDW-II profile adherent
+    ds_from_request = Dataset()
+    # decode(event.request.ModificationList, True, True)
+    ds_from_request.SOPInstanceUID = event.request.RequestedSOPInstanceUID
+    if ds_from_request.SOPInstanceUID is None or len(ds_from_request.SOPInstanceUID) == 0:
+        print("Requested SOP Instance UID is empty")
 
     engine = create_engine(db_path)
     with engine.connect() as conn:  # noqa:  F841
@@ -365,10 +375,10 @@ def handle_nget(event, db_path, cli_config, logger):
         session = Session()
         # Search database using Identifier as the query
         try:
-            matches = search(model, event.identifier, session)
+            matches = search(model, ds_from_request, session)
         except InvalidIdentifier as exc:
             session.rollback()
-            logger.error("Invalid C-GET Identifier received")
+            logger.error("Invalid N-GET Identifier received")
             logger.error(str(exc))
             yield 0xA900, None
             return
@@ -382,7 +392,7 @@ def handle_nget(event, db_path, cli_config, logger):
             session.close()
 
     # Yield number of sub-operations
-    yield len(matches)
+    # yield len(matches)
 
     # Yield results
     for match in matches:
@@ -391,13 +401,21 @@ def handle_nget(event, db_path, cli_config, logger):
             return
 
         try:
+            print(f"N-GET handler: matched on {match.filename}")
             ds = dcmread(match.filename)
+            print(ds)
+            ds.is_implicit_VR = False
+            ds.ensure_file_meta()
+            ds.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+            ds.fix_meta_info()
+            ds.Status = 0x0000
         except Exception as exc:
             logger.error(f"Error reading file: {match.filename}")
             logger.exception(exc)
             yield 0xC421, None
 
-        yield 0xFF00, ds
+        yield 0x0000
+        yield ds
 
 
 def handle_naction(event, instance_dir, db_path, cli_config, logger):
