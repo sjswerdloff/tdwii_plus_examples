@@ -385,11 +385,12 @@ def _create_code_seq_item(value: str | int, designator: str, meaning: str) -> Da
 def _create_ups_content_item(value_type: str, value: any, code_seq_item: Dataset) -> Dataset:
     content_item = Dataset()
     content_item.ValueType = value_type
+    if code_seq_item is not None:
+        content_item.ConceptNameCodeSequence = pydicom.Sequence([code_seq_item])
     if value_type == "TEXT":
         content_item.TextValue = str(value)
     elif value_type == "NUMERIC":
         content_item.MeasurementUnitsCodeSequence = pydicom.Sequence([_measurement_units_code_seq_item_no_units()])
-        content_item.ConceptNameCodeSequence = pydicom.Sequence([code_seq_item])
         content_item.NumericValue = value
     else:
         raise ValueError(f"Value Type {value_type} not supported")
