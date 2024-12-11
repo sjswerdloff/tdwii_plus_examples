@@ -3,7 +3,7 @@ from argparse import Namespace
 from pynetdicom import AE, evt
 from pynetdicom.apps.common import setup_logging
 
-from tdwii_plus_examples.transport_handler import handle_open, handle_close
+from tdwii_plus_examples.basehandlers import handle_open, handle_close
 
 
 class BaseSCP:
@@ -51,13 +51,17 @@ class BaseSCP:
 
     def _add_handlers(self):
         # To define actions when a TCP connection in opened or closed
-        # self.handlers.append((evt.EVT_CONN_OPEN, handle_open, [None, self.logger]))
-        # self.handlers.append((evt.EVT_CONN_CLOSE, handle_close, [None, self.logger]))
-        pass  # base class, do nothing, pure virtual
+        self.handlers.append((evt.EVT_CONN_OPEN, handle_open,
+                              [self.logger]))
+        self.handlers.append((evt.EVT_CONN_CLOSE, handle_close,
+                              [self.logger]))
 
     def run(self):
         # Listen for incoming association requests
-        self.threaded_server = self.ae.start_server((self.bind_address, self.port), evt_handlers=self.handlers, block=False)
+        self.threaded_server = self.ae.start_server(
+            (self.bind_address, self.port),
+            evt_handlers=self.handlers,
+            block=False)
 
     def stop(self):
         self.ae.shutdown()
