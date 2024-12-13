@@ -15,8 +15,8 @@ def handle_open(event, logger):
         always ``0x0000`` (Success).
     """
     requestor = event.assoc.requestor
-    aet, addr, port = requestor.address, requestor.port
-    logger.info(f"Succesful connection from {aet}@{addr}:{port}")
+    addr, port = requestor.address, requestor.port
+    logger.info(f"Succesful connection from {addr}:{port}")
 
     return 0x0000
 
@@ -38,7 +38,7 @@ def handle_close(event, logger):
         always ``0x0000`` (Success).
     """
     requestor = event.assoc.requestor
-    aet, addr, port = requestor.address, requestor.port
+    aet, addr, port = requestor.ae_title, requestor.address, requestor.port
     logger.info(f"Closed connection with {aet}@{addr}:{port}")
 
     return 0x0000
