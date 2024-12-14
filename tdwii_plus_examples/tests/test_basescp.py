@@ -4,8 +4,6 @@ from logging.handlers import MemoryHandler
 import subprocess
 import time
 from tdwii_plus_examples.basescp import BaseSCP
-from tdwii_plus_examples.basehandlers import handle_open
-from pynetdicom import ALL_TRANSFER_SYNTAXES
 from pynetdicom.sop_class import Verification
 
 
@@ -14,8 +12,9 @@ class EchoSCP(BaseSCP):
         super().__init__(bind_address=bind_address, logger=logger)
 
     def _add_contexts(self):
-        BaseSCP._add_contexts(self)
-        self.ae.add_supported_context(Verification, ALL_TRANSFER_SYNTAXES)
+        super()._add_contexts()
+        self.ae.add_supported_context(Verification, "1.2.840.10008.1.2")
+
 
 class TestBaseSCP(unittest.TestCase):
 
@@ -24,51 +23,54 @@ class TestBaseSCP(unittest.TestCase):
         # with a memory handler to store up to 100 log messages
         self.scp_logger = logging.getLogger('basescp')
         self.scp_logger.setLevel(logging.INFO)
-        self.memory_handler = MemoryHandler(100) 
+        self.memory_handler = MemoryHandler(100)
         self.scp_logger.addHandler(self.memory_handler)
-        
-        # Set up the logger for this test to DEBUG level 
-        #  with a stream handler to print the log messages to the console
+
+        # Set up the logger for this test to DEBUG level
+        # with a stream handler to print the log messages to the console
         self.test_logger = logging.getLogger('test_basescp')
         self.test_logger.setLevel(logging.DEBUG)
-        self.stream_handler = logging.StreamHandler() 
+        self.stream_handler = logging.StreamHandler()
         self.test_logger.addHandler(self.stream_handler)
 
-        # Create the SCP
-        #self.scp = BaseSCP(bind_address="localhost", logger=self.scp_logger)
+        # Create a subclass of BaseSCP with only 1 presentation context:
+        # the required Verification presentation context with the
+        # default DICOM transfer syntax (Implicit VR Little Endian)
         self.scp = EchoSCP(bind_address="localhost", logger=self.scp_logger)
-
 
     def test_run_and_check_log(self):
         # Run the SCP
         self.scp.run()
 
         # Send an echo request using pynetdicom's echoscu.py
-        subprocess.check_call(['python', '-m', 'pynetdicom', 'echoscu', 
-        'localhost', '11112',
-        '-aet', 'ECHOSCU', '-aec', 'BASE_SCP'])
+        subprocess.check_call(['python', '-m', 'pynetdicom', 'echoscu',
+                               'localhost', '11112',
+                               '-aet', 'ECHOSCU', '-aec', 'BASE_SCP'])
 
         # Wait for 1 second to ensure the logs are generated
         time.sleep(1)
 
         # Get the log messages
-        log_messages = [record.getMessage() for record 
-                                            in self.memory_handler.buffer]
-                                            
+        log_messages = [record.getMessage() for record
+                        in self.memory_handler.buffer]
+
         # Check the EVT_CONN_OPEN event log message
-        self.test_logger.info(f"Checking EVT_CONN_OPEN event log message: {log_messages[0]}")
-        self.assertRegex(log_messages[0], 
+        self.test_logger.info(f"Checking EVT_CONN_OPEN event log message: "
+                              f"{log_messages[0]}")
+        self.assertRegex(log_messages[0],
                          r"Succesful connection from " +
                          r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})")
         # Stop the SCP
         self.scp.stop()
 
         # Check the EVT_CONN_CLOSED event log message
-        self.test_logger.info(f"Checking EVT_CONN_CLOSE event log message: {log_messages[-1]}")
-        self.assertRegex(log_messages[-1], 
+        self.test_logger.info(f"Checking EVT_CONN_CLOSE event log message: "
+                              f"{log_messages[-1]}")
+        self.assertRegex(log_messages[-1],
                          r"Closed connection with " +
-                         r"([\w]+)@"+
+                         r"([\w]+)@" +
                          r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})")
+
 
 if __name__ == "__main__":
     unittest.main()
