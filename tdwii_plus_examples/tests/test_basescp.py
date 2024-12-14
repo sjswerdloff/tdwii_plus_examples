@@ -7,7 +7,7 @@ from tdwii_plus_examples.basescp import BaseSCP
 from pynetdicom.sop_class import Verification
 
 
-class EchoSCP(BaseSCP):
+class CEchoSCP(BaseSCP):
     def __init__(self, bind_address, logger=None):
         super().__init__(bind_address=bind_address, logger=logger)
 
@@ -36,7 +36,7 @@ class TestBaseSCP(unittest.TestCase):
         # Create a subclass of BaseSCP with only 1 presentation context:
         # the required Verification presentation context with the
         # default DICOM transfer syntax (Implicit VR Little Endian)
-        self.scp = EchoSCP(bind_address="localhost", logger=self.scp_logger)
+        self.scp = CEchoSCP(bind_address="localhost", logger=self.scp_logger)
 
     def test_run_and_check_log(self):
         # Run the SCP
@@ -56,8 +56,8 @@ class TestBaseSCP(unittest.TestCase):
 
         # Check the EVT_CONN_OPEN event log message
         self.test_logger.info(f"Checking EVT_CONN_OPEN event log message: "
-                              f"{log_messages[0]}")
-        self.assertRegex(log_messages[0],
+                              f"{log_messages[-2]}")
+        self.assertRegex(log_messages[-2],
                          r"Succesful connection from " +
                          r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})")
         # Stop the SCP

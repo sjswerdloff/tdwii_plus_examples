@@ -6,10 +6,10 @@ from pynetdicom import ALL_TRANSFER_SYNTAXES, AllStoragePresentationContexts, ev
 
 from tdwii_plus_examples.basescp import BaseSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.cstore_handler import handle_store
-from tdwii_plus_examples.TDWII_PPVS_subscriber.echoscp import EchoSCP
+from tdwii_plus_examples.cechoscp import CEchoSCP
 
 
-class StoreSCP(EchoSCP):
+class StoreSCP(CEchoSCP):
     def __init__(
         self,
         ae_title: str = "STORE_SCP",
@@ -28,15 +28,15 @@ class StoreSCP(EchoSCP):
         else:
             self.handle_cstore = custom_handler
         self.store_directory = store_directory
-        EchoSCP.__init__(self, ae_title=ae_title, port=port, logger=logger, bind_address=bind_address)
+        CEchoSCP.__init__(self, ae_title=ae_title, port=port, logger=logger, bind_address=bind_address)
 
     def _add_contexts(self):
-        EchoSCP._add_contexts(self)
+        CEchoSCP._add_contexts(self)
         for context in self.storage_presentation_contexts:
             self.ae.add_supported_context(context.abstract_syntax, self.transfer_syntaxes)
 
     def _add_handlers(self):
-        EchoSCP._add_handlers(self)
+        CEchoSCP._add_handlers(self)
         args = Namespace(ignore=False, output_directory=self.store_directory)
 
         self.handlers.append((evt.EVT_C_STORE, self.handle_cstore, [args, self.logger]))
