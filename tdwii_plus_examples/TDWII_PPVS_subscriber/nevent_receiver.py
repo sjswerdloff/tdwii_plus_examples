@@ -3,7 +3,7 @@ from time import sleep
 from pynetdicom import ALL_TRANSFER_SYNTAXES, UnifiedProcedurePresentationContexts, evt
 
 from tdwii_plus_examples.basescp import BaseSCP
-from tdwii_plus_examples.TDWII_PPVS_subscriber.echoscp import EchoSCP
+from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver_handlers import (
     handle_nevent,
 )
@@ -58,7 +58,7 @@ def nevent_cb(**kwargs):
             logger.warning(f"Unknown Event Type ID: {event_type_id}")
 
 
-class NEventReceiver(EchoSCP):
+class NEventReceiver(CEchoSCP):
     def __init__(
         self, nevent_callback=None, ae_title: str = "NEVENT_RECEIVER", port: int = 11115, logger=None, bind_address: str = ""
     ):
@@ -66,15 +66,15 @@ class NEventReceiver(EchoSCP):
             self.nevent_callback = nevent_cb  # fallback to something that just logs incoming events
         else:
             self.nevent_callback = nevent_callback
-        EchoSCP.__init__(self, ae_title=ae_title, port=port, logger=logger, bind_address=bind_address)
+        CEchoSCP.__init__(self, ae_title=ae_title, port=port, logger=logger, bind_address=bind_address)
 
     def _add_contexts(self):
-        EchoSCP._add_contexts(self)
+        CEchoSCP._add_contexts(self)
         for cx in UnifiedProcedurePresentationContexts:
             self.ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     def _add_handlers(self):
-        EchoSCP._add_handlers(self)
+        CEchoSCP._add_handlers(self)
         self.handlers.append((evt.EVT_N_EVENT_REPORT, handle_nevent, [self.nevent_callback, None, self.logger]))
 
     def run(self):

@@ -1,4 +1,5 @@
 from argparse import Namespace
+import logging
 
 from pynetdicom import AE, evt
 from pynetdicom.apps.common import setup_logging
@@ -23,7 +24,7 @@ class BaseSCP:
         ae_title (str): The title of the Application Entity (AE)
         bind_address (str): The IP address or hostname of the AE
         port (int): The port number the AE will listen on
-        logger: A logger instance (optional)
+        logger(logging.Logger): A logger instance
 
     Methods:
         _add_contexts(self)
@@ -66,8 +67,8 @@ class BaseSCP:
         if logger is None:
             self.logger = setup_logging(
                 Namespace(log_type="d", log_level="debug"), "base_scp")
-        # elif not isinstance(self.logger, logging.Logger):
-        #     raise TypeError("logger must be an instance of logging.Logger")
+        elif not isinstance(logger, logging.Logger):
+            raise TypeError("logger must be an instance of logging.Logger")
         else:
             self.logger = logger
 
@@ -103,7 +104,7 @@ class BaseSCP:
 
     def _add_handlers(self):
         """
-        Adds handlers for processing DICOM events from incoming associations.
+        Adds handlers for processing TCP events from incoming associations.
 
         This method is intended to be overridden in derived classes.
         """
@@ -122,10 +123,15 @@ class BaseSCP:
         not block the calling thread.
         """
         # Listen for incoming association requests
-        self.threaded_server = self.ae.start_server(
-            (self.bind_address, self.port),
-            evt_handlers=self.handlers,
-            block=False)
+        try:
+            self.threaded_server = self.ae.start_server(
+                (self.bind_address, self.port),
+                evt_handlers=self.handlers,
+                block=False)
+            if self.threaded_server is not None:
+                self.logger.info("SCP server started successfully")
+        except Exception as e:
+            self.logger.error("SCP server failed to start: %s", e)
 
     def stop(self):
         """

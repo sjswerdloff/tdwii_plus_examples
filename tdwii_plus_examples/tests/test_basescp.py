@@ -3,11 +3,12 @@ import logging
 from logging.handlers import MemoryHandler
 import subprocess
 import time
+import re
 from tdwii_plus_examples.basescp import BaseSCP
 from pynetdicom.sop_class import Verification
 
 
-class EchoSCP(BaseSCP):
+class CEchoSCP(BaseSCP):
     def __init__(self, bind_address, logger=None):
         super().__init__(bind_address=bind_address, logger=logger)
 
@@ -36,7 +37,7 @@ class TestBaseSCP(unittest.TestCase):
         # Create a subclass of BaseSCP with only 1 presentation context:
         # the required Verification presentation context with the
         # default DICOM transfer syntax (Implicit VR Little Endian)
-        self.scp = EchoSCP(bind_address="localhost", logger=self.scp_logger)
+        self.scp = CEchoSCP(bind_address="localhost", logger=self.scp_logger)
 
     def test_run_and_check_log(self):
         # Run the SCP
@@ -55,21 +56,35 @@ class TestBaseSCP(unittest.TestCase):
                         in self.memory_handler.buffer]
 
         # Check the EVT_CONN_OPEN event log message
-        self.test_logger.info(f"Checking EVT_CONN_OPEN event log message: "
-                              f"{log_messages[0]}")
-        self.assertRegex(log_messages[0],
-                         r"Succesful connection from " +
-                         r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})")
+        self.test_logger.info("Searching for EVT_CONN_OPEN event log message")
+        pattern = r"^Succesful connection from " + \
+                  r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})"
+        matching_message = None
+        for message in log_messages:
+            if re.search(pattern, message):
+                matching_message = message
+                break
+        self.test_logger.info(
+            f"EVT_CONN_OPEN event log message found: {matching_message}")
+        self.assertIsNotNone(matching_message,
+                             "EVT_CONN_OPEN event log message not found")
         # Stop the SCP
         self.scp.stop()
 
-        # Check the EVT_CONN_CLOSED event log message
-        self.test_logger.info(f"Checking EVT_CONN_CLOSE event log message: "
-                              f"{log_messages[-1]}")
-        self.assertRegex(log_messages[-1],
-                         r"Closed connection with " +
-                         r"([\w]+)@" +
-                         r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})")
+        # Check the EVT_CONN_CLOSE event log message
+        self.test_logger.info("Searching for EVT_CONN_CLOSE event log message")
+        pattern = r"^Closed connection with " + \
+                  r"([\w]+)@" + \
+                  r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})"
+        matching_message = None
+        for message in log_messages:
+            if re.search(pattern, message):
+                matching_message = message
+                break
+        self.test_logger.info(
+            f"EVT_CONN_CLOSE event log message found: {matching_message}")
+        self.assertIsNotNone(matching_message,
+                             "EVT_CONN_CLOSE event log message not found")
 
 
 if __name__ == "__main__":
