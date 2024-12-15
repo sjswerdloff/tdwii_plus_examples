@@ -7,7 +7,7 @@ import re
 from tdwii_plus_examples.cechoscp import CEchoSCP
 
 
-class TestBaseSCP(unittest.TestCase):
+class TestCEchoSCP(unittest.TestCase):
 
     def setUp(self):
         # Set up the logger for the BaseSCP to INFO level
