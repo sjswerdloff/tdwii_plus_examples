@@ -4,7 +4,7 @@ from time import sleep
 
 from pynetdicom import ALL_TRANSFER_SYNTAXES, AllStoragePresentationContexts, evt
 
-from tdwii_plus_examples.TDWII_PPVS_subscriber.basescp import BaseSCP
+from tdwii_plus_examples.basescp import BaseSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.cstore_handler import handle_store
 from tdwii_plus_examples.TDWII_PPVS_subscriber.echoscp import EchoSCP
 
