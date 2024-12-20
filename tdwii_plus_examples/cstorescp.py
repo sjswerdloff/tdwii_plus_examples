@@ -1,5 +1,6 @@
 import os
 from argparse import Namespace
+import logging
 
 from pydicom.uid import UID, ImplicitVRLittleEndian, AllTransferSyntaxes
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
@@ -8,6 +9,7 @@ from pynetdicom.presentation import (
     AllStoragePresentationContexts,
 )
 
+from pynetdicom.apps.common import setup_logging
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
 
@@ -52,7 +54,7 @@ class CStoreSCP(CEchoSCP):
                  sop_classes=None,
                  transfer_syntaxes=None,
                  custom_handler=None,
-                 store_directory=os.path.curdir,
+                 store_directory=None,
                  ):
         """
         Initializes a new instance of the CStoreSCP class.
@@ -97,11 +99,13 @@ class CStoreSCP(CEchoSCP):
             The directory to store files
             Optional, default: current directory
         """
-        super().__init__(
-            ae_title=ae_title,
-            bind_address=bind_address,
-            port=port,
-            logger=logger)
+        if logger is None:
+            self.logger = setup_logging(
+                Namespace(log_type="d", log_level="debug"), "base_scp")
+        elif not isinstance(logger, logging.Logger):
+            raise TypeError("logger must be an instance of logging.Logger")
+        else:
+            self.logger = logger
 
         self.sop_classes = sop_classes
         if sop_classes is not None:
@@ -121,39 +125,57 @@ class CStoreSCP(CEchoSCP):
                 print("Warning: Ignoring invalid Transfer Syntaxes:",
                       self._invalid_transfer_syntaxes)
 
-        if not callable(custom_handler):
-            self.logger.warning(f"{custom_handler} is not a known "
-                                "function, using default handler")
+        if custom_handler is None:
+            self.logger.warning("No custom_handler defined, "
+                                "using default handler")
+            self.handle_store = handle_cstore
+        elif not callable(custom_handler):
+            self.logger.warning(f"{custom_handler} is not a known function, "
+                                "using default handler")
             self.handle_store = handle_cstore
         else:
             self.handle_store = custom_handler
-        self.store_directory = store_directory
+
+        if store_directory is None:
+            self.store_directory = os.getcwd()
+        else:
+            self.store_directory = store_directory
+        self.logger.debug(f"Store directory: {self.store_directory}")
+
+        super().__init__(
+            ae_title=ae_title,
+            bind_address=bind_address,
+            port=port,
+            logger=logger)
 
     def _validate_syntaxes(self, items, uid_type):
-        # Get valid UIDs and keywords based on the UID type
-        if uid_type == 'SOP Class':
-            valid_uids = {
-                ctx.abstract_syntax for ctx in AllStoragePresentationContexts}
-            valid_keywords = {name for name in dir(
-                UID) if getattr(UID, name) in valid_uids}
-        elif uid_type == 'Transfer Syntax':
-            valid_uids = {
-                ctx.transfer_syntax for ctx in AllTransferSyntaxes}
-            valid_keywords = {name for name in dir(
-                UID) if getattr(UID, name) in valid_uids}
-        else:
-            raise ValueError(f"Unknown UID type: {uid_type}")
+        # Sort valid and invalid items based on the UID type
+        self.logger.debug(f"Validating {uid_type} list: {items}")
 
-        # Initialize lists to store valid and invalid items
-        valid_items = []
-        invalid_items = []
+        # Construct a mapping of valid keywords and UIDs for syntax validation
+        valid_syntaxes = {
+            ctx.abstract_syntax: UID(ctx.abstract_syntax).keyword
+            for ctx in AllStoragePresentationContexts
+        } if uid_type == 'SOP Class' else {
+            ctx: UID(ctx).keyword
+            for ctx in AllTransferSyntaxes
+        }
 
         # Check each item in the provided list
+        valid_items = []
+        invalid_items = []
         for item in items:
-            if item in valid_uids or item in valid_keywords:
+            keyword = valid_syntaxes.get(item)
+            if keyword is not None:
                 valid_items.append(item)
+                self.logger.debug(f"Valid {uid_type} UID: {item}")
+            elif item in valid_syntaxes.values():
+                valid_items.append(
+                    next(UID for UID, keyword in valid_syntaxes.items() if keyword == item))
+                self.logger.debug(f"Valid {uid_type} Keyword: {item}")
             else:
                 invalid_items.append(item)
+                self.logger.debug(f"Invalid {uid_type}: {item}")
 
         return valid_items, invalid_items
 
@@ -170,9 +192,13 @@ class CStoreSCP(CEchoSCP):
         """
         super()._add_contexts()
         if self.sop_classes is None:
-            sop_classes = StoragePresentationContexts
+            sop_classes = [
+                context.abstract_syntax
+                for context in StoragePresentationContexts
+            ]
         else:
             sop_classes = self._valid_sop_classes
+        self.logger.debug(f"Supported Storage SOP Classes: {sop_classes}")
 
         if self.transfer_syntaxes is None:
             transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES
@@ -182,8 +208,10 @@ class CStoreSCP(CEchoSCP):
                     self._valid_transfer_syntaxes
             else:
                 transfer_syntaxes = self._valid_transfer_syntaxes
+        self.logger.debug(f"Supported Transfer Syntaxes: {transfer_syntaxes}")
 
-        self.ae.add_supported_context(sop_classes, transfer_syntaxes)
+        for sop_class in sop_classes:
+            self.ae.add_supported_context(sop_class, transfer_syntaxes)
 
     def _add_handlers(self):
         """

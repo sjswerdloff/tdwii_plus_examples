@@ -1,5 +1,9 @@
+import os
 from pynetdicom.status import Status
-from pydicom import Dataset
+from pydicom.dataset import Dataset
+from pydicom.filewriter import write_file_meta_info
+from pydicom.uid import DeflatedExplicitVRLittleEndian
+from pynetdicom.dsutils import encode
 
 
 # Define the specific Status Code values for the C-STORE Response
@@ -42,7 +46,7 @@ SOP_CLASS_PREFIXES = {
 }
 
 
-def handle_cstore(event, logger):
+def handle_cstore(event, args, app_logger):
     """Handler for evt.EVT_C_STORE.
 
     Parameters
@@ -68,17 +72,17 @@ def handle_cstore(event, logger):
     # Return Success status code if the C-STORE request is to be ignored
     if hasattr(args, 'ignore'):
         if args.ignore:
-            logger.info("Ignoring C-STORE request")
+            app_logger.info("Ignoring C-STORE request")
             return Status.SUCCESS
         else:
-            logger.info("Processing C-STORE request")
+            app_logger.info("Processing C-STORE request")
     else:
-        logger.warning(
+        app_logger.warning(
             "args.ignore attribute not present, processing C-STORE request")
 
     # Check that the output directory argument is present and not None
     if not hasattr(args, 'output_directory') or args.output_directory is None:
-        logger.error("args.output_directory attribute not present or None")
+        app_logger.error("args.output_directory attribute not present or None")
         return Status.MISSING_ARGUMENT
 
     # Read the incoming Data Set
@@ -88,7 +92,7 @@ def handle_cstore(event, logger):
         # that may have been included
         ds = ds[0x00030000:]
     except Exception:
-        logger.exception("Unable to decode the data set")
+        app_logger.exception("Unable to decode the data set")
         return Status.UNABLE_TO_DECODE_DATASET
 
     # Add the File Meta Information elements from the incoming Command Set

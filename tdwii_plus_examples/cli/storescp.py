@@ -22,6 +22,22 @@ def main():
         help='Port number'
     )
     parser.add_argument(
+        '-s', '--sop_classes', nargs='+',
+        help='List of SOP Class UID or valid keywords from PS3.6 Annex A'
+    )
+    parser.add_argument(
+        '-t', '--transfer_syntaxes', nargs='+',
+        help='List of Transfer syntax to support'
+    )
+    parser.add_argument(
+        '-c', '--custom_handler', type=str,
+        help='Custom C-STORE handler function'
+    )
+    parser.add_argument(
+        '-o', '--output_directory', type=str,
+        help='Output directory, defaults to current working directory'
+    )
+    parser.add_argument(
         '-v', '--verbose', action='store_true',
         help='Set log level to INFO'
     )
@@ -42,8 +58,16 @@ def main():
     logger = logging.getLogger('storescp')
 
     logger.info("Starting up the DICOM Storage SCP...")
-    cstorescp = CStoreSCP(ae_title=args.ae_title, bind_address=args.bind_address,
-                          port=args.port, logger=logger)
+    cstorescp = CStoreSCP(
+        ae_title=args.ae_title,
+        bind_address=args.bind_address,
+        port=args.port,
+        logger=logger,
+        sop_classes=args.sop_classes,
+        transfer_syntaxes=args.transfer_syntaxes,
+        custom_handler=args.custom_handler,
+        store_directory=args.output_directory
+    )
     cstorescp.run()
     # Keep the main application running
     try:
