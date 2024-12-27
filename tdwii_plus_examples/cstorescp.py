@@ -101,7 +101,7 @@ class CStoreSCP(CEchoSCP):
         """
         if logger is None:
             self.logger = setup_logging(
-                Namespace(log_type="d", log_level="debug"), "base_scp")
+                Namespace(log_type="d", log_level="debug"), "cstore_scp")
         elif not isinstance(logger, logging.Logger):
             raise TypeError("logger must be an instance of logging.Logger")
         else:
@@ -113,8 +113,8 @@ class CStoreSCP(CEchoSCP):
                 self._validate_syntaxes(sop_classes, "SOP Class")
             )
             if self._invalid_sop_classes:
-                print("Warning: Ignoring invalid SOP Classes:",
-                      self._invalid_sop_classes)
+                self.logger.warning("Ignoring invalid SOP Classes: %s",
+                                    self._invalid_sop_classes)
 
         self.transfer_syntaxes = transfer_syntaxes
         if transfer_syntaxes is not None:
@@ -122,9 +122,11 @@ class CStoreSCP(CEchoSCP):
                 self._validate_syntaxes(transfer_syntaxes, "Transfer Syntax")
             )
             if self._invalid_transfer_syntaxes:
-                print("Warning: Ignoring invalid Transfer Syntaxes:",
-                      self._invalid_transfer_syntaxes)
+                self.logger.warning("Ignoring invalid Transfer Syntaxes: %s",
+                                    self._invalid_transfer_syntaxes)
 
+        self.logger.debug(
+            f"Custom handler: {custom_handler} type is {type(custom_handler)}")
         if custom_handler is None:
             self.logger.warning("No custom_handler defined, "
                                 "using default handler")
@@ -135,6 +137,7 @@ class CStoreSCP(CEchoSCP):
             self.handle_store = handle_cstore
         else:
             self.handle_store = custom_handler
+            self.logger.debug(f"Custom handler: {self.handle_store}")
 
         if store_directory is None:
             self.store_directory = os.getcwd()
@@ -168,14 +171,14 @@ class CStoreSCP(CEchoSCP):
             keyword = valid_syntaxes.get(item)
             if keyword is not None:
                 valid_items.append(item)
-                self.logger.debug(f"Valid {uid_type} UID: {item}")
+                self.logger.debug(f"Valid {uid_type} : {item}")
             elif item in valid_syntaxes.values():
                 valid_items.append(
                     next(UID for UID, keyword in valid_syntaxes.items() if keyword == item))
-                self.logger.debug(f"Valid {uid_type} Keyword: {item}")
+                self.logger.debug(f"Valid {uid_type} : {item}")
             else:
                 invalid_items.append(item)
-                self.logger.debug(f"Invalid {uid_type}: {item}")
+                self.logger.debug(f"Invalid {uid_type} : {item}")
 
         return valid_items, invalid_items
 

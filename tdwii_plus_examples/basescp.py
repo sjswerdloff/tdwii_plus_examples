@@ -36,55 +36,90 @@ class BaseSCP:
         stop(self)
             Stops the SCP AE.
     """
+
     def __init__(self,
                  ae_title: str = "BASE_SCP",
                  bind_address: str = "",
                  port: int = 11112,
                  logger=None):
-
         """
         Initializes a new instance of the BaseSCP class.
         This method creates an AE without presentation contexts.
 
         Parameters
         ----------
-        ae_title : str
+        ae_title : str or None
             The title of the Application Entity (AE)
             Optional, default: "BASE_SCP"
 
-        bind_address : str
+        bind_address : str or None
             A specific IP address or hostname of the AE
             Optional, default: "" will bind to all interfaces.
 
-        port: int
+        port: int or None
             The port number to listen on
             Optional, default: 11112 (as registered for DICOM at IANA)
 
-        logger: logging.Logger
+        logger: logging.Logger or None
             A logger instance
-            Optional, default: None, a debug logger will be used.
+            Optional, default: None, a debug level logger will be used.
         """
         if logger is None:
             self.logger = setup_logging(
-                Namespace(log_type="d", log_level="debug"), "base_scp")
-        elif not isinstance(logger, logging.Logger):
-            raise TypeError("logger must be an instance of logging.Logger")
-        else:
+                Namespace(log_type=None, log_level="debug"), "base_scp")
+            self.logger.info(
+                f"No logger provided, using default logger with level"
+                f" {logging.getLevelName(self.logger.level)}")
+        elif isinstance(logger, logging.Logger):
             self.logger = logger
+            self.logger.info(
+                f"Logger set to {logger.name} with level"
+                f" {logging.getLevelName(logger.level)}")
+        else:
+            raise TypeError("logger must be an instance of logging.Logger")
 
-        if not isinstance(bind_address, str):
-            raise ValueError("bind_address must be a string")
         if not bind_address:
-            self.logger.debug("bind_address empty, binding to all interfaces")
-        self.bind_address = bind_address
+            self.bind_address = ""
+            self.logger.info("bind_address empty, binding to all interfaces")
+        elif isinstance(bind_address, str):
+            self.bind_address = bind_address
+            self.logger.debug(f"bind_address set to {bind_address}")
+        else:
+            raise TypeError("bind_address must be a string or None")
 
-        if not isinstance(port, int):
-            raise TypeError("port must be an integer")
-        self.port = port
+        if port is None:
+            self.port = 11112
+            self.logger.info("Port not provided, using default port 11112")
+        elif isinstance(port, int):
+            if port < 0:
+                raise ValueError("port must not be negative")
+            elif 0 <= port <= 1023 and port != 104:
+                raise ValueError(
+                    "port must not be in the range (0-1023), except 104")
+            elif port == 104:
+                self.port = port
+                self.logger.warning("DICOM port 104 may need admin privileges")
+            elif port in range(1024, 11111) or port in range(11161, 49151):
+                self.port = port
+                self.logger.warning(
+                    "Registered port (1024-49151) may be used by others")
+            elif port > 65535:
+                raise ValueError("port must not exceed 65535")
+            else:
+                self.port = port
+                self.logger.debug(f"port set to {port}")
+        else:
+            raise TypeError("port must be an integer or None")
 
-        if not isinstance(ae_title, str):
-            raise TypeError("ae_title must be a string")
-        self.ae_title = ae_title
+        if not ae_title:
+            self.ae_title = "BASE_SCP"
+            self.logger.info("ae_title not provided, using default ae_title")
+        elif isinstance(ae_title, str):
+            self.ae_title = ae_title
+            self.logger.debug(f"ae_title set to {ae_title}")
+        else:
+            raise TypeError("ae_title must be a string or None")
+
         self.ae = AE(self.ae_title)
 
         self._add_contexts()

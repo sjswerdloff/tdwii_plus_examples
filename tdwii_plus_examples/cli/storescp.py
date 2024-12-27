@@ -4,6 +4,64 @@ import logging
 
 from tdwii_plus_examples.cstorescp import CStoreSCP
 
+from pydicom.uid import UID
+from pynetdicom.status import Status
+
+
+def my_handler(event, args, logger):
+    """
+    Example of a custom handler for C-STORE requests.
+
+    This handler logs all arguments passed to it, as well as information
+    of the C-STORE-RQ message. It's meant to be used as a starting point for
+    writing your own custom handlers.
+
+    Parameters
+    ----------
+    event : pynetdicom.event.event
+        The event that triggered the handler
+    args : argparse.Namespace
+        The arguments passed to the handler
+    logger : logging.Logger
+        The logger instance
+
+    Returns
+    -------
+    status : pynetdicom.sop_class.Status or int
+        The return status of the handler
+    """
+    logger.info("Custom handler for %s called", event.request.msg_type)
+
+    # Log all arguments
+    args_dict = vars(args)
+    for key in args_dict:
+        logger.info("\twith argument  %s: %s", key, args_dict[key])
+
+    # Log the C-STORE request information
+    request_info = {
+        "MessageID": event.request.MessageID,
+        "AffectedSOPClassUID": event.request.AffectedSOPClassUID,
+        "AffectedSOPInstanceUID": event.request.AffectedSOPInstanceUID,
+        "Priority": event.request.Priority,
+        "MoveOriginatorApplicationEntityTitle":
+            event.request.MoveOriginatorApplicationEntityTitle,
+        "MoveOriginatorMessageID": event.request.MoveOriginatorMessageID
+    }
+
+    for key, value in request_info.items():
+        if key == "AffectedSOPClassUID":
+            logger.info("Command Set %s: %s (%s)", key, value, UID(value).name)
+        else:
+            logger.info("Command Set %s: %s", key, value)
+
+    data_set_info = (
+        f"{event.request.DataSet.getbuffer().nbytes} bytes"
+        if event.request.DataSet is not None else "Absent"
+    )
+    logger.info("Command Set Data Set: %s", data_set_info)
+
+    return Status.SUCCESS
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -57,6 +115,14 @@ def main():
     logging.basicConfig(level=log_level)
     logger = logging.getLogger('storescp')
 
+    if args.custom_handler:
+        # Custom handler should be a function defined in the global namespace
+        # at the module level, so we use globals() to look it up.
+        # This allows passing a function name as a string argument.
+        handler = globals().get(args.custom_handler)
+    else:
+        handler = None
+
     logger.info("Starting up the DICOM Storage SCP...")
     cstorescp = CStoreSCP(
         ae_title=args.ae_title,
@@ -65,7 +131,7 @@ def main():
         logger=logger,
         sop_classes=args.sop_classes,
         transfer_syntaxes=args.transfer_syntaxes,
-        custom_handler=args.custom_handler,
+        custom_handler=handler,
         store_directory=args.output_directory
     )
     cstorescp.run()

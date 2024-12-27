@@ -30,12 +30,12 @@ class CEchoSCP(BaseSCP):
         _add_handlers(self)
             Adds handlers for DICOM communication events to the SCP instance.
     """
+
     def __init__(self,
                  ae_title: str = "ECHO_SCP",
                  bind_address: str = "",
                  port: int = 11112,
                  logger=None):
-
         """
         Initializes a new instance of the CEchoSCP class.
         This method creates an AE without presentation contexts.
