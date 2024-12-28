@@ -101,11 +101,17 @@ class CStoreSCP(CEchoSCP):
         """
         if logger is None:
             self.logger = setup_logging(
-                Namespace(log_type="d", log_level="debug"), "cstore_scp")
-        elif not isinstance(logger, logging.Logger):
-            raise TypeError("logger must be an instance of logging.Logger")
-        else:
+                Namespace(log_type=None, log_level="debug"), "cstore_scp")
+            self.logger.info(
+                "Logger not provided, using default logger with level %s",
+                logging.getLevelName(self.logger.level)
+            )
+        elif isinstance(logger, logging.Logger):
             self.logger = logger
+            self.logger.debug(
+                "Logger set to %s with level %s",
+                logger.name, logging.getLevelName(logger.getEffectiveLevel())
+            )
 
         self.sop_classes = sop_classes
         if sop_classes is not None:

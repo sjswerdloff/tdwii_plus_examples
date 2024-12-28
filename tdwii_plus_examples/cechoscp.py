@@ -1,3 +1,5 @@
+import logging
+
 from pynetdicom import evt
 from pynetdicom.sop_class import Verification
 
@@ -58,8 +60,31 @@ class CEchoSCP(BaseSCP):
             A logger instance
             Optional, default: None, a debug logger will be used.
         """
+        if logger is None:
+            self.logger = setup_logging(
+                Namespace(log_type=None, log_level="debug"), "cecho_scp")
+            self.logger.info(
+                "Logger not provided, using default logger with level %s",
+                logging.getLevelName(self.logger.level)
+            )
+        elif isinstance(logger, logging.Logger):
+            self.logger = logger
+            self.logger.debug(
+                "Logger set to %s with level %s",
+                logger.name, logging.getLevelName(logger.getEffectiveLevel())
+            )
+        else:
+            raise TypeError("logger must be an instance of logging.Logger")
+
+        if not ae_title:
+            self.ae_title = "ECHO_SCP"
+            self.logger.info("AE title not provided, using default: %s",
+                             self.ae_title)
+        else:
+            self.ae_title = ae_title
+
         super().__init__(
-            ae_title=ae_title,
+            ae_title=self.ae_title,
             bind_address=bind_address,
             port=port,
             logger=logger)

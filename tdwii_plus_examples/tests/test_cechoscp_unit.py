@@ -30,7 +30,7 @@ class TestCEchoSCP(unittest.TestCase):
         sop_class = [ctx.abstract_syntax
                      for ctx in self.scp.ae.supported_contexts]
         self.assertIn(Verification, sop_class,
-                      msg="Verification SOP Class not added to contexts")
+                      msg="Verification SOP Class not supported")
         ts = [ctx.transfer_syntax for ctx in self.scp.ae.supported_contexts
               if ctx.abstract_syntax == Verification]
         self.assertEqual(ts[0], ['1.2.840.10008.1.2'],

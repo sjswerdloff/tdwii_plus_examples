@@ -68,13 +68,14 @@ class BaseSCP:
             self.logger = setup_logging(
                 Namespace(log_type=None, log_level="debug"), "base_scp")
             self.logger.info(
-                f"No logger provided, using default logger with level"
-                f" {logging.getLevelName(self.logger.level)}")
+                "Logger not provided, using default logger with level %s",
+                logging.getLevelName(self.logger.level))
         elif isinstance(logger, logging.Logger):
             self.logger = logger
-            self.logger.info(
-                f"Logger set to {logger.name} with level"
-                f" {logging.getLevelName(logger.level)}")
+            self.logger.debug(
+                "Logger set to %s with level %s",
+                logger.name, logging.getLevelName(logger.getEffectiveLevel())
+            )
         else:
             raise TypeError("logger must be an instance of logging.Logger")
 
@@ -89,7 +90,7 @@ class BaseSCP:
 
         if port is None:
             self.port = 11112
-            self.logger.info("Port not provided, using default port 11112")
+            self.logger.info("Port not provided, using default: 11112")
         elif isinstance(port, int):
             if port < 0:
                 raise ValueError("port must not be negative")
@@ -113,7 +114,8 @@ class BaseSCP:
 
         if not ae_title:
             self.ae_title = "BASE_SCP"
-            self.logger.info("ae_title not provided, using default ae_title")
+            self.logger.info("AE title not provided, using default: %s" %
+                             self.ae_title)
         elif isinstance(ae_title, str):
             self.ae_title = ae_title
             self.logger.debug(f"ae_title set to {ae_title}")
