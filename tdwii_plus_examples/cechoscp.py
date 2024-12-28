@@ -1,7 +1,9 @@
+from argparse import Namespace
 import logging
 
 from pynetdicom import evt
 from pynetdicom.sop_class import Verification
+from pynetdicom.apps.common import setup_logging
 
 from tdwii_plus_examples.basescp import BaseSCP
 from tdwii_plus_examples.cechohandler import handle_cecho

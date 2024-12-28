@@ -8,8 +8,8 @@ from pynetdicom.presentation import (
     StoragePresentationContexts,
     AllStoragePresentationContexts,
 )
-
 from pynetdicom.apps.common import setup_logging
+
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
 
@@ -64,7 +64,7 @@ class CStoreSCP(CEchoSCP):
         ----------
         ae_title : str
             The title of the Application Entity (AE)
-            Optional, default: "ECHO_SCP"
+            Optional, default: "STORE_SCP"
 
         bind_address : str
             A specific IP address or hostname of the AE
@@ -113,6 +113,13 @@ class CStoreSCP(CEchoSCP):
                 logger.name, logging.getLevelName(logger.getEffectiveLevel())
             )
 
+        if not ae_title:
+            self.ae_title = "STORE_SCP"
+            self.logger.info("AE title not provided, using default: %s",
+                             self.ae_title)
+        else:
+            self.ae_title = ae_title
+
         self.sop_classes = sop_classes
         if sop_classes is not None:
             self._valid_sop_classes, self._invalid_sop_classes = (
@@ -152,7 +159,7 @@ class CStoreSCP(CEchoSCP):
         self.logger.debug(f"Store directory: {self.store_directory}")
 
         super().__init__(
-            ae_title=ae_title,
+            ae_title=self.ae_title,
             bind_address=bind_address,
             port=port,
             logger=logger)
