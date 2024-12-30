@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import logging
+import time
 
 from tdwii_plus_examples.cstorescp import CStoreSCP
 
@@ -63,7 +64,7 @@ def my_handler(event, args, logger):
     return Status.SUCCESS
 
 
-def main():
+def main(loop_forever=True):  # Add a parameter to control the loop
     parser = argparse.ArgumentParser(
         description="Run a DICOM Storage SCP."
     )
@@ -135,10 +136,11 @@ def main():
         store_directory=args.output_directory
     )
     cstorescp.run()
+    logger.info("DICOM Storage SCP is running...")
     # Keep the main application running
     try:
-        while True:
-            pass  # You can replace this with your main application logic
+        while loop_forever:
+            time.sleep(1)  # Sleep to prevent high CPU usage
     except KeyboardInterrupt:
         logger.info("Shutting down the DICOM Storage SCP...")
 

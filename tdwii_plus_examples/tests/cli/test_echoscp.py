@@ -4,7 +4,6 @@ import argparse
 import sys
 import logging
 
-# Import the main function from your script
 from tdwii_plus_examples.cli.echoscp import main
 
 
