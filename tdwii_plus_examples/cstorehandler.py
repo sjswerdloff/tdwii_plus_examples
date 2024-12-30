@@ -69,11 +69,16 @@ def handle_cstore(event, args, app_logger):
         A valid return status code, see PS3.4 Annex B.2.3 or the
         ``StorageServiceClass`` implementation for the available statuses
     """
+    # Create the response status assuming success
+    # consistently using Dataset object with Status element (vs int)
+    status_ds = Dataset()
+    status_ds.Status = Status.SUCCESS
+
     # Return Success status code if the C-STORE request is to be ignored
     if hasattr(args, 'ignore'):
         if args.ignore:
             app_logger.info("Ignoring C-STORE request")
-            return Status.SUCCESS
+            return status_ds
         else:
             app_logger.info("Processing C-STORE request")
     else:
@@ -83,7 +88,8 @@ def handle_cstore(event, args, app_logger):
     # Check that the output directory argument is present and not None
     if not hasattr(args, 'output_directory') or args.output_directory is None:
         app_logger.error("args.output_directory attribute not present or None")
-        return Status.MISSING_ARGUMENT
+        status_ds.Status = Status.MISSING_ARGUMENT
+        return status_ds
 
     # Read the incoming Data Set
     try:
@@ -93,7 +99,8 @@ def handle_cstore(event, args, app_logger):
         ds = ds[0x00030000:]
     except Exception:
         app_logger.exception("Unable to decode the data set")
-        return Status.UNABLE_TO_DECODE_DATASET
+        status_ds.Status = Status.UNABLE_TO_DECODE_DATASET
+        return status_ds
 
     # Add the File Meta Information elements from the incoming Command Set
     # Note: Implementation Class UID and Implementation Version Name are set
@@ -109,7 +116,8 @@ def handle_cstore(event, args, app_logger):
         app_logger.exception(
             "Unable to decode the data set and/or the command set"
         )
-        return Status.UNABLE_TO_DECODE_DATASET
+        status_ds.Status = Status.UNABLE_TO_DECODE_DATASET
+        return status_ds
 
     # Get a prefix of the SOP Class for the filename
     try:
@@ -119,10 +127,6 @@ def handle_cstore(event, args, app_logger):
 
     filename = f"{sop_prefix}.{sop_instance}.dcm"
     app_logger.info(f"Storing DICOM file: {filename}")
-
-    # Create the response status assuming success
-    status_ds = Dataset()
-    status_ds.Status = Status.SUCCESS
 
     # Store the received dataset as a DICOM Part 10 file
 
