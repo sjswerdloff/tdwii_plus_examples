@@ -187,7 +187,8 @@ class CStoreSCP(CEchoSCP):
                 self.logger.debug(f"Valid {uid_type} : {item}")
             elif item in valid_syntaxes.values():
                 valid_items.append(
-                    next(UID for UID, keyword in valid_syntaxes.items() if keyword == item))
+                    next(UID for UID, keyword in valid_syntaxes.items()
+                         if keyword == item))
                 self.logger.debug(f"Valid {uid_type} : {item}")
             else:
                 invalid_items.append(item)

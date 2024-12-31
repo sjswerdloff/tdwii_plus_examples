@@ -5,7 +5,7 @@ from unittest.mock import Mock
 from logging.handlers import MemoryHandler
 from parameterized import parameterized
 from pydicom import uid
-from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
+from pynetdicom import DEFAULT_TRANSFER_SYNTAXES
 from tdwii_plus_examples.cstorescp import CStoreSCP
 
 # Define dictionaries of valid and invalid SOP Classes and Transfer syntaxes
@@ -182,5 +182,4 @@ class TestCStoreSCP(unittest.TestCase):
             self.assertEqual(scp.store_directory, store_directory)
 
         # Print the log messages
-        for record in self.memory_handler.buffer:
-            self.test_logger.info(f"{record.levelname}: {record.getMessage()}")
+        self.test_logger.info(f"{log_output}")

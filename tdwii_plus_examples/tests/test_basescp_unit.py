@@ -6,7 +6,7 @@ from parameterized import parameterized
 
 from tdwii_plus_examples.basescp import BaseSCP
 from tdwii_plus_examples.basehandlers import handle_open, handle_close
-from pynetdicom import AE, evt
+from pynetdicom import evt
 
 
 class TestBaseSCP(unittest.TestCase):
@@ -82,8 +82,9 @@ class TestBaseSCP(unittest.TestCase):
             with self.assertRaises(expected_exception) as exception_context:
                 BaseSCP(ae_title, bind_address, port, logger)
                 self.test_logger.info(
-                    f"Raised expected exception: {expected_exception.__name__}:"
-                    f" {exception_context.exception}")
+                    "Raised expected exception: %s: %s" % (
+                        expected_exception.__name__,
+                        exception_context.exception))
         else:
             scp = BaseSCP(ae_title, bind_address, port, logger)
 
@@ -115,7 +116,8 @@ class TestBaseSCP(unittest.TestCase):
 
         # Print the log messages
         # for record in self.memory_handler.buffer:
-        #     self.test_logger.info(f"{record.levelname}: {record.getMessage()}")
+        #     self.test_logger.info("%s: %s" % (
+        #         record.levelname, record.getMessage()[:77]))
 
     # Mock unit tests for the run method
 

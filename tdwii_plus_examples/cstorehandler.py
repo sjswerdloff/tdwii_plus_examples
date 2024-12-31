@@ -20,29 +20,41 @@ SOP_CLASS_PREFIXES = {
     "1.2.840.10008.5.1.4.1.1.128": (
         "PT", "Positron Emission Tomography Image Storage"),
     "1.2.840.10008.5.1.4.1.1.481.1": (
-        "RI", "RTIMG", "RTIMAGE", "RT Image Storage"),
+        "RI", "RTIMG", "RTIMAGE",
+        "RT Image Storage"),
     "1.2.840.10008.5.1.4.1.1.481.2": (
-        "RD", "RTDOSE", "RT Dose Storage"),
+        "RD", "RTDOSE",
+        "RT Dose Storage"),
     "1.2.840.10008.5.1.4.1.1.481.3": (
-        "RS", "RTSTRUCT", "RTSTRUCTURESET", "RT Structure Set Storage"),
+        "RS", "RTSTRUCT", "RTSTRUCTURESET",
+        "RT Structure Set Storage"),
     "1.2.840.10008.5.1.4.1.1.481.4": (
-        "RR", "RTREC", "RTRECORD", "RT Beam Treatment Record Storage"),
+        "RR", "RTREC", "RTRECORD",
+        "RT Beam Treatment Record Storage"),
     "1.2.840.10008.5.1.4.1.1.481.5": (
-        "RP", "RTPLAN", "RTPLAN",  "RT Plan Storage"),
+        "RP", "RTPLAN", "RTPLAN",
+        "RT Plan Storage"),
     "1.2.840.10008.5.1.4.1.1.481.6": (
-        "BR", "RTBYREC", "RTBRACHYRECORD", "RT Brachy Treatment Record Storage"),
+        "BR", "RTBYREC", "RTBRACHYRECORD",
+        "RT Brachy Treatment Record Storage"),
     "1.2.840.10008.5.1.4.1.1.481.7": (
-        "SR", "SUMREC", "RTSUMRECORD", "RT Treatment Summary Record Storage"),
+        "SR", "SUMREC", "RTSUMRECORD",
+        "RT Treatment Summary Record Storage"),
     "1.2.840.10008.5.1.4.1.1.481.8": (
-        "RN", "RTIONPLN", "RTIONPLAN", "RT Ion Plan Storage"),
+        "RN", "RTIONPLN", "RTIONPLAN",
+        "RT Ion Plan Storage"),
     "1.2.840.10008.5.1.4.1.1.481.9": (
-        "IR", "RTIONREC", "RTIONRECORD", "RT Ion Beams Treatment Record Storage"),
+        "IR", "RTIONREC", "RTIONRECORD",
+        "RT Ion Beams Treatment Record Storage"),
     "1.2.840.10008.5.1.4.34.7": (
-        "BDI", "RTBDI", "RTBEAMDELIVERYINSTRUCTION", "RT Beams Delivery Instruction Storage"),
+        "BDI", "RTBDI", "RTBEAMDELIVERYINSTRUCTION",
+        "RT Beams Delivery Instruction Storage"),
     "1.2.840.10008.5.1.4.1.1.66.1": (
-        "REG", "IMREG", "IMAGEREGISTRATION", "Spatial Registration Storage"),
+        "REG", "IMREG", "IMAGEREGISTRATION",
+        "Spatial Registration Storage"),
     "1.2.840.10008.5.1.4.1.1.66.3": (
-        "DIR", "DEFIMREG", "DEFORMABLEIMAGEREGISTRATION", "Deformable Spatial Registration Storage")
+        "DIR", "DEFIMREG", "DEFORMABLEIMAGEREGISTRATION",
+        "Deformable Spatial Registration Storage")
 }
 
 

@@ -11,7 +11,7 @@ from tdwii_plus_examples.cstorehandler import handle_cstore
 
 def create_mock_dataset():
     ds = Dataset()
-    ds.SOPClassUID = '1.2.840.10008.5.1.4.1.1.7'  # SC Image Storage
+    ds.SOPClassUID = uid.SecondaryCaptureImageStorage
     ds.SOPInstanceUID = uid.generate_uid()
     ds.PatientName = 'Test^Patient'
     ds.PatientID = '123456'
@@ -23,9 +23,9 @@ def create_mock_dataset():
 def create_mock_file_meta(sop_instance_uid):
     file_meta = FileMetaDataset()
     # Secondary Capture Image Storage
-    file_meta.MediaStorageSOPClassUID = '1.2.840.10008.5.1.4.1.1.7'
+    file_meta.MediaStorageSOPClassUID = uid.SecondaryCaptureImageStorage
     file_meta.MediaStorageSOPInstanceUID = sop_instance_uid
-    file_meta.TransferSyntaxUID = '1.2.840.10008.1.2.1'  # Explicit VR Little Endian
+    file_meta.TransferSyntaxUID = uid.ExplicitVRLittleEndian
     file_meta.ImplementationClassUID = uid.PYDICOM_IMPLEMENTATION_UID
     return file_meta
 
@@ -55,7 +55,8 @@ class TestHandleCStoreEvent(unittest.TestCase):
         (False, '/invalid/path\0', 0xA700),  # Status.OUT_OF_RESOURCES
     ])
     @patch('logging.Logger')
-    def test_handle_cstore(self, ignore, output_directory, expected_status, MockLogger):
+    def test_handle_cstore(self, ignore, output_directory, expected_status,
+                           MockLogger):
 
         # Create a mock args
         mock_args = MagicMock()
@@ -93,7 +94,8 @@ class TestHandleCStoreEvent(unittest.TestCase):
 
         # Check that the logger was called with the correct messages
         if ignore:
-            mock_logger.info.assert_called_once_with("Ignoring C-STORE request")
+            mock_logger.info.assert_called_once_with(
+                "Ignoring C-STORE request")
         elif output_directory is None:
             mock_logger.error.assert_called_once_with(
                 "args.output_directory attribute not present or None")
@@ -106,7 +108,8 @@ class TestHandleCStoreEvent(unittest.TestCase):
         else:
             mock_logger.info.assert_any_call("Processing C-STORE request")
             mock_logger.info.assert_any_call(
-                f"Storing DICOM file: SC.{self.mock_event.dataset.SOPInstanceUID}.dcm")
+                "Storing DICOM file: SC.%s.dcm"
+                % self.mock_event.dataset.SOPInstanceUID)
 
 
 if __name__ == '__main__':

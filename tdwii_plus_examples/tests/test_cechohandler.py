@@ -24,7 +24,8 @@ class TestHandleCEchoEvent(unittest.TestCase):
 
         # Check that the logger was called with the correct message
         mock_logger.info.assert_called_once_with(
-            'Received C-ECHO request from TEST_AET@127.0.0.1:104 at 2024-12-28 11:00:00'
+            'Received C-ECHO request from TEST_AET@127.0.0.1:104 at '
+            '2024-12-28 11:00:00'
         )
 
 

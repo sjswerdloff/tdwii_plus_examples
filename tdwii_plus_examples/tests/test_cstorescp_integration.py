@@ -7,12 +7,9 @@ import logging
 from logging.handlers import MemoryHandler
 import subprocess
 import time
-import re
 
-from pydicom.dataset import Dataset, FileMetaDataset, FileDataset
+from pydicom.dataset import FileMetaDataset, FileDataset
 from pydicom import uid
-from pynetdicom import AE
-from pynetdicom.sop_class import SecondaryCaptureImageStorage
 
 from tdwii_plus_examples.cstorescp import CStoreSCP
 
@@ -105,9 +102,13 @@ class TestCStoreSCP(unittest.TestCase):
         self.scp.run()
 
         # Send the dataset using pynetdicom's storescu.py
-        subprocess.check_call(['python', '-m', 'pynetdicom', 'storescu',
-                               'localhost', '11112',
-                               '-aet', 'STORESCU', '-aec', 'STORE_SCP', self.dataset_file])
+        subprocess.check_call(
+            [
+                'python', '-m', 'pynetdicom', 'storescu',
+                'localhost', '11112', '-aet', 'STORESCU',
+                '-aec', 'STORE_SCP', self.dataset_file
+            ]
+        )
 
         # Wait for 1 second to ensure the logs are generated
         time.sleep(1)
