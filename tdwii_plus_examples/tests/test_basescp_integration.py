@@ -4,6 +4,7 @@ from logging.handlers import MemoryHandler
 import subprocess
 import time
 import re
+import sys
 from tdwii_plus_examples.basescp import BaseSCP
 from pynetdicom.sop_class import Verification
 
@@ -20,10 +21,10 @@ class CEchoSCP(BaseSCP):
 class TestBaseSCP(unittest.TestCase):
 
     def setUp(self):
-        # Set up the logger for the BaseSCP to INFO level
+        # Set up the logger for the BaseSCP to DEBUG level
         # with a memory handler to store up to 100 log messages
         self.scp_logger = logging.getLogger('basescp')
-        self.scp_logger.setLevel(logging.INFO)
+        self.scp_logger.setLevel(logging.DEBUG)
         self.memory_handler = MemoryHandler(100)
         self.scp_logger.addHandler(self.memory_handler)
 
@@ -43,8 +44,11 @@ class TestBaseSCP(unittest.TestCase):
         # Run the SCP
         self.scp.run()
 
+        # Ensure the correct Python interpreter is used for the subprocess call
+        python_executable = sys.executable
+
         # Send an echo request using pynetdicom's echoscu.py
-        subprocess.check_call(['python', '-m', 'pynetdicom', 'echoscu',
+        subprocess.check_call([python_executable, '-m', 'pynetdicom', 'echoscu',
                                'localhost', '11112',
                                '-aet', 'ECHOSCU', '-aec', 'BASE_SCP'])
 

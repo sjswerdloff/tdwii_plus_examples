@@ -1,3 +1,4 @@
+import sys
 import unittest
 import tempfile
 import shutil
@@ -101,10 +102,13 @@ class TestCStoreSCP(unittest.TestCase):
         # Run the SCP
         self.scp.run()
 
+        # Ensure the correct Python interpreter is used for the subprocess call
+        python_executable = sys.executable
+
         # Send the dataset using pynetdicom's storescu.py
         subprocess.check_call(
             [
-                'python', '-m', 'pynetdicom', 'storescu',
+                python_executable, '-m', 'pynetdicom', 'storescu',
                 'localhost', '11112', '-aet', 'STORESCU',
                 '-aec', 'STORE_SCP', self.dataset_file
             ]

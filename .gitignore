@@ -167,3 +167,6 @@ scratchpad/
 
 # Ignore SQLite database files
 *.sqlite
+
+# Visual Studio Code settings
+.vscode/settings.json

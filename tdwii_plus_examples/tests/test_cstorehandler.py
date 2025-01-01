@@ -1,7 +1,9 @@
+import sys
 import unittest
 import tempfile
 import shutil
 import os
+import logging
 from unittest.mock import MagicMock, patch
 from parameterized import parameterized
 from pydicom.dataset import Dataset, FileMetaDataset
@@ -34,6 +36,11 @@ class TestHandleCStoreEvent(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp_dir = tempfile.mkdtemp()
+        cls.logger = logging.getLogger("TestHandleCStoreEvent")
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.DEBUG)
+        cls.logger.addHandler(handler)
+        cls.logger.setLevel(logging.DEBUG)
 
     def setUp(self):
         # Create a mock event
@@ -78,16 +85,16 @@ class TestHandleCStoreEvent(unittest.TestCase):
         status_ds = handle_cstore(self.mock_event, mock_args, mock_logger)
 
         # Debugging output
-        # print(
-        #     "\nTest case parameters:\n ignore = %s"
-        #     "\n output_directory = %s"
-        #     "\n expected_status = 0x%04X" % (
-        #         ignore, mock_args.output_directory, expected_status))
-        # print(
-        #     "\nTest case results:"
-        #     "\n actual status = 0x%04X"
-        #     "\n logger calls : %s," % (
-        #         status_ds.Status, mock_logger.mock_calls))
+        self.logger.debug(
+            "\nTest case parameters:\n ignore = %s"
+            "\n output_directory = %s"
+            "\n expected_status = 0x%04X" % (
+                ignore, mock_args.output_directory, expected_status))
+        self.logger.debug(
+            "\nTest case results:"
+            "\n actual status = 0x%04X"
+            "\n logger calls : %s," % (
+                status_ds.Status, mock_logger.mock_calls))
 
         # Check the status
         self.assertEqual(status_ds.Status, expected_status)
@@ -100,8 +107,10 @@ class TestHandleCStoreEvent(unittest.TestCase):
             mock_logger.error.assert_called_once_with(
                 "args.output_directory attribute not present or None")
         elif '/invalid/path' in output_directory:
-            mock_logger.exception.assert_called_once_with(
-                "Unable to create the output directory: /invalid/path\0")
+            expected_message = "Unable to create the output directory: /invalid/path\0"
+            if sys.platform.startswith('win'):
+                expected_message = expected_message.replace("/invalid/path", "C:/invalid/path")
+            mock_logger.exception.assert_called_once_with(expected_message)
         elif expected_status == 0xC210:
             mock_logger.exception.assert_called_once_with(
                 "Unable to decode the data set and/or the command set")
