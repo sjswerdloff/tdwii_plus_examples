@@ -6,10 +6,10 @@ from pynetdicom import ALL_TRANSFER_SYNTAXES, AllStoragePresentationContexts
 from tdwii_plus_examples import tdwii_config
 from tdwii_plus_examples.basescp import BaseSCP
 from tdwii_plus_examples.TDWII_PPVS_subscriber.nevent_receiver import NEventReceiver
-from tdwii_plus_examples.TDWII_PPVS_subscriber.storescp import StoreSCP
+from tdwii_plus_examples.cstorescp import CStoreSCP
 
 
-class PPVS_SCP(NEventReceiver, StoreSCP):
+class PPVS_SCP(NEventReceiver, CStoreSCP):
     def __init__(
         self,
         ae_title: str = "PPVS_SCP",
@@ -27,15 +27,15 @@ class PPVS_SCP(NEventReceiver, StoreSCP):
         if port < 1:
             port = tdwii_config.known_ae_port[ae_title]
         self.nevent_callback = nevent_callback
-        StoreSCP.__init__(
+        CStoreSCP.__init__(
             self,
             ae_title=ae_title,
             port=port,
             logger=logger,
             bind_address=bind_address,
+            sop_classes=None,  # use first 128 SOP Classes
+            transfer_syntaxes=None,  # use pynetdicom defaults xfer syntaxes
             custom_handler=custom_cstore_handler,
-            storage_presentation_contexts=storage_presentation_contexts,
-            transfer_syntaxes=transfer_syntaxes,
             store_directory=store_directory,
         )
         NEventReceiver.__init__(
@@ -48,11 +48,11 @@ class PPVS_SCP(NEventReceiver, StoreSCP):
         )
 
     def _add_contexts(self):
-        StoreSCP._add_contexts(self)
+        CStoreSCP._add_contexts(self)
         NEventReceiver._add_contexts(self)
 
     def _add_handlers(self):
-        StoreSCP._add_handlers(self)
+        CStoreSCP._add_handlers(self)
         NEventReceiver._add_handlers(self)
 
     def run(self):

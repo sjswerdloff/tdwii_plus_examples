@@ -2,9 +2,9 @@ def handle_cecho(event, logger):
     """Handler for evt.EVT_C_ECHO.
     Parameters
     ----------
-    event : events.Event
-        The corresponding event.
-    logger : logging.Logger
+    event : pynetdicom.event.event
+        The event corresponding to a C-ECHO request.
+    app_logger : logging.Logger
         The application's logger.
 
     Returns

@@ -10,7 +10,7 @@ from tdwii_plus_examples.cechoscp import CEchoSCP
 class TestCEchoSCP(unittest.TestCase):
 
     def setUp(self):
-        # Set up the logger for the BaseSCP to INFO level
+        # Set up the logger for the CEchoSCP to INFO level
         # with a memory handler to store up to 100 log messages
         self.scp_logger = logging.getLogger('cechoscp')
         self.scp_logger.setLevel(logging.INFO)

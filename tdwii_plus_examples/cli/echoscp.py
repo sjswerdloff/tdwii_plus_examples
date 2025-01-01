@@ -1,16 +1,18 @@
 #!/usr/bin/env python
+
 import argparse
 import logging
+import time
 
 from tdwii_plus_examples.cechoscp import CEchoSCP
 
 
-def main():
+def main(loop_forever=True):  # Add a parameter to control the loop
     parser = argparse.ArgumentParser(
         description="Run a DICOM Verification SCP."
     )
     parser.add_argument(
-        '-a', '--ae_title', type=str, default='ECHO_SCP',
+        '-a', '--ae_title', type=str, default='',
         help='Application Entity Title'
     )
     parser.add_argument(
@@ -18,7 +20,7 @@ def main():
         help='Specific IP address or hostname, omit to bind to all interfaces'
     )
     parser.add_argument(
-        '-p', '--port', type=int, default=11112,
+        '-p', '--port', type=int, default=None,
         help='Port number'
     )
     parser.add_argument(
@@ -40,6 +42,7 @@ def main():
 
     logging.basicConfig(level=log_level)
     logger = logging.getLogger('echoscp')
+    logger.setLevel(log_level)
 
     logger.info("Starting up the DICOM Verification SCP...")
     cechoscp = CEchoSCP(ae_title=args.ae_title, bind_address=args.bind_address,
@@ -47,8 +50,8 @@ def main():
     cechoscp.run()
     # Keep the main application running
     try:
-        while True:
-            pass  # You can replace this with your main application logic
+        while loop_forever:
+            time.sleep(1)  # Sleep to prevent high CPU usage
     except KeyboardInterrupt:
         logger.info("Shutting down the DICOM Verification SCP...")
 
