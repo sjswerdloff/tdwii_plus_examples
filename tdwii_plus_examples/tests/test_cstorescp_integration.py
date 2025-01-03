@@ -111,7 +111,6 @@ class TestCStoreSCP(unittest.TestCase):
         block.add_new(0x01, 'DS', '123.456')  # Decimal String
         block.add_new(0x02, 'FL', 789.0123456789)  # Float
         block.add_new(0x03, 'FD', 789.0123456789)  # Double
-        
 
     def tearDown(self):
         # Remove the temporary directory and its contents
@@ -124,20 +123,20 @@ class TestCStoreSCP(unittest.TestCase):
             (self.temp_dir, files_in_temp_dir))
 
     @parameterized.expand([
-            ([],),
-            ([uid.ExplicitVRLittleEndian],),
-            ([uid.ImplicitVRLittleEndian],),
-            ([uid.ExplicitVRLittleEndian, uid.ImplicitVRLittleEndian],),
-            ([uid.ExplicitVRBigEndian, uid.ImplicitVRLittleEndian],),
-            ([uid.ImplicitVRLittleEndian, uid.ExplicitVRLittleEndian],),
-        ])
+        ([],),
+        ([uid.ExplicitVRLittleEndian],),
+        ([uid.ImplicitVRLittleEndian],),
+        ([uid.ExplicitVRLittleEndian, uid.ImplicitVRLittleEndian],),
+        ([uid.ExplicitVRBigEndian, uid.ImplicitVRLittleEndian],),
+        ([uid.ImplicitVRLittleEndian, uid.ExplicitVRLittleEndian],),
+    ])
     def test_run_and_check_log(self, transfer_syntaxes):
         # Create a CStoreSCP instance
         self.scp = CStoreSCP(bind_address="localhost",
-                                store_directory=self.temp_dir,
-                                logger=self.scp_logger,
-                                sop_classes=[uid.SecondaryCaptureImageStorage],
-                                transfer_syntaxes=transfer_syntaxes)
+                             store_directory=self.temp_dir,
+                             logger=self.scp_logger,
+                             sop_classes=[uid.SecondaryCaptureImageStorage],
+                             transfer_syntaxes=transfer_syntaxes)
         # Run the SCP
         self.scp.run()
         self.test_logger.info("SCP started successfully")
@@ -178,19 +177,19 @@ class TestCStoreSCP(unittest.TestCase):
         file_path = os.path.join(self.temp_dir, filename)
         self.assertTrue(os.path.isfile(file_path),
                         f"The dataset {file_path} was not stored")
-        
+
         # Print the stored DICOM file content
         ds = dcmread(file_path)
         self.test_logger.debug(f"DICOM file content:\n{ds}")
 
         # Check that the private elements are present in the stored file
         private_block = ds.private_block(0x0011, 'PrivateCreator')
-        self.assertIn(0x01, private_block, 
+        self.assertIn(0x01, private_block,
                       "Private element 0x00110001 not found")
-        self.assertIn(0x02, private_block, 
+        self.assertIn(0x02, private_block,
                       "Private element 0x00110002 not found")
         if ds.file_meta.TransferSyntaxUID in [
-            uid.ExplicitVRLittleEndian, uid.ExplicitVRBigEndian]:
+                uid.ExplicitVRLittleEndian, uid.ExplicitVRBigEndian]:
             self.assertEqual(
                 private_block[0x01].value, '123.456',
                 "Private element 0x00110001 has incorrect value"
@@ -224,7 +223,6 @@ class TestCStoreSCP(unittest.TestCase):
                 private_block[0x03].value, b'\xfb\xf8\xb0H\x19\xa8\x88@',
                 "Private element 0x00110003 has incorrect value"
             )
-
 
         # Stop the SCP
         self.scp.stop()

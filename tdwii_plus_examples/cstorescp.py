@@ -227,7 +227,7 @@ class CStoreSCP(CEchoSCP):
             # Make ExplicitVRLittleEndian the preferred transfer syntax
             transfer_syntaxes.remove(UID(ExplicitVRLittleEndian))
             transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + \
-                                transfer_syntaxes
+                transfer_syntaxes
         else:
             if ImplicitVRLittleEndian not in self._valid_transfer_syntaxes:
                 transfer_syntaxes = self._valid_transfer_syntaxes + [

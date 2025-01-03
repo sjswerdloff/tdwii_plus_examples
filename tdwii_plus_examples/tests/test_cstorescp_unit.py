@@ -48,13 +48,13 @@ class TestCStoreSCP(unittest.TestCase):
             xfer for xfer, is_valid in XFER_SYNTAXES.items() if is_valid]
         cls.invalid_xfer_syntaxes = [
             xfer for xfer, is_valid in XFER_SYNTAXES.items() if not is_valid]
-        
+
         # Create the list of default transfer syntaxes
         cls.default_transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
         # Make ExplicitVRLittleEndian the preferred transfer syntax
         cls.default_transfer_syntaxes.remove(UID(uid.ExplicitVRLittleEndian))
         cls.default_transfer_syntaxes = [UID(uid.ExplicitVRLittleEndian)] + \
-                        cls.default_transfer_syntaxes
+            cls.default_transfer_syntaxes
         cls.test_logger.debug(f"Default Transfer Syntaxes: "
                               f"{cls.default_transfer_syntaxes}")
 
@@ -195,4 +195,3 @@ class TestCStoreSCP(unittest.TestCase):
             self.assertEqual(scp.handle_store, handler)
         elif store_directory:
             self.assertEqual(scp.store_directory, store_directory)
-
