@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "tdwii_plus_examples"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10, <3.11"
+python = ">=3.10, <3.13"
 pydicom = "^2.4.0"
 pynetdicom = "^2.1.0"
 pyside6 = "^6.6.0"

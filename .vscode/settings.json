@@ -77,5 +77,14 @@
         "watchscu",
         "whatsthis"
     ],
-    "python.REPL.enableREPLSmartSend": false
+    "python.REPL.enableREPLSmartSend": false,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tdwii_plus_examples/tests",
+        "-p",
+        "test_*.py",
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true
 }
