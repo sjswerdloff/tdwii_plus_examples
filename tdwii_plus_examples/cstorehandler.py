@@ -38,7 +38,7 @@ SOP_CLASS_PREFIXES = {
         "BR", "RTBYREC", "RTBRACHYRECORD",
         "RT Brachy Treatment Record Storage"),
     "1.2.840.10008.5.1.4.1.1.481.7": (
-        "SR", "SUMREC", "RTSUMRECORD",
+        "SUM", "SUMREC", "RTSUMRECORD",
         "RT Treatment Summary Record Storage"),
     "1.2.840.10008.5.1.4.1.1.481.8": (
         "RN", "RTIONPLN", "RTIONPLAN",

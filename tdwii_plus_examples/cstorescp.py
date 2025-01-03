@@ -2,7 +2,9 @@ import os
 from argparse import Namespace
 import logging
 
-from pydicom.uid import UID, ImplicitVRLittleEndian, AllTransferSyntaxes
+from pydicom.uid import (
+    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian, AllTransferSyntaxes
+)
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
 from pynetdicom.presentation import (
     StoragePresentationContexts,
@@ -87,9 +89,11 @@ class CStoreSCP(CEchoSCP):
         transfer_syntaxes: list of str/pydicom.uid.UID
             A list of transfer syntaxes UIDs or names to support
             (names must be valid Transfer Syntax Keywords from PS3.6 Annex A,
-            invalid UIDs and names will be ignored)
+            invalid UIDs and names will be ignored).
+            The order of the transfer syntaxes in the list can be used to set
+            the preferred syntax to accept when multiple ones are proposed.
             Optional, default: None, pynetdicom default transfer syntaxes are
-            supported
+            supported with Explicit VR Little Endian as the preferred syntax.
 
         custom_handler: function
             A function to handle C-STORE requests
@@ -217,12 +221,17 @@ class CStoreSCP(CEchoSCP):
             sop_classes = self._valid_sop_classes
         self.logger.debug(f"Supported Storage SOP Classes: {sop_classes}")
 
-        if self.transfer_syntaxes is None:
-            transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES
+        if self.transfer_syntaxes is None or not self.transfer_syntaxes:
+            self.logger.debug("No transfer syntaxes specified, using defaults")
+            transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
+            # Make ExplicitVRLittleEndian the preferred transfer syntax
+            transfer_syntaxes.remove(UID(ExplicitVRLittleEndian))
+            transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + \
+                                transfer_syntaxes
         else:
             if ImplicitVRLittleEndian not in self._valid_transfer_syntaxes:
-                transfer_syntaxes = [ImplicitVRLittleEndian] + \
-                    self._valid_transfer_syntaxes
+                transfer_syntaxes = self._valid_transfer_syntaxes + [
+                    ImplicitVRLittleEndian]
             else:
                 transfer_syntaxes = self._valid_transfer_syntaxes
         self.logger.debug(f"Supported Transfer Syntaxes: {transfer_syntaxes}")

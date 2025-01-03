@@ -5,7 +5,8 @@ from unittest.mock import Mock
 from logging.handlers import MemoryHandler
 from parameterized import parameterized
 from pydicom import uid
-from pynetdicom import DEFAULT_TRANSFER_SYNTAXES
+from pynetdicom import UID, DEFAULT_TRANSFER_SYNTAXES
+from pynetdicom.sop_class import Verification
 from tdwii_plus_examples.cstorescp import CStoreSCP
 
 # Define dictionaries of valid and invalid SOP Classes and Transfer syntaxes
@@ -47,12 +48,21 @@ class TestCStoreSCP(unittest.TestCase):
             xfer for xfer, is_valid in XFER_SYNTAXES.items() if is_valid]
         cls.invalid_xfer_syntaxes = [
             xfer for xfer, is_valid in XFER_SYNTAXES.items() if not is_valid]
+        
+        # Create the list of default transfer syntaxes
+        cls.default_transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
+        # Make ExplicitVRLittleEndian the preferred transfer syntax
+        cls.default_transfer_syntaxes.remove(UID(uid.ExplicitVRLittleEndian))
+        cls.default_transfer_syntaxes = [UID(uid.ExplicitVRLittleEndian)] + \
+                        cls.default_transfer_syntaxes
+        cls.test_logger.debug(f"Default Transfer Syntaxes: "
+                              f"{cls.default_transfer_syntaxes}")
 
     def setUp(self):
         # Set up the logger for the BaseSCP to DEBUG level
         # with a memory handler to store up to 100 log messages
         self.scp_logger = logging.getLogger('cstorescp')
-        self.scp_logger.setLevel(logging.ERROR)
+        self.scp_logger.setLevel(logging.INFO)
         self.memory_handler = MemoryHandler(100)
         self.scp_logger.addHandler(self.memory_handler)
 
@@ -85,6 +95,7 @@ class TestCStoreSCP(unittest.TestCase):
             self.test_logger.debug(f"Custom handler: {handler}")
         else:
             handler = None
+        self.test_logger.debug(f"transfer_syntaxes: {transfer_syntaxes}")
         scp = CStoreSCP(
             logger=self.scp_logger,
             sop_classes=sop_classes,
@@ -96,6 +107,8 @@ class TestCStoreSCP(unittest.TestCase):
         self.memory_handler.flush()
         log_output = [record.getMessage()
                       for record in self.memory_handler.buffer]
+        # Print the log messages
+        self.test_logger.debug(f"{log_output}")
 
         if transfer_syntaxes:
             # get the valid Transfer Syntax UIDs passed to the constructor
@@ -106,8 +119,10 @@ class TestCStoreSCP(unittest.TestCase):
                 else:
                     valid_xfer_stx_uids.append(xfer_stx)
             # add DICOM default Transfer Syntax if not present
-            if '1.2.840.10008.1.2' not in valid_xfer_stx_uids:
-                valid_xfer_stx_uids.append('1.2.840.10008.1.2')
+            if uid.ImplicitVRLittleEndian not in valid_xfer_stx_uids:
+                valid_xfer_stx_uids.append(uid.ImplicitVRLittleEndian)
+            self.test_logger.debug(f"Transfer Syntax UIDs: "
+                                   f"{valid_xfer_stx_uids}")
 
         if sop_classes:
             # get the valid SOP Class UIDs passed to the constructor
@@ -140,16 +155,16 @@ class TestCStoreSCP(unittest.TestCase):
             for context in scp.ae.supported_contexts:
                 if not transfer_syntaxes:
                     # Check default transfer syntaxes are supported
-                    if context.abstract_syntax == '1.2.840.10008.1.1':
+                    if context.abstract_syntax == Verification:
                         pass  # skip as provided by parent class
                     else:
                         self.assertCountEqual(
                             context.transfer_syntax,
-                            DEFAULT_TRANSFER_SYNTAXES,
+                            self.default_transfer_syntaxes,
                             msg=f"Supported transfer syntaxes for "
                             f"{context.abstract_syntax} "
                             f"do not match the pynetdicom defaults "
-                            f"({DEFAULT_TRANSFER_SYNTAXES})")
+                            f"({self.default_transfer_syntaxes})")
                 else:
                     # Check specified transfer syntaxes are supported
                     if context.abstract_syntax == '1.2.840.10008.1.1':
@@ -181,5 +196,3 @@ class TestCStoreSCP(unittest.TestCase):
         elif store_directory:
             self.assertEqual(scp.store_directory, store_directory)
 
-        # Print the log messages
-        self.test_logger.info(f"{log_output}")

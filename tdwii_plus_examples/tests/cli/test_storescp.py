@@ -18,7 +18,7 @@ class TestMainFunction(unittest.TestCase):
             bind_address='127.0.0.1',
             port=12345,
             sop_classes=['SecondaryCaptureImageStorage'],
-            transfer_syntaxes=['ImplicitVRLittleEndian'],
+            transfer_syntaxes=['ExplicitVRLittleEndian'],
             custom_handler='my_handler',
             output_directory='/var/tmp/output',
             verbose=False,
@@ -46,7 +46,7 @@ class TestMainFunction(unittest.TestCase):
                 port=12345,
                 logger=logging.getLogger('storescp'),
                 sop_classes=['SecondaryCaptureImageStorage'],
-                transfer_syntaxes=['ImplicitVRLittleEndian'],
+                transfer_syntaxes=['ExplicitVRLittleEndian'],
                 custom_handler=mock_handler,  # Ensure this is the mock function
                 store_directory='/var/tmp/output'
             )
