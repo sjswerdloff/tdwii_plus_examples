@@ -1,5 +1,4 @@
 import logging
-import re
 import unittest
 from unittest.mock import Mock
 from logging.handlers import MemoryHandler
@@ -8,6 +7,7 @@ from pydicom import uid
 from pynetdicom import UID, DEFAULT_TRANSFER_SYNTAXES
 from pynetdicom.sop_class import Verification
 from tdwii_plus_examples.cstorescp import CStoreSCP
+from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
 
 # Define dictionaries of valid and invalid SOP Classes and Transfer syntaxes
 SOP_CLASSES = {
@@ -39,15 +39,11 @@ class TestCStoreSCP(unittest.TestCase):
         cls.test_logger.addHandler(cls.stream_handler)
 
         # Create lists of valid and invalid values from the dictionaries
-        cls.valid_sop_classes = [
-            sop for sop, is_valid in SOP_CLASSES.items() if is_valid]
-        cls.invalid_sop_classes = [
-            sop for sop, is_valid in SOP_CLASSES.items() if not is_valid]
+        cls.valid_sop_classes, cls.invalid_sop_classes = validate_sop_classes(
+            list(SOP_CLASSES.copy().keys()))
 
-        cls.valid_xfer_syntaxes = [
-            xfer for xfer, is_valid in XFER_SYNTAXES.items() if is_valid]
-        cls.invalid_xfer_syntaxes = [
-            xfer for xfer, is_valid in XFER_SYNTAXES.items() if not is_valid]
+        cls.valid_xfer_syntaxes, cls.invalid_xfer_syntaxes = validate_transfer_syntaxes(
+            list(XFER_SYNTAXES.copy().keys()))
 
         # Create the list of default transfer syntaxes
         cls.default_transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
@@ -95,7 +91,6 @@ class TestCStoreSCP(unittest.TestCase):
             self.test_logger.debug(f"Custom handler: {handler}")
         else:
             handler = None
-        self.test_logger.debug(f"transfer_syntaxes: {transfer_syntaxes}")
         scp = CStoreSCP(
             logger=self.scp_logger,
             sop_classes=sop_classes,
@@ -103,7 +98,6 @@ class TestCStoreSCP(unittest.TestCase):
             custom_handler=handler,
             store_directory=store_directory
         )
-
         self.memory_handler.flush()
         log_output = [record.getMessage()
                       for record in self.memory_handler.buffer]
@@ -112,26 +106,27 @@ class TestCStoreSCP(unittest.TestCase):
 
         if transfer_syntaxes:
             # get the valid Transfer Syntax UIDs passed to the constructor
-            valid_xfer_stx_uids = []
-            for xfer_stx in self.valid_xfer_syntaxes:
-                if not re.match(uid.RE_VALID_UID, xfer_stx):
-                    valid_xfer_stx_uids.append(getattr(uid, xfer_stx))
-                else:
-                    valid_xfer_stx_uids.append(xfer_stx)
-            # add DICOM default Transfer Syntax if not present
+            valid_xfer_stx_uids = list(self.valid_xfer_syntaxes.copy().values())
+            # add ImplicitVRLittleEndian to the list of valid Transfer Syntax
+            # UIDs if it is not already present
             if uid.ImplicitVRLittleEndian not in valid_xfer_stx_uids:
                 valid_xfer_stx_uids.append(uid.ImplicitVRLittleEndian)
-            self.test_logger.debug(f"Transfer Syntax UIDs: "
+            self.test_logger.debug(f"Expected Transfer Syntax UIDs: "
                                    f"{valid_xfer_stx_uids}")
+
+            # get the list of Transfer Syntax UIDs supported by the AE
+            ae_supported_xfer_stx_uids = [
+                context.transfer_syntax
+                for context in scp.ae.supported_contexts
+                if context.abstract_syntax != Verification
+            ]
+            self.test_logger.debug(f"Supported Transfer Syntax UIDs: "
+                                   f"{ae_supported_xfer_stx_uids[0]}")
 
         if sop_classes:
             # get the valid SOP Class UIDs passed to the constructor
-            valid_sop_classes_uids = []
-            for sop_class in self.valid_sop_classes:
-                if not re.match(uid.RE_VALID_UID, sop_class):
-                    valid_sop_classes_uids.append(getattr(uid, sop_class))
-                else:
-                    valid_sop_classes_uids.append(sop_class)
+            valid_sop_classes_uids = list(
+                self.valid_sop_classes.copy().values())
 
             # get the list of Storage SOP Classes UIDs supported by the AE
             ae_supported_sop_classes_uids = [

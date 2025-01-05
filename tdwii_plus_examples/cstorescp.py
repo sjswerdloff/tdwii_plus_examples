@@ -14,6 +14,7 @@ from pynetdicom.apps.common import setup_logging
 
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
+from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
 
 
 class CStoreSCP(CEchoSCP):
@@ -127,20 +128,21 @@ class CStoreSCP(CEchoSCP):
         self.sop_classes = sop_classes
         if sop_classes is not None:
             self._valid_sop_classes, self._invalid_sop_classes = (
-                self._validate_syntaxes(sop_classes, "SOP Class")
+                validate_sop_classes(sop_classes)
             )
             if self._invalid_sop_classes:
                 self.logger.warning("Ignoring invalid SOP Classes: %s",
-                                    self._invalid_sop_classes)
+                                    list(self._invalid_sop_classes.keys()))
 
         self.transfer_syntaxes = transfer_syntaxes
         if transfer_syntaxes is not None:
             self._valid_transfer_syntaxes, self._invalid_transfer_syntaxes = (
-                self._validate_syntaxes(transfer_syntaxes, "Transfer Syntax")
+                validate_transfer_syntaxes(transfer_syntaxes)
             )
             if self._invalid_transfer_syntaxes:
-                self.logger.warning("Ignoring invalid Transfer Syntaxes: %s",
-                                    self._invalid_transfer_syntaxes)
+                self.logger.warning(
+                    "Ignoring invalid Transfer Syntaxes: %s",
+                    list(self._invalid_transfer_syntaxes.keys()))
 
         self.logger.debug(
             f"Custom handler: {custom_handler} type is {type(custom_handler)}")
@@ -168,38 +170,6 @@ class CStoreSCP(CEchoSCP):
             port=port,
             logger=logger)
 
-    def _validate_syntaxes(self, items, uid_type):
-        # Sort valid and invalid items based on the UID type
-        self.logger.debug(f"Validating {uid_type} list: {items}")
-
-        # Construct a mapping of valid keywords and UIDs for syntax validation
-        valid_syntaxes = {
-            ctx.abstract_syntax: UID(ctx.abstract_syntax).keyword
-            for ctx in AllStoragePresentationContexts
-        } if uid_type == 'SOP Class' else {
-            ctx: UID(ctx).keyword
-            for ctx in AllTransferSyntaxes
-        }
-
-        # Check each item in the provided list
-        valid_items = []
-        invalid_items = []
-        for item in items:
-            keyword = valid_syntaxes.get(item)
-            if keyword is not None:
-                valid_items.append(item)
-                self.logger.debug(f"Valid {uid_type} : {item}")
-            elif item in valid_syntaxes.values():
-                valid_items.append(
-                    next(UID for UID, keyword in valid_syntaxes.items()
-                         if keyword == item))
-                self.logger.debug(f"Valid {uid_type} : {item}")
-            else:
-                invalid_items.append(item)
-                self.logger.debug(f"Invalid {uid_type} : {item}")
-
-        return valid_items, invalid_items
-
     def _add_contexts(self):
         """
         Adds the DICOM Storage SOP Classes presentation context to the AE.
@@ -218,7 +188,7 @@ class CStoreSCP(CEchoSCP):
                 for context in StoragePresentationContexts
             ]
         else:
-            sop_classes = self._valid_sop_classes
+            sop_classes = list(self._valid_sop_classes.values())
         self.logger.debug(f"Supported Storage SOP Classes: {sop_classes}")
 
         if self.transfer_syntaxes is None or not self.transfer_syntaxes:
@@ -229,11 +199,11 @@ class CStoreSCP(CEchoSCP):
             transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + \
                 transfer_syntaxes
         else:
-            if ImplicitVRLittleEndian not in self._valid_transfer_syntaxes:
-                transfer_syntaxes = self._valid_transfer_syntaxes + [
+            if ImplicitVRLittleEndian not in list(self._valid_transfer_syntaxes.values()):
+                transfer_syntaxes = list(self._valid_transfer_syntaxes.values()) + [
                     ImplicitVRLittleEndian]
             else:
-                transfer_syntaxes = self._valid_transfer_syntaxes
+                transfer_syntaxes = list(self._valid_transfer_syntaxes.values())
         self.logger.debug(f"Supported Transfer Syntaxes: {transfer_syntaxes}")
 
         for sop_class in sop_classes:
