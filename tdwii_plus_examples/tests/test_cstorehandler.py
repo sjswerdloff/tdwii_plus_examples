@@ -108,7 +108,7 @@ class TestHandleCStoreEvent(unittest.TestCase):
                 "args.output_directory attribute not present or None")
         elif '/invalid/path' in output_directory:
             expected_message = (
-                "Unable to create the output directory: /invalid/path")
+                "Unable to create the output directory: /invalid/path\x00")
             if sys.platform.startswith('win'):
                 expected_message = expected_message.replace(
                     "/invalid/path", "C:/invalid/path"
