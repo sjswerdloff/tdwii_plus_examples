@@ -169,4 +169,7 @@ scratchpad/
 *.sqlite
 
 # Visual Studio Code settings
-.vscode/settings.json
+.vscode
+
+# MacOS
+.DS_Store
