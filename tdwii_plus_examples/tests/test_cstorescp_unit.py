@@ -7,24 +7,27 @@ from pydicom import uid
 from pynetdicom import UID, DEFAULT_TRANSFER_SYNTAXES
 from pynetdicom.sop_class import Verification
 from tdwii_plus_examples.cstorescp import CStoreSCP
-from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
+from tdwii_plus_examples._dicom_uids import (
+    validate_sop_classes, validate_transfer_syntaxes
+)
 
-# Define dictionaries of valid and invalid SOP Classes and Transfer syntaxes
-SOP_CLASSES = {
-    "CTImageStorage": True,                 # valid Storage SOP Class Keyword
-    "MRStorage": False,                     # invalid Storage SOP Class Keyword
-    "RTIonPlanStorage": True,               # valid Storage SOP Class Keyword
-    "1.2.840.10008.5.1.4.1.1.481.9": True,  # valid Storage SOP Class UID
-    "1.2.840.10008.1.2": False,             # invalid Storage SOP Class UID
-    "Verification": False                   # invalid Storage SOP Class UID
-}
+# Define test lists of valid and invalid SOP Classes and Transfer syntaxes
+# to be used in the parameterized test cases.
+SOP_CLASSES = [
+    "CTImageStorage",                 # valid Storage SOP Class Keyword
+    "MRStorage",                      # invalid Storage SOP Class Keyword
+    "RTIonPlanStorage",               # valid Storage SOP Class Keyword
+    "1.2.840.10008.5.1.4.1.1.481.9",  # valid Storage SOP Class UID
+    "1.2.840.10008.1.2",              # invalid Storage SOP Class UID
+    "Verification",                   # invalid Storage SOP Class UID
+]
 
-XFER_SYNTAXES = {
-    "ExplicitVRLittleEndian": True,  # valid transfer syntax Keyword
-    "1.2.840.10008.1.2.2": True,     # valid transfer syntax UID
-    "ImplicitLittleEndian": False,   # invalid transfer syntax Keyword
-    "1.2.840.10008.5.2.1": False,     # invalid transfer syntax UID
-}
+XFER_SYNTAXES = [
+    "ExplicitVRLittleEndian",  # valid transfer syntax Keyword
+    "1.2.840.10008.1.2.2",     # valid transfer syntax UID
+    "ImplicitLittleEndian",    # invalid transfer syntax Keyword
+    "1.2.840.10008.5.2.1",     # invalid transfer syntax UID
+]
 
 
 class TestCStoreSCP(unittest.TestCase):
@@ -38,14 +41,14 @@ class TestCStoreSCP(unittest.TestCase):
         cls.stream_handler = logging.StreamHandler()
         cls.test_logger.addHandler(cls.stream_handler)
 
-        # Create lists of valid and invalid values from the dictionaries
-        cls.valid_sop_classes, cls.invalid_sop_classes = validate_sop_classes(
-            list(SOP_CLASSES.copy().keys()))
+        # Get the valid and invalid items of the test lists
+        cls.valid_sop_classes, cls.invalid_sop_classes = \
+            validate_sop_classes(SOP_CLASSES)
 
-        cls.valid_xfer_syntaxes, cls.invalid_xfer_syntaxes = validate_transfer_syntaxes(
-            list(XFER_SYNTAXES.copy().keys()))
+        cls.valid_xfer_syntaxes, cls.invalid_xfer_syntaxes = \
+            validate_transfer_syntaxes(XFER_SYNTAXES)
 
-        # Create the list of default transfer syntaxes
+        # Get the list of default transfer syntaxes
         cls.default_transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
         # Make ExplicitVRLittleEndian the preferred transfer syntax
         cls.default_transfer_syntaxes.remove(UID(uid.ExplicitVRLittleEndian))
@@ -69,11 +72,10 @@ class TestCStoreSCP(unittest.TestCase):
     # Parameterized unit tests for the constructor parameters
 
     # Define test cases parameters
-
     @parameterized.expand([
-        (list(SOP_CLASSES.keys()), None, None, None),
-        (None, list(XFER_SYNTAXES.keys()), None, None),
-        (list(SOP_CLASSES.keys()), list(XFER_SYNTAXES.keys()), None, None),
+        (SOP_CLASSES, None, None, None),
+        (None, XFER_SYNTAXES, None, None),
+        (SOP_CLASSES, XFER_SYNTAXES, None, None),
         (None, None, "custom_handler", None),
         (None, None, "", None),
         (None, None, None, "/path/to/store"),
@@ -106,7 +108,9 @@ class TestCStoreSCP(unittest.TestCase):
 
         if transfer_syntaxes:
             # get the valid Transfer Syntax UIDs passed to the constructor
-            valid_xfer_stx_uids = list(self.valid_xfer_syntaxes.copy().values())
+            valid_xfer_stx_uids = list(
+                self.valid_xfer_syntaxes.copy().values()
+            )
             # add ImplicitVRLittleEndian to the list of valid Transfer Syntax
             # UIDs if it is not already present
             if uid.ImplicitVRLittleEndian not in valid_xfer_stx_uids:

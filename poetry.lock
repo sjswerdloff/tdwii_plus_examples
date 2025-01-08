@@ -185,7 +185,7 @@ typing = ["typing-extensions (>=4.12.2)"]
 name = "flake8"
 version = "7.1.1"
 description = "the modular source code checker: pep8 pyflakes and co"
-optional = true
+optional = false
 python-versions = ">=3.8.1"
 files = [
     {file = "flake8-7.1.1-py2.py3-none-any.whl", hash = "sha256:597477df7860daa5aa0fdd84bf5208a043ab96b8e96ab708770ae0364dd03213"},
@@ -326,7 +326,7 @@ colors = ["colorama (>=0.4.6)"]
 name = "mccabe"
 version = "0.7.0"
 description = "McCabe checker, plugin for flake8"
-optional = true
+optional = false
 python-versions = ">=3.6"
 files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
@@ -502,7 +502,7 @@ virtualenv = ">=20.10.0"
 name = "pycodestyle"
 version = "2.12.1"
 description = "Python style guide checker"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "pycodestyle-2.12.1-py2.py3-none-any.whl", hash = "sha256:46f0fb92069a7c28ab7bb558f05bfc0110dac69a0cd23c61ea0040283a9d78b3"},
@@ -527,7 +527,7 @@ docs = ["matplotlib", "numpy", "numpydoc", "pillow", "sphinx", "sphinx-copybutto
 name = "pyflakes"
 version = "3.2.0"
 description = "passive checker of Python programs"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "pyflakes-3.2.0-py2.py3-none-any.whl", hash = "sha256:84b5be138a2dfbb40689ca07e2152deb896a65c3a3e24c251c5c62489568074a"},
@@ -1044,4 +1044,4 @@ tests = ["dill", "flake8", "pylint", "pytest", "pytest-rerunfailures", "pytest-s
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10, <3.13"
-content-hash = "26f0161c693933bf1a7dcd883c9914254c098cea970a75fdcbb9a8cccf9425a2"
+content-hash = "5111c94464b0a04e4d72374ab199e182868e4edd4f1cd70b6f3b0af7d70fcf41"

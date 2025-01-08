@@ -107,9 +107,12 @@ class TestHandleCStoreEvent(unittest.TestCase):
             mock_logger.error.assert_called_once_with(
                 "args.output_directory attribute not present or None")
         elif '/invalid/path' in output_directory:
-            expected_message = "Unable to create the output directory: /invalid/path\0"
+            expected_message = (
+                "Unable to create the output directory: /invalid/path")
             if sys.platform.startswith('win'):
-                expected_message = expected_message.replace("/invalid/path", "C:/invalid/path")
+                expected_message = expected_message.replace(
+                    "/invalid/path", "C:/invalid/path"
+                )
             mock_logger.exception.assert_called_once_with(expected_message)
         elif expected_status == 0xC210:
             mock_logger.exception.assert_called_once_with(
