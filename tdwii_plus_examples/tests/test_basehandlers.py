@@ -22,7 +22,7 @@ class TestHandleConnectionsEvents(unittest.TestCase):
 
         # Check that the logger was called with the correct message
         mock_logger.info.assert_called_once_with(
-            'Succesful connection from 127.0.0.1:104'
+            'Successful connection from 127.0.0.1:104'
         )
 
     @patch('logging.Logger')

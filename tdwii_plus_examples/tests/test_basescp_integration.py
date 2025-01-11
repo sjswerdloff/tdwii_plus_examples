@@ -61,7 +61,7 @@ class TestBaseSCP(unittest.TestCase):
 
         # Check the EVT_CONN_OPEN event log message
         self.test_logger.info("Searching for EVT_CONN_OPEN event log message")
-        pattern = r"^Succesful connection from " + \
+        pattern = r"^Successful connection from " + \
                   r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})"
         matching_message = None
         for message in log_messages:

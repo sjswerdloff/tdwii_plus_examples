@@ -3,34 +3,282 @@ import argparse
 import logging
 import time
 
-from pydicom.uid import UID
-from pynetdicom.status import Status
-from pydicom.dataset import Dataset
-
 from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 from tdwii_plus_examples.upsneventhandler import UPS_EVENT_TYPES
 
 
-def my_upsevent_callback(upseventtype, upseventinfo, logger):
+def my_upsevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
     """
     Example of a UPS Event callback for processing incoming UPS events.
 
-    This callback logs all arguments passed to it, as well as information
-    of the N-EVENT-REPORT-RQ message. It's meant to be used as a starting 
-    point for writing your own callback.
+    This callback process UPS State Change events. It's meant to be
+    used as a starting point for writing your own callback.
 
     Parameters
     ----------
-    upseventinfo : pydicom.dataset.Dataset.
+    upsinstance : pydicom.uid.UID
+        The UPS SOP Instance UID.
+    upseventtype : int
+        The UPS Event Type ID.
+    upseventinfo : pydicom.dataset.Dataset
         The N-EVENT-REPORT-RQ Event Information dataset.
-    logger : logging.Logger
-        The logger instance
+    app_logger : logging.Logger
+        The application's logger instance
     """
-    logger.info("UPS Event callback for %s called",
-                UPS_EVENT_TYPES[upseventtype])
+    app_logger.info(f"Processing {UPS_EVENT_TYPES[upseventtype]} Event")
 
-    if UPS_EVENT_TYPES[upseventtype] == "UPS State Report":
-        logger.info("UPS State Report")
+    # Define the processing functions
+    def process_ups_state_report(upsinstance, upseventinfo):
+        """
+        Process the UPS State Report Event.
+
+        This function is called by the UPS Event Handler callback
+        when a UPS State Report Event is received. It processes the
+        received event information and takes appropriate actions.
+
+        Parameters
+        ----------
+        upsinstance : pydicom.uid.UID
+            The UPS SOP Instance UID.
+        upseventinfo : pydicom.dataset.Dataset
+            The received UPS Event Information dataset.
+            +-------------------------------------------------+------+
+            | Attribute Keyword                               | Type |
+            +=================================================+======+
+            | ProcedureStepState                              | 1    |
+            +-------------------------------------------------+------+
+            | InputReadinessState                             | 1    |
+            +-------------------------------------------------+------+
+            | ReasonForCancellation                           | 3    |
+            +-------------------------------------------------+------+
+            | ProcedureStepDiscontinuationReason​Code​Sequence  | 3    |
+            +-------------------------------------------------+------+
+            | >Include Table 8-3a “Enhanced SCU/SCP Coded     |      |
+            | Entry Macro with no SCU Support and no Matching |      |
+            | Key Support”                                    |      |
+            +-------------------------------------------------+------+
+            adapted from PS3.4 Table CC.2.4-1
+
+        Returns
+        -------
+        None
+        """
+        state = upseventinfo.ProcedureStepState
+        readiness = upseventinfo.InputReadinessState
+        if state == 'SCHEDULED' and readiness != 'READY':
+            app_logger.info(
+                f"Waiting for UPS {upsinstance} inputs to be ready"
+            )
+        elif state == 'SCHEDULED' and readiness == 'READY':
+            app_logger.info(
+                f"Time to C-FIND UPS {upsinstance} and check if assigned "
+                f"to my station name"
+            )
+        elif state == 'IN PROGRESS':
+            app_logger.info(
+                f"Time to C-FIND UPS {upsinstance} and check if assigned "
+                f"to the station name I work with"
+            )
+        elif state == 'COMPLETED' or state == 'CANCELLED':
+            app_logger.info(
+                f"Time to close my session linked to UPS {upsinstance}"
+            )
+
+    def process_ups_cancel_request(upsinstance, upseventinfo):
+        """
+        Process the UPS Cancel Request Event.
+
+        This function is called by the UPS Event Handler callback
+        when a UPS Cancel Request Event is received. It processes the
+        received event information and takes appropriate actions.
+
+        Parameters
+        ----------
+        upsinstance : pydicom.uid.UID
+            The UPS SOP Instance UID.
+        upseventinfo : pydicom.dataset.Dataset
+            The received UPS Event Information dataset.
+            +-------------------------------------------------+------+
+            | Attribute Keyword                               | Type |
+            +=================================================+======+
+            | RequestingAE                                    | 1    |
+            +-------------------------------------------------+------+
+            | ReasonForCancellation                           | 1C   |
+            +-------------------------------------------------+------+
+            | ProcedureStepDiscontinuationReasonCodeSequence  | 1C   |
+            +-------------------------------------------------+------+
+            | >Include Table 8-3a “Enhanced SCU/SCP Coded     |      |
+            | Entry Macro with no SCU Support and no Matching |      |
+            | Key Support”                                    |      |
+            +-------------------------------------------------+------+
+            | ContactURI                                      | 1C   |
+            +-------------------------------------------------+------+
+            | ContactDisplayName                              | 1C   |
+            +-------------------------------------------------+------+
+            adapted from PS3.4 Table CC.2.4-1
+
+        Returns
+        -------
+        None
+        """
+        requesting_ae = upseventinfo.RequestingAE
+        app_logger.info(
+            f"Time to accept or reject cancellation of UPS {upsinstance} "
+            f"from {requesting_ae}"
+        )
+
+    def process_ups_progress_report(upsinstance, upseventinfo):
+        """
+        Process the UPS Progress Report Event.
+
+        This function is called by the UPS Event Handler callback
+        when a UPS Progress Report Event is received. It processes the
+        received event information and takes appropriate actions.
+
+        Parameters
+        ----------
+        upsinstance : pydicom.uid.UID
+            The UPS SOP Instance UID.
+        upseventinfo : pydicom.dataset.Dataset
+            The received UPS Event Information dataset.
+            +-------------------------------------------------+------+
+            | Attribute Keyword                               | Type |
+            +=================================================+======+
+            | ProcedureStepProgressInformationSequence        | 1    |
+            +-------------------------------------------------+------+
+            | >ProcedureStepProgress                          | 3    |
+            +-------------------------------------------------+------+
+            | >ProcedureStepProgressDescription               | 3    |
+            +-------------------------------------------------+------+
+            | >ProcedureStepProgressParametersSequence        | 3    |
+            +-------------------------------------------------+------+
+            | >ProcedureStepCommunicationsURISequence         | 3    |
+            +-------------------------------------------------+------+
+            | >>ContactURI                                    | 1    |
+            +-------------------------------------------------+------+
+            | >>ContactDisplayName                            | 3    |
+            +-------------------------------------------------+------+
+            adapted from PS3.4 Table CC.2.4-1
+
+        Returns
+        -------
+        None
+        """
+
+        app_logger.info(
+            f"Time to check if the Beam (number) changed "
+            f"if working with UPS {upsinstance}"
+        )
+
+    def process_scp_status_change(upsinstance, upseventinfo):
+        """
+        Process the SCP Status Change Event.
+
+        This function is called by the UPS Event Handler callback
+        when an SCP Status Change Event is received. It processes the
+        received event information and takes appropriate actions.
+
+        Parameters
+        ----------
+        upsinstance : pydicom.uid.UID
+            The UPS SOP Instance UID.
+        upseventinfo : pydicom.dataset.Dataset
+            The received UPS Event Information dataset.
+            +-------------------------------------------------+------+
+            | Attribute Keyword                               | Type |
+            +=================================================+======+
+            | SCPStatus                                       | 1    |
+            +-------------------------------------------------+------+
+            | SubscriptionListStatus                          | 1    |
+            +-------------------------------------------------+------+
+            | UnifiedProcedureStepListStatus                  | 1    |
+            +-------------------------------------------------+------+
+            adapted from PS3.4 Table CC.2.4-1
+
+        Returns
+        -------
+        None
+        """
+        scpstatus = upseventinfo.SCPStatus
+        subscriptionstatus = upseventinfo.SubscriptionListStatus
+
+        if scpstatus == "RESTARTED" and subscriptionstatus == "COLD START":
+            app_logger.info(
+                f"Time to check if this is a Cold Start and then re-subscribe for "
+                f"specific UPS instances if this application has/had instance "
+                f"specific subscriptions {upsinstance}"
+            )
+        elif scpstatus == "GOING DOWN":
+            app_logger.info(
+                f"Time to warn the user that the Worklist Manager is "
+                f"going down "
+            )
+
+    def process_ups_assigned(upsinstance, upseventinfo):
+        """
+        Process the UPS Assigned Event.
+
+        This function is called by the UPS Event Handler callback
+        when a UPS Assigned Event is received. It processes the
+        received event information and takes appropriate actions.
+
+        Parameters
+        ----------
+        upsinstance : pydicom.uid.UID
+            The UPS SOP Instance UID.
+        upseventinfo : pydicom.dataset.Dataset
+            The received UPS Event Information dataset.
+            +-------------------------------------------------+------+
+            | Attribute Keyword                               | Type |
+            +=================================================+======+
+            | ScheduledStationNameCodeSequence                | 1C   |
+            +-------------------------------------------------+------+
+            | >Include Table 8-3a “Enhanced SCU/SCP Coded     |      |
+            | Entry Macro with no SCU Support and no Matching |      |
+            | Key Support”                                    |      |
+            +-------------------------------------------------+------+
+            | HumanPerformerCodeSequence                      | 1C   |
+            +-------------------------------------------------+------+
+            | >Include Table 8-3a “Enhanced SCU/SCP Coded     |      |
+            | Entry Macro with no SCU Support and no Matching |      |
+            | Key Support”                                    |      |
+            +-------------------------------------------------+------+
+            | HumanPerformerOrganization                      | 1C   |
+            +-------------------------------------------------+------+
+            adapted from PS3.4 Table CC.2.4-1
+
+        Returns
+        -------
+        None
+        """
+
+        app_logger.info(f"UPS {upsinstance} Assigned")
+        app_logger.info(
+            f"Not too interesting for TDW-II, UPS are typically assigned at "
+            f"the time of scheduling, but a matching class of machines might "
+            f"make for a different approach"
+        )
+
+    # Dictionary to map event types to processing functions
+    upsevent_process_functions = {
+        "UPS State Report": process_ups_state_report,
+        "UPS Cancel Request": process_ups_cancel_request,
+        "UPS Progress Report": process_ups_progress_report,
+        "SCP Status Change": process_scp_status_change,
+        "UPS Assigned": process_ups_assigned
+    }
+
+    # Get the event type
+    event_type = UPS_EVENT_TYPES[upseventtype]
+
+    # Call the appropriate processing function
+    process_upsevent = upsevent_process_functions.get(
+        event_type,
+        lambda upsinstance, upseventinfo: app_logger.info(
+            f"Unsupported UPS event type {event_type} for UPS {upsinstance}"
+        )
+    )
+    process_upsevent(upsinstance, upseventinfo)
 
 
 def main(loop_forever=True):  # Add a parameter to control the loop

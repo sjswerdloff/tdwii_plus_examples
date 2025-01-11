@@ -16,7 +16,7 @@ def handle_open(event, logger):
     """
     requestor = event.assoc.requestor
     addr, port = requestor.address, requestor.port
-    logger.info(f"Succesful connection from {addr}:{port}")
+    logger.info(f"Successful connection from {addr}:{port}")
 
     return 0x0000
 
