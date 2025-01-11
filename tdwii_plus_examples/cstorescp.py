@@ -14,7 +14,9 @@ from pynetdicom.apps.common import setup_logging
 
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
-from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
+from tdwii_plus_examples._dicom_uids import (
+    validate_sop_classes, validate_transfer_syntaxes
+)
 
 
 class CStoreSCP(CEchoSCP):
@@ -61,7 +63,7 @@ class CStoreSCP(CEchoSCP):
                  ):
         """
         Initializes a new instance of the CStoreSCP class.
-        This method creates an AE without presentation contexts.
+        This method creates an AE with storage presentation contexts.
 
         Parameters
         ----------
@@ -82,15 +84,16 @@ class CStoreSCP(CEchoSCP):
             Optional, default: None, a debug logger will be used
 
         sop_classes: list of str or pydicom.uid.UID
-            A list of SOP Classes UIDs or names to support
-            (names must be valid SOP Class Keywords from PS3.6 Annex A,
-            invalid UIDs and names will be ignored)
+            A list of Storage SOP Classes to support
+            (must be valid SOP Class UID, Names or Keywords from PS3.6 Annex A,
+            for Storage SOP classes defined in Part 4 Annex B.5, invalid 
+            UIDs, Names or Keywords will be ignored)
             Optional, default: None, First 128 SOP Classes are supported
 
         transfer_syntaxes: list of str/pydicom.uid.UID
-            A list of transfer syntaxes UIDs or names to support
-            (names must be valid Transfer Syntax Keywords from PS3.6 Annex A,
-            invalid UIDs and names will be ignored).
+            A list of transfer syntaxes to support
+            (must be valid Transfer Syntax UIDs, Names or Keywords from PS3.6
+            Annex A, invalid UIDs and names will be ignored).
             The order of the transfer syntaxes in the list can be used to set
             the preferred syntax to accept when multiple ones are proposed.
             Optional, default: None, pynetdicom default transfer syntaxes are
@@ -199,11 +202,16 @@ class CStoreSCP(CEchoSCP):
             transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + \
                 transfer_syntaxes
         else:
-            if ImplicitVRLittleEndian not in list(self._valid_transfer_syntaxes.values()):
-                transfer_syntaxes = list(self._valid_transfer_syntaxes.values()) + [
-                    ImplicitVRLittleEndian]
+            if ImplicitVRLittleEndian not in list(
+                    self._valid_transfer_syntaxes.values()):
+                transfer_syntaxes = (
+                    list(self._valid_transfer_syntaxes.values()) +
+                    [ImplicitVRLittleEndian]
+                )
             else:
-                transfer_syntaxes = list(self._valid_transfer_syntaxes.values())
+                transfer_syntaxes = (
+                    list(self._valid_transfer_syntaxes.values())
+                )
         self.logger.debug(f"Supported Transfer Syntaxes: {transfer_syntaxes}")
 
         for sop_class in sop_classes:

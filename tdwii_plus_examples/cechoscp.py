@@ -42,7 +42,7 @@ class CEchoSCP(BaseSCP):
                  logger=None):
         """
         Initializes a new instance of the CEchoSCP class.
-        This method creates an AE without presentation contexts.
+        This method creates an AE with the Verification presentation context.
 
         Parameters
         ----------
