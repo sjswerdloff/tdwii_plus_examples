@@ -1,9 +1,8 @@
-import os
 from argparse import Namespace
 import logging
 
 from pydicom.uid import (
-    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian, AllTransferSyntaxes
+    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian
 )
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
 
@@ -22,12 +21,12 @@ class UPSNEventReceiver(CEchoSCP):
     A subclass of the CEchoSCP class that implements the DICOM UPS Event
     Service Receiver which role is defined as a Service Class User (SCU).
     As this may be perceived as counter-intuitive for a network listener,
-    the term Receiver is used instead. This "reversal" of the roles is 
-    common for notification services where a SCP, here the UPS SCP, 
-    notifies an SCU of state changes as described in section CC.2.4 of 
-    DICOM PS3.4. 
+    the term Receiver is used instead. This "reversal" of the roles is
+    common for notification services where a SCP, here the UPS SCP,
+    notifies an SCU of state changes as described in section CC.2.4 of
+    DICOM PS3.4.
 
-    The Unified Procedure Step - Event SOP Class is supported with 
+    The Unified Procedure Step - Event SOP Class is supported with
     default transfer syntaxes unless otherwise specified.
 
     Usage:
@@ -41,7 +40,7 @@ class UPSNEventReceiver(CEchoSCP):
         port (int): The port number the AE will listen on
         logger (logging.Logger): A logger instance
         transfer_syntaxes (list): A list of transfer syntaxes to support
-        ups_event_callback (function): A function to process UPS State 
+        ups_event_callback (function): A function to process UPS State
             Changes Reports in received N-EVENT-REPORT requests.
 
     Methods:
@@ -84,9 +83,9 @@ class UPSNEventReceiver(CEchoSCP):
 
         transfer_syntaxes: list of str/pydicom.uid.UID
             A list of transfer syntaxes to support
-            (names must be valid Transfer Syntax UIDs, Names or Keywords 
+            (names must be valid Transfer Syntax UIDs, Names or Keywords
             from PS3.6 Annex A, invalid UIDs and names will be ignored).
-            The order of the transfer syntaxes in the list can be used 
+            The order of the transfer syntaxes in the list can be used
             to set the preferred syntax to accept when multiple ones are
             proposed.
             Optional, default: None, pynetdicom default transfer syntaxes
@@ -192,7 +191,7 @@ class UPSNEventReceiver(CEchoSCP):
         """
         Adds a handler for for processing incoming N-EVENT-REPORT requests.
 
-        This method overrides the CEchoSCP parent class method to add a 
+        This method overrides the CEchoSCP parent class method to add a
         handler for the UPS Event SOP Class.
         """
         super()._add_handlers()

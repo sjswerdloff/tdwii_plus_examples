@@ -2,7 +2,6 @@ import unittest
 from parameterized import parameterized
 import logging
 from logging.handlers import MemoryHandler
-import subprocess
 import time
 
 from pydicom.dataset import Dataset
@@ -10,7 +9,7 @@ from pydicom import uid
 
 from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 from tdwii_plus_examples._dicom_uids import UPS_SOP_CLASSES
-from pynetdicom import AE, evt
+from pynetdicom import AE
 from pynetdicom.sop_class import UnifiedProcedureStepEvent
 
 

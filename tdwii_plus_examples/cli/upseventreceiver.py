@@ -210,8 +210,8 @@ def my_upsevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
             )
         elif scpstatus == "GOING DOWN":
             app_logger.info(
-                f"Time to warn the user that the Worklist Manager is "
-                f"going down "
+                "Time to warn the user that the Worklist Manager is "
+                "going down "
             )
 
     def process_ups_assigned(upsinstance, upseventinfo):
@@ -254,9 +254,9 @@ def my_upsevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
 
         app_logger.info(f"UPS {upsinstance} Assigned")
         app_logger.info(
-            f"Not too interesting for TDW-II, UPS are typically assigned at "
-            f"the time of scheduling, but a matching class of machines might "
-            f"make for a different approach"
+            "Not too interesting for TDW-II, UPS are typically assigned at "
+            "the time of scheduling, but a matching class of machines might "
+            "make for a different approach"
         )
 
     # Dictionary to map event types to processing functions

@@ -99,12 +99,6 @@ class TestUPSNEventReceiver(unittest.TestCase):
             self.test_logger.debug(f"Expected Transfer Syntax UIDs: "
                                    f"{valid_xfer_stx_uids}")
 
-            # get the list of Transfer Syntax UIDs supported by the AE
-            ae_supported_xfer_stx_uids = [
-                context.transfer_syntax
-                for context in receiver.ae.supported_contexts
-            ]
-
         # Check AE supports the UPSEventSOP and expected transfer syntaxes
         for context in receiver.ae.supported_contexts:
             if context.abstract_syntax != Verification:
