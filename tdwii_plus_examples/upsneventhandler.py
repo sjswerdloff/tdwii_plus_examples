@@ -121,11 +121,6 @@ def handle_nevent(event, ups_event_callback, app_logger):
     app_logger.info(
         f"Received N-EVENT-REPORT request from {addr}:{port} at {timestamp}")
 
-    affectedsopclassuid = nevent_primitive.AffectedSOPClassUID
-    affectedsopinstanceuid = nevent_primitive.AffectedSOPInstanceUID
-    eventtypeid = nevent_primitive.EventTypeID
-    eventinformation = dcmread(nevent_primitive.EventInformation, force=True)
-
     # Create the response status assuming success
     # consistently using Dataset object with Status element (vs int)
     # Other N-EVENT-REPORT response parameters are set by pynetdicom
@@ -133,7 +128,10 @@ def handle_nevent(event, ups_event_callback, app_logger):
     status_ds = Dataset()
     status_ds.Status = Status.SUCCESS
 
+    affectedsopinstanceuid = nevent_primitive.AffectedSOPInstanceUID
+
     # Make sure the event SOP class is valid
+    affectedsopclassuid = nevent_primitive.AffectedSOPClassUID
     if affectedsopclassuid.keyword in ["UnifiedProcedureStepPush"]:
         app_logger.debug(
             f"UPS Event valid SOP Class UID: "
@@ -146,6 +144,7 @@ def handle_nevent(event, ups_event_callback, app_logger):
         return status_ds, None
 
     # Make sure the event type is valid
+    eventtypeid = nevent_primitive.EventTypeID
     if eventtypeid in UPS_EVENT_TYPES:
         app_logger.debug(
             f"UPS Event valid Event Type ID: "
@@ -159,6 +158,8 @@ def handle_nevent(event, ups_event_callback, app_logger):
 
     # Make sure the event information is valid
     try:
+        eventinformation = dcmread(nevent_primitive.EventInformation,
+                                   force=True)
         for elem in eventinformation:
             # Access the element's value to ensure it can be read
             _ = elem.value
