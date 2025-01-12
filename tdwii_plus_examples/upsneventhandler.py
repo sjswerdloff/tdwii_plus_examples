@@ -16,10 +16,26 @@ UPS_EVENT_TYPES = {
 }
 
 
-def nevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
-    app_logger.info(f"Processing Status Change for UPS Instance {upsinstance}")
-    app_logger.info(f"UPS Event Type: {UPS_EVENT_TYPES[upseventtype]}")
-    app_logger.info(f"UPS Event Information: \n{upseventinfo}")
+def nevent_callback(ups_instance, ups_event_type, ups_event_info, app_logger):
+    """
+    Default UPS Event callback for processing incoming UPS events.
+
+    This callback logs UPS SOP Instance UID and UPS Event type and information.
+
+    Parameters
+    ----------
+    ups_instance : pydicom.uid.UID
+        The UPS SOP Instance UID.
+    ups_event_type : int
+        The UPS Event Type ID.
+    ups_event_info : pydicom.dataset.Dataset
+        The N-EVENT-REPORT-RQ Event Information dataset.
+    app_logger : logging.Logger
+        The application's logger instance
+    """
+    app_logger.info(f"Processing Status Change for UPS Instance {ups_instance}")
+    app_logger.info(f"UPS Event Type: {UPS_EVENT_TYPES[ups_event_type]}")
+    app_logger.info(f"UPS Event Information: \n{ups_event_info}")
 
 
 def handle_nevent(event, ups_event_callback, app_logger):
@@ -105,10 +121,10 @@ def handle_nevent(event, ups_event_callback, app_logger):
     app_logger.info(
         f"Received N-EVENT-REPORT request from {addr}:{port} at {timestamp}")
 
-    ups_sop_class = nevent_primitive.AffectedSOPClassUID
-    ups_instance = nevent_primitive.AffectedSOPInstanceUID
-    nevent_type_id = nevent_primitive.EventTypeID
-    nevent_information = dcmread(nevent_primitive.EventInformation, force=True)
+    affectedsopclassuid = nevent_primitive.AffectedSOPClassUID
+    affectedsopinstanceuid = nevent_primitive.AffectedSOPInstanceUID
+    eventtypeid = nevent_primitive.EventTypeID
+    eventinformation = dcmread(nevent_primitive.EventInformation, force=True)
 
     # Create the response status assuming success
     # consistently using Dataset object with Status element (vs int)
@@ -118,43 +134,44 @@ def handle_nevent(event, ups_event_callback, app_logger):
     status_ds.Status = Status.SUCCESS
 
     # Make sure the event SOP class is valid
-    if ups_sop_class.keyword in ["UnifiedProcedureStepPush"]:
+    if affectedsopclassuid.keyword in ["UnifiedProcedureStepPush"]:
         app_logger.debug(
             f"UPS Event valid SOP Class UID: "
-            f"{ups_sop_class}")
+            f"{affectedsopclassuid}")
     else:
         app_logger.error(
             "UPS Event invalid SOP Class UID: "
-            f"{ups_sop_class}")
+            f"{affectedsopclassuid}")
         status_ds.Status = Status.REFUSED_SOP_CLASS_NOT_SUPPORTED
         return status_ds, None
 
     # Make sure the event type is valid
-    if nevent_type_id in UPS_EVENT_TYPES:
+    if eventtypeid in UPS_EVENT_TYPES:
         app_logger.debug(
             f"UPS Event valid Event Type ID: "
-            f"{nevent_type_id} ({UPS_EVENT_TYPES[nevent_type_id]})")
+            f"{eventtypeid} ({UPS_EVENT_TYPES[eventtypeid]})")
     else:
         app_logger.error(
             "UPS Event invalid Event Type ID: "
-            f"{nevent_type_id}")
+            f"{eventtypeid}")
         status_ds.Status = Status.NO_SUCH_EVENT_TYPE
         return status_ds, None
 
     # Make sure the event information is valid
     try:
-        for elem in nevent_information:
+        for elem in eventinformation:
             # Access the element's value to ensure it can be read
             _ = elem.value
     except Exception as e:
         app_logger.error(f"InvalidException encountered: {e}")
         status_ds.Status = Status.ATTRIBUTE_LIST_ERROR
         return status_ds, None
-    app_logger.debug(f"UPS Event information: \n{nevent_information}")
+    app_logger.debug(f"UPS Event information: \n{eventinformation}")
 
     # Check if valid ups_event_callback function is provided
     app_logger.debug(
-        f"UPS Event callback: {ups_event_callback} type is {type(ups_event_callback)}")
+        f"UPS Event callback: {ups_event_callback} "
+        f"type is {type(ups_event_callback)}")
     if ups_event_callback is None:
         app_logger.warning("No ups_event_callback defined, "
                            "using default callback")
@@ -168,9 +185,9 @@ def handle_nevent(event, ups_event_callback, app_logger):
 
     # Call the UPS Event callback
     try:
-        ups_event_callback(upsinstance=ups_instance,
-                           upseventtype=nevent_type_id,
-                           upseventinfo=nevent_information,
+        ups_event_callback(ups_instance=affectedsopinstanceuid,
+                           ups_event_type=eventtypeid,
+                           ups_event_info=eventinformation,
                            app_logger=app_logger)
     except Exception as e:
         app_logger.error(f"Exception encountered in UPS Event callback: {e}")

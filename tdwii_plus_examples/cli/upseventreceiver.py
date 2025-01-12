@@ -7,7 +7,7 @@ from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 from tdwii_plus_examples.upsneventhandler import UPS_EVENT_TYPES
 
 
-def my_upsevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
+def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logger):
     """
     Example of a UPS Event callback for processing incoming UPS events.
 
@@ -16,16 +16,16 @@ def my_upsevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
 
     Parameters
     ----------
-    upsinstance : pydicom.uid.UID
+    ups_instance : pydicom.uid.UID
         The UPS SOP Instance UID.
-    upseventtype : int
+    ups_event_type : int
         The UPS Event Type ID.
-    upseventinfo : pydicom.dataset.Dataset
+    ups_event_info : pydicom.dataset.Dataset
         The N-EVENT-REPORT-RQ Event Information dataset.
     app_logger : logging.Logger
         The application's logger instance
     """
-    app_logger.info(f"Processing {UPS_EVENT_TYPES[upseventtype]} Event")
+    app_logger.info(f"Processing {UPS_EVENT_TYPES[ups_event_type]} Event")
 
     # Define the processing functions
     def process_ups_state_report(upsinstance, upseventinfo):
@@ -269,7 +269,7 @@ def my_upsevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
     }
 
     # Get the event type
-    event_type = UPS_EVENT_TYPES[upseventtype]
+    event_type = UPS_EVENT_TYPES[ups_event_type]
 
     # Call the appropriate processing function
     process_upsevent = upsevent_process_functions.get(
@@ -278,7 +278,7 @@ def my_upsevent_callback(upsinstance, upseventtype, upseventinfo, app_logger):
             f"Unsupported UPS event type {event_type} for UPS {upsinstance}"
         )
     )
-    process_upsevent(upsinstance, upseventinfo)
+    process_upsevent(ups_instance, ups_event_info)
 
 
 def main(loop_forever=True):  # Add a parameter to control the loop
