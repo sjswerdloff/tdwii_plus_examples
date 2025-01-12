@@ -53,7 +53,7 @@ class UPSNEventReceiver(CEchoSCP):
     """
 
     def __init__(self,
-                 ae_title: str = "EVENT_REPORT_RECEIVER",
+                 ae_title: str = "EVENT_REPORT_RCV",
                  bind_address: str = "",
                  port: int = 11112,
                  logger=None,
@@ -68,7 +68,7 @@ class UPSNEventReceiver(CEchoSCP):
         ----------
         ae_title : str
             The title of the Application Entity (AE)
-            Optional, default: "EVENT_REPORT_RECEIVER"
+            Optional, default: "EVENT_REPORT_RCV"
 
         bind_address : str
             A specific IP address or hostname of the AE
@@ -113,7 +113,7 @@ class UPSNEventReceiver(CEchoSCP):
             )
 
         if not ae_title:
-            self.ae_title = "EVENT_REPORT_RECEIVER"
+            self.ae_title = "EVENT_REPORT_RCV"
             self.logger.info("AE title not provided, using default: %s",
                              self.ae_title)
         else:
