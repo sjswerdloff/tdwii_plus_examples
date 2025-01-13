@@ -41,7 +41,8 @@ class BaseSCP:
                  ae_title: str = "BASE_SCP",
                  bind_address: str = "",
                  port: int = 11112,
-                 logger=None):
+                 logger=None,
+                 **kwargs):
         """
         Initializes a new instance of the BaseSCP class.
         This method creates an AE without presentation contexts.
@@ -78,6 +79,7 @@ class BaseSCP:
             )
         else:
             raise TypeError("logger must be an instance of logging.Logger")
+        self.logger.debug("BaseSCP.__init__")
 
         if not bind_address:
             self.bind_address = ""
@@ -137,6 +139,7 @@ class BaseSCP:
 
         This method is intended to be overridden in derived classes.
         """
+        self.logger.debug("BaseSCP._add_contexts")
         pass    # base class, do nothing, pure virtual
 
     def _add_handlers(self):
@@ -145,6 +148,7 @@ class BaseSCP:
 
         This method is intended to be overridden in derived classes.
         """
+        self.logger.debug("BaseSCP._add_handlers")
         # To define actions when a TCP connection in opened or closed
         self.handlers.append((evt.EVT_CONN_OPEN, handle_open,
                               [self.logger]))
@@ -159,6 +163,7 @@ class BaseSCP:
         association requests.  The server is run in a separate thread and will
         not block the calling thread.
         """
+        self.logger.debug("BaseSCP.run")
         # Listen for incoming association requests
         try:
             self.threaded_server = self.ae.start_server(

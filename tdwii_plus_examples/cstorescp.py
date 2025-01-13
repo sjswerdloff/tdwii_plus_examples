@@ -60,6 +60,7 @@ class CStoreSCP(CEchoSCP):
                  transfer_syntaxes=None,
                  custom_handler=None,
                  store_directory=None,
+                 **kwargs
                  ):
         """
         Initializes a new instance of the CStoreSCP class.
@@ -120,6 +121,7 @@ class CStoreSCP(CEchoSCP):
                 "Logger set to %s with level %s",
                 logger.name, logging.getLevelName(logger.getEffectiveLevel())
             )
+        self.logger.debug("CStoreSCP.__init__")
 
         if not ae_title:
             self.ae_title = "STORE_SCP"
@@ -171,7 +173,8 @@ class CStoreSCP(CEchoSCP):
             ae_title=self.ae_title,
             bind_address=bind_address,
             port=port,
-            logger=logger)
+            logger=logger,
+            **kwargs)
 
     def _add_contexts(self):
         """
@@ -184,6 +187,7 @@ class CStoreSCP(CEchoSCP):
         Endian and Deflated Explicit VR Little Endian transfer syntaxes are
         included by default unless otherwise specified in the constructor.
         """
+        self.logger.debug("CStoreSCP._add_contexts")
         super()._add_contexts()
         if self.sop_classes is None:
             sop_classes = [
@@ -224,6 +228,7 @@ class CStoreSCP(CEchoSCP):
         This method overrides the CEchoSCP parent class method to add a handler
         for the Storage SOP Classes.
         """
+        self.logger.debug("CStoreSCP._add_handlers")
         super()._add_handlers()
         args = Namespace(ignore=False, output_directory=self.store_directory)
         self.handlers.append((evt.EVT_C_STORE, self.handle_store,

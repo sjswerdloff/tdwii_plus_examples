@@ -33,6 +33,7 @@ def nevent_callback(ups_instance, ups_event_type, ups_event_info, app_logger):
     app_logger : logging.Logger
         The application's logger instance
     """
+    print(f"Processing Status Change for UPS Instance {ups_instance}")
     app_logger.info(f"Processing Status Change for UPS Instance {ups_instance}")
     app_logger.info(f"UPS Event Type: {UPS_EVENT_TYPES[ups_event_type]}")
     app_logger.info(f"UPS Event Information: \n{ups_event_info}")

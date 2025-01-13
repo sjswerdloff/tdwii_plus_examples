@@ -58,7 +58,7 @@ class UPSNEventReceiver(CEchoSCP):
                  logger=None,
                  transfer_syntaxes=None,
                  ups_event_callback=None,
-                 ):
+                 **kwargs):
         """
         Initializes a new instance of the NEventReceiver class.
         This method creates an AE with UPS Event presentation context.
@@ -110,6 +110,7 @@ class UPSNEventReceiver(CEchoSCP):
                 "Logger set to %s with level %s",
                 logger.name, logging.getLevelName(logger.getEffectiveLevel())
             )
+        self.logger.debug("UPSNEventReceiver.__init__")
 
         if not ae_title:
             self.ae_title = "EVENT_REPORT_RCV"
@@ -146,10 +147,11 @@ class UPSNEventReceiver(CEchoSCP):
             )
 
         super().__init__(
-            ae_title=self.ae_title,
+            ae_title=ae_title,
             bind_address=bind_address,
             port=port,
-            logger=self.logger)
+            logger=logger,
+            **kwargs)
 
     def _add_contexts(self):
         """
@@ -161,6 +163,7 @@ class UPSNEventReceiver(CEchoSCP):
         Endian and Deflated Explicit VR Little Endian transfer syntaxes are
         included by default unless otherwise specified in the constructor.
         """
+        self.logger.debug("UPSNEventReceiver._add_contexts")
         super()._add_contexts()
 
         sop_class = UPS_SOP_CLASSES["UnifiedProcedureStepEvent"]
@@ -194,6 +197,7 @@ class UPSNEventReceiver(CEchoSCP):
         This method overrides the CEchoSCP parent class method to add a
         handler for the UPS Event SOP Class.
         """
+        self.logger.debug("UPSNEventReceiver._add_handlers")
         super()._add_handlers()
         self.handlers.append((evt.EVT_N_EVENT_REPORT, handle_nevent,
                               [self.ups_event_callback, self.logger]))

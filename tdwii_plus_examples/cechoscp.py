@@ -39,7 +39,8 @@ class CEchoSCP(BaseSCP):
                  ae_title: str = "ECHO_SCP",
                  bind_address: str = "",
                  port: int = 11112,
-                 logger=None):
+                 logger=None,
+                 **kwargs):
         """
         Initializes a new instance of the CEchoSCP class.
         This method creates an AE with the Verification presentation context.
@@ -77,6 +78,7 @@ class CEchoSCP(BaseSCP):
             )
         else:
             raise TypeError("logger must be an instance of logging.Logger")
+        self.logger.debug("CEchoSCP.__init__")
 
         if not ae_title:
             self.ae_title = "ECHO_SCP"
@@ -89,7 +91,8 @@ class CEchoSCP(BaseSCP):
             ae_title=self.ae_title,
             bind_address=bind_address,
             port=port,
-            logger=logger)
+            logger=logger,
+            **kwargs)
 
     def _add_contexts(self):
         """
@@ -101,6 +104,7 @@ class CEchoSCP(BaseSCP):
 
         This method is intended to be overridden in derived classes.
         """
+        self.logger.debug("CEchoSCP._add_contexts")
         super()._add_contexts()
         self.ae.add_supported_context(Verification, "1.2.840.10008.1.2")
 
@@ -114,6 +118,7 @@ class CEchoSCP(BaseSCP):
 
         This method is intended to be overridden in derived classes.
         """
+        self.logger.debug("CEchoSCP._add_handlers")
         super()._add_handlers()
         self.handlers.append((evt.EVT_C_ECHO, handle_cecho,
                               [self.logger]))
