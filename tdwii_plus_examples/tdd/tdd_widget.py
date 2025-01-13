@@ -100,6 +100,9 @@ class TDD_Widget(QWidget):
         try:
             if "ae_title" in default_dict and "import_staging_directory" in default_dict:
                 self._restart_scp()
+            else:
+                logging.error("AE Title and Staging Directory missing from config file")
+
         except Exception:
             logging.error(
                 "Unable to start SCP for this Emulator, check AE Title in defaults configuration and ApplicationEntities.json"
@@ -345,7 +348,10 @@ class TDD_Widget(QWidget):
         staging_dir = self.ui.import_staging_dir_line_edit.text()
         print(f"TDD AE Title: {tdd_scp_ae_title} using {staging_dir} for caching data")
         # TDD_SCP combines the NEVENT SCP and C-STORE SCP
-        self.tdd_scp = PPVS_SCP(nevent_callback=self._nevent_callback, ae_title=tdd_scp_ae_title, store_directory=staging_dir)
+        self.tdd_scp = PPVS_SCP(
+            ups_event_callback=self._nevent_callback,
+            ae_title=tdd_scp_ae_title,
+            store_directory=staging_dir)
         self.tdd_scp.run()
         self.watch_scu = WatchSCU(self.ui.tdd_ae_line_edit.text())
         upsscp_ae_title = self.ui.ups_ae_line_edit.text()
@@ -432,26 +438,33 @@ class TDD_Widget(QWidget):
         return success
 
     def _nevent_callback(self, **kwargs):
+        print(f"Processing UPS Event in TDD callback")
         logger = None
         ups_uid = ""
-        if "logger" in kwargs.keys():
-            logger = kwargs["logger"]
+        if "app_logger" in kwargs.keys():
+            logger = kwargs["app_logger"]
         if logger:
             logger.info("nevent_cb invoked")
         event_type_id = 0  # not a valid type ID
         if logger:
             logger.info("TODO: Invoke application response appropriate to content of N-EVENT-REPORT-RQ")
-        if "type_id" in kwargs.keys():
-            event_type_id = kwargs["type_id"]
+        if "ups_event_type" in kwargs.keys():
+            event_type_id = kwargs["ups_event_type"]
             if logger:
                 logger.info(f"Event Type ID is: {event_type_id}")
-        if "information_ds" in kwargs.keys():
-            information_ds = kwargs["information_ds"]
+        if "ups_event_info" in kwargs.keys():
+            information_ds = kwargs["ups_event_info"]
             if logger:
                 logger.info("Dataset in N-EVENT-REPORT-RQ: ")
                 logger.info(f"{information_ds}")
-            if "SOPInstanceUID" in information_ds:
-                ups_uid = information_ds.SOPInstanceUID
+        # disabled as UPS SOPInstanceUID was not received
+        # from the original nevent_receiver_handlers
+        #
+        #  if "ups_instance" in kwargs.keys():
+        #     ups_uid = kwargs["ups_instance"]
+        #     if logger:
+        #         logger.info(f"UPS Instance UID is: {ups_uid}")
+
         # TODO: replace if/elif with dict of {event_type_id,application_response_functions}
         if event_type_id == 1:
             if logger:
