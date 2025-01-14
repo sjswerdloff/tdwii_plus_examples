@@ -438,7 +438,7 @@ class TDD_Widget(QWidget):
         return success
 
     def _nevent_callback(self, **kwargs):
-        print(f"Processing UPS Event in TDD callback")
+        print("Processing UPS Event in TDD callback")
         logger = None
         ups_uid = ""
         if "app_logger" in kwargs.keys():
