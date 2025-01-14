@@ -1,8 +1,6 @@
 import os
 from time import sleep
 
-from pynetdicom import ALL_TRANSFER_SYNTAXES, AllStoragePresentationContexts
-
 from tdwii_plus_examples import tdwii_config
 from tdwii_plus_examples.cstorescp import CStoreSCP
 from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver

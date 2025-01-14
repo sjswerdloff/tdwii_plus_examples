@@ -3,13 +3,11 @@ from argparse import Namespace
 import logging
 
 from pydicom.uid import (
-    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian, AllTransferSyntaxes
+    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian
 )
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
-from pynetdicom.presentation import (
-    StoragePresentationContexts,
-    AllStoragePresentationContexts,
-)
+from pynetdicom.presentation import StoragePresentationContexts
+
 from pynetdicom.apps.common import setup_logging
 
 from tdwii_plus_examples.cechoscp import CEchoSCP
@@ -87,7 +85,7 @@ class CStoreSCP(CEchoSCP):
         sop_classes: list of str or pydicom.uid.UID
             A list of Storage SOP Classes to support
             (must be valid SOP Class UID, Names or Keywords from PS3.6 Annex A,
-            for Storage SOP classes defined in Part 4 Annex B.5, invalid 
+            for Storage SOP classes defined in Part 4 Annex B.5, invalid
             UIDs, Names or Keywords will be ignored)
             Optional, default: None, First 128 SOP Classes are supported
 
@@ -209,8 +207,9 @@ class CStoreSCP(CEchoSCP):
             if ImplicitVRLittleEndian not in list(
                     self._valid_transfer_syntaxes.values()):
                 transfer_syntaxes = (
-                    list(self._valid_transfer_syntaxes.values()) +
-                    [ImplicitVRLittleEndian]
+                    list(self._valid_transfer_syntaxes.values()) + [
+                        ImplicitVRLittleEndian
+                    ]
                 )
             else:
                 transfer_syntaxes = (

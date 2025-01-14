@@ -179,8 +179,9 @@ class UPSNEventReceiver(CEchoSCP):
             if ImplicitVRLittleEndian not in list(
                     self._valid_transfer_syntaxes.values()):
                 transfer_syntaxes = (
-                    list(self._valid_transfer_syntaxes.values()) +
-                    [ImplicitVRLittleEndian]
+                    list(self._valid_transfer_syntaxes.values()) + [
+                        ImplicitVRLittleEndian
+                    ]
                 )
             else:
                 transfer_syntaxes = list(
