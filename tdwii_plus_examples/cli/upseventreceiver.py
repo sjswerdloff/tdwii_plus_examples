@@ -7,12 +7,16 @@ from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 from tdwii_plus_examples.upsneventhandler import UPS_EVENT_TYPES
 
 
-def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logger):
+def my_upsevent_callback(
+    ups_instance, ups_event_type, ups_event_info, app_logger
+):
     """
     Example of a UPS Event callback for processing incoming UPS events.
 
-    This callback process UPS State Change events. It's meant to be
-    used as a starting point for writing your own callback.
+    This callback processes UPS State Change events. It does only log
+    the received UPS Event Type and a message suggesting what behavior
+    could be implemented. It's meant to be used as a starting point for
+    writing your own callback.
 
     Parameters
     ----------
@@ -123,8 +127,9 @@ def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logge
         """
         requesting_ae = upseventinfo.RequestingAE
         app_logger.info(
-            f"Time to accept or reject cancellation of UPS {upsinstance} "
-            f"from {requesting_ae}"
+            f"Time to accept cancellation of UPS {upsinstance} "
+            f"if {requesting_ae} was its creator and reject "
+            f"otherwise"
         )
 
     def process_ups_progress_report(upsinstance, upseventinfo):
@@ -204,9 +209,9 @@ def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logge
 
         if scpstatus == "RESTARTED" and subscriptionstatus == "COLD START":
             app_logger.info(
-                f"Time to check if this is a Cold Start and then re-subscribe for "
-                f"specific UPS instances if this application has/had instance "
-                f"specific subscriptions {upsinstance}"
+                f"Time to check if this is a Cold Start and then re-subscribe "
+                f"for specific UPS instances if this application has/had "
+                f"instance specific subscriptions {upsinstance}"
             )
         elif scpstatus == "GOING DOWN":
             app_logger.info(
