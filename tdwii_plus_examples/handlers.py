@@ -202,31 +202,6 @@ def _number_of_matching_ups(query_as_ds: Dataset):
     return number_of_matches
 
 
-def handle_echo(event, cli_config, logger):
-    """Handler for evt.EVT_C_ECHO.
-
-    Parameters
-    ----------
-    event : events.Event
-        The corresponding event.
-    cli_config : dict
-        A :class:`dict` containing configuration settings passed via CLI.
-    logger : logging.Logger
-        The application's logger.
-
-    Returns
-    -------
-    int
-        The status of the C-ECHO operation, always ``0x0000`` (Success).
-    """
-    requestor = event.assoc.requestor
-    timestamp = event.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-    addr, port = requestor.address, requestor.port
-    logger.info(f"Received C-ECHO request from {addr}:{port} at {timestamp}")
-
-    return 0x0000
-
-
 def handle_find(event, instance_dir, db_path, cli_config, logger):
     """Handler for evt.EVT_C_FIND.
 
@@ -297,14 +272,17 @@ def handle_find(event, instance_dir, db_path, cli_config, logger):
             try:
                 logger.info(f"match: {match} with SOP Instance UID: {match.sop_instance_uid}")
                 response = dcmread(Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True)
-                logger.info(f"response: {response}")
-                response.RetrieveAETitle = event.assoc.ae.ae_title
+                logger.info(f"response Identifier: {response}")
+                # Next line removed as only required for Query/Retrieve SOP Class
+                # response.RetrieveAETitle = event.assoc.ae.ae_title
             except Exception as exc:
                 logger.error("Error creating response Identifier")
                 logger.exception(exc)
                 yield 0xC322, None
 
-            yield 0xFF00, response
+            # TODO: Change to 0xFF01 when one or more Optional Keys not
+            #  supported. See Table C.4-1. C-FIND Response Status Values
+            yield 0xFF00, response 
 
 
 def _reload_ups_instances(instance_dir, logger):

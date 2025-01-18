@@ -5,6 +5,7 @@ import argparse
 import os
 import sys
 from configparser import ConfigParser
+import time
 
 import pydicom.config
 from pynetdicom import (
@@ -23,13 +24,14 @@ from sqlalchemy.orm import sessionmaker
 
 from tdwii_plus_examples import upsdb
 from tdwii_plus_examples.handlers import (
-    handle_echo,
     handle_find,
     handle_naction,
     handle_ncreate,
     handle_nget,
     handle_nset,
 )
+
+from tdwii_plus_examples.cechoscp import CEchoSCP
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True
@@ -199,7 +201,7 @@ def _setup_argparser():
         choices=["critical", "error", "warn", "info", "debug"],
     )
     fdir = os.path.abspath(os.path.dirname(__file__))
-    fpath = os.path.join(fdir, "default.ini")
+    fpath = os.path.join(fdir, "../config/upsscp_default.ini")
     gen_opts.add_argument(
         "-c",
         "--config",
@@ -272,8 +274,10 @@ def _setup_argparser():
     return parser.parse_args()
 
 
-def main(args=None):
+def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     """Run the application."""
+
+    # parse the arguments from the command line or from the calling function
     if args is not None:
         sys.argv = args
 
@@ -283,16 +287,19 @@ def main(args=None):
         print(f"upsscp.py v{__version__}")
         sys.exit()
 
+    # Setup logging
     APP_LOGGER = setup_logging(args, "upsscp")
     APP_LOGGER.debug(f"upsscp.py v{__version__}")
     APP_LOGGER.debug("")
 
+    # Load the configuration file settings
     APP_LOGGER.debug("Using configuration from:")
     APP_LOGGER.debug(f"  {args.config}")
     APP_LOGGER.debug("")
     config = ConfigParser()
     config.read(args.config)
 
+    # Override configuration file settings with command line settings
     if args.ae_title:
         config["DEFAULT"]["ae_title"] = args.ae_title
     if args.port:
@@ -312,10 +319,13 @@ def main(args=None):
     if args.instance_location:
         config["DEFAULT"]["instance_location"] = args.instance_location
 
-    # Log configuration settings
+    # Log the configuration settings
     _log_config(config, APP_LOGGER)
+
+    # Get our Application Entity settings
     app_config = config["DEFAULT"]
 
+    # Get other Application Entities settings
     dests = {}
     for ae_title in config.sections():
         dest = config[ae_title]
@@ -323,15 +333,18 @@ def main(args=None):
         ae_title = set_ae(ae_title, "ae_title", False, False)
         dests[ae_title] = (dest["address"], dest.getint("port"))
 
-    # Use default or specified configuration file
+    # Set the instance storage and database directories to current directory
+    # if setting is not an absolute path
     current_dir = os.path.abspath(os.path.dirname(__file__))
     instance_dir = os.path.join(current_dir, app_config["instance_location"])
+
     db_path = os.path.join(current_dir, app_config["database_location"])
-    # The path to the database
     db_path = f"sqlite:///{db_path}"
+
+    # Create the database if it doesn't exist
     upsdb.create(db_path)
 
-    # Clean up the database and storage directory
+    # Clean up the database and storage directory if requested
     if args.clean:
         response = input(
             "This will delete all instances from both the storage directory "
@@ -345,32 +358,16 @@ def main(args=None):
         else:
             sys.exit(1)
 
-    # Try to create the instance storage directory
+    # Create the instance storage directory if it doesn't exist
     os.makedirs(instance_dir, exist_ok=True)
 
-    ae = AE(app_config["ae_title"])
+    # Create our Application Entity
+    upsscp = CEchoSCP(ae_title=app_config["ae_title"], bind_address=app_config["bind_address"], port=app_config.getint("port"), logger=APP_LOGGER)
+    ae = upsscp.ae
     ae.maximum_pdu_size = app_config.getint("max_pdu")
     ae.acse_timeout = app_config.getfloat("acse_timeout")
     ae.dimse_timeout = app_config.getfloat("dimse_timeout")
     ae.network_timeout = app_config.getfloat("network_timeout")
-
-    # Add supported presentation contexts
-    # Verification SCP
-    ae.add_supported_context(Verification, ALL_TRANSFER_SYNTAXES)
-
-    # # Storage SCP - support all transfer syntaxes
-    # for cx in AllStoragePresentationContexts:
-    #     ae.add_supported_context(
-    #         cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False
-    #     )
-
-    # # Query/Retrieve SCP
-    # ae.add_supported_context(PatientRootQueryRetrieveInformationModelFind)
-    # ae.add_supported_context(PatientRootQueryRetrieveInformationModelMove)
-    # ae.add_supported_context(PatientRootQueryRetrieveInformationModelGet)
-    # ae.add_supported_context(StudyRootQueryRetrieveInformationModelFind)
-    # ae.add_supported_context(StudyRootQueryRetrieveInformationModelMove)
-    # ae.add_supported_context(StudyRootQueryRetrieveInformationModelGet)
 
     # Unified Procedure Step SCP
     for cx in UnifiedProcedurePresentationContexts:
@@ -378,22 +375,30 @@ def main(args=None):
 
     APP_LOGGER.info(f"Configured for instance_dir = {instance_dir}")
     # Set our handler bindings
-    handlers = [
-        (evt.EVT_C_ECHO, handle_echo, [args, APP_LOGGER]),
-        (evt.EVT_C_FIND, handle_find, [instance_dir, db_path, args, APP_LOGGER]),
-        # (evt.EVT_C_GET, handle_get, [db_path, args, APP_LOGGER]),
-        # (evt.EVT_C_MOVE, handle_move, [dests, db_path, args, APP_LOGGER]),
-        # (evt.EVT_C_STORE, handle_store, [instance_dir, db_path, args, APP_LOGGER]),
-        (evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]),
-        (evt.EVT_N_ACTION, handle_naction, [instance_dir, db_path, args, APP_LOGGER]),
-        (evt.EVT_N_CREATE, handle_ncreate, [instance_dir, db_path, args, APP_LOGGER]),
-        # (evt.EVT_N_EVENT_REPORT, handle_nevent, [db_path, args, APP_LOGGER]),
-        (evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]),
-    ]
-
+    upsscp.handlers.append(
+        (evt.EVT_C_FIND, handle_find, 
+        [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append(
+        (evt.EVT_N_GET, handle_nget, 
+        [db_path, args, APP_LOGGER]))
+    upsscp.handlers.append(
+        (evt.EVT_N_ACTION, handle_naction, 
+        [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append(
+        (evt.EVT_N_CREATE, handle_ncreate,
+        [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append(
+        (evt.EVT_N_SET, handle_nset, 
+        [db_path, args, APP_LOGGER]))
+    
     # Listen for incoming association requests
-    ae.start_server((app_config["bind_address"], app_config.getint("port")), evt_handlers=handlers)
-
+    upsscp.run()
+    # Keep the main application running
+    try:
+        while loop_forever:
+            time.sleep(1)  # Sleep to prevent high CPU usage
+    except KeyboardInterrupt:
+        APP_LOGGER.info("Shutting down the DICOM Verification SCP...")
 
 if __name__ == "__main__":
     main()
