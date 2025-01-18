@@ -36,8 +36,8 @@ class TestCEchoSCP(unittest.TestCase):
         python_executable = sys.executable
 
         # Send an echo request using pynetdicom's echoscu.py
-        subprocess.check_call([python_executable, '-m', 'pynetdicom', 'echoscu',
-                               'localhost', '11112',
+        subprocess.check_call([python_executable, '-m', 'pynetdicom',
+                               'echoscu', 'localhost', '11112',
                                '-aet', 'ECHOSCU', '-aec', 'ECHO_SCP'])
 
         # Wait for 1 second to ensure the logs are generated

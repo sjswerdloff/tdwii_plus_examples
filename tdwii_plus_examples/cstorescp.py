@@ -3,17 +3,18 @@ from argparse import Namespace
 import logging
 
 from pydicom.uid import (
-    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian, AllTransferSyntaxes
+    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian
 )
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
-from pynetdicom.presentation import (
-    StoragePresentationContexts,
-    AllStoragePresentationContexts,
-)
+from pynetdicom.presentation import StoragePresentationContexts
+
 from pynetdicom.apps.common import setup_logging
 
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
+from tdwii_plus_examples._dicom_uids import (
+    validate_sop_classes, validate_transfer_syntaxes
+)
 
 
 class CStoreSCP(CEchoSCP):
@@ -57,10 +58,11 @@ class CStoreSCP(CEchoSCP):
                  transfer_syntaxes=None,
                  custom_handler=None,
                  store_directory=None,
+                 **kwargs
                  ):
         """
         Initializes a new instance of the CStoreSCP class.
-        This method creates an AE without presentation contexts.
+        This method creates an AE with storage presentation contexts.
 
         Parameters
         ----------
@@ -81,15 +83,16 @@ class CStoreSCP(CEchoSCP):
             Optional, default: None, a debug logger will be used
 
         sop_classes: list of str or pydicom.uid.UID
-            A list of SOP Classes UIDs or names to support
-            (names must be valid SOP Class Keywords from PS3.6 Annex A,
-            invalid UIDs and names will be ignored)
+            A list of Storage SOP Classes to support
+            (must be valid SOP Class UID, Names or Keywords from PS3.6 Annex A,
+            for Storage SOP classes defined in Part 4 Annex B.5, invalid
+            UIDs, Names or Keywords will be ignored)
             Optional, default: None, First 128 SOP Classes are supported
 
         transfer_syntaxes: list of str/pydicom.uid.UID
-            A list of transfer syntaxes UIDs or names to support
-            (names must be valid Transfer Syntax Keywords from PS3.6 Annex A,
-            invalid UIDs and names will be ignored).
+            A list of transfer syntaxes to support
+            (must be valid Transfer Syntax UIDs, Names or Keywords from PS3.6
+            Annex A, invalid UIDs and names will be ignored).
             The order of the transfer syntaxes in the list can be used to set
             the preferred syntax to accept when multiple ones are proposed.
             Optional, default: None, pynetdicom default transfer syntaxes are
@@ -116,6 +119,7 @@ class CStoreSCP(CEchoSCP):
                 "Logger set to %s with level %s",
                 logger.name, logging.getLevelName(logger.getEffectiveLevel())
             )
+        self.logger.debug("CStoreSCP.__init__")
 
         if not ae_title:
             self.ae_title = "STORE_SCP"
@@ -127,20 +131,21 @@ class CStoreSCP(CEchoSCP):
         self.sop_classes = sop_classes
         if sop_classes is not None:
             self._valid_sop_classes, self._invalid_sop_classes = (
-                self._validate_syntaxes(sop_classes, "SOP Class")
+                validate_sop_classes(sop_classes)
             )
             if self._invalid_sop_classes:
                 self.logger.warning("Ignoring invalid SOP Classes: %s",
-                                    self._invalid_sop_classes)
+                                    list(self._invalid_sop_classes.keys()))
 
         self.transfer_syntaxes = transfer_syntaxes
         if transfer_syntaxes is not None:
             self._valid_transfer_syntaxes, self._invalid_transfer_syntaxes = (
-                self._validate_syntaxes(transfer_syntaxes, "Transfer Syntax")
+                validate_transfer_syntaxes(transfer_syntaxes)
             )
             if self._invalid_transfer_syntaxes:
-                self.logger.warning("Ignoring invalid Transfer Syntaxes: %s",
-                                    self._invalid_transfer_syntaxes)
+                self.logger.warning(
+                    "Ignoring invalid Transfer Syntaxes: %s",
+                    list(self._invalid_transfer_syntaxes.keys()))
 
         self.logger.debug(
             f"Custom handler: {custom_handler} type is {type(custom_handler)}")
@@ -166,39 +171,8 @@ class CStoreSCP(CEchoSCP):
             ae_title=self.ae_title,
             bind_address=bind_address,
             port=port,
-            logger=logger)
-
-    def _validate_syntaxes(self, items, uid_type):
-        # Sort valid and invalid items based on the UID type
-        self.logger.debug(f"Validating {uid_type} list: {items}")
-
-        # Construct a mapping of valid keywords and UIDs for syntax validation
-        valid_syntaxes = {
-            ctx.abstract_syntax: UID(ctx.abstract_syntax).keyword
-            for ctx in AllStoragePresentationContexts
-        } if uid_type == 'SOP Class' else {
-            ctx: UID(ctx).keyword
-            for ctx in AllTransferSyntaxes
-        }
-
-        # Check each item in the provided list
-        valid_items = []
-        invalid_items = []
-        for item in items:
-            keyword = valid_syntaxes.get(item)
-            if keyword is not None:
-                valid_items.append(item)
-                self.logger.debug(f"Valid {uid_type} : {item}")
-            elif item in valid_syntaxes.values():
-                valid_items.append(
-                    next(UID for UID, keyword in valid_syntaxes.items()
-                         if keyword == item))
-                self.logger.debug(f"Valid {uid_type} : {item}")
-            else:
-                invalid_items.append(item)
-                self.logger.debug(f"Invalid {uid_type} : {item}")
-
-        return valid_items, invalid_items
+            logger=logger,
+            **kwargs)
 
     def _add_contexts(self):
         """
@@ -211,6 +185,7 @@ class CStoreSCP(CEchoSCP):
         Endian and Deflated Explicit VR Little Endian transfer syntaxes are
         included by default unless otherwise specified in the constructor.
         """
+        self.logger.debug("CStoreSCP._add_contexts")
         super()._add_contexts()
         if self.sop_classes is None:
             sop_classes = [
@@ -218,7 +193,7 @@ class CStoreSCP(CEchoSCP):
                 for context in StoragePresentationContexts
             ]
         else:
-            sop_classes = self._valid_sop_classes
+            sop_classes = list(self._valid_sop_classes.values())
         self.logger.debug(f"Supported Storage SOP Classes: {sop_classes}")
 
         if self.transfer_syntaxes is None or not self.transfer_syntaxes:
@@ -229,11 +204,17 @@ class CStoreSCP(CEchoSCP):
             transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + \
                 transfer_syntaxes
         else:
-            if ImplicitVRLittleEndian not in self._valid_transfer_syntaxes:
-                transfer_syntaxes = self._valid_transfer_syntaxes + [
-                    ImplicitVRLittleEndian]
+            if ImplicitVRLittleEndian not in list(
+                    self._valid_transfer_syntaxes.values()):
+                transfer_syntaxes = (
+                    list(self._valid_transfer_syntaxes.values()) + [
+                        ImplicitVRLittleEndian
+                    ]
+                )
             else:
-                transfer_syntaxes = self._valid_transfer_syntaxes
+                transfer_syntaxes = (
+                    list(self._valid_transfer_syntaxes.values())
+                )
         self.logger.debug(f"Supported Transfer Syntaxes: {transfer_syntaxes}")
 
         for sop_class in sop_classes:
@@ -246,6 +227,7 @@ class CStoreSCP(CEchoSCP):
         This method overrides the CEchoSCP parent class method to add a handler
         for the Storage SOP Classes.
         """
+        self.logger.debug("CStoreSCP._add_handlers")
         super()._add_handlers()
         args = Namespace(ignore=False, output_directory=self.store_directory)
         self.handlers.append((evt.EVT_C_STORE, self.handle_store,

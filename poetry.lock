@@ -185,7 +185,7 @@ typing = ["typing-extensions (>=4.12.2)"]
 name = "flake8"
 version = "7.1.1"
 description = "the modular source code checker: pep8 pyflakes and co"
-optional = true
+optional = false
 python-versions = ">=3.8.1"
 files = [
     {file = "flake8-7.1.1-py2.py3-none-any.whl", hash = "sha256:597477df7860daa5aa0fdd84bf5208a043ab96b8e96ab708770ae0364dd03213"},
@@ -326,7 +326,7 @@ colors = ["colorama (>=0.4.6)"]
 name = "mccabe"
 version = "0.7.0"
 description = "McCabe checker, plugin for flake8"
-optional = true
+optional = false
 python-versions = ">=3.6"
 files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
@@ -502,7 +502,7 @@ virtualenv = ">=20.10.0"
 name = "pycodestyle"
 version = "2.12.1"
 description = "Python style guide checker"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "pycodestyle-2.12.1-py2.py3-none-any.whl", hash = "sha256:46f0fb92069a7c28ab7bb558f05bfc0110dac69a0cd23c61ea0040283a9d78b3"},
@@ -527,7 +527,7 @@ docs = ["matplotlib", "numpy", "numpydoc", "pillow", "sphinx", "sphinx-copybutto
 name = "pyflakes"
 version = "3.2.0"
 description = "passive checker of Python programs"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "pyflakes-3.2.0-py2.py3-none-any.whl", hash = "sha256:84b5be138a2dfbb40689ca07e2152deb896a65c3a3e24c251c5c62489568074a"},
@@ -935,6 +935,17 @@ files = [
 pbr = ">=2.0.0"
 
 [[package]]
+name = "style"
+version = "1.1.0"
+description = "🌈 Terminal string styling"
+optional = false
+python-versions = "*"
+files = [
+    {file = "style-1.1.0-py2.py3-none-any.whl", hash = "sha256:6485a4bcb84629341a5fd1587fe3ac4887daa4741f0c8a1d01b9c3c8a263afe7"},
+    {file = "style-1.1.0.tar.gz", hash = "sha256:8eb365fc15039b19b728bd4e6e85fb7daf24e7aeeec6a15a666f97484c564005"},
+]
+
+[[package]]
 name = "termcolor"
 version = "2.4.0"
 description = "ANSI color formatting for output in terminal"
@@ -993,6 +1004,19 @@ files = [
 ]
 
 [[package]]
+name = "update"
+version = "0.0.1"
+description = ""
+optional = false
+python-versions = "*"
+files = [
+    {file = "update-0.0.1-py2.py3-none-any.whl", hash = "sha256:a25522b4bf60e3e3c1a3ff3ca3a4f5a328ac4b8ff400fdc9614483147e313323"},
+]
+
+[package.dependencies]
+style = "1.1.0"
+
+[[package]]
 name = "virtualenv"
 version = "20.26.6"
 description = "Virtual Python Environment builder"
@@ -1020,4 +1044,4 @@ tests = ["dill", "flake8", "pylint", "pytest", "pytest-rerunfailures", "pytest-s
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10, <3.13"
-content-hash = "c066e324ab2c3e9eca92f1abf7df39bb0d43e57c29fa19552256f453e8e6d1f9"
+content-hash = "5111c94464b0a04e4d72374ab199e182868e4edd4f1cd70b6f3b0af7d70fcf41"

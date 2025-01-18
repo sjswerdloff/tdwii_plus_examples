@@ -1,5 +1,4 @@
 import logging
-import re
 import unittest
 from unittest.mock import Mock
 from logging.handlers import MemoryHandler
@@ -8,23 +7,27 @@ from pydicom import uid
 from pynetdicom import UID, DEFAULT_TRANSFER_SYNTAXES
 from pynetdicom.sop_class import Verification
 from tdwii_plus_examples.cstorescp import CStoreSCP
+from tdwii_plus_examples._dicom_uids import (
+    validate_sop_classes, validate_transfer_syntaxes
+)
 
-# Define dictionaries of valid and invalid SOP Classes and Transfer syntaxes
-SOP_CLASSES = {
-    "CTImageStorage": True,                 # valid Storage SOP Class Keyword
-    "MRStorage": False,                     # invalid Storage SOP Class Keyword
-    "RTIonPlanStorage": True,               # valid Storage SOP Class Keyword
-    "1.2.840.10008.5.1.4.1.1.481.9": True,  # valid Storage SOP Class UID
-    "1.2.840.10008.1.2": False,             # invalid Storage SOP Class UID
-    "Verification": False                   # invalid Storage SOP Class UID
-}
+# Define test lists of valid and invalid SOP Classes and Transfer syntaxes
+# to be used in the parameterized test cases.
+SOP_CLASSES = [
+    "CTImageStorage",                 # valid Storage SOP Class Keyword
+    "MRStorage",                      # invalid Storage SOP Class Keyword
+    "RTIonPlanStorage",               # valid Storage SOP Class Keyword
+    "1.2.840.10008.5.1.4.1.1.481.9",  # valid Storage SOP Class UID
+    "1.2.840.10008.1.2",              # invalid Storage SOP Class UID
+    "Verification",                   # invalid Storage SOP Class UID
+]
 
-XFER_SYNTAXES = {
-    "ExplicitVRLittleEndian": True,  # valid transfer syntax Keyword
-    "1.2.840.10008.1.2.2": True,     # valid transfer syntax UID
-    "ImplicitLittleEndian": False,   # invalid transfer syntax Keyword
-    "1.2.840.10008.5.2.1": False,     # invalid transfer syntax UID
-}
+XFER_SYNTAXES = [
+    "ExplicitVRLittleEndian",  # valid transfer syntax Keyword
+    "1.2.840.10008.1.2.2",     # valid transfer syntax UID
+    "ImplicitLittleEndian",    # invalid transfer syntax Keyword
+    "1.2.840.10008.5.2.1",     # invalid transfer syntax UID
+]
 
 
 class TestCStoreSCP(unittest.TestCase):
@@ -38,18 +41,14 @@ class TestCStoreSCP(unittest.TestCase):
         cls.stream_handler = logging.StreamHandler()
         cls.test_logger.addHandler(cls.stream_handler)
 
-        # Create lists of valid and invalid values from the dictionaries
-        cls.valid_sop_classes = [
-            sop for sop, is_valid in SOP_CLASSES.items() if is_valid]
-        cls.invalid_sop_classes = [
-            sop for sop, is_valid in SOP_CLASSES.items() if not is_valid]
+        # Get the valid and invalid items of the test lists
+        cls.valid_sop_classes, cls.invalid_sop_classes = \
+            validate_sop_classes(SOP_CLASSES)
 
-        cls.valid_xfer_syntaxes = [
-            xfer for xfer, is_valid in XFER_SYNTAXES.items() if is_valid]
-        cls.invalid_xfer_syntaxes = [
-            xfer for xfer, is_valid in XFER_SYNTAXES.items() if not is_valid]
+        cls.valid_xfer_syntaxes, cls.invalid_xfer_syntaxes = \
+            validate_transfer_syntaxes(XFER_SYNTAXES)
 
-        # Create the list of default transfer syntaxes
+        # Get the list of default transfer syntaxes
         cls.default_transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
         # Make ExplicitVRLittleEndian the preferred transfer syntax
         cls.default_transfer_syntaxes.remove(UID(uid.ExplicitVRLittleEndian))
@@ -73,11 +72,10 @@ class TestCStoreSCP(unittest.TestCase):
     # Parameterized unit tests for the constructor parameters
 
     # Define test cases parameters
-
     @parameterized.expand([
-        (list(SOP_CLASSES.keys()), None, None, None),
-        (None, list(XFER_SYNTAXES.keys()), None, None),
-        (list(SOP_CLASSES.keys()), list(XFER_SYNTAXES.keys()), None, None),
+        (SOP_CLASSES, None, None, None),
+        (None, XFER_SYNTAXES, None, None),
+        (SOP_CLASSES, XFER_SYNTAXES, None, None),
         (None, None, "custom_handler", None),
         (None, None, "", None),
         (None, None, None, "/path/to/store"),
@@ -95,7 +93,6 @@ class TestCStoreSCP(unittest.TestCase):
             self.test_logger.debug(f"Custom handler: {handler}")
         else:
             handler = None
-        self.test_logger.debug(f"transfer_syntaxes: {transfer_syntaxes}")
         scp = CStoreSCP(
             logger=self.scp_logger,
             sop_classes=sop_classes,
@@ -103,7 +100,6 @@ class TestCStoreSCP(unittest.TestCase):
             custom_handler=handler,
             store_directory=store_directory
         )
-
         self.memory_handler.flush()
         log_output = [record.getMessage()
                       for record in self.memory_handler.buffer]
@@ -112,26 +108,29 @@ class TestCStoreSCP(unittest.TestCase):
 
         if transfer_syntaxes:
             # get the valid Transfer Syntax UIDs passed to the constructor
-            valid_xfer_stx_uids = []
-            for xfer_stx in self.valid_xfer_syntaxes:
-                if not re.match(uid.RE_VALID_UID, xfer_stx):
-                    valid_xfer_stx_uids.append(getattr(uid, xfer_stx))
-                else:
-                    valid_xfer_stx_uids.append(xfer_stx)
-            # add DICOM default Transfer Syntax if not present
+            valid_xfer_stx_uids = list(
+                self.valid_xfer_syntaxes.copy().values()
+            )
+            # add ImplicitVRLittleEndian to the list of valid Transfer Syntax
+            # UIDs if it is not already present
             if uid.ImplicitVRLittleEndian not in valid_xfer_stx_uids:
                 valid_xfer_stx_uids.append(uid.ImplicitVRLittleEndian)
-            self.test_logger.debug(f"Transfer Syntax UIDs: "
+            self.test_logger.debug(f"Expected Transfer Syntax UIDs: "
                                    f"{valid_xfer_stx_uids}")
+
+            # get the list of Transfer Syntax UIDs supported by the AE
+            ae_supported_xfer_stx_uids = [
+                context.transfer_syntax
+                for context in scp.ae.supported_contexts
+                if context.abstract_syntax != Verification
+            ]
+            self.test_logger.debug(f"Supported Transfer Syntax UIDs: "
+                                   f"{ae_supported_xfer_stx_uids[0]}")
 
         if sop_classes:
             # get the valid SOP Class UIDs passed to the constructor
-            valid_sop_classes_uids = []
-            for sop_class in self.valid_sop_classes:
-                if not re.match(uid.RE_VALID_UID, sop_class):
-                    valid_sop_classes_uids.append(getattr(uid, sop_class))
-                else:
-                    valid_sop_classes_uids.append(sop_class)
+            valid_sop_classes_uids = list(
+                self.valid_sop_classes.copy().values())
 
             # get the list of Storage SOP Classes UIDs supported by the AE
             ae_supported_sop_classes_uids = [
