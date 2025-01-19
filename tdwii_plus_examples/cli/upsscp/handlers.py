@@ -30,7 +30,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from tdwii_plus_examples import tdwii_config
-from tdwii_plus_examples.upsdb import Instance, InvalidIdentifier, add_instance, search
+from tdwii_plus_examples.cli.upsscp.upsdb import (
+    Instance, InvalidIdentifier, add_instance, search
+)
 
 _SERVICE_STATUS = {
     "SCHEDULED": {
@@ -282,7 +284,7 @@ def handle_find(event, instance_dir, db_path, cli_config, logger):
 
             # TODO: Change to 0xFF01 when one or more Optional Keys not
             #  supported. See Table C.4-1. C-FIND Response Status Values
-            yield 0xFF00, response 
+            yield 0xFF00, response
 
 
 def _reload_ups_instances(instance_dir, logger):

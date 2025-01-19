@@ -1,5 +1,35 @@
 #!/usr/bin/env python
-"""A Verification, Storage and Query/Retrieve SCP application."""
+"""
+A DICOM UPS Worklist Manager application example.
+
+This application starts an Application Entity (AE) server implementing
+the Verification and Unified Procedure Step (UPS) Service Classes.
+It listens for incoming DIMSE primitive requests and delegates the
+processing to handlers to store UPS work items as DICOM Part 10 files
+and manage them using a database.
+
+Usage:
+    upsscp [options]
+
+Options:
+    --version                   Print version information and exit
+    -q, --quiet                 Quiet mode, print no warnings and errors
+    -v, --verbose               Verbose mode, print processing details
+    -d, --debug                 Debug mode, print debug information
+    -ll, --log-level [l]        Set level of logger (critical, error, warn,
+                                info, debug)
+    -c, --config [f]ilename     Specify configuration file path
+    --port                      Override the AE TCP/IP port
+    -aet, --ae-title [a]etitle  Override the configured AE title
+    -ta, --acse-timeout [s]     Override the association messages timeout
+    -td, --dimse-timeout [s]    Override the DIMSE messages timeout
+    -tn, --network-timeout [s]  Override the network timeout
+    -pdu, --max-pdu [n]         Override the maximum PDU size
+    -ba, --bind-address [a]     Override the AE IP address
+    --database-location [f]     Override the database file path
+    --instance-location [d]     Override the instance storage directory
+    --clean                     Empty database and instance storage directory
+"""
 
 import argparse
 import os
@@ -9,7 +39,6 @@ import time
 
 import pydicom.config
 from pynetdicom import (
-    AE,
     ALL_TRANSFER_SYNTAXES,
     UnifiedProcedurePresentationContexts,
     _config,
@@ -17,13 +46,12 @@ from pynetdicom import (
     evt,
 )
 from pynetdicom.apps.common import setup_logging
-from pynetdicom.sop_class import Verification
 from pynetdicom.utils import set_ae
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from tdwii_plus_examples import upsdb
-from tdwii_plus_examples.handlers import (
+from tdwii_plus_examples.cli.upsscp import upsdb
+from tdwii_plus_examples.cli.upsscp.handlers import (
     handle_find,
     handle_naction,
     handle_ncreate,
@@ -59,7 +87,7 @@ def _log_config(config, logger):
 
     Parameters
     ----------
-    logger : logging.Logger
+    logger: logging.Logger
         The application's logger.
     """
     logger.debug("Configuration settings")
@@ -201,7 +229,7 @@ def _setup_argparser():
         choices=["critical", "error", "warn", "info", "debug"],
     )
     fdir = os.path.abspath(os.path.dirname(__file__))
-    fpath = os.path.join(fdir, "../config/upsscp_default.ini")
+    fpath = os.path.join(fdir, "./config/upsscp_default.ini")
     gen_opts.add_argument(
         "-c",
         "--config",
@@ -337,6 +365,8 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     # if setting is not an absolute path
     current_dir = os.path.abspath(os.path.dirname(__file__))
     instance_dir = os.path.join(current_dir, app_config["instance_location"])
+    instance_dir_path = os.path.abspath(instance_dir)
+    APP_LOGGER.info(f"Configured for instance_dir = {instance_dir_path}")
 
     db_path = os.path.join(current_dir, app_config["database_location"])
     db_path = f"sqlite:///{db_path}"
@@ -373,24 +403,23 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     for cx in UnifiedProcedurePresentationContexts:
         ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
-    APP_LOGGER.info(f"Configured for instance_dir = {instance_dir}")
     # Set our handler bindings
     upsscp.handlers.append(
-        (evt.EVT_C_FIND, handle_find, 
-        [instance_dir, db_path, args, APP_LOGGER]))
+        (evt.EVT_C_FIND, handle_find,
+         [instance_dir, db_path, args, APP_LOGGER]))
     upsscp.handlers.append(
-        (evt.EVT_N_GET, handle_nget, 
-        [db_path, args, APP_LOGGER]))
+        (evt.EVT_N_GET, handle_nget,
+         [db_path, args, APP_LOGGER]))
     upsscp.handlers.append(
-        (evt.EVT_N_ACTION, handle_naction, 
-        [instance_dir, db_path, args, APP_LOGGER]))
+        (evt.EVT_N_ACTION, handle_naction,
+         [instance_dir, db_path, args, APP_LOGGER]))
     upsscp.handlers.append(
         (evt.EVT_N_CREATE, handle_ncreate,
-        [instance_dir, db_path, args, APP_LOGGER]))
+         [instance_dir, db_path, args, APP_LOGGER]))
     upsscp.handlers.append(
-        (evt.EVT_N_SET, handle_nset, 
-        [db_path, args, APP_LOGGER]))
-    
+        (evt.EVT_N_SET, handle_nset,
+         [db_path, args, APP_LOGGER]))
+
     # Listen for incoming association requests
     upsscp.run()
     # Keep the main application running
@@ -399,6 +428,7 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
             time.sleep(1)  # Sleep to prevent high CPU usage
     except KeyboardInterrupt:
         APP_LOGGER.info("Shutting down the DICOM Verification SCP...")
+
 
 if __name__ == "__main__":
     main()
