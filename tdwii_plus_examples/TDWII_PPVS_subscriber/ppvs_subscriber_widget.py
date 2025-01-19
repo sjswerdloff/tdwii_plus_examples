@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # This Python file uses the following encoding: utf-8
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Dict
@@ -55,6 +56,8 @@ class PPVS_SubscriberWidget(QWidget):
         self.ups_dataset_dict: Dict[str, Dataset] = dict()
         config_file = "ppvs.toml"
         # TODO: command line argument specifying a different config file
+        config_file_path = os.path.abspath(config_file)
+
         try:
             with open(config_file, "rb") as f:
                 toml_dict = tomli.load(f)
@@ -76,17 +79,19 @@ class PPVS_SubscriberWidget(QWidget):
                 if "machine" in default_dict:
                     machine_name = default_dict["machine"]
                     self.ui.machine_name_line_edit.setText(machine_name)
-                logging.warning("Completed Parsing of " + config_file)
+                logging.warning(f"Completed Parsing of {config_file_path}")
             except Exception:
-                warning_msg = f"Difficulty parsing config file {config_file}"
-                logging.warning(warning_msg)
+                logging.warning("Difficulty parsing config file "
+                                f"{config_file_path}")
         except OSError as config_file_error:
-            logging.exception("Problem parsing config file: " + config_file_error)
+            logging.exception("Problem parsing config file "
+                              f"{config_file_path}: {config_file_error}")
 
         if "ae_title" in default_dict and "import_staging_directory" in default_dict:
             self.ppvs_scp = self._restart_scp()
         else:
-            logging.error("AE Title and Staging Directory missing from config file")
+            logging.error(f"AE Title and Staging Directory missing from "
+                          f"config file {config_file_path}")
 
     @Slot()
     def _import_staging_dir_clicked(self):
