@@ -4,7 +4,7 @@ A DICOM UPS Worklist Manager application example.
 
 This application starts an Application Entity (AE) server implementing
 the Verification and Unified Procedure Step (UPS) Service Classes.
-It supports the Verification, the UPS Push, UPS Pull, UPS Watch and 
+It supports the Verification, the UPS Push, UPS Pull, UPS Watch and
 UPS Event SOP Classes as an SCP.
 It listens for incoming DIMSE primitive requests and delegates the
 processing to handlers to store UPS work items as DICOM Part 10 files

@@ -4,9 +4,9 @@ This script loads and prints AE parameters and Machine Name mapping to AE Title.
 Usage:
     config_dump.py <ae_config_file> <machine_map_file>
 Arguments:
-    ae_config_file: Path to the AE configuration file 
+    ae_config_file: Path to the AE configuration file
         (default: tdwii_plus_examples/config/ApplicationEntities.json).
-    machine_map_file: Path to the machine map file. 
+    machine_map_file: Path to the machine map file.
         (default: tdwii_plus_examples/config/MachineMap.json).
 """
 
@@ -39,6 +39,7 @@ def main():
                   f"Port:{known_ae_port[value]}")
         except KeyError as e:
             print(f"AE Title {value} not found in AE config file")
+            print(f"Error: {e}")
 
 
 if __name__ == "__main__":

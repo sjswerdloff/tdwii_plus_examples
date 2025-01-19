@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 
 fdir = os.path.abspath(os.path.dirname(__file__))
 
