@@ -4,6 +4,8 @@ A DICOM UPS Worklist Manager application example.
 
 This application starts an Application Entity (AE) server implementing
 the Verification and Unified Procedure Step (UPS) Service Classes.
+It supports the Verification, the UPS Push, UPS Pull, UPS Watch and 
+UPS Event SOP Classes as an SCP.
 It listens for incoming DIMSE primitive requests and delegates the
 processing to handlers to store UPS work items as DICOM Part 10 files
 and manage them using a database.
@@ -12,6 +14,7 @@ Usage:
     upsscp [options]
 
 Options:
+    -h, --help                  Show this help message and exit
     --version                   Print version information and exit
     -q, --quiet                 Quiet mode, print no warnings and errors
     -v, --verbose               Verbose mode, print processing details
@@ -230,12 +233,13 @@ def _setup_argparser():
     )
     fdir = os.path.abspath(os.path.dirname(__file__))
     fpath = os.path.join(fdir, "./config/upsscp_default.ini")
+    fabspath = os.path.abspath(fpath)
     gen_opts.add_argument(
         "-c",
         "--config",
         metavar="[f]ilename",
         help="use configuration file f",
-        default=fpath,
+        default=fabspath,
     )
 
     net_opts = parser.add_argument_group("Networking Options")
@@ -401,7 +405,8 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
 
     # Unified Procedure Step SCP
     for cx in UnifiedProcedurePresentationContexts:
-        ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
+        if (cx.abstract_syntax.keyword not in ("UnifiedProcedureStepEvent", "UnifiedProcedureStepQuery")):
+            ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     # Set our handler bindings
     upsscp.handlers.append(

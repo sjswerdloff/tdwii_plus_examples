@@ -65,7 +65,9 @@ _ups_instances = dict()
 _global_subscribers = dict()  # AE Title and delete lock boolean "TRUE" or "FALSE" is the text representation
 _filtered_subscribers = dict()  # AE Title and the Dataset acting as the query filter
 
-REMOTE_AE_CONFIG_FILE = "ApplicationEntities.json"
+fdir = os.path.abspath(os.path.dirname(__file__))
+REMOTE_AE_CONFIG_FILE = os.path.join(fdir, "../../config/ApplicationEntities.json")
+
 tdwii_config.load_ae_config(REMOTE_AE_CONFIG_FILE)
 
 
@@ -1008,6 +1010,8 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
 
         subscriber_ip_addr = tdwii_config.known_ae_ipaddr[globalsubscriber]
         subscriber_port = tdwii_config.known_ae_port[globalsubscriber]
+        logger.info(f"Requesting association with {globalsubscriber} "
+                    f"at {subscriber_ip_addr}:{subscriber_port}")
         assoc = ae.associate(
             subscriber_ip_addr,
             subscriber_port,
