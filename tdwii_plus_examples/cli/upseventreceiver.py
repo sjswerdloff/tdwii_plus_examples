@@ -1,4 +1,26 @@
 #!/usr/bin/env python
+"""
+A DICOM UPS Event Receiver application example.
+
+This application starts an Application Entity (AE) server implementing
+the Verification and Unified Procedure Step (UPS) Service Classes.
+It supports the Verification and the UPS Event SOP Classes.
+It demonstrates how an application can use the NEventReceiverSCP class
+to receive and handle UPS State Change notifications.
+
+Usage:
+    upseventreceiver.py [options]
+
+Options:
+    -h, --help               Show this help message and exit
+    -a, --ae_title           Application Entity Title (default: UPSEVENT_RCV)
+    -b, --bind_address       AE Specific IP address or hostname.
+    -p, --port               AE Port number
+    -t, --transfer_syntaxes  List of Transfer syntax to support
+    -c, --callback           UPS Event callback function
+    -v, --verbose            Set log level to INFO
+    -d, --debug              Set log level to DEBUG
+"""
 import argparse
 import logging
 import time

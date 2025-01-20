@@ -56,8 +56,8 @@ def test_load_ae_config_default_path(setup_config_files, monkeypatch):
     monkeypatch.chdir(ae_config_file.parent)
     load_ae_config()
 
-    assert len(known_ae_ipaddr) == 3
-    assert len(known_ae_port) == 3
+    assert len(known_ae_ipaddr) == 9
+    assert len(known_ae_port) == 9
 
 
 def test_load_machine_map(setup_config_files):
@@ -74,7 +74,7 @@ def test_load_machine_map_default_path(setup_config_files, monkeypatch):
     monkeypatch.chdir(machine_map_file.parent)
     load_machine_map()
 
-    assert len(machine_ae_map) == 2
+    assert len(machine_ae_map) == 3
 
 
 def test_integration(setup_config_files):

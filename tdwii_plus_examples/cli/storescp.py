@@ -1,4 +1,26 @@
 #!/usr/bin/env python
+"""
+A DICOM Storage Service Class Provider (SCP) application.
+
+This application starts an Application Entity (AE) server implementing
+the Verification and Storage Service Classes.
+
+Usage:
+    storescp [options]
+
+Options:
+    -h, --help              Show this help message and exit
+    -a --ae_title           Application Entity Title (default: STORE_SCP)
+    -b --bind_address       Specific IP address or hostname
+    -p --port               Port number (default: 11112)
+    -s --sop_classes        List of SOP Class UIDs, Names or Keywords
+    -t --transfer_syntaxes  List of Transfer Syntaxes UIDs, Names or Keywords
+    -c --custom_handler     Custom C-STORE handler function
+    -o --output_directory   Output directory (defaults; current directory)
+    -v --verbose            Set log level to INFO
+    -d --debug              Set log level to DEBUG
+"""
+
 import argparse
 import logging
 import time

@@ -250,13 +250,14 @@ def _setup_argparser():
 
     # Configuration file Options
     fdir = os.path.abspath(os.path.dirname(__file__))
-    fpath = os.path.join(fdir, "default.ini")
+    fpath = os.path.join(fdir, "../config/default.ini")
+    fabspath = os.path.abspath(fpath)
     gen_opts.add_argument(
         "-c",
         "--config",
         metavar="[f]ilename",
         help="use configuration file f",
-        default=fpath,
+        default=fabspath,
     )
 
     # transaction UID option

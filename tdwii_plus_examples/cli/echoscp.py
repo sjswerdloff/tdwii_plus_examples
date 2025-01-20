@@ -1,4 +1,21 @@
 #!/usr/bin/env python
+"""
+A DICOM Verfication Service Class Provider (SCP) application.
+
+This application starts an Application Entity (AE) server implementing
+the Verification Service Class.
+
+Usage:
+    echoscp [options]
+
+Options:
+    -h, --help          Show this help message and exit
+    -a, --ae_title      Application Entity Title (default: ECHOSCP)
+    -b, --bind_address  Specific IP address or hostname
+    -p, --port          Port number (default: 11112)
+    -v, --verbose       Set log level to INFO
+    -d, --debug         Set log level to DEBUG
+"""
 
 import argparse
 import logging

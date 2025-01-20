@@ -5,6 +5,7 @@ Requires a configuration json file containing a list of AE Title/Address/Port
 """
 import json
 import logging
+import os
 import re
 import sys
 from pathlib import Path
@@ -180,7 +181,8 @@ def main(args=None):
     """Run the application."""
     local_store_ae_title = "STORE_SCP"
     path = "rsp000001.dcm"
-    ae_config_file = "ApplicationEntities.json"
+    fdir = os.path.abspath(os.path.dirname(__file__))
+    ae_config_file = os.path.join(fdir, "./config/ApplicationEntities.json")
     if args is not None and len(args) > 2:
         local_store_ae_title = args[1]
         path = args[2]
