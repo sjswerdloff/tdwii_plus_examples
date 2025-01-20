@@ -37,8 +37,8 @@ Options:
 import argparse
 import os
 import sys
-from configparser import ConfigParser
 import time
+from configparser import ConfigParser
 
 import pydicom.config
 from pynetdicom import (
@@ -53,6 +53,7 @@ from pynetdicom.utils import set_ae
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cli.upsscp import upsdb
 from tdwii_plus_examples.cli.upsscp.handlers import (
     handle_find,
@@ -61,8 +62,6 @@ from tdwii_plus_examples.cli.upsscp.handlers import (
     handle_nget,
     handle_nset,
 )
-
-from tdwii_plus_examples.cechoscp import CEchoSCP
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True
@@ -396,7 +395,12 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     os.makedirs(instance_dir, exist_ok=True)
 
     # Create our Application Entity
-    upsscp = CEchoSCP(ae_title=app_config["ae_title"], bind_address=app_config["bind_address"], port=app_config.getint("port"), logger=APP_LOGGER)
+    upsscp = CEchoSCP(
+        ae_title=app_config["ae_title"],
+        bind_address=app_config["bind_address"],
+        port=app_config.getint("port"),
+        logger=APP_LOGGER,
+    )
     ae = upsscp.ae
     ae.maximum_pdu_size = app_config.getint("max_pdu")
     ae.acse_timeout = app_config.getfloat("acse_timeout")
@@ -405,25 +409,15 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
 
     # Unified Procedure Step SCP
     for cx in UnifiedProcedurePresentationContexts:
-        if (cx.abstract_syntax.keyword not in ("UnifiedProcedureStepEvent", "UnifiedProcedureStepQuery")):
+        if cx.abstract_syntax.keyword not in ("UnifiedProcedureStepEvent", "UnifiedProcedureStepQuery"):
             ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     # Set our handler bindings
-    upsscp.handlers.append(
-        (evt.EVT_C_FIND, handle_find,
-         [instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append(
-        (evt.EVT_N_GET, handle_nget,
-         [db_path, args, APP_LOGGER]))
-    upsscp.handlers.append(
-        (evt.EVT_N_ACTION, handle_naction,
-         [instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append(
-        (evt.EVT_N_CREATE, handle_ncreate,
-         [instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append(
-        (evt.EVT_N_SET, handle_nset,
-         [db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_C_FIND, handle_find, [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_ACTION, handle_naction, [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_CREATE, handle_ncreate, [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]))
 
     # Listen for incoming association requests
     upsscp.run()
