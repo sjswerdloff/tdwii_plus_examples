@@ -9,4 +9,4 @@
     # Our listen port
     #   This directory contains the QR service's managed SOP Instances
     import_staging_directory = "~/ppvs_import_staging"
-    machine = "ProNova SC360 GR"
+    machine = "TR1"

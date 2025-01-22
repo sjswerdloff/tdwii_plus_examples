@@ -8,4 +8,4 @@
     ae_title = "TDD"
     #   This directory contains the retrieved Composit IOD Instances
     import_staging_directory = "~/tdd_import_staging"
-    machine = "ProNova SC360 GR"
+    machine = "TR1"

@@ -1,14 +1,14 @@
 [
   {
     "machine": "FX1",
-    "AETitle": "IHERO_SCP"
+    "AETitle": "TDD"
   },
   {
     "machine": "FX2",
-    "AETitle": "TDWII_SCP"
+    "AETitle": "TDD"
   },
   {
-    "machine": "ProNova SC360 GR",
-    "AETitle": "TDWII_SCP"
+    "machine": "TR1",
+    "AETitle": "TDD"
   }
 ]

@@ -1,16 +1,11 @@
 # Global Configuration Folder
 
-This folder contains global configuration files that are shared across 
-multiple applications within the project. 
+This folder contains global configuration files that are shared across
+multiple applications within the project.
 
 ## Contents
 - `default.ini`: Default configuration file shared by some applications.
 - `ApplicationEntities.json`: Default AEs parameters.
-- `ApplicationEntities_Loopback.json`:  Local AEs parameters.
-- `ApplicationEntities_Connectathon.json`: Connectathon AEs parameters
-- `MachineMap.json`: Mapping between Machine Names and AE Titles
-
-
-
-
-
+- `ApplicationEntities_Custom.json`: Custom AEs parameters
+- `MachineMap.json`: Default Mapping between Machine Names and AE Titles
+- `MachineMap_Custom.json`: Custom Mapping between Machine Names and AE Titles
