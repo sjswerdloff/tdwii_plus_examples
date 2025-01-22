@@ -50,7 +50,7 @@ def test_default_section_values():
     assert default["qr_ae_title"] == "QRSCP"
     assert default["ae_title"] == "PPVS_SCP"
     assert default["import_staging_directory"] == "~/ppvs_import_staging"
-    assert default["machine"] == "ProNova SC360 GR"
+    assert default["machine"] == "TR1"
 
 
 def test_no_extra_sections():

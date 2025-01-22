@@ -14,15 +14,15 @@ from tdwii_plus_examples.tdwii_config import (
 @pytest.fixture
 def sample_ae_config():
     return [
-        {"AETitle": "IMS_IHERO_TMS1", "IPAddr": "10.11.255.8", "Port": 10401},
-        {"AETitle": "IHERO_SCP", "IPAddr": "10.11.255.8", "Port": 10403},
+        {"AETitle": "OST", "IPAddr": "127.0.0.1", "Port": 11112},
+        {"AETitle": "TDD", "IPAddr": "127.0.0.1", "Port": 11113},
         {"AETitle": "TMS", "IPAddr": "127.0.0.1", "Port": 11114},
     ]
 
 
 @pytest.fixture
 def sample_machine_map():
-    return [{"machine": "FX1", "AETitle": "IHERO_SCP"}, {"machine": "ProNova SC360 GR", "AETitle": "TDWII_SCP"}]
+    return [{"machine": "FX1", "AETitle": "TDD"}, {"machine": "TR1", "AETitle": "TDD"}]
 
 
 @pytest.fixture
@@ -45,8 +45,8 @@ def test_load_ae_config(setup_config_files):
 
     assert len(known_ae_ipaddr) == 3
     assert len(known_ae_port) == 3
-    assert known_ae_ipaddr["IMS_IHERO_TMS1"] == "10.11.255.8"
-    assert known_ae_port["IMS_IHERO_TMS1"] == 10401
+    assert known_ae_ipaddr["OST"] == "127.0.0.1"
+    assert known_ae_port["OST"] == 11112
     assert known_ae_ipaddr["TMS"] == "127.0.0.1"
     assert known_ae_port["TMS"] == 11114
 
@@ -56,8 +56,8 @@ def test_load_ae_config_default_path(setup_config_files, monkeypatch):
     monkeypatch.chdir(ae_config_file.parent)
     load_ae_config()
 
-    assert len(known_ae_ipaddr) == 3
-    assert len(known_ae_port) == 3
+    assert len(known_ae_ipaddr) == 7
+    assert len(known_ae_port) == 7
 
 
 def test_load_machine_map(setup_config_files):
@@ -65,8 +65,8 @@ def test_load_machine_map(setup_config_files):
     load_machine_map(str(machine_map_file))
 
     assert len(machine_ae_map) == 2
-    assert machine_ae_map["FX1"] == "IHERO_SCP"
-    assert machine_ae_map["ProNova SC360 GR"] == "TDWII_SCP"
+    assert machine_ae_map["FX1"] == "TDD"
+    assert machine_ae_map["TR1"] == "TDD"
 
 
 def test_load_machine_map_default_path(setup_config_files, monkeypatch):
@@ -74,7 +74,7 @@ def test_load_machine_map_default_path(setup_config_files, monkeypatch):
     monkeypatch.chdir(machine_map_file.parent)
     load_machine_map()
 
-    assert len(machine_ae_map) == 2
+    assert len(machine_ae_map) == 3
 
 
 def test_integration(setup_config_files):
@@ -82,9 +82,9 @@ def test_integration(setup_config_files):
     load_ae_config(str(ae_config_file))
     load_machine_map(str(machine_map_file))
 
-    assert machine_ae_map["FX1"] == "IHERO_SCP"
-    assert known_ae_ipaddr[machine_ae_map["FX1"]] == "10.11.255.8"
-    assert known_ae_port[machine_ae_map["FX1"]] == 10403
+    assert machine_ae_map["FX1"] == "TDD"
+    assert known_ae_ipaddr[machine_ae_map["FX1"]] == "127.0.0.1"
+    assert known_ae_port[machine_ae_map["FX1"]] == 11113
 
 
 def test_nonexistent_file():
