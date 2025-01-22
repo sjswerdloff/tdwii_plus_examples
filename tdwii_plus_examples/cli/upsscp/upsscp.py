@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""
+
+r"""
 A DICOM UPS Worklist Manager application example.
 
 This application starts an Application Entity (AE) server implementing
@@ -10,25 +11,34 @@ It listens for incoming DIMSE primitive requests and delegates the
 processing to handlers to store UPS work items as DICOM Part 10 files
 and manage them using a database.
 
+Note: that for the UPS Event SOP Class, the SCP is not a receiver of the
+N-EVENT-REPORT primitives but a sender of notifications about changes
+in the states of the UPS it manages or its own state to any SCU that
+has previously subscribed to receive such notifications using the UPS
+Watch SOP Class.
+
+If not specified in the command line, the configuration file is
+tdwii_plus_examples\cli\upsscp\config\upsscp_default.ini
+
 Usage:
     upsscp [options]
 
 Options:
     -h, --help                  Show this help message and exit
     --version                   Print version information and exit
+    -c, --config [f]ilename     Overridde configuration file
+    -a, --ae_title              Override the Application Entity Title
+    -b, --bind_address          Override the interface IP address or hostname
+    -p, --port                  Override Port number
     -q, --quiet                 Quiet mode, print no warnings and errors
-    -v, --verbose               Verbose mode, print processing details
-    -d, --debug                 Debug mode, print debug information
+    -v, --verbose               Set log level to INFO
+    -d, --debug                 Set log level to DEBUG
     -ll, --log-level [l]        Set level of logger (critical, error, warn,
                                 info, debug)
-    -c, --config [f]ilename     Specify configuration file path
-    --port                      Override the AE TCP/IP port
-    -aet, --ae-title [a]etitle  Override the configured AE title
     -ta, --acse-timeout [s]     Override the association messages timeout
     -td, --dimse-timeout [s]    Override the DIMSE messages timeout
     -tn, --network-timeout [s]  Override the network timeout
     -pdu, --max-pdu [n]         Override the maximum PDU size
-    -ba, --bind-address [a]     Override the AE IP address
     --database-location [f]     Override the database file path
     --instance-location [d]     Override the instance storage directory
     --clean                     Empty database and instance storage directory
@@ -243,11 +253,12 @@ def _setup_argparser():
 
     net_opts = parser.add_argument_group("Networking Options")
     net_opts.add_argument(
+        "-p",
         "--port",
         help="override the configured TCP/IP listen port number",
     )
     net_opts.add_argument(
-        "-aet",
+        "-a",
         "--ae-title",
         metavar="[a]etitle",
         help="override the configured AE title",
@@ -277,7 +288,7 @@ def _setup_argparser():
         help="override the configured max receive pdu to n bytes",
     )
     net_opts.add_argument(
-        "-ba",
+        "-b",
         "--bind-address",
         metavar="[a]ddress",
         help="override the configured address of the network interface to listen on",

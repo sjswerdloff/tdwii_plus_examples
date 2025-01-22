@@ -388,3 +388,9 @@ Either Cancel or Complete for RO-65.
 poetry install -E all
 poetry run pre-commit install
 ```
+
+## Acknowledgments
+In addition to being the main package used by this project, some of the code has been inspired, adapted or reused from:
+- **pynetdicom** by Patrice Munger and pynetdicom contributors
+- URL: https://github.com/pydicom/pynetdicom
+- License: MIT
