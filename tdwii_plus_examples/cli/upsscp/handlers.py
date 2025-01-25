@@ -31,7 +31,10 @@ from sqlalchemy.orm import sessionmaker
 
 from tdwii_plus_examples import tdwii_config
 from tdwii_plus_examples.cli.upsscp.upsdb import (
-    Instance, InvalidIdentifier, add_instance, search
+    Instance,
+    InvalidIdentifier,
+    add_instance,
+    search,
 )
 
 _SERVICE_STATUS = {
@@ -79,6 +82,9 @@ def _add_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False
     else:
         if logger is not None:
             logger.info(f"Receiving AE Title {subscriber_ae_title} is already subscribed globally")
+            if _global_subscribers[subscriber_ae_title] != deletion_lock:
+                _global_subscribers[subscriber_ae_title] = deletion_lock
+                logger.info(f"Updated deletion lock to {deletion_lock}")
     return
 
 
@@ -99,6 +105,7 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
 def _remove_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False, logger=None):
     if subscriber_ae_title in _global_subscribers.keys():
         del _global_subscribers[subscriber_ae_title]
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed")
     else:
         if logger is not None:
             logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed")
@@ -108,6 +115,7 @@ def _remove_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = Fa
 def _remove_filtered_subscriber(subscriber_ae_title: str, query: Dataset = None, logger=None):
     if subscriber_ae_title in _filtered_subscribers.keys():
         del _filtered_subscribers[subscriber_ae_title]
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed")
     else:
         if logger is not None:
             logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed")
@@ -481,7 +489,8 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 logger.info("Action Information:")
 
                 subscribing_ae_title = action_information.ReceivingAE
-                deletion_lock = action_information.DeletionLock == "TRUE"
+                if action_type_id == 3:
+                    deletion_lock = action_information.DeletionLock == "TRUE"
                 logger.info(f"{action_information}")
             except AttributeError as exc:
                 logger.error(f"Error in decoding subscriber information: {exc}")
@@ -492,17 +501,68 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
 
         # TODO:  use action_type_id to determine if this is subscribe or unsubscribe
         if naction_primitive.RequestedSOPInstanceUID == UPSGlobalSubscriptionInstance:
-            logger.info("Request was for Subscribing to (unfiltered) Global UPS")
             if action_type_id == 3:
+                logger.info("Request was for Subscribing to (unfiltered) Global UPS")
                 _add_global_subscriber(subscribing_ae_title, deletion_lock=deletion_lock, logger=logger)
             elif action_type_id == 4:
+                logger.info("Request was for Unsubscribing to (unfiltered) Global UPS")
                 _remove_global_subscriber(subscribing_ae_title, logger=logger)
+            elif action_type_id == 5:
+                logger.info("Request was for Suspend Global (unfiltered) Subscription")
+                logger.warning("Suspend Global (unfiltered) Subscription is not supported")
+                # Respond with an Unrecognized Operation Error
+                error_response.Status = 0x0211
+                yield error_response
+                yield None
+                return
+            else:
+                logger.error("invalid action_type_id")
+                # Respond with an Unrecognized Operation Error
+                error_response.Status = 0x0211
+                yield error_response
+                yield None
+                return
+
         elif naction_primitive.RequestedSOPInstanceUID == UPSFilteredGlobalSubscriptionInstance:
-            logger.info("Request was for Subscribing to Filtered Global UPS")
             if action_type_id == 3:
-                _add_filtered_subscriber(subscribing_ae_title, action_information)
+                logger.info("Request was for Subscribing to Filtered Global UPS")
+                _add_filtered_subscriber(subscribing_ae_title, action_information, logger=logger)
+            elif action_type_id == 4:  # TODO: return an error in this case as not compliant
+                logger.info("Request was for Unsubscribing from Filtered Global UPS")
+                _remove_filtered_subscriber(subscribing_ae_title, logger=logger)
+            else:
+                logger.error("invalid action_type_id")
+                # Respond with an Unrecognized Operation Error
+                error_response.Status = 0x0211
+                yield error_response
+                yield None
+                return
+        else:
+            instance_uid = naction_primitive.RequestedSOPInstanceUID
+            if action_type_id == 3:
+                logger.info(f"Request was for Subscribing to UPS Instance {instance_uid}")
+                logger.warning("Subscribing to specifc UPS Instances is not supported")
+                # Respond with an Unrecognized Operation Error
+                error_response.Status = 0x0211
+                yield error_response
+                yield None
+                return
             elif action_type_id == 4:
-                _remove_filtered_subscriber(subscribing_ae_title)
+                logger.info(f"Request was for Unsubscribing from UPS Instance {instance_uid}")
+                logger.warning("Unsubscribing from specifc UPS Instances is not supported")
+                # Respond with an Unrecognized Operation Error
+                error_response.Status = 0x0211
+                yield error_response
+                yield None
+                return
+            else:
+                logger.error("invalid action_type_id")
+                # Respond with an Unrecognized Operation Error
+                error_response.Status = 0x0211
+                yield error_response
+                yield None
+                return
+
         yield happy_response
         yield None
         return
@@ -1010,8 +1070,7 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
 
         subscriber_ip_addr = tdwii_config.known_ae_ipaddr[globalsubscriber]
         subscriber_port = tdwii_config.known_ae_port[globalsubscriber]
-        logger.info(f"Requesting association with {globalsubscriber} "
-                    f"at {subscriber_ip_addr}:{subscriber_port}")
+        logger.info(f"Requesting association with {globalsubscriber} " f"at {subscriber_ip_addr}:{subscriber_port}")
         assoc = ae.associate(
             subscriber_ip_addr,
             subscriber_port,
