@@ -105,20 +105,20 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
 def _remove_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False, logger=None):
     if subscriber_ae_title in _global_subscribers.keys():
         del _global_subscribers[subscriber_ae_title]
-        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed")
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed " "from global subscription")
     else:
         if logger is not None:
-            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed")
+            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed " "from global subscription")
     return
 
 
 def _remove_filtered_subscriber(subscriber_ae_title: str, query: Dataset = None, logger=None):
     if subscriber_ae_title in _filtered_subscribers.keys():
         del _filtered_subscribers[subscriber_ae_title]
-        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed")
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed " "from filtered global subscription")
     else:
         if logger is not None:
-            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed")
+            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed " "from filtered global subscription")
     return
 
 
@@ -283,7 +283,10 @@ def handle_find(event, instance_dir, db_path, cli_config, logger):
 
             try:
                 logger.info(f"match: {match} with SOP Instance UID: {match.sop_instance_uid}")
-                response = dcmread(Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True)
+                response = dcmread(
+                    Path(instance_dir).joinpath(str(match.sop_instance_uid)),
+                    force=True,
+                )
                 logger.info(f"response Identifier: {response}")
                 # Next line removed as only required for Query/Retrieve SOP Class
                 # response.RetrieveAETitle = event.assoc.ae.ae_title
@@ -503,10 +506,15 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
         if naction_primitive.RequestedSOPInstanceUID == UPSGlobalSubscriptionInstance:
             if action_type_id == 3:
                 logger.info("Request was for Subscribing to (unfiltered) Global UPS")
-                _add_global_subscriber(subscribing_ae_title, deletion_lock=deletion_lock, logger=logger)
+                _add_global_subscriber(
+                    subscribing_ae_title,
+                    deletion_lock=deletion_lock,
+                    logger=logger,
+                )
             elif action_type_id == 4:
                 logger.info("Request was for Unsubscribing to (unfiltered) Global UPS")
                 _remove_global_subscriber(subscribing_ae_title, logger=logger)
+                _remove_filtered_subscriber(subscribing_ae_title, logger=logger)
             elif action_type_id == 5:
                 logger.info("Request was for Suspend Global (unfiltered) Subscription")
                 logger.warning("Suspend Global (unfiltered) Subscription is not supported")
@@ -528,8 +536,12 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 logger.info("Request was for Subscribing to Filtered Global UPS")
                 _add_filtered_subscriber(subscribing_ae_title, action_information, logger=logger)
             elif action_type_id == 4:  # TODO: return an error in this case as not compliant
-                logger.info("Request was for Unsubscribing from Filtered Global UPS")
-                _remove_filtered_subscriber(subscribing_ae_title, logger=logger)
+                logger.error("invalid well-known UID for Unsubscribe Action Type")
+                # Respond with an Unrecognized Operation Error
+                error_response.Status = 0x0211
+                yield error_response
+                yield None
+                return
             else:
                 logger.error("invalid action_type_id")
                 # Respond with an Unrecognized Operation Error
@@ -661,7 +673,10 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 logger.info(f"Matching instance: {match}")
                 logger.info(f"Stored Procedure Step State: {current_step_state}")
                 logger.info(f"Requested Procedure Step State: {requested_step_state}")
-                response = dcmread(Path(instance_dir).joinpath(str(match.sop_instance_uid)), force=True)
+                response = dcmread(
+                    Path(instance_dir).joinpath(str(match.sop_instance_uid)),
+                    force=True,
+                )
                 response.ProcedureStepState = requested_step_state
                 response.is_little_endian = True
                 response.is_implicit_VR = True
@@ -704,7 +719,12 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
     return
 
 
-def handle_nset(event: pynetdicom.events.Event, db_path: Path | str, cli_config, logger: logging.Logger):
+def handle_nset(
+    event: pynetdicom.events.Event,
+    db_path: Path | str,
+    cli_config,
+    logger: logging.Logger,
+):
     """Handler for evt.EVT_N_SET.
 
     Parameters
@@ -963,7 +983,10 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
         return 0x0120, None  # Missing Attribute
     elif not ds.ProcedureStepState == "SCHEDULED":
         logger.error("UPS State not SCHEDULED")
-        return 0xC309, None  # The provided value of UPS State was not "SCHEDULED"
+        return (
+            0xC309,
+            None,
+        )  # The provided value of UPS State was not "SCHEDULED"
     elif ds.InputReadinessState not in ("INCOMPLETE", "UNAVAILABLE", "READY"):
         logger.error("Input Readiness State not valid")
         return 0x0106, None  # Invalid Attribute Value
@@ -1085,17 +1108,35 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
                 if event_type == 1:
                     logger.info(f"Sending UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
                     message_id += 1
-                    assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
+                    assoc.send_n_event_report(
+                        event_info,
+                        event_type,
+                        UnifiedProcedureStepPush,
+                        ds.SOPInstanceUID,
+                        message_id,
+                    )
                 elif event_type == 5:  # The assignment took place at the time of creation
                     # notify of creation first, i.e. event type == 1
                     logger.info(f"Sending UPS State Report: {ds.SOPInstanceUID}, {ds.ProcedureStepState}")
                     message_id += 1
-                    assoc.send_n_event_report(event_info, 1, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
+                    assoc.send_n_event_report(
+                        event_info,
+                        1,
+                        UnifiedProcedureStepPush,
+                        ds.SOPInstanceUID,
+                        message_id,
+                    )
                     # if the assignment happened after the creation (e.g. via N-SET or internal change in a TMS)
                     # then *only* send an N-EVENT-REPORT regarding the UPS Assignment
                     logger.info(f"Sending UPS Assignment: {ds.ScheduledStationNameCodeSequence}")
                     message_id += 1
-                    assoc.send_n_event_report(event_info, event_type, UnifiedProcedureStepPush, ds.SOPInstanceUID, message_id)
+                    assoc.send_n_event_report(
+                        event_info,
+                        event_type,
+                        UnifiedProcedureStepPush,
+                        ds.SOPInstanceUID,
+                        message_id,
+                    )
 
                 logger.info(f"Notified global subscriber: {globalsubscriber}")
             except InvalidDicomError:

@@ -1,7 +1,4 @@
-import logging
-from time import sleep
-
-from pydicom import Dataset, Sequence
+from pydicom import Dataset
 from pydicom.uid import UID
 from pynetdicom.association import Association
 from pynetdicom.sop_class import (
@@ -132,7 +129,10 @@ class UPSWatchNActionSCU(BaseSCU):
         rsp_status = Dataset()
         self.logger.debug("Sending N-ACTION request")
         rsp_status, action_reply = assoc.send_n_action(
-            dataset=action_info, action_type=action_type_id, class_uid=UnifiedProcedureStepPush, instance_uid=instance_uid
+            dataset=action_info,
+            action_type=action_type_id,
+            class_uid=UnifiedProcedureStepPush,
+            instance_uid=instance_uid,
         )
 
         assoc.release()
@@ -163,12 +163,18 @@ class UPSWatchNActionSCU(BaseSCU):
             action_type_id = 3
 
             success, msg = self._send_upswatchnaction_request(
-                assoc=assoc, action_type_id=action_type_id, deletion_lock=lock, matching_keys=matching_keys
+                assoc=assoc,
+                action_type_id=action_type_id,
+                deletion_lock=lock,
+                matching_keys=matching_keys,
             )
             if success:
-                logger.info("Global subscription successful")
+                if matching_keys is None:
+                    self.logger.info("Global subscription successful")
+                else:
+                    self.logger.info("Filtered global subscription successful")
             else:
-                logger.error(msg)
+                self.logger.error(msg)
 
     def unsubscribe_globally(self):
         """Unsubscribe from receiving UPS Event Reports for all existing
@@ -185,9 +191,9 @@ class UPSWatchNActionSCU(BaseSCU):
                 action_type_id=action_type_id,
             )
             if success:
-                logger.info("Global unsubscription successful")
+                self.logger.info("Global unsubscription successful")
             else:
-                logger.error(msg)
+                self.logger.error(msg)
 
     def suspend_global_subscription(self):
         """Unsubscribe from receiving UPS Event Reports for all new UPS
@@ -204,9 +210,9 @@ class UPSWatchNActionSCU(BaseSCU):
                 action_type_id=action_type_id,
             )
             if success:
-                logger.info("Suspend global subscription successful")
+                self.logger.info("Suspend global subscription successful")
             else:
-                logger.error(msg)
+                self.logger.error(msg)
 
     def subscribe(self, instance_uid: UID, lock: bool = False):
         """Subscribe to receive UPS Event Reports for a specific
@@ -232,9 +238,9 @@ class UPSWatchNActionSCU(BaseSCU):
                 deletion_lock=lock,
             )
             if success:
-                logger.info(f"Subscription to UPS SOP Instance {instance_uid} " "successful")
+                self.logger.info(f"Subscription to UPS SOP Instance {instance_uid} " "successful")
             else:
-                logger.error(msg)
+                self.logger.error(msg)
 
     def unsubscribe(self, instance_uid: UID):
         """Unsubscribe from receiving UPS Event Reports for a specific
@@ -259,38 +265,6 @@ class UPSWatchNActionSCU(BaseSCU):
                 instance_uid=instance_uid,
             )
             if success:
-                logger.info(f"Unsubscribing from UPS SOP Instance {instance_uid} " "successful")
+                self.logger.info(f"Unsubscribing from UPS SOP Instance {instance_uid} " "successful")
             else:
-                logger.error(msg)
-
-
-# Example usage
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger("UPSWatchNActionSCU")
-    scu = UPSWatchNActionSCU(
-        logger=logger, calling_ae_title="MY_AE", called_ae_title="PEER_AE", called_ip="127.0.0.1", called_port=11114
-    )
-    scu.subscribe_globally()
-    sleep(3)
-    scu.unsubscribe_globally()
-    sleep(3)
-    # Create a filter to watch the UPS scheduled for a specific machine
-    ds = Dataset()
-    # Create a sequence item
-    item = Dataset()
-    item.CodeValue = "FX1"
-    item.CodingSchemeDesignator = "99IHERO2008"
-    item.CodeMeaning = "FX1"
-    # Add the item to a sequence
-    seq = Sequence([item])
-    # Add the sequence to the ScheduledStationNameCodeSequence element
-    ds.ScheduledStationNameCodeSequence = seq
-    scu.subscribe_globally(matching_keys=ds)
-    sleep(3)
-    scu.suspend_global_subscription()
-    sleep(3)
-    sopinstanceuid = UID("1.2.840.113854.19.4.2017747596206021632.638223481578481915")
-    scu.subscribe(sopinstanceuid)
-    sleep(3)
-    scu.unsubscribe(sopinstanceuid)
+                self.logger.error(msg)
