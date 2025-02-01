@@ -6,7 +6,15 @@ from pynetdicom.sop_class import (
     UPSFilteredGlobalSubscriptionInstance,
     UPSGlobalSubscriptionInstance,
 )
+from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
+from tdwii_plus_examples._dicom_exceptions import (
+    AssociationError,
+    ContextWarning,
+    ResponseError,
+    ResponseUnknown,
+    ResponseWarning,
+)
 from tdwii_plus_examples.basescu import BaseSCU
 
 
@@ -40,8 +48,27 @@ class UPSWatchNActionSCU(BaseSCU):
             Suspends the global subscription.
     """
 
-    def __init__(self, logger, called_ip, called_port, called_ae_title, calling_ae_title):
-        super().__init__(logger, called_ip, called_port, called_ae_title, calling_ae_title)
+    def __init__(
+        self, logger, calling_ae_title: str = None, called_ip: str = None, called_port: int = None, called_ae_title: str = None
+    ):
+        super().__init__(
+            logger,
+            calling_ae_title=calling_ae_title,
+            called_ip=called_ip,
+            called_port=called_port,
+            called_ae_title=called_ae_title,
+        )
+
+    def _add_requested_context(self):
+        """
+        Adds the DICOM UPS Push SOP Class presentation context to the AE.
+        Default transfer syntaxes are included.
+        """
+        super()._add_requested_context()
+        self.ae.add_requested_context(UnifiedProcedureStepPush)
+        self.logger.debug(
+            f"Verification Presentation context added: \n {'\n'.join([str(ctx) for ctx in self.ae.requested_contexts])}"
+        )
 
     def _send_upswatchnaction_request(
         self,
@@ -135,10 +162,48 @@ class UPSWatchNActionSCU(BaseSCU):
             instance_uid=instance_uid,
         )
 
-        assoc.release()
-        self.logger.debug("Association released after subscribing")
+        try:
+            self.status = self._handle_response(rsp_status, action_reply)
+        except ResponseWarning as warning:
+            self.logger.warning(f"{warning.message} (Status Code: {warning.status_code})")
+            raise
+        except ResponseError as error:
+            self.logger.error(f"{error.message} (Status Code: {error.status_code})")
+            raise
+        except ResponseUnknown as unknown:
+            self.logger.error(f"{unknown.message} (Status Code: {unknown.status_code})")
+            raise
+        finally:
+            self.assoc.release()
+            self.logger.debug("Association released")
 
-        return self._handle_response(rsp_status, action_reply)
+    def _toggle_subscription(self, action_type_id, instance_uid=UPSGlobalSubscriptionInstance, lock=False, matching_keys=None):
+        safe_to_proceed = False
+        try:
+            self._associate()
+            safe_to_proceed = True
+        except AssociationError as error:
+            self.logger.error(str(error))
+            raise
+        except ContextWarning as warning:
+            accepted_sop_names = [f"[{UID(uid).name}]" for uid in warning.accepted_sop_classes]
+            self.logger.warning(f"{warning} - Accepted Transfer Syntaxes: {', '.join(accepted_sop_names)}")
+            if "[Unified Procedure Step - Push SOP Class]" in accepted_sop_names:
+                safe_to_proceed = True
+            raise
+        finally:
+            if safe_to_proceed:
+                self._send_upswatchnaction_request(
+                    assoc=self.assoc,
+                    action_type_id=action_type_id,
+                    instance_uid=instance_uid,
+                    deletion_lock=lock,
+                    matching_keys=matching_keys,
+                )
+            else:
+                if self.assoc:
+                    self.assoc.release()
+                    self.logger.debug("Association released")
 
     def subscribe_globally(self, lock: bool = False, matching_keys=None):
         """Subscribe to receive UPS Event Reports for all existing
@@ -151,68 +216,26 @@ class UPSWatchNActionSCU(BaseSCU):
         matching_keys : pydicom.Dataset
             The *Matching Keys* to filter the UPS to subscribe to.
         """
-        assoc = self._associate()
-        if assoc.is_established:
-            self.logger.debug("Association established for ...")
-            if matching_keys is not None:
-                self.logger.debug("Filtered Global Subscription")
-                self.logger.debug(matching_keys)
-            else:
-                self.logger.debug("Global (Unfiltered) Subscription")
-
-            action_type_id = 3
-
-            success, msg = self._send_upswatchnaction_request(
-                assoc=assoc,
-                action_type_id=action_type_id,
-                deletion_lock=lock,
-                matching_keys=matching_keys,
-            )
-            if success:
-                if matching_keys is None:
-                    self.logger.info("Global subscription successful")
-                else:
-                    self.logger.info("Filtered global subscription successful")
-            else:
-                self.logger.error(msg)
+        if matching_keys is not None:
+            self.logger.debug("Filtered Global Subscription")
+            self.logger.debug(matching_keys)
+        else:
+            self.logger.debug("(Unfiltered) Global Subscription")
+        self._toggle_subscription(action_type_id=3, lock=lock, matching_keys=matching_keys)
 
     def unsubscribe_globally(self):
         """Unsubscribe from receiving UPS Event Reports for all existing
         and new UPS Instances.
         """
-        assoc = self._associate()
-        if assoc.is_established:
-            self.logger.debug("Association established for unsubscribing.")
-
-            action_type_id = 4
-
-            success, msg = self._send_upswatchnaction_request(
-                assoc=assoc,
-                action_type_id=action_type_id,
-            )
-            if success:
-                self.logger.info("Global unsubscription successful")
-            else:
-                self.logger.error(msg)
+        self.logger.debug("Global Unsubscription")
+        self._toggle_subscription(action_type_id=4)
 
     def suspend_global_subscription(self):
         """Unsubscribe from receiving UPS Event Reports for all new UPS
         Instances only.
         """
-        assoc = self._associate()
-        if assoc.is_established:
-            self.logger.debug("Association established for suspending subscription.")
-
-            action_type_id = 5
-
-            success, msg = self._send_upswatchnaction_request(
-                assoc=assoc,
-                action_type_id=action_type_id,
-            )
-            if success:
-                self.logger.info("Suspend global subscription successful")
-            else:
-                self.logger.error(msg)
+        self.logger.debug("Suspend Global Subscription")
+        self._toggle_subscription(action_type_id=5)
 
     def subscribe(self, instance_uid: UID, lock: bool = False):
         """Subscribe to receive UPS Event Reports for a specific
@@ -225,22 +248,8 @@ class UPSWatchNActionSCU(BaseSCU):
             Set to *true* to request the SCP to keep the UPS when it is
             Canceled or Completed.
         """
-        assoc = self._associate()
-        if assoc.is_established:
-            self.logger.debug("Association established for Subscription to " f"UPS SOP Instance {instance_uid}")
-
-            action_type_id = 3
-
-            success, msg = self._send_upswatchnaction_request(
-                assoc=assoc,
-                action_type_id=action_type_id,
-                instance_uid=instance_uid,
-                deletion_lock=lock,
-            )
-            if success:
-                self.logger.info(f"Subscription to UPS SOP Instance {instance_uid} " "successful")
-            else:
-                self.logger.error(msg)
+        self.logger.debug("Single UPS Subscription")
+        self._toggle_subscription(action_type_id=3, instance_uid=instance_uid, lock=lock)
 
     def unsubscribe(self, instance_uid: UID):
         """Unsubscribe from receiving UPS Event Reports for a specific
@@ -249,22 +258,9 @@ class UPSWatchNActionSCU(BaseSCU):
         ----------
         instance_uid: pydicom.uid.UID
                 The SOP Instance UID of the UPS Instance to Unsubscribe to.
-        lock : bool
-            Set to *true* to request the SCP to keep the UPS when it is
-            Canceled or Completed.
         """
-        assoc = self._associate()
-        if assoc.is_established:
-            self.logger.debug("Association established for unsubscribing from " f"UPS SOP Instance {instance_uid}")
+        self.logger.debug("Single UPS Unsubscription")
+        self._toggle_subscription(action_type_id=4, instance_uid=instance_uid)
 
-            action_type_id = 4
-
-            success, msg = self._send_upswatchnaction_request(
-                assoc=assoc,
-                action_type_id=action_type_id,
-                instance_uid=instance_uid,
-            )
-            if success:
-                self.logger.info(f"Unsubscribing from UPS SOP Instance {instance_uid} " "successful")
-            else:
-                self.logger.error(msg)
+    def _get_status_description(self, status_code):
+        return UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS.get(status_code, ("Unknown", "Unknown status code"))[1]
