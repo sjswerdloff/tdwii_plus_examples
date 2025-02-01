@@ -206,7 +206,8 @@ def _setup_argparser():
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
+    gen_opts.add_argument(
+        "--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -380,6 +381,8 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     current_dir = os.path.abspath(os.path.dirname(__file__))
     instance_dir = os.path.join(current_dir, app_config["instance_location"])
     instance_dir_path = os.path.abspath(instance_dir)
+    if not os.path.exists(instance_dir_path):
+        os.makedirs(instance_dir_path, exist_ok=True)
     APP_LOGGER.info(f"Configured for instance_dir = {instance_dir_path}")
 
     db_path = os.path.join(current_dir, app_config["database_location"])
@@ -421,14 +424,20 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     # Unified Procedure Step SCP
     for cx in UnifiedProcedurePresentationContexts:
         if cx.abstract_syntax.keyword not in ("UnifiedProcedureStepEvent", "UnifiedProcedureStepQuery"):
-            ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
+            ae.add_supported_context(
+                cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     # Set our handler bindings
-    upsscp.handlers.append((evt.EVT_C_FIND, handle_find, [instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append((evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]))
-    upsscp.handlers.append((evt.EVT_N_ACTION, handle_naction, [instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append((evt.EVT_N_CREATE, handle_ncreate, [instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append((evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_C_FIND, handle_find, [
+                           instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append(
+        (evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_ACTION, handle_naction, [
+                           instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_CREATE, handle_ncreate, [
+                           instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append(
+        (evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]))
 
     # Listen for incoming association requests
     upsscp.run()
