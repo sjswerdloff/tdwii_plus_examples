@@ -166,16 +166,13 @@ class UPSWatchNActionSCU(BaseSCU):
         try:
             self.status = self._handle_response(rsp_status, action_reply)
         except ResponseWarning as warning:
-            self.logger.warning(
-                f"{warning.message} (Status Code: {warning.status_code})")
+            self.logger.warning(f"{warning.message} (Status Code: {warning.status_code})")
             raise
         except ResponseError as error:
-            self.logger.error(
-                f"{error.message} (Status Code: {error.status_code})")
+            self.logger.error(f"{error.message} (Status Code: {error.status_code})")
             raise
         except ResponseUnknown as unknown:
-            self.logger.error(
-                f"{unknown.message} (Status Code: {unknown.status_code})")
+            self.logger.error(f"{unknown.message} (Status Code: {unknown.status_code})")
             raise
         finally:
             self.assoc.release()
@@ -190,10 +187,8 @@ class UPSWatchNActionSCU(BaseSCU):
             self.logger.error(str(error))
             raise
         except ContextWarning as warning:
-            accepted_sop_names = [
-                f"[{UID(uid).name}]" for uid in warning.accepted_sop_classes]
-            self.logger.warning(
-                f"{warning} - Accepted Transfer Syntaxes: {', '.join(accepted_sop_names)}")
+            accepted_sop_names = [f"[{UID(uid).name}]" for uid in warning.accepted_sop_classes]
+            self.logger.warning(f"{warning} - Accepted Transfer Syntaxes: {', '.join(accepted_sop_names)}")
             if "[Unified Procedure Step - Watch SOP Class]" in accepted_sop_names:
                 safe_to_proceed = True
             raise
@@ -207,7 +202,7 @@ class UPSWatchNActionSCU(BaseSCU):
                     matching_keys=matching_keys,
                 )
             else:
-                self.logger.error("UPS Push SOP Class not accepted")
+                self.logger.error("UPS Watch SOP Class not accepted")
                 if self.assoc:
                     self.assoc.release()
                     self.logger.debug("Association released")
@@ -228,8 +223,7 @@ class UPSWatchNActionSCU(BaseSCU):
             self.logger.debug(matching_keys)
         else:
             self.logger.debug("(Unfiltered) Global Subscription")
-        self._toggle_subscription(
-            action_type_id=3, lock=lock, matching_keys=matching_keys)
+        self._toggle_subscription(action_type_id=3, lock=lock, matching_keys=matching_keys)
 
     def unsubscribe_globally(self):
         """Unsubscribe from receiving UPS Event Reports for all existing
@@ -257,8 +251,7 @@ class UPSWatchNActionSCU(BaseSCU):
             Canceled or Completed.
         """
         self.logger.debug("Single UPS Subscription")
-        self._toggle_subscription(
-            action_type_id=3, instance_uid=instance_uid, lock=lock)
+        self._toggle_subscription(action_type_id=3, instance_uid=instance_uid, lock=lock)
 
     def unsubscribe(self, instance_uid: UID):
         """Unsubscribe from receiving UPS Event Reports for a specific
