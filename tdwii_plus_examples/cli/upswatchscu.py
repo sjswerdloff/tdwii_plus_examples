@@ -111,8 +111,10 @@ def main():
             finally:
                 if scu.status and not args.machine:
                     print("Global Subscription successful")
-                else:
+                elif scu.status and args.machine:
                     print("Filtered Global Subscription successful")
+                else:
+                    print("Global Subscription failed")
         else:
             try:
                 if args.unsubscribe:
@@ -124,6 +126,8 @@ def main():
             finally:
                 if scu.status:
                     print("Global Unsubscription successful")
+                else:
+                    print("Global Unsubscription failed")
 
     # Single Instance Un/Subscription requested
     else:
@@ -143,6 +147,8 @@ def main():
             finally:
                 if scu.status:
                     print("Single UPS Subscription successful")
+                else:
+                    print("Single UPS Subscription failed")
 
 
 if __name__ == "__main__":

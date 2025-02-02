@@ -10,9 +10,10 @@ from tdwii_plus_examples._dicom_exceptions import (
     AssociationError,
     ContextWarning,
     ResponseError,
+    ResponseWarning,
+    ResponseCancel,
     ResponsePending,
     ResponseUnknown,
-    ResponseWarning,
 )
 
 
@@ -116,9 +117,8 @@ class BaseSCU:
                             `refused_sop_classes` attribute of the exception.
         """
         if (self.called_ip is None or self.called_ip == "") or self.called_port is None:
-            raise AssociationError("Called AE parameters no set")
+            raise AssociationError("Called AE parameters not set")
         else:
-            self.status = False
             if self.called_ae_title is None:
                 self.called_ae_title = "ANYSCP"
                 self.logger.warning(f"Using default Called Application Entity Title: {self.called_ae_title}")
@@ -126,8 +126,12 @@ class BaseSCU:
             self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
             if not self.assoc.is_established:
                 raise AssociationError("Association could not be established")
-
             self.logger.debug("Association established")
+
+            # Initialize status of future requests
+            self.status = False
+
+            # Check if all requested contexts were accepted
             self._all_contexts_accepted(self.assoc)
 
     def _all_contexts_accepted(self, assoc: Association) -> bool:
@@ -186,6 +190,7 @@ class BaseSCU:
         bool
             True if the request was successful, False otherwise.
         """
+        self.status = False
         self.logger.debug("Received Response:")
         self.logger.debug(f"Status Type: {type(rsp_status)}")
         self.logger.debug(f"Status Value: {rsp_status}")
@@ -193,7 +198,7 @@ class BaseSCU:
         # check if Status contains empty dataset
         if rsp_status is None or len(rsp_status) == 0:
             self.logger.error("Response Status is None or empty")
-            raise ResponseError("Empty Status, SCP timed out, aborted or sent an invalid response")
+            raise ResponseError(0xFFFF, "Empty Status, SCP timed out, aborted or sent an invalid response")
 
         # check if Dataset contains empty dataset
         if rsp_dataset is None or len(rsp_dataset) == 0:
@@ -215,12 +220,16 @@ class BaseSCU:
             status_code = cast(int, rsp_status.Status)
             category = code_to_category(cast(int, status_code))
             description = self._get_status_description(status_code)
-            if category == "Pending":
-                raise ResponsePending(status_code, description)
-            if category == "Warning":
-                raise ResponseWarning(status_code, description)
-            elif category == "Failure":
+            self.logger.debug(f"Status Category: {category}")
+            self.logger.debug(f"Status Description: {description}")
+            if category == "Failure":
                 raise ResponseError(status_code, description)
+            elif category == "Warning":
+                raise ResponseWarning(status_code, description)
+            elif category == "Cancel":
+                raise ResponseCancel(status_code, description)
+            elif category == "Pending":
+                raise ResponsePending(status_code, description)
             elif category == "Unknown":
                 raise ResponseUnknown(status_code, description)
             else:

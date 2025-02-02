@@ -1,5 +1,7 @@
 from pydicom.uid import UID
 
+# Custom exceptions for DICOM association
+
 
 class AssociationError(Exception):
     """Custom exception for association errors."""
@@ -18,11 +20,14 @@ class ContextWarning(Exception):
         self.refused_sop_classes: list[UID] = refused_sop_classes
 
 
+# Custom exceptions for DICOM response handling
+
+
 class ResponseWarning(Exception):
     """Custom exception for response warnings."""
 
     def __init__(self, status_code, message):
-        status_code_hex = f"{status_code:#06x}"
+        status_code_hex = f"0x{status_code:04X}"
         super().__init__(f"{message} (Status Code: {status_code_hex})")
         self.status_code = status_code
         self.message = message
@@ -32,7 +37,7 @@ class ResponseError(Exception):
     """Custom exception for response errors"""
 
     def __init__(self, status_code, message):
-        status_code_hex = f"{status_code:#06x}"
+        status_code_hex = f"0x{status_code:04X}"
         super().__init__(f"{message} (Status Code: {status_code_hex})")
         self.status_code = status_code
         self.message = message
@@ -42,7 +47,7 @@ class ResponseUnknown(Exception):
     """Custom exception for response of unknown status."""
 
     def __init__(self, status_code, message):
-        status_code_hex = f"{status_code:#06x}"
+        status_code_hex = f"0x{status_code:04X}"
         super().__init__(f"{message} (Status Code: {status_code_hex})")
         self.status_code = status_code
         self.message = message
@@ -52,7 +57,17 @@ class ResponsePending(Exception):
     """Custom exception for response pending status"""
 
     def __init__(self, status_code, message):
-        status_code_hex = f"{status_code:#06x}"
+        status_code_hex = f"0x{status_code:04X}"
+        super().__init__(f"{message} (Status Code: {status_code_hex})")
+        self.status_code = status_code
+        self.message = message
+
+
+class ResponseCancel(Exception):
+    """Custom exception for response cancel status"""
+
+    def __init__(self, status_code, message):
+        status_code_hex = f"0x{status_code:04X}"
         super().__init__(f"{message} (Status Code: {status_code_hex})")
         self.status_code = status_code
         self.message = message
