@@ -37,6 +37,8 @@ from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
 def main():
+    print("Starting main function")  # Debug statement
+
     parser = argparse.ArgumentParser(description="Send a DICOM UPS Watch N-ACTION - Un/Subscribe request")
     parser.add_argument("ip", type=str, help="IP address or hotname of called AE")
     parser.add_argument("port", type=int, help="TCP port number of called AE")
@@ -55,6 +57,7 @@ def main():
     parser.add_argument("-q", "--quiet", action="store_true", help="Suppress all log output")
 
     args = parser.parse_args()
+    print(f"Parsed arguments: {args}")  # Debug statement
 
     if args.quiet:
         log_level = logging.CRITICAL
@@ -68,6 +71,7 @@ def main():
     logging.basicConfig(level=log_level)
     logger = logging.getLogger("upswatchscu")
     logger.setLevel(log_level)
+    print(f"Logger level set to: {log_level}")  # Debug statement
 
     logger.info(f"Trying to establish association with {args.called_ae_title}@{args.ip}:{args.port}")
     scu = UPSWatchNActionSCU(
@@ -77,9 +81,12 @@ def main():
         called_port=args.port,
         called_ae_title=args.called_ae_title,
     )
+    print("SCU instance created")  # Debug statement
+
     # Verification requested
     if args.echo:
         try:
+            print("Verification (C-ECHO) requested")
             scu.verify()
         except Exception as e:
             print(e)
@@ -125,7 +132,10 @@ def main():
                 print(e)
             finally:
                 if scu.status:
-                    print("Global Unsubscription successful")
+                    if args.unsubscribe:
+                        print("Global Unsubscription successful")
+                    else:
+                        print("Global Suspend successful")
                 else:
                     print("Global Unsubscription failed")
 
@@ -139,6 +149,8 @@ def main():
             finally:
                 if scu.status:
                     print("Single UPS Subscription successful")
+                else:
+                    print("Single UPS Subscription failed")
         else:
             try:
                 scu.unsubscribe(instance_uid=args.uid)
@@ -146,9 +158,9 @@ def main():
                 print(e)
             finally:
                 if scu.status:
-                    print("Single UPS Subscription successful")
+                    print("Single UPS Unsubscription successful")
                 else:
-                    print("Single UPS Subscription failed")
+                    print("Single UPS Unsubscription failed")
 
 
 if __name__ == "__main__":
