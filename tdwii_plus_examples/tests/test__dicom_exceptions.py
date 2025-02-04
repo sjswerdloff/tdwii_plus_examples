@@ -2,7 +2,7 @@ import unittest
 
 from pydicom.uid import UID
 
-from tdwii_plus_examples._dicom_exceptions import (
+from tdwii_plus_examples.dicom_exceptions import (
     AssociationError,
     ContextWarning,
     ResponseCancel,

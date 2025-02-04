@@ -9,14 +9,14 @@ from pynetdicom.sop_class import (
 )
 from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
-from tdwii_plus_examples._dicom_exceptions import (
+from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.dicom_exceptions import (
     AssociationError,
     ContextWarning,
     ResponseError,
     ResponseUnknown,
     ResponseWarning,
 )
-from tdwii_plus_examples.basescu import BaseSCU
 
 
 class UPSWatchNActionSCU(BaseSCU):

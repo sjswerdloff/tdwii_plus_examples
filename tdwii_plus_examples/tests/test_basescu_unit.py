@@ -10,7 +10,8 @@ from pynetdicom import AE, Association
 from pynetdicom.sop_class import Verification
 from pynetdicom.status import Status
 
-from tdwii_plus_examples._dicom_exceptions import (
+from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.dicom_exceptions import (
     AssociationError,
     ContextWarning,
     ResponseCancel,
@@ -19,7 +20,6 @@ from tdwii_plus_examples._dicom_exceptions import (
     ResponseUnknown,
     ResponseWarning,
 )
-from tdwii_plus_examples.basescu import BaseSCU
 
 
 class TestBaseSCU(unittest.TestCase):

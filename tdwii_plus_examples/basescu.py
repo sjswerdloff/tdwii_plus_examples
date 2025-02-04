@@ -9,7 +9,7 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.status import GENERAL_STATUS, Status, code_to_category
 
-from tdwii_plus_examples._dicom_exceptions import (
+from tdwii_plus_examples.dicom_exceptions import (
     AssociationError,
     ContextWarning,
     ResponseCancel,

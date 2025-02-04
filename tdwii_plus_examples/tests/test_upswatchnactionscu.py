@@ -16,7 +16,7 @@ from pynetdicom.sop_class import (
     Verification,
 )
 
-from tdwii_plus_examples._dicom_exceptions import AssociationError, ContextWarning
+from tdwii_plus_examples.dicom_exceptions import AssociationError, ContextWarning
 from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
