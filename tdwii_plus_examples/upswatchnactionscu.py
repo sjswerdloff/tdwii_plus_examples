@@ -50,7 +50,12 @@ class UPSWatchNActionSCU(BaseSCU):
     """
 
     def __init__(
-        self, logger, calling_ae_title: str = None, called_ip: str = None, called_port: int = None, called_ae_title: str = None
+        self,
+        logger=None,
+        calling_ae_title: str = None,
+        called_ip: str = None,
+        called_port: int = None,
+        called_ae_title: str = None,
     ):
         super().__init__(
             logger,

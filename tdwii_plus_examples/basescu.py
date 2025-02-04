@@ -1,19 +1,22 @@
+import logging
+from argparse import Namespace
 from typing import cast
 
 from pydicom.dataset import Dataset
 from pydicom.uid import UID
 from pynetdicom import AE, Association
+from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.status import GENERAL_STATUS, Status, code_to_category
 
 from tdwii_plus_examples._dicom_exceptions import (
     AssociationError,
     ContextWarning,
-    ResponseError,
-    ResponseWarning,
     ResponseCancel,
+    ResponseError,
     ResponsePending,
     ResponseUnknown,
+    ResponseWarning,
 )
 
 
@@ -50,7 +53,12 @@ class BaseSCU:
     """
 
     def __init__(
-        self, logger, calling_ae_title: str = None, called_ip: str = None, called_port: int = None, called_ae_title: str = None
+        self,
+        logger=None,
+        calling_ae_title: str = None,
+        called_ip: str = None,
+        called_port: int = None,
+        called_ae_title: str = None,
     ):
         """
         Initializes a new instance of the Base SCU AE class.
@@ -71,7 +79,17 @@ class BaseSCU:
         calling_ae_title : str
             The AE title of the calling AE.
         """
-        self.logger = logger
+        if logger is None:
+            self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "base_scu")
+            self.logger.info(
+                "Logger not provided, using default logger with level %s", logging.getLevelName(self.logger.level)
+            )
+        elif isinstance(logger, logging.Logger):
+            self.logger = logger
+            self.logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
+        else:
+            raise TypeError("logger must be an instance of logging.Logger")
+        self.logger.debug("BaseSCU.__init__")
 
         if calling_ae_title is None or calling_ae_title == "":
             self.calling_ae_title = "BASESCU"
@@ -242,10 +260,10 @@ class BaseSCU:
         self.called_ip = called_ip
         self.called_port = called_port
         if called_ae_title is None or called_ae_title == "":
-            self.called_ae_title = called_ae_title
-        else:
-            self.called_ae_title == "ANYSCU"
+            self.called_ae_title == "ANYSCP"
             self.logger.warning(f"Using default Called Application Title: {self.called_ae_title}")
+        else:
+            self.called_ae_title = called_ae_title
 
     def verify(self):
         """
