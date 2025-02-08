@@ -517,7 +517,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 _remove_filtered_subscriber(subscribing_ae_title, logger=logger)
             elif action_type_id == 5:
                 logger.info("Request was for Suspend Global (unfiltered) Subscription")
-                logger.warning("Suspend Global (unfiltered) Subscription is not supported")
+                logger.warning("Suspend Global (unfiltered) Subscription is not yet supported")
                 # Respond with an Unrecognized Operation Error
                 error_response.Status = 0x0211
                 yield error_response
@@ -538,7 +538,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
             elif action_type_id == 4:  # TODO: return an error in this case as not compliant
                 logger.error("invalid well-known UID for Unsubscribe Action Type")
                 # Respond with an Unrecognized Operation Error
-                error_response.Status = 0x0211
+                error_response.Status = 0xC314
                 yield error_response
                 yield None
                 return
@@ -553,7 +553,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
             instance_uid = naction_primitive.RequestedSOPInstanceUID
             if action_type_id == 3:
                 logger.info(f"Request was for Subscribing to UPS Instance {instance_uid}")
-                logger.warning("Subscribing to specifc UPS Instances is not supported")
+                logger.warning("Subscribing to specifc UPS Instances is not yet supported")
                 # Respond with an Unrecognized Operation Error
                 error_response.Status = 0x0211
                 yield error_response
@@ -561,7 +561,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 return
             elif action_type_id == 4:
                 logger.info(f"Request was for Unsubscribing from UPS Instance {instance_uid}")
-                logger.warning("Unsubscribing from specifc UPS Instances is not supported")
+                logger.warning("Unsubscribing from specifc UPS Instances is not yet supported")
                 # Respond with an Unrecognized Operation Error
                 error_response.Status = 0x0211
                 yield error_response
@@ -570,7 +570,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
             else:
                 logger.error("invalid action_type_id")
                 # Respond with an Unrecognized Operation Error
-                error_response.Status = 0x0211
+                error_response.Status = 0xC314
                 yield error_response
                 yield None
                 return

@@ -11,6 +11,11 @@ from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
 from tdwii_plus_examples.basescu import BaseSCU
 
+# Action Type ID constants
+ACTION_TYPE_ID_SUBSCRIBE = 3
+ACTION_TYPE_ID_UNSUBSCRIBE = 4
+ACTION_TYPE_ID_SUSPEND = 5
+
 
 class UPSWatchNActionSCU(BaseSCU):
     """
@@ -30,16 +35,23 @@ class UPSWatchNActionSCU(BaseSCU):
         calling_ae_title (str) : The title of the calling AE
         called_ae_title (str)  : The title of the called AE
         called_ip (str)        : The IP address or hostname of the called AE
-        called_port (int)      : Theport number of the called AE
+        called_port (int)      : The port number of the called AE
         logger(logging.Logger) : A logger instance
 
     Methods:
-        subscribe_globally(self, lock: bool = False)
+        subscribe_globally(lock: bool = False, matching_keys = None)
             Subscribes to receive UPS Event Reports for all UPS Instances.
-        unsubscribe(self)
+            - use *lock* to request *Deletion Lock*.
+            - use *matching_keys* to request filtered global subscription.
+        unsubscribe_globally()
             Unsubscribes from receiving UPS Event Reports.
-        suspend(self)
+        suspend_global_subscription()
             Suspends the global subscription.
+        subscribe(instance_uid: UID, lock: bool = False)
+            Subscribes to receive UPS Event Reports for a specific UPS Instance.
+            - use *lock* to request *Deletion Lock*.
+        unsubscribe(instance_uid: UID)
+            Unsubscribes from receiving UPS Event Reports for a specific UPS Instance.
     """
 
     def __init__(
@@ -144,7 +156,7 @@ class UPSWatchNActionSCU(BaseSCU):
         """
         action_info = Dataset()
         action_info.ReceivingAE = self.calling_ae_title
-        if action_type_id == 3:
+        if action_type_id == ACTION_TYPE_ID_SUBSCRIBE:
             action_info.DeletionLock = str(deletion_lock).upper()
             if matching_keys is not None:
                 instance_uid = UPSFilteredGlobalSubscriptionInstance
@@ -224,12 +236,13 @@ class UPSWatchNActionSCU(BaseSCU):
             A named tuple containing the status category, status code, status description, and dataset,
             indicating the outcome of the request.
         """
+        lock_str = "with Deletion Lock" if lock else "without Deletion Lock"
         if matching_keys is not None:
-            self.logger.debug("Filtered Global Subscription")
+            self.logger.debug(f"Filtered Global Subscription {lock_str}")
             self.logger.debug(matching_keys)
         else:
-            self.logger.debug("(Unfiltered) Global Subscription")
-        return self._toggle_subscription(action_type_id=3, lock=lock, matching_keys=matching_keys)
+            self.logger.debug(f"(Unfiltered) Global Subscription {lock_str}")
+        return self._toggle_subscription(action_type_id=ACTION_TYPE_ID_SUBSCRIBE, lock=lock, matching_keys=matching_keys)
 
     def unsubscribe_globally(self):
         """Unsubscribe from receiving UPS Event Reports for all existing
@@ -242,7 +255,7 @@ class UPSWatchNActionSCU(BaseSCU):
             indicating the outcome of the request.
         """
         self.logger.debug("Global Unsubscription")
-        return self._toggle_subscription(action_type_id=4)
+        return self._toggle_subscription(action_type_id=ACTION_TYPE_ID_UNSUBSCRIBE)
 
     def suspend_global_subscription(self):
         """Unsubscribe from receiving UPS Event Reports for all new UPS
@@ -255,7 +268,7 @@ class UPSWatchNActionSCU(BaseSCU):
             indicating the outcome of the request.
         """
         self.logger.debug("Suspend Global Subscription")
-        return self._toggle_subscription(action_type_id=5)
+        return self._toggle_subscription(action_type_id=ACTION_TYPE_ID_SUSPEND)
 
     def subscribe(self, instance_uid: UID, lock: bool = False):
         """Subscribe to receive UPS Event Reports for a specific
@@ -276,7 +289,7 @@ class UPSWatchNActionSCU(BaseSCU):
             indicating the outcome of the request.
         """
         self.logger.debug("Single UPS Subscription")
-        return self._toggle_subscription(action_type_id=3, instance_uid=instance_uid, lock=lock)
+        return self._toggle_subscription(action_type_id=ACTION_TYPE_ID_SUBSCRIBE, instance_uid=instance_uid, lock=lock)
 
     def unsubscribe(self, instance_uid: UID):
         """Unsubscribe from receiving UPS Event Reports for a specific
@@ -294,7 +307,7 @@ class UPSWatchNActionSCU(BaseSCU):
             indicating the outcome of the request.
         """
         self.logger.debug("Single UPS Unsubscription")
-        return self._toggle_subscription(action_type_id=4, instance_uid=instance_uid)
+        return self._toggle_subscription(action_type_id=ACTION_TYPE_ID_UNSUBSCRIBE, instance_uid=instance_uid)
 
     def _get_status_description(self, status_code):
         return UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS.get(status_code, ("Unknown", "Unknown status code"))[1]
