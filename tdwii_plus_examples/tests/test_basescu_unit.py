@@ -11,15 +11,6 @@ from pynetdicom.sop_class import Verification
 from pynetdicom.status import Status
 
 from tdwii_plus_examples.basescu import BaseSCU
-from tdwii_plus_examples.dicom_exceptions import (
-    AssociationError,
-    ContextWarning,
-    ResponseCancel,
-    ResponseError,
-    ResponsePending,
-    ResponseUnknown,
-    ResponseWarning,
-)
 
 
 class TestBaseSCU(unittest.TestCase):
@@ -104,8 +95,8 @@ class TestBaseSCU(unittest.TestCase):
         with patch.object(self.base_scu.assoc, "is_established", new_callable=PropertyMock) as mock_is_established:
             # Test association rejection
             mock_is_established.return_value = False
-            with self.assertRaises(AssociationError):
-                self.base_scu._associate()
+            assoc_result = self.base_scu._associate()
+            self.assertEqual(assoc_result.status, "Error")
         self.test_logger.info("Test _associate with rejection")
 
     @parameterized.expand(
@@ -118,9 +109,9 @@ class TestBaseSCU(unittest.TestCase):
     def test_associate_ae_params_not_set(self, called_ip, called_port):
         base_scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", called_ip, called_port, "SCP_AE_TITLE")
 
-        with self.assertRaises(AssociationError) as e:
-            base_scu._associate()
-        self.assertEqual(str(e.exception), "Called AE parameters not set")
+        assoc_result = base_scu._associate()
+        self.assertEqual(assoc_result.status, "Error")
+        self.assertEqual(str(assoc_result.description), "Called AE parameters not set")
         self.test_logger.info(
             f"Test _associate with called AE parameters not set with called_ip={called_ip}, called_port={called_port}"
         )
@@ -131,19 +122,17 @@ class TestBaseSCU(unittest.TestCase):
             (
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1"), MagicMock(abstract_syntax="1.2.840.10008.5.1.4.34.6.2")],
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1"), MagicMock(abstract_syntax="1.2.840.10008.5.1.4.34.6.2")],
-                True,
-                None,
+                "Success",
             ),
             # Test case where some contexts are not accepted
             (
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1"), MagicMock(abstract_syntax="1.2.840.10008.5.1.4.34.6.2")],
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1")],
-                False,
-                ContextWarning,
+                "Warning",
             ),
         ]
     )
-    def test_all_contexts_accepted(self, requested_contexts, accepted_contexts, expected_result, expected_exception):
+    def test_all_contexts_accepted(self, requested_contexts, accepted_contexts, expected_result):
         # Initialize instance and assoc
         assoc = MagicMock(spec=Association)
 
@@ -152,22 +141,20 @@ class TestBaseSCU(unittest.TestCase):
         self.base_scu.ae.requested_contexts = requested_contexts
         type(assoc).accepted_contexts = PropertyMock(return_value=accepted_contexts)
 
-        if expected_exception:
-            with self.assertRaises(expected_exception) as cm:
-                self.base_scu._all_contexts_accepted(assoc)
-            exception = cm.exception
-            self.assertEqual(len(exception.accepted_sop_classes), len(accepted_contexts))
-            self.assertEqual(len(exception.refused_sop_classes), len(requested_contexts) - len(accepted_contexts))
+        if expected_result == "Warning":
+            assoc_result = self.base_scu._all_contexts_accepted(assoc)
+            self.assertEqual(assoc_result.status, expected_result)
+            self.assertEqual(len(assoc_result.accepted_sop_classes), len(accepted_contexts))
             # Check the log messages in the memory handler
             self.memory_handler.flush()
             log_messages = [record.getMessage() for record in self.memory_handler.buffer]
-            self.test_logger.debug("Exception expected - log messages: %s", log_messages)
+            self.test_logger.debug("Warning expected - log messages: %s", log_messages)
         else:
-            result = self.base_scu._all_contexts_accepted(assoc)
-            self.assertEqual(result, expected_result)
+            assoc_result = self.base_scu._all_contexts_accepted(assoc)
+            self.assertEqual(assoc_result.status, expected_result)
             self.memory_handler.flush()
             log_messages = [record.getMessage() for record in self.memory_handler.buffer]
-            self.test_logger.debug("No exception expected - log messages: %s", log_messages)
+            self.test_logger.debug("No warning expected - log messages: %s", log_messages)
         self.test_logger.info("Test _all_contexts_accepted")
 
     @parameterized.expand(
@@ -180,6 +167,23 @@ class TestBaseSCU(unittest.TestCase):
         description = self.base_scu._get_status_description(status_code)
         self.assertEqual(description, expected_description)
 
+    def _create_minimal_test_dataset(self):
+        ds = Dataset()
+        ds.SOPInstanceUID = UID("1.2.3.4")
+        return ds
+
+    def test_handle_response_success(self):
+        rsp_status = MagicMock()
+        rsp_status.Status = Status.SUCCESS
+        rsp_status.__len__.return_value = 1  # Ensure rsp_status is not empty
+        rsp_dataset = self._create_minimal_test_dataset()
+
+        result = self.base_scu._handle_response(rsp_status, rsp_dataset)
+        self.assertTrue(result.status_category == "Success")
+        self.assertTrue(result.status_code == Status.SUCCESS)
+        self.assertTrue(result.status_description == "")
+        self.assertIsNotNone(result.dataset)
+
     def test_handle_response_empty_dataset(self):
         rsp_status = MagicMock()
         rsp_status.Status = Status.SUCCESS
@@ -187,84 +191,81 @@ class TestBaseSCU(unittest.TestCase):
         rsp_dataset = None
 
         result = self.base_scu._handle_response(rsp_status, rsp_dataset)
-        self.assertTrue(result)
+        self.assertTrue(result.status_category == "Success")
+        self.assertTrue(result.status_code == Status.SUCCESS)
+        self.assertTrue(result.status_description == "")
+        self.assertIsNone(result.dataset)
 
         # Check the log messages in the memory handler
         self.memory_handler.flush()
         log_messages = [record.getMessage() for record in self.memory_handler.buffer]
         self.assertIn("Response Dataset is None or empty", log_messages)
 
-    @patch("tdwii_plus_examples.basescu.BaseSCU._get_status_description")
-    def test_handle_response_success(self, mock_get_status_description):
-        rsp_status = MagicMock()
-        rsp_status.Status = Status.SUCCESS
-        rsp_status.__len__.return_value = 1  # Ensure rsp_status is not empty
-        rsp_dataset = MagicMock(spec=Dataset)
-        mock_get_status_description.return_value = "Success"
-
-        result = self.base_scu._handle_response(rsp_status, rsp_dataset)
-        self.assertTrue(result)
-
-        # Check the log messages in the memory handler
-        self.memory_handler.flush()
-        log_messages = [record.getMessage() for record in self.memory_handler.buffer]
-        self.assertIn("Request successful", log_messages)
-
     def test_handle_response_failure(self):
         rsp_status = MagicMock()
         rsp_status.Status = 0x0211  # Failure status code
         rsp_status.__len__.return_value = 1  # Ensure rsp_status is not empty
-        rsp_dataset = MagicMock(spec=Dataset)
+        rsp_dataset = self._create_minimal_test_dataset()
 
-        with self.assertRaises(ResponseError) as cm:
-            self.base_scu._handle_response(rsp_status, rsp_dataset)
-        self.assertEqual(str(cm.exception), "Unrecognised Operation (Status Code: 0x0211)")
+        result = self.base_scu._handle_response(rsp_status, rsp_dataset)
+        self.assertTrue(result.status_category == "Failure")
+        self.assertTrue(result.status_code == 0x0211)
+        self.assertTrue(result.status_description == "Unrecognised Operation")
+        self.assertIsNotNone(result.dataset)
 
     def test_handle_response_warning(self):
         rsp_status = MagicMock()
         rsp_status.Status = 0x0116  # Warning status code
         rsp_status.__len__.return_value = 1  # Ensure rsp_status is not empty
-        rsp_dataset = MagicMock(spec=Dataset)
+        rsp_dataset = self._create_minimal_test_dataset()
 
-        with self.assertRaises(ResponseWarning) as cm:
-            self.base_scu._handle_response(rsp_status, rsp_dataset)
-        self.assertEqual(str(cm.exception), "Attribute Value Out of Range (Status Code: 0x0116)")
+        result = self.base_scu._handle_response(rsp_status, rsp_dataset)
+        self.assertTrue(result.status_category == "Warning")
+        self.assertTrue(result.status_code == 0x0116)
+        self.assertTrue(result.status_description == "Attribute Value Out of Range")
+        self.assertIsNotNone(result.dataset)
 
     @patch("tdwii_plus_examples.basescu.BaseSCU._get_status_description")
     def test_handle_response_cancel(self, mock_get_status_description):
         rsp_status = MagicMock()
-        rsp_status.Status = 0xFE00  # Pending status code
+        rsp_status.Status = 0xFE00  # Cancel status code
         rsp_status.__len__.return_value = 1  # Ensure rsp_status is not empty
-        rsp_dataset = MagicMock(spec=Dataset)
+        rsp_dataset = self._create_minimal_test_dataset()
         mock_get_status_description.return_value = "Cancel"
 
-        with self.assertRaises(ResponseCancel) as cm:
-            self.base_scu._handle_response(rsp_status, rsp_dataset)
-        self.assertEqual(str(cm.exception), "Cancel (Status Code: 0xFE00)")
+        result = self.base_scu._handle_response(rsp_status, rsp_dataset)
+        self.assertTrue(result.status_category == "Cancel")
+        self.assertTrue(result.status_code == 0xFE00)
+        self.assertTrue(result.status_description == "Cancel")
+        self.assertIsNotNone(result.dataset)
 
     @patch("tdwii_plus_examples.basescu.BaseSCU._get_status_description")
     def test_handle_response_pending(self, mock_get_status_description):
         rsp_status = MagicMock()
         rsp_status.Status = 0xFF00  # Pending status code
         rsp_status.__len__.return_value = 1  # Ensure rsp_status is not empty
-        rsp_dataset = MagicMock(spec=Dataset)
+        rsp_dataset = self._create_minimal_test_dataset()
         mock_get_status_description.return_value = "Matches are continuing, current match supplied"
 
-        with self.assertRaises(ResponsePending) as cm:
-            self.base_scu._handle_response(rsp_status, rsp_dataset)
-        self.assertEqual(str(cm.exception), "Matches are continuing, current match supplied (Status Code: 0xFF00)")
+        result = self.base_scu._handle_response(rsp_status, rsp_dataset)
+        self.assertTrue(result.status_category == "Pending")
+        self.assertTrue(result.status_code == 0xFF00)
+        self.assertTrue(result.status_description == "Matches are continuing, current match supplied")
+        self.assertIsNotNone(result.dataset)
 
     @patch("tdwii_plus_examples.basescu.BaseSCU._get_status_description")
     def test_handle_response_unknown(self, mock_get_status_description):
         rsp_status = MagicMock()
-        rsp_status.Status = 0xE000  # Unkwnown status code
+        rsp_status.Status = 0xE000  # Unknown status code
         rsp_status.__len__.return_value = 1  # Ensure rsp_status is not empty
-        rsp_dataset = MagicMock(spec=Dataset)
+        rsp_dataset = self._create_minimal_test_dataset()
         mock_get_status_description.return_value = "Unknown status code"
 
-        with self.assertRaises(ResponseUnknown) as cm:
-            self.base_scu._handle_response(rsp_status, rsp_dataset)
-        self.assertEqual(str(cm.exception), "Unknown status code (Status Code: 0xE000)")
+        result = self.base_scu._handle_response(rsp_status, rsp_dataset)
+        self.assertTrue(result.status_category == "Unknown")
+        self.assertTrue(result.status_code == 0xE000)
+        self.assertTrue(result.status_description == "Unknown status code")
+        self.assertIsNotNone(result.dataset)
 
     @patch("tdwii_plus_examples.basescu.BaseSCU._associate")
     @patch("tdwii_plus_examples.basescu.BaseSCU._handle_response")
@@ -277,7 +278,9 @@ class TestBaseSCU(unittest.TestCase):
         # Set the assoc attribute on the base_scu instance
         self.base_scu.assoc = mock_assoc_instance
 
-        mock_handle_response.return_value = None
+        mock_handle_response.return_value = BaseSCU.PrimitiveResult(
+            status_category="Success", status_code=0x0000, status_description="", dataset=None
+        )
 
         # Call the verify method
         self.base_scu.verify()
@@ -296,7 +299,7 @@ class TestBaseSCU(unittest.TestCase):
         [("with_verification", [UID("1.2.840.10008.1.1")], "[Verification SOP Class]"), ("without_verification", [], "")]
     )
     @patch("tdwii_plus_examples.basescu.BaseSCU._handle_response")
-    def test_verify_context_warning(self, name, accepted_sop_classes, expected_transfer_syntax, mock_handle_response):
+    def test_verify_context_warning(self, name, accepted_sop_classes, expected_abstract_syntax, mock_handle_response):
         # Mock the association and response handling
         mock_assoc_instance = MagicMock()
         mock_assoc_instance.send_c_echo.return_value = MagicMock()
@@ -305,38 +308,44 @@ class TestBaseSCU(unittest.TestCase):
         # Set the assoc attribute on the base_scu instance
         self.base_scu.assoc = mock_assoc_instance
 
-        mock_handle_response.return_value = None
-
-        # Patch the _associate method with the appropriate side effect
+        mock_handle_response.return_value = BaseSCU.PrimitiveResult(
+            status_category="Success",
+            status_code=0x0000,  # Example status code for success
+            status_description="Request successful",
+            dataset=None,
+        )
+        # Patch the _associate method with the appropriate result
         with patch(
             "tdwii_plus_examples.basescu.BaseSCU._associate",
-            side_effect=ContextWarning(
-                "Some SOP classes were refused",
+            return_value=BaseSCU.AssociationResult(
+                status="Warning",
+                description="Some SOP classes were refused",
                 accepted_sop_classes=accepted_sop_classes,
-                refused_sop_classes=[UID("1.2.840.10008.5.1.4.34.6.2")],  # UPS Watch SOP Class
             ),
         ) as mock_associate:
-            # Call the verify method and expect it to raise ContextWarning
-            try:
-                self.base_scu.verify()
-            except ContextWarning as e:
-                self.scu_logger.debug(f"ContextWarning raised: {e}")
-
+            # Call the verify method
+            result = self.base_scu.verify()
             # Check that the association was attempted
             mock_associate.assert_called_once()
             mock_assoc_instance.release.assert_called_once()
 
-            if expected_transfer_syntax:
+            if expected_abstract_syntax:
                 mock_assoc_instance.send_c_echo.assert_called_once()
                 mock_handle_response.assert_called_once()
+            else:
+                mock_assoc_instance.send_c_echo.assert_not_called()
+                mock_handle_response.assert_not_called()
+
+                self.assertEqual(result.status_category, "AssocFailure")
+                self.assertEqual(result.status_code, 0xD001)
+                self.assertEqual(result.status_description, "Some SOP classes were refused")
+                self.assertIsNone(result.dataset)
 
             # Check the log messages in the memory handler
             self.memory_handler.flush()
             log_messages = [record.getMessage() for record in self.memory_handler.buffer]
             self.assertTrue(any("Some SOP classes were refused" in message for message in log_messages))
-            self.assertTrue(
-                any(f"Accepted Transfer Syntaxes: {expected_transfer_syntax}" in message for message in log_messages)
-            )
+            self.assertTrue(any(f"Accepted SOP Classes: {expected_abstract_syntax}" in message for message in log_messages))
 
 
 if __name__ == "__main__":

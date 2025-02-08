@@ -10,13 +10,6 @@ from pynetdicom.sop_class import (
 from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
 from tdwii_plus_examples.basescu import BaseSCU
-from tdwii_plus_examples.dicom_exceptions import (
-    AssociationError,
-    ContextWarning,
-    ResponseError,
-    ResponseUnknown,
-    ResponseWarning,
-)
 
 
 class UPSWatchNActionSCU(BaseSCU):
@@ -121,11 +114,9 @@ class UPSWatchNActionSCU(BaseSCU):
 
         Returns
         -------
-        bool:
-            True if the request was successful, False otherwise.
-        str:
-            The message indicating the outcome of the request derived from
-            the status code from the N-ACTION - Un/Subscribe response.
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset,
+            indicating the outcome of the request.
 
         Valid status codes are specified in PS3.4 Table CC.2.3-3
         +----------------+-----------------------------------+-------------+
@@ -168,53 +159,57 @@ class UPSWatchNActionSCU(BaseSCU):
             instance_uid=instance_uid,
         )
 
-        try:
-            self.status = self._handle_response(rsp_status, action_reply)
-        except ResponseWarning as warning:
-            self.logger.warning(f"{warning.message} (Status Code: {warning.status_code})")
-            raise
-        except ResponseError as error:
-            self.logger.error(f"{error.message} (Status Code: {error.status_code})")
-            raise
-        except ResponseUnknown as unknown:
-            self.logger.error(f"{unknown.message} (Status Code: {unknown.status_code})")
-            raise
-        finally:
-            self.assoc.release()
-            self.logger.debug("Association released")
+        return self._handle_response(rsp_status, action_reply)
 
     def _toggle_subscription(self, action_type_id, instance_uid=UPSGlobalSubscriptionInstance, lock=False, matching_keys=None):
-        safe_to_proceed = False
-        try:
-            self._associate()
-            safe_to_proceed = True
-        except AssociationError as error:
-            self.logger.error(str(error))
-            raise
-        except ContextWarning as warning:
-            accepted_sop_names = [f"[{UID(uid).name}]" for uid in warning.accepted_sop_classes]
-            self.logger.warning(f"{warning} - Accepted Transfer Syntaxes: {', '.join(accepted_sop_names)}")
-            if "[Unified Procedure Step - Watch SOP Class]" in accepted_sop_names:
-                safe_to_proceed = True
-            raise
-        finally:
-            if safe_to_proceed:
-                self._send_upswatchnaction_request(
-                    assoc=self.assoc,
-                    action_type_id=action_type_id,
-                    instance_uid=instance_uid,
-                    deletion_lock=lock,
-                    matching_keys=matching_keys,
-                )
-            else:
-                self.logger.error("UPS Watch SOP Class not accepted")
-                if self.assoc:
-                    self.assoc.release()
-                    self.logger.debug("Association released")
+        """
+        Subscribe or unsubscribe for UPS Event Reports
+
+        Parameters
+        ----------
+        action_type_id : int
+            The *Action Type ID* to use.  default 3, global subscription
+        instance_uid : pydicom.uid.UID, optional
+            The *Requested SOP Instance UID* to use.  default UPSGlobalSubscriptionInstance
+        lock : bool, optional
+            The *Deletion Lock* option.  default False
+        matching_keys : Sequence[pydicom.DataElement], optional
+            The *Matching Keys* to use for filtered global subscription.
+
+        Returns
+        -------
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset,
+            indicating the outcome of the request.
+        """
+        assoc_result = self._associate()
+
+        if assoc_result.status == "Error":
+            return self.PrimitiveResult("AssocFailure", 0xD000, assoc_result.description, None)
+
+        if assoc_result.status == "Warning":
+            accepted_sop_names = [f"[{UID(uid).name}]" for uid in assoc_result.accepted_sop_classes]
+            self.logger.warning(f"{assoc_result.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
+            if "[Unified Procedure Step - Watch SOP Class]" not in accepted_sop_names:
+                self.assoc.release()
+                return self.PrimitiveResult("AssocFailure", 0xD001, assoc_result.description, None)
+
+        result = self._send_upswatchnaction_request(
+            assoc=self.assoc,
+            action_type_id=action_type_id,
+            instance_uid=instance_uid,
+            deletion_lock=lock,
+            matching_keys=matching_keys,
+        )
+        self.assoc.release()
+        self.logger.debug("Association released")
+
+        return result
 
     def subscribe_globally(self, lock: bool = False, matching_keys=None):
         """Subscribe to receive UPS Event Reports for all existing
         and new UPS Instances (w/ or w/o Deletion Lock).
+
         Parameters
         ----------
         lock : bool
@@ -222,31 +217,50 @@ class UPSWatchNActionSCU(BaseSCU):
             Canceled or Completed.
         matching_keys : pydicom.Dataset
             The *Matching Keys* to filter the UPS to subscribe to.
+
+        Returns
+        -------
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset,
+            indicating the outcome of the request.
         """
         if matching_keys is not None:
             self.logger.debug("Filtered Global Subscription")
             self.logger.debug(matching_keys)
         else:
             self.logger.debug("(Unfiltered) Global Subscription")
-        self._toggle_subscription(action_type_id=3, lock=lock, matching_keys=matching_keys)
+        return self._toggle_subscription(action_type_id=3, lock=lock, matching_keys=matching_keys)
 
     def unsubscribe_globally(self):
         """Unsubscribe from receiving UPS Event Reports for all existing
         and new UPS Instances.
+
+        Returns
+        -------
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset,
+            indicating the outcome of the request.
         """
         self.logger.debug("Global Unsubscription")
-        self._toggle_subscription(action_type_id=4)
+        return self._toggle_subscription(action_type_id=4)
 
     def suspend_global_subscription(self):
         """Unsubscribe from receiving UPS Event Reports for all new UPS
         Instances only.
+
+        Returns
+        -------
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset,
+            indicating the outcome of the request.
         """
         self.logger.debug("Suspend Global Subscription")
-        self._toggle_subscription(action_type_id=5)
+        return self._toggle_subscription(action_type_id=5)
 
     def subscribe(self, instance_uid: UID, lock: bool = False):
         """Subscribe to receive UPS Event Reports for a specific
         UPS Instance (w/ or w/o Deletion Lock).
+
         Parameters
         ----------
         instance_uid: pydicom.uid.UID
@@ -254,20 +268,33 @@ class UPSWatchNActionSCU(BaseSCU):
         lock : bool
             Set to *true* to request the SCP to keep the UPS when it is
             Canceled or Completed.
+
+        Returns
+        -------
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset,
+            indicating the outcome of the request.
         """
         self.logger.debug("Single UPS Subscription")
-        self._toggle_subscription(action_type_id=3, instance_uid=instance_uid, lock=lock)
+        return self._toggle_subscription(action_type_id=3, instance_uid=instance_uid, lock=lock)
 
     def unsubscribe(self, instance_uid: UID):
         """Unsubscribe from receiving UPS Event Reports for a specific
         UPS Instance.
+
         Parameters
         ----------
         instance_uid: pydicom.uid.UID
                 The SOP Instance UID of the UPS Instance to Unsubscribe to.
+
+        Returns
+        -------
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset,
+            indicating the outcome of the request.
         """
         self.logger.debug("Single UPS Unsubscription")
-        self._toggle_subscription(action_type_id=4, instance_uid=instance_uid)
+        return self._toggle_subscription(action_type_id=4, instance_uid=instance_uid)
 
     def _get_status_description(self, status_code):
         return UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS.get(status_code, ("Unknown", "Unknown status code"))[1]

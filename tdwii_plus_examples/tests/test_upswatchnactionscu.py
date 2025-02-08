@@ -8,7 +8,6 @@ from pydicom import Dataset, Sequence
 from pydicom.uid import UID
 from pynetdicom.association import Association
 from pynetdicom.sop_class import (
-    UnifiedProcedureStepEvent,
     UnifiedProcedureStepPush,
     UnifiedProcedureStepWatch,
     UPSFilteredGlobalSubscriptionInstance,
@@ -16,7 +15,6 @@ from pynetdicom.sop_class import (
     Verification,
 )
 
-from tdwii_plus_examples.dicom_exceptions import AssociationError, ContextWarning
 from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
@@ -115,80 +113,107 @@ class TestUPSWatchNActionSCU(unittest.TestCase):
                 instance_uid=self.assoc.send_n_action.call_args[1]["instance_uid"],
             )
 
+            # Verify the call to _handle_response
+            mock_handle_response.assert_called_once_with(rsp_status, Dataset())
+
+        # Verify the response
+        self.assertEqual(mock_handle_response.return_value, "Success")
+
     @parameterized.expand(
         [
-            ("success", None, None, True),
-            ("association_error", AssociationError("Association failed"), None, False),
             (
-                "context_warning_accepted",
-                ContextWarning(
-                    "Context warning",
-                    accepted_sop_classes=[Verification, UnifiedProcedureStepWatch],
-                    refused_sop_classes=[UnifiedProcedureStepEvent],
-                ),
-                None,
-                True,
+                "with_watch_sop_class",
+                [UID("1.2.840.10008.5.1.4.34.6.2")],
+                "[Unified Procedure Step - Watch SOP Class]",
+                "Warning",
             ),
-            (
-                "context_warning_not_accepted",
-                ContextWarning(
-                    "Context warning", accepted_sop_classes=[Verification], refused_sop_classes=[UnifiedProcedureStepWatch]
-                ),
-                None,
-                False,
-            ),
+            ("without_watch_sop_class", [], "", "Warning"),
+            ("assoc_error", [], "", "Error"),
+            ("assoc_success", [UID("1.2.840.10008.5.1.4.34.6.2")], "[Unified Procedure Step - Watch SOP Class]", "Success"),
         ]
     )
-    def test_toggle_subscription(self, name, associate_exception, warning_exception, safe_to_proceed):
-        if associate_exception:
-            self.scu._associate = MagicMock(side_effect=associate_exception)
-        elif warning_exception:
-            self.scu._associate = MagicMock(side_effect=warning_exception)
-        else:
-            self.scu._associate = MagicMock()
+    @patch("tdwii_plus_examples.upswatchnactionscu.UPSWatchNActionSCU._send_upswatchnaction_request")
+    def test_toggle_subscription_context_warning(
+        self, name, accepted_sop_classes, expected_abstract_syntax, assoc_status, mock_send_upswatchnaction_request
+    ):
+        # Mock the association and response handling
+        mock_assoc_instance = MagicMock()
+        mock_assoc_instance.release.return_value = None
 
-        action_type_id = 3
-        instance_uid = UPSGlobalSubscriptionInstance
-        lock = True
-        matching_keys = create_matching_keys()
+        # Initialize the base_scu instance
+        self.upswatchnactionscu = UPSWatchNActionSCU()
+        # Set up a memory handler for logging
+        self.memory_handler = logging.handlers.MemoryHandler(capacity=10000, target=None)
+        self.upswatchnactionscu.logger.addHandler(self.memory_handler)
+        # Set the assoc attribute on the base_scu instance
+        self.upswatchnactionscu.assoc = mock_assoc_instance
 
-        if safe_to_proceed:
-            # Configure the mock to return a tuple with a valid Dataset and another Dataset
-            rsp_status = Dataset()
-            rsp_status.Status = 0x0000  # Example status code indicating success
-            self.assoc.send_n_action.return_value = (rsp_status, Dataset())
+        mock_send_upswatchnaction_request.return_value = UPSWatchNActionSCU.PrimitiveResult(
+            status_category="Success",
+            status_code=0x0000,  # Example status code for success
+            status_description="Request successful",
+            dataset=None,
+        )
 
-        if associate_exception or warning_exception:
-            with self.assertRaises((AssociationError, ContextWarning)):
-                with patch(
-                    "tdwii_plus_examples.upswatchnactionscu.UPSWatchNActionSCU._send_upswatchnaction_request"
-                ) as mock_send_request:
-                    self.scu._toggle_subscription(
-                        action_type_id=action_type_id, instance_uid=instance_uid, lock=lock, matching_keys=matching_keys
-                    )
-        else:
-            with patch(
-                "tdwii_plus_examples.upswatchnactionscu.UPSWatchNActionSCU._send_upswatchnaction_request"
-            ) as mock_send_request:
-                self.scu._toggle_subscription(
-                    action_type_id=action_type_id, instance_uid=instance_uid, lock=lock, matching_keys=matching_keys
+        # Patch the _associate method with the appropriate result
+        with patch(
+            "tdwii_plus_examples.basescu.BaseSCU._associate",
+            return_value=UPSWatchNActionSCU.AssociationResult(
+                status=assoc_status,
+                description="Some SOP classes were refused"
+                if assoc_status == "Warning"
+                else "Association error"
+                if assoc_status == "Error"
+                else "Association successful",
+                accepted_sop_classes=accepted_sop_classes,
+            ),
+        ) as mock_associate:
+            # Call the _toggle_subscription method
+            result = self.upswatchnactionscu._toggle_subscription(action_type_id=1)
+
+            # Check that the association was attempted
+            mock_associate.assert_called_once()
+
+            if assoc_status == "Error":
+                self.assertEqual(result.status_category, "AssocFailure")
+                self.assertEqual(result.status_code, 0xD000)
+                self.assertEqual(result.status_description, "Association error")
+                self.assertIsNone(result.dataset)
+                mock_send_upswatchnaction_request.assert_not_called()
+                mock_assoc_instance.release.assert_not_called()
+            elif assoc_status == "Warning":
+                if expected_abstract_syntax:
+                    mock_send_upswatchnaction_request.assert_called_once()
+                    mock_assoc_instance.release.assert_called_once()
+                else:
+                    mock_send_upswatchnaction_request.assert_not_called()
+                    mock_assoc_instance.release.assert_called_once()
+
+                    self.assertEqual(result.status_category, "AssocFailure")
+                    self.assertEqual(result.status_code, 0xD001)
+                    self.assertEqual(result.status_description, "Some SOP classes were refused")
+                    self.assertIsNone(result.dataset)
+            elif assoc_status == "Success":
+                mock_send_upswatchnaction_request.assert_called_once()
+                mock_assoc_instance.release.assert_called_once()
+
+                self.assertEqual(result.status_category, "Success")
+                self.assertEqual(result.status_code, 0x0000)
+                self.assertEqual(result.status_description, "Request successful")
+                self.assertIsNone(result.dataset)
+
+            # Check the log messages in the memory handler
+            self.memory_handler.flush()
+            log_messages = [record.getMessage() for record in self.memory_handler.buffer]
+            if assoc_status == "Warning":
+                self.assertTrue(any("Some SOP classes were refused" in message for message in log_messages))
+                self.assertTrue(
+                    any(f"Accepted SOP Classes: {expected_abstract_syntax}" in message for message in log_messages)
                 )
 
-        if safe_to_proceed:
-            mock_send_request.assert_called_once_with(
-                assoc=self.assoc,
-                action_type_id=action_type_id,
-                instance_uid=instance_uid,
-                deletion_lock=lock,
-                matching_keys=matching_keys,
-            )
-        else:
-            mock_send_request.assert_not_called()
-            self.assertTrue(
-                any("UPS Watch SOP Class not accepted" in record.getMessage() for record in self.memory_handler.buffer)
-            )
-            self.assoc.release.assert_called_once()
-            self.assertTrue(any("Association released" in record.getMessage() for record in self.memory_handler.buffer))
+
+if __name__ == "__main__":
+    unittest.main()
 
     @parameterized.expand(
         [

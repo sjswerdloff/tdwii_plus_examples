@@ -57,7 +57,6 @@ def main():
     parser.add_argument("-q", "--quiet", action="store_true", help="Suppress all log output")
 
     args = parser.parse_args()
-    print(f"Parsed arguments: {args}")  # Debug statement
 
     if args.quiet:
         log_level = logging.CRITICAL
@@ -71,7 +70,6 @@ def main():
     logging.basicConfig(level=log_level)
     logger = logging.getLogger("upswatchscu")
     logger.setLevel(log_level)
-    print(f"Logger level set to: {log_level}")  # Debug statement
 
     logger.info(f"Trying to establish association with {args.called_ae_title}@{args.ip}:{args.port}")
     scu = UPSWatchNActionSCU(
@@ -81,18 +79,15 @@ def main():
         called_port=args.port,
         called_ae_title=args.called_ae_title,
     )
-    print("SCU instance created")  # Debug statement
 
     # Verification requested
     if args.echo:
-        try:
-            print("Verification (C-ECHO) requested")
-            scu.verify()
-        except Exception as e:
-            print(e)
-        finally:
-            if scu.status:
-                print("Verification (C-ECHO) successful")
+        print("Verification (C-ECHO) request")
+        result = scu.verify()
+        if result.status_category == "Success":
+            print("Verification (C-ECHO) successful")
+        else:
+            print(f"Verification (C-ECHO) failed: {result.status_description}")
 
     # Global Un/Subscription requested
     elif args.uid is None:
@@ -111,56 +106,45 @@ def main():
                 ds.ScheduledStationNameCodeSequence = seq
             else:
                 ds = None
-            try:
-                scu.subscribe_globally(lock=args.lock, matching_keys=ds)
-            except Exception as e:
-                print(e)
-            finally:
-                if scu.status and not args.machine:
-                    print("Global Subscription successful")
-                elif scu.status and args.machine:
-                    print("Filtered Global Subscription successful")
-                else:
-                    print("Global Subscription failed")
+
+            result = scu.subscribe_globally(lock=args.lock, matching_keys=ds)
+
+            if result.status_category == "Success" and not args.machine:
+                print("Global Subscription successful")
+            elif result.status_category == "Success" and args.machine:
+                print("Filtered Global Subscription successful")
+            else:
+                print(f"Global Subscription failed: {result.status_description}")
         else:
-            try:
+            if args.unsubscribe:
+                result = scu.unsubscribe_globally()
+            else:
+                result = scu.suspend_global_subscription()
+
+            if result.status_category == "Success":
                 if args.unsubscribe:
-                    scu.unsubscribe_globally()
+                    print("Global Unsubscription successful")
                 else:
-                    scu.suspend_global_subscription()
-            except Exception as e:
-                print(e)
-            finally:
-                if scu.status:
-                    if args.unsubscribe:
-                        print("Global Unsubscription successful")
-                    else:
-                        print("Global Suspend successful")
-                else:
-                    print("Global Unsubscription failed")
+                    print("Global Suspend successful")
+            else:
+                print(f"Global Unsubscription failed: {result.status_description}")
 
     # Single Instance Un/Subscription requested
     else:
         if not args.unsubscribe:
-            try:
-                scu.subscribe(lock=args.lock, instance_uid=args.uid)
-            except Exception as e:
-                print(e)
-            finally:
-                if scu.status:
-                    print("Single UPS Subscription successful")
-                else:
-                    print("Single UPS Subscription failed")
+            result = scu.subscribe(lock=args.lock, instance_uid=args.uid)
+
+            if result.status_category == "Success":
+                print("Single UPS Subscription successful")
+            else:
+                print(f"Single UPS Subscription failed: {result.status_description}")
         else:
-            try:
-                scu.unsubscribe(instance_uid=args.uid)
-            except Exception as e:
-                print(e)
-            finally:
-                if scu.status:
-                    print("Single UPS Unsubscription successful")
-                else:
-                    print("Single UPS Unsubscription failed")
+            result = scu.unsubscribe(instance_uid=args.uid)
+
+            if result.status_category == "Success":
+                print("Single UPS Unsubscription successful")
+            else:
+                print(f"Single UPS Unsubscription failed: {result.status_description}")
 
 
 if __name__ == "__main__":

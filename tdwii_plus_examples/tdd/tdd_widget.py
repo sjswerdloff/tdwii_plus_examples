@@ -414,13 +414,15 @@ class TDD_Widget(QWidget):
             matching_keys = watch_scu.create_data_set(
                 match_on_beam_number=match_on_beam_number, match_on_step_state=match_on_step_state
             )
-        try:
-            watch_scu.subscribe_globally(matching_keys=matching_keys)
-        except Exception as e:
-            logging.error("Error subscribing to UPS: " + str(e))
-        if watch_scu.status and self.watch_scu is None:
+        result = watch_scu.subscribe_globally(matching_keys=matching_keys)
+        if result.status_category != "Success":
+            status = False
+            logging.error("Error subscribing to UPS: " + result.status_description)
+        if result.status_category == "Success" and self.watch_scu is None:
+            status = True
             self.watch_scu = watch_scu
-        return watch_scu.status
+
+        return status
 
     def _unsubscribe_from_ups(self):
         if self.watch_scu is None:
@@ -434,13 +436,15 @@ class TDD_Widget(QWidget):
         else:
             watch_scu = self.watch_scu
 
-        try:
-            watch_scu.unsubscribe_globally()
-        except Exception as e:
-            logging.error("Error unsubscribing from UPS: " + str(e))
-        if watch_scu.status and self.watch_scu is None:
+        result = watch_scu.unsubscribe_globally()
+        if result.status_category != "Success":
+            status = False
+            logging.error("Error unsubscribing from UPS: " + result.status_description)
+        if result.status_category == "Success" and self.watch_scu is None:
+            status = True
             self.watch_scu = watch_scu
-        return watch_scu.status
+
+        return status
 
     def _nevent_callback(self, **kwargs):
         print("Processing UPS Event in TDD callback")

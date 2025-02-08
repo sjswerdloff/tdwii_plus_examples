@@ -1,23 +1,13 @@
 import logging
 from argparse import Namespace
-from typing import cast
+from collections import namedtuple
 
 from pydicom.dataset import Dataset
 from pydicom.uid import UID
 from pynetdicom import AE, Association
 from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
-from pynetdicom.status import GENERAL_STATUS, Status, code_to_category
-
-from tdwii_plus_examples.dicom_exceptions import (
-    AssociationError,
-    ContextWarning,
-    ResponseCancel,
-    ResponseError,
-    ResponsePending,
-    ResponseUnknown,
-    ResponseWarning,
-)
+from pynetdicom.status import GENERAL_STATUS, code_to_category
 
 
 class BaseSCU:
@@ -122,20 +112,18 @@ class BaseSCU:
         self.ae.add_requested_context(Verification)
         self.logger.debug(f"Verification Presentation context added: \n {self.ae.requested_contexts[0]}")
 
+    # Create a named tuple to hold the result of the Association
+    AssociationResult = namedtuple("AssociationResult", ["status", "description", "accepted_sop_classes"])
+
     def _associate(self):
         """
         Establish an association with the remote AE and check contexts.
 
-        Raises:
-            AssociationError: If the association could not be established.
-            ContextWarning: If some requested presentation contexts were not accepted.
-                            The list of accepted SOP classes (list of pydicom.uid.UID) can be accessed via the
-                            `accepted_sop_classes` attribute of the exception.
-                            The list of refused SOP classes (list of pydicom.uid.UID) can be accessed via the
-                            `refused_sop_classes` attribute of the exception.
+        Returns:
+            AssociationResult: A named tuple containing the status, accepted SOP classes, and description.
         """
         if (self.called_ip is None or self.called_ip == "") or self.called_port is None:
-            raise AssociationError("Called AE parameters not set")
+            return self.AssociationResult(status="Error", description="Called AE parameters not set", accepted_sop_classes=[])
         else:
             if self.called_ae_title is None:
                 self.called_ae_title = "ANYSCP"
@@ -143,16 +131,18 @@ class BaseSCU:
 
             self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
             if not self.assoc.is_established:
-                raise AssociationError("Association could not be established")
+                return self.AssociationResult(
+                    status="Error", description="Association could not be established", accepted_sop_classes=[]
+                )
             self.logger.debug("Association established")
 
             # Initialize status of future requests
             self.status = False
 
             # Check if all requested contexts were accepted
-            self._all_contexts_accepted(self.assoc)
+            return self._all_contexts_accepted(self.assoc)
 
-    def _all_contexts_accepted(self, assoc: Association) -> bool:
+    def _all_contexts_accepted(self, assoc: Association) -> AssociationResult:
         """
         Check if all requested presentation contexts were accepted.
 
@@ -160,14 +150,7 @@ class BaseSCU:
             assoc (Association): The established association object.
 
         Returns:
-            bool: True if all requested presentation contexts were accepted, False otherwise.
-
-        Raises:
-            ContextWarning: If some requested presentation contexts were not accepted.
-                            The list of accepted SOP classes (list of pydicom.uid.UID) can be accessed via the
-                            `accepted_sop_classes` attribute of the exception.
-                            The list of refused SOP classes (list of pydicom.uid.UID) can be accessed via the
-                            `refused_sop_classes` attribute of the exception.
+            AssociationResult: A named tuple containing the status, accepted SOP classes, and description.
         """
         requested_abstract_syntaxes = {ctx.abstract_syntax for ctx in self.ae.requested_contexts}
         accepted_abstract_syntaxes = {ctx.abstract_syntax for ctx in assoc.accepted_contexts}
@@ -176,16 +159,21 @@ class BaseSCU:
 
         if refused_abstract_syntaxes:
             accepted_sop_classes = [UID(uid) for uid in accepted_abstract_syntaxes]
-            refused_sop_classes = [UID(uid) for uid in refused_abstract_syntaxes]
-            raise ContextWarning(
-                "The following SOP classes were not accepted",
-                accepted_sop_classes=accepted_sop_classes,
-                refused_sop_classes=refused_sop_classes,
+            description = "The following SOP classes were not accepted: " + ", ".join(
+                str(uid) for uid in refused_abstract_syntaxes
             )
+            return self.AssociationResult(status="Warning", description=description, accepted_sop_classes=accepted_sop_classes)
 
-        return True
+        return self.AssociationResult(
+            status="Success",
+            description="All requested presentation contexts were accepted",
+            accepted_sop_classes=[UID(uid) for uid in accepted_abstract_syntaxes],
+        )
 
-    def _handle_response(self, rsp_status, rsp_dataset):
+    # Create a named tuple to hold the response status and dataset
+    PrimitiveResult = namedtuple("PrimitiveResult", ["status_category", "status_code", "status_description", "dataset"])
+
+    def _handle_response(self, rsp_status, rsp_dataset) -> PrimitiveResult:
         """
         Handle the response from the SCP.
 
@@ -196,62 +184,40 @@ class BaseSCU:
         rsp_dataset : Dataset
             The response dataset.
 
-        Raises
-        ------
-        ResponseWarning
-            If the request was successful but with a warning.
-        ResponseError
-            If the request failed.
-
         Returns
         -------
-        bool
-            True if the request was successful, False otherwise.
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset.
         """
-        self.status = False
+
         self.logger.debug("Received Response:")
         self.logger.debug(f"Status Type: {type(rsp_status)}")
         self.logger.debug(f"Status Value: {rsp_status}")
 
-        # check if Status contains empty dataset
         if rsp_status is None or len(rsp_status) == 0:
             self.logger.error("Response Status is None or empty")
-            raise ResponseError(0xFFFF, "Empty Status, SCP timed out, aborted or sent an invalid response")
+            return self.PrimitiveResult(
+                "Failure", 0xFFFF, "Empty Status, SCP timed out, aborted or sent an invalid response", None
+            )
 
-        # check if Dataset contains empty dataset
         if rsp_dataset is None or len(rsp_dataset) == 0:
             self.logger.debug("Response Dataset is None or empty")
+            rsp_ds = None
         else:
             if isinstance(rsp_dataset, Dataset):
                 rsp_ds = Dataset(rsp_dataset)
                 self.logger.debug(f"Response Dataset: {rsp_ds}")
             else:
-                self.logger.debug("Response Dataset is not a DICOM Dataset")
+                self.logger.error("Response Dataset is not a DICOM Dataset")
+                rsp_ds = None
 
-        # For an SCU, the status can belong to Success, Failure, Warning, Pending, or Unknown category
-        if rsp_status.Status == Status.SUCCESS:
-            self.status = True
-            message = "Request successful"
-            self.logger.debug(message)
-            return self.status
-        else:
-            status_code = cast(int, rsp_status.Status)
-            category = code_to_category(cast(int, status_code))
-            description = self._get_status_description(status_code)
-            self.logger.debug(f"Status Category: {category}")
-            self.logger.debug(f"Status Description: {description}")
-            if category == "Failure":
-                raise ResponseError(status_code, description)
-            elif category == "Warning":
-                raise ResponseWarning(status_code, description)
-            elif category == "Cancel":
-                raise ResponseCancel(status_code, description)
-            elif category == "Pending":
-                raise ResponsePending(status_code, description)
-            elif category == "Unknown":
-                raise ResponseUnknown(status_code, description)
-            else:
-                return self.status
+        status_code = int(rsp_status.Status)
+        category = code_to_category(status_code)
+        description = self._get_status_description(status_code)
+        self.logger.debug(f"Status Category: {category}")
+        self.logger.debug(f"Status Description: {description}")
+
+        return self.PrimitiveResult(category, status_code, description, rsp_ds)
 
     def _get_status_description(self, status_code):
         return GENERAL_STATUS.get(status_code, ("Unknown", "Unknown status code"))[1]
@@ -274,50 +240,30 @@ class BaseSCU:
         verify communication, and handles the response. It logs the status
         of the association and the verification process.
 
-        Raises
+        Returns
         -------
-        AssociationError:
-            If the association could not be established.
-        ContextWarning:
-            If some requested presentation contexts were not accepted.
-        ResponseWarning:
-            If the request was successful but with a warning.
-        ResponseError:
-            If the request failed.
-        ResponseUnknown:
-            If the request failed with an unknown status.
+        PrimitiveResult:
+            A named tuple containing the status category, status code, status description, and dataset.
         """
-        safe_to_proceed = False
-        try:
-            self._associate()
-            safe_to_proceed = True
-        except AssociationError as error:
-            self.logger.error(str(error))
-            raise
-        except ContextWarning as warning:
-            accepted_sop_names = [f"[{UID(uid).name}]" for uid in warning.accepted_sop_classes]
-            self.logger.warning(f"{warning} - Accepted Transfer Syntaxes: {', '.join(accepted_sop_names)}")
-            if "[Verification SOP Class]" in accepted_sop_names:
-                safe_to_proceed = True
-                raise
-        finally:
-            if safe_to_proceed:
-                try:
-                    self._handle_response(self.assoc.send_c_echo(), None)
-                    self.logger.info("Verification (C-ECHO) successful")
-                except ResponseWarning as warning:
-                    self.logger.warning(self._get_status_description(warning.status_code))
-                    raise
-                except ResponseError as error:
-                    self.logger.error(self._get_status_description(error.status_code))
-                    raise
-                except ResponseUnknown as unknown:
-                    self.logger.error(self._get_status_description(unknown.status_code))
-                    raise
-                finally:
-                    self.assoc.release()
-                    self.logger.debug("Association released")
-            else:
-                if self.assoc:
-                    self.assoc.release()
-                    self.logger.debug("Association released")
+        assoc_result = self._associate()
+
+        if assoc_result.status == "Error":
+            return self.PrimitiveResult("AssocFailure", 0xD000, assoc_result.description, None)
+
+        if assoc_result.status == "Warning":
+            accepted_sop_names = [f"[{UID(uid).name}]" for uid in assoc_result.accepted_sop_classes]
+            self.logger.warning(f"{assoc_result.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
+            if "[Verification SOP Class]" not in accepted_sop_names:
+                self.assoc.release()
+                return self.PrimitiveResult("AssocFailure", 0xD001, assoc_result.description, None)
+
+        result = self._handle_response(self.assoc.send_c_echo(), None)
+
+        if result.status_category == "Success":
+            self.logger.info("Verification (C-ECHO) successful")
+        else:
+            self.logger.error(f"Verification (C-ECHO) failure: {result.status_description}")
+
+        self.assoc.release()
+
+        return result
