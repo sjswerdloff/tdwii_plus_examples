@@ -33,7 +33,7 @@ from tdwii_plus_examples.TDWII_PPVS_subscriber.upsfindscu import (
     create_ups_query,
     get_ups,
 )
-from tdwii_plus_examples.TDWII_PPVS_subscriber.watchscu import WatchSCU
+from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
 class PPVS_SubscriberWidget(QWidget):
@@ -81,17 +81,14 @@ class PPVS_SubscriberWidget(QWidget):
                     self.ui.machine_name_line_edit.setText(machine_name)
                 logging.warning(f"Completed Parsing of {config_file_path}")
             except Exception:
-                logging.warning("Difficulty parsing config file "
-                                f"{config_file_path}")
+                logging.warning("Difficulty parsing config file " f"{config_file_path}")
         except OSError as config_file_error:
-            logging.exception("Problem parsing config file "
-                              f"{config_file_path}: {config_file_error}")
+            logging.exception("Problem parsing config file " f"{config_file_path}: {config_file_error}")
 
         if "ae_title" in default_dict and "import_staging_directory" in default_dict:
             self.ppvs_scp = self._restart_scp()
         else:
-            logging.error(f"AE Title and Staging Directory missing from "
-                          f"config file {config_file_path}")
+            logging.error(f"AE Title and Staging Directory missing from " f"config file {config_file_path}")
 
     @Slot()
     def _import_staging_dir_clicked(self):
@@ -120,16 +117,14 @@ class PPVS_SubscriberWidget(QWidget):
         print(f"PPVS AE Title: {ppvs_scp_ae_title} using {staging_dir} for caching data")
         # PPVS_SCP combines the NEVENT SCP and C-STORE SCP
         self.ppvs_scp = PPVS_SCP(
-            ups_event_callback=self._nevent_callback,
-            ae_title=ppvs_scp_ae_title,
-            store_directory=staging_dir
+            ups_event_callback=self._nevent_callback, ae_title=ppvs_scp_ae_title, store_directory=staging_dir
         )
         self.ppvs_scp.run()
-        self.watch_scu = WatchSCU(self.ui.ppvs_ae_line_edit.text())
+        self.watch_scu = UPSWatchNActionSCU(calling_ae_title=self.ui.ppvs_ae_line_edit.text())
         upsscp_ae_title = self.ui.ups_ae_line_edit.text()
         ip_addr = tdwii_config.known_ae_ipaddr[upsscp_ae_title]
         port = tdwii_config.known_ae_port[upsscp_ae_title]
-        self.watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr, port=port)
+        self.watch_scu.set_called_ae(called_ae_title=upsscp_ae_title, called_ip=ip_addr, called_port=port)
 
     @Slot()
     def _get_input_information(self):
@@ -327,11 +322,11 @@ class PPVS_SubscriberWidget(QWidget):
     def _subscribe_to_ups(self, match_on_step_state=False, match_on_beam_number=False) -> bool:
         if self.watch_scu is None:
             my_ae_title = self.ui.ppvs_ae_line_edit.text()
-            watch_scu = WatchSCU(my_ae_title)
+            watch_scu = UPSWatchNActionSCU(calling_ae_title=my_ae_title)
             upsscp_ae_title = self.ui.ups_ae_line_edit.text()
             ip_addr = tdwii_config.known_ae_ipaddr[upsscp_ae_title]
             port = tdwii_config.known_ae_port[upsscp_ae_title]
-            watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr, port=port)
+            watch_scu.set_called_ae(called_ae_title=upsscp_ae_title, called_ip=ip_addr, called_port=port)
         else:
             watch_scu = self.watch_scu
 
@@ -340,28 +335,37 @@ class PPVS_SubscriberWidget(QWidget):
             matching_keys = watch_scu.create_data_set(
                 match_on_beam_number=match_on_beam_number, match_on_step_state=match_on_step_state
             )
-        success = watch_scu.subscribe(matching_keys=matching_keys)
-        if success and self.watch_scu is None:
+        result = watch_scu.subscribe_globally(matching_keys=matching_keys)
+        if result.status_category != "Success":
+            status = False
+            logging.error("Error subscribing to UPS: " + result.status_description)
+        if result.status_category == "Success" and self.watch_scu is None:
+            status = True
             self.watch_scu = watch_scu
-        return success
+
+        return status
 
     def _unsubscribe_from_ups(self):
         if self.watch_scu is None:
             my_ae_title = self.ui.ppvs_ae_line_edit.text()
-            watch_scu = WatchSCU(my_ae_title)
+            watch_scu = UPSWatchNActionSCU(calling_ae_title=my_ae_title)
             upsscp_ae_title = self.ui.ups_ae_line_edit.text()
             ip_addr = tdwii_config.known_ae_ipaddr[upsscp_ae_title]
             port = tdwii_config.known_ae_port[upsscp_ae_title]
 
-            watch_scu.set_subscription_ae(upsscp_ae_title, ip_addr=ip_addr, port=port)
+            watch_scu.set_called_ae(called_ae_title=upsscp_ae_title, called_ip=ip_addr, called_port=port)
         else:
             watch_scu = self.watch_scu
 
-        matching_keys = None
-        success = watch_scu.unsubscribe(matching_keys=matching_keys)
-        if success and self.watch_scu is None:
+        result = watch_scu.unsubscribe_globally()
+        if result.status_category != "Success":
+            status = False
+            logging.error("Error unsubscribing from UPS: " + result.status_description)
+        if result.status_category == "Success" and self.watch_scu is None:
+            status = True
             self.watch_scu = watch_scu
-        return success
+
+        return status
 
     def _nevent_callback(self, **kwargs):
         print("Processing UPS Event in PPVS callback")
