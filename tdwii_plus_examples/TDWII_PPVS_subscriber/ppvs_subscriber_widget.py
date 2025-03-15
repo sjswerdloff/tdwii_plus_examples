@@ -86,7 +86,7 @@ class PPVS_SubscriberWidget(QWidget):
             logging.exception("Problem parsing config file " f"{config_file_path}: {config_file_error}")
 
         if "ae_title" in default_dict and "import_staging_directory" in default_dict:
-            self.ppvs_scp = self._restart_scp()
+            self._restart_scp()
         else:
             logging.error(f"AE Title and Staging Directory missing from " f"config file {config_file_path}")
 
@@ -115,7 +115,11 @@ class PPVS_SubscriberWidget(QWidget):
         ppvs_scp_ae_title = self.ui.ppvs_ae_line_edit.text()
         staging_dir = self.ui.import_staging_dir_line_edit.text()
         print(f"PPVS AE Title: {ppvs_scp_ae_title} using {staging_dir} for caching data")
+
         # PPVS_SCP combines the NEVENT SCP and C-STORE SCP
+        if self.ppvs_scp is not None:
+            self.ppvs_scp.stop()
+
         self.ppvs_scp = PPVS_SCP(
             ups_event_callback=self._nevent_callback, ae_title=ppvs_scp_ae_title, store_directory=staging_dir
         )
@@ -427,20 +431,6 @@ class PPVS_SubscriberWidget(QWidget):
         else:
             if logger:
                 logger.warning(f"Unknown Event Type ID: {event_type_id}")
-
-
-def restart_ppvs_scp(ae_title: str, output_dir: Path = None) -> str:
-    """_summary_
-
-    Args:
-        ae_title (str): _description_
-        output_dir (Path, optional): _description_. Defaults to None.
-                                    If None, the output path will be set
-                                    to the current working directory
-
-    Returns:
-        str: error string, empty if startup was successful
-    """
 
 
 def sop_references_in_input_info(ups_ds: Dataset) -> dict[uid.UID | str, uid.UID | str]:
