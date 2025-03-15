@@ -349,6 +349,10 @@ class TDD_Widget(QWidget):
         staging_dir = self.ui.import_staging_dir_line_edit.text()
         print(f"TDD AE Title: {tdd_scp_ae_title} using {staging_dir} for caching data")
         # TDD_SCP combines the NEVENT SCP and C-STORE SCP
+
+        if self.tdd_scp is not None:
+            self.tdd_scp.stop()
+
         self.tdd_scp = PPVS_SCP(
             ups_event_callback=self._nevent_callback, ae_title=tdd_scp_ae_title, store_directory=staging_dir
         )

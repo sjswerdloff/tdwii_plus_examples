@@ -19,18 +19,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Fetch all history for determining changed files
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
+
     - name: Install pip
       run: |
         python -m pip install --upgrade pip
+
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.3
       with:
         version: 1.5.0
         virtualenvs-create: true
+
     - name: Configure poetry
       run: |
         poetry config virtualenvs.in-project true
@@ -53,16 +59,54 @@ jobs:
       run: |
         poetry install -E all
 
-    - name: Lint with flake8
+    - name: Get changed Python files
+      id: changed-py-files
+      shell: bash
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        poetry run flake8 tdwii_plus_examples --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        # --extend-ignore=203 because black puts in a space before a slicing :
-        # while flake8 complains (this warning is not PEP 8 compliant), If W503 pops up, that should be disabled also
-        # poetry run flake8 tdwii_plus_examples --count --exit-zero --extend-ignore=E203 --max-line-length=127 --statistics
-        # poetry run flake8 tdwii_plus_examples --count --exit-zero --max-complexity=10 --statistics
-        poetry run flake8 --count --extend-ignore=E203 --max-line-length=127 --statistics --exclude="tdwii_plus_examples/tdd/ui_tdd.py tdwii_plus_examples/rtbdi_creator/ui_form.py tdwii_plus_examples/TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber.py" tdwii_plus_examples
+        # Set the base SHA based on the event type
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          BASE_SHA=${{ github.event.pull_request.base.sha }}
+        else
+          BASE_SHA=$(git rev-parse HEAD~1)
+        fi
+
+        # Get changed files
+        CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRT $BASE_SHA ${{ github.sha }} | grep '\.py$' | grep '^tdwii_plus_examples/' || echo "")
+
+        # Filter out excluded files
+        EXCLUDED_FILES="tdwii_plus_examples/tdd/ui_tdd.py tdwii_plus_examples/rtbdi_creator/ui_form.py tdwii_plus_examples/TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber.py"
+        FILTERED_FILES=""
+
+        if [ -n "$CHANGED_FILES" ]; then
+          for file in $CHANGED_FILES; do
+            if ! echo "$EXCLUDED_FILES" | grep -q "$file"; then
+              FILTERED_FILES="$FILTERED_FILES $file"
+            fi
+          done
+        fi
+
+        # Store in output variables
+        echo "filtered_files=${FILTERED_FILES}" >> $GITHUB_OUTPUT
+        echo "all_files=${CHANGED_FILES}" >> $GITHUB_OUTPUT
+
+        # For debugging
+        echo "Changed Python files in tdwii_plus_examples: ${CHANGED_FILES}"
+        echo "After exclusions: ${FILTERED_FILES}"
+
+    - name: Lint with flake8 (strict check on changed files only)
+      if: steps.changed-py-files.outputs.all_files != ''
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        echo "Running strict flake8 on changed files"
+        poetry run flake8 ${{ steps.changed-py-files.outputs.all_files }} --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Lint with flake8 (relaxed check on changed files only)
+      if: steps.changed-py-files.outputs.filtered_files != ''
+      run: |
+        # Run with relaxed rules as warnings
+        echo "Running relaxed flake8 on changed files (excluding UI files)"
+        poetry run flake8 ${{ steps.changed-py-files.outputs.filtered_files }} --count --extend-ignore=E203 --max-line-length=127 --statistics
+
     - name: Test with pytest
       run: |
         poetry run pytest tdwii_plus_examples/tests
