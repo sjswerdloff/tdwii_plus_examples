@@ -5,6 +5,7 @@ Used for uploading DICOM UPS SOP Instances to a UPS SCP.
 """
 
 import argparse
+import errno
 import os
 import sys
 from pathlib import Path
@@ -286,37 +287,44 @@ def main(args=None):
         APP_LOGGER.warning("No suitable DICOM files found")
         sys.exit()
 
-    # Request association with remote
-    assoc = ae.associate(args.addr, args.port, ae_title=args.called_aet, max_pdu=args.max_pdu)
-    if assoc.is_established:
-        ii = 1
-        for fpath in lfiles:
-            APP_LOGGER.info(f"Sending file: {fpath}")
-            try:
-                ds = dcmread(fpath, force=True)  # set force flag to allow raw DICOM files
-                status = assoc.send_n_create(
-                    ds,
-                    UnifiedProcedureStepPush,
-                    ds.SOPInstanceUID,
-                    ii,
-                    meta_uid=UnifiedProcedureStepPush,
-                )
-                APP_LOGGER.debug(f"Status: {status}")
-                # dataset: Dataset,
-                # class_uid: Union[str, UID],
-                # instance_uid: Optional[Union[str, UID]] = None,
-                # msg_id: int = 1,
-                # meta_uid: Optional[Union[str, UID]] = None,
-                ii += 1
-            except InvalidDicomError:
-                APP_LOGGER.error(f"Bad DICOM file: {fpath}")
-            except Exception as exc:
-                APP_LOGGER.error(f"Create failed: {fpath}")
-                APP_LOGGER.exception(exc)
+    try:
+        # Request association with remote
+        assoc = ae.associate(args.addr, args.port, ae_title=args.called_aet, max_pdu=args.max_pdu)
+        if assoc.is_established:
+            ii = 1
+            for fpath in lfiles:
+                APP_LOGGER.info(f"Sending file: {fpath}")
+                try:
+                    ds = dcmread(fpath, force=True)  # set force flag to allow raw DICOM files
+                    status = assoc.send_n_create(
+                        ds,
+                        UnifiedProcedureStepPush,
+                        ds.SOPInstanceUID,
+                        ii,
+                        meta_uid=UnifiedProcedureStepPush,
+                    )
+                    APP_LOGGER.debug(f"Status: {status}")
+                    # dataset: Dataset,
+                    # class_uid: Union[str, UID],
+                    # instance_uid: Optional[Union[str, UID]] = None,
+                    # msg_id: int = 1,
+                    # meta_uid: Optional[Union[str, UID]] = None,
+                    ii += 1
+                except InvalidDicomError:
+                    APP_LOGGER.error(f"Bad DICOM file: {fpath}")
+                    sys.exit(errno.EFTYPE)  # Inappropriate file type or format
+                except Exception as exc:
+                    APP_LOGGER.error(f"Create failed: {fpath}")
+                    APP_LOGGER.exception(exc)
+                    sys.exit(errno.EIO)  # Input/output error
 
-        assoc.release()
-    else:
-        sys.exit(1)
+            assoc.release()
+        else:
+            sys.exit(1)
+    except Exception as exc:
+        APP_LOGGER.error("Association request failed")
+        APP_LOGGER.exception(exc)
+        sys.exit(1)  # Exit with code 1 on any exception related to opening an association
 
 
 if __name__ == "__main__":

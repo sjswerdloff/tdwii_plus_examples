@@ -132,8 +132,11 @@ class ncreatescuBase:
         """Test trying to connect to non-existent host."""
         p = self.func([DATASET_FILE])
         p.wait()
-        assert p.returncode == 1
         out, err = capfd.readouterr()
+        print(out)
+        print(err)
+        assert p.returncode == 1
+
         assert "Association request failed: unable to connect to remote" in err
         assert "TCP Initialisation Error" in err
 

@@ -1,10 +1,30 @@
-from argparse import Namespace
+import inspect
 import logging
+import traceback
+from argparse import Namespace
 
 from pynetdicom import AE, evt
 from pynetdicom.apps.common import setup_logging
 
-from tdwii_plus_examples.basehandlers import handle_open, handle_close
+from tdwii_plus_examples.basehandlers import handle_close, handle_open
+
+
+def get_full_call_stack():
+    """Get the complete call stack including code outside the exception path"""
+    stack = inspect.stack()
+    return [
+        {
+            "function": frame_info.function,
+            "filename": frame_info.filename,
+            "lineno": frame_info.lineno,
+            "code": (
+                frame_info.code_context[0].strip()
+                if frame_info.code_context
+                else None
+            ),
+        }
+        for frame_info in stack
+    ]
 
 
 class BaseSCP:
@@ -37,12 +57,7 @@ class BaseSCP:
             Stops the SCP AE.
     """
 
-    def __init__(self,
-                 ae_title: str = "BASE_SCP",
-                 bind_address: str = "",
-                 port: int = 11112,
-                 logger=None,
-                 **kwargs):
+    def __init__(self, ae_title: str = "BASE_SCP", bind_address: str = "", port: int = 11112, logger=None, **kwargs):
         """
         Initializes a new instance of the BaseSCP class.
         This method creates an AE without presentation contexts.
@@ -66,17 +81,13 @@ class BaseSCP:
             Optional, default: None, a debug level logger will be used.
         """
         if logger is None:
-            self.logger = setup_logging(
-                Namespace(log_type=None, log_level="debug"), "base_scp")
+            self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "base_scp")
             self.logger.info(
-                "Logger not provided, using default logger with level %s",
-                logging.getLevelName(self.logger.level))
+                "Logger not provided, using default logger with level %s", logging.getLevelName(self.logger.level)
+            )
         elif isinstance(logger, logging.Logger):
             self.logger = logger
-            self.logger.debug(
-                "Logger set to %s with level %s",
-                logger.name, logging.getLevelName(logger.getEffectiveLevel())
-            )
+            self.logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
         else:
             raise TypeError("logger must be an instance of logging.Logger")
         self.logger.debug("BaseSCP.__init__")
@@ -97,15 +108,13 @@ class BaseSCP:
             if port < 0:
                 raise ValueError("port must not be negative")
             elif 0 <= port <= 1023 and port != 104:
-                raise ValueError(
-                    "port must not be in the range (0-1023), except 104")
+                raise ValueError("port must not be in the range (0-1023), except 104")
             elif port == 104:
                 self.port = port
                 self.logger.warning("DICOM port 104 may need admin privileges")
             elif port in range(1024, 11111) or port in range(11161, 49151):
                 self.port = port
-                self.logger.warning(
-                    "Registered port (1024-49151) may be used by others")
+                self.logger.warning("Registered port (1024-49151) may be used by others")
             elif port > 65535:
                 raise ValueError("port must not exceed 65535")
             else:
@@ -116,8 +125,7 @@ class BaseSCP:
 
         if not ae_title:
             self.ae_title = "BASE_SCP"
-            self.logger.info("AE title not provided, using default: %s" %
-                             self.ae_title)
+            self.logger.info("AE title not provided, using default: %s" % self.ae_title)
         elif isinstance(ae_title, str):
             self.ae_title = ae_title
             self.logger.debug(f"ae_title set to {ae_title}")
@@ -140,7 +148,7 @@ class BaseSCP:
         This method is intended to be overridden in derived classes.
         """
         self.logger.debug("BaseSCP._add_contexts")
-        pass    # base class, do nothing, pure virtual
+        pass  # base class, do nothing, pure virtual
 
     def _add_handlers(self):
         """
@@ -150,10 +158,8 @@ class BaseSCP:
         """
         self.logger.debug("BaseSCP._add_handlers")
         # To define actions when a TCP connection in opened or closed
-        self.handlers.append((evt.EVT_CONN_OPEN, handle_open,
-                              [self.logger]))
-        self.handlers.append((evt.EVT_CONN_CLOSE, handle_close,
-                              [self.logger]))
+        self.handlers.append((evt.EVT_CONN_OPEN, handle_open, [self.logger]))
+        self.handlers.append((evt.EVT_CONN_CLOSE, handle_close, [self.logger]))
 
     def run(self):
         """
@@ -167,13 +173,20 @@ class BaseSCP:
         # Listen for incoming association requests
         try:
             self.threaded_server = self.ae.start_server(
-                (self.bind_address, self.port),
-                evt_handlers=self.handlers,
-                block=False)
+                (self.bind_address, self.port), evt_handlers=self.handlers, block=False
+            )
             if self.threaded_server is not None:
                 self.logger.info("SCP server started successfully")
         except Exception as e:
             self.logger.error("SCP server failed to start: %s", e)
+            self.logger.error(traceback.format_exc())
+            # Log the full call stack
+            call_stack = get_full_call_stack()
+            self.logger.error("Full call stack:")
+            for i, frame in enumerate(call_stack):
+                self.logger.error(f"{i}: {frame['function']} in {frame['filename']}:{frame['lineno']}")
+                if frame["code"]:
+                    self.logger.error(f"   Code: {frame['code']}")
 
     def stop(self):
         """
