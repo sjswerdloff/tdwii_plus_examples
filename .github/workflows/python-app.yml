@@ -98,14 +98,14 @@ jobs:
       run: |
         # Stop the build if there are Python syntax errors or undefined names
         echo "Running strict flake8 on changed files"
-        poetry run flake8 ${{ steps.changed-py-files.outputs.all_files }} --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 "${{ steps.changed-py-files.outputs.all_files }}" --count --select=E9,F63,F7,F82 --show-source --statistics
 
     - name: Lint with flake8 (relaxed check on changed files only)
       if: steps.changed-py-files.outputs.filtered_files != ''
       run: |
         # Run with relaxed rules as warnings
         echo "Running relaxed flake8 on changed files (excluding UI files)"
-        poetry run flake8 ${{ steps.changed-py-files.outputs.filtered_files }} --count --extend-ignore=E203 --max-line-length=127 --statistics
+        flake8 "${{ steps.changed-py-files.outputs.filtered_files }}" --count --extend-ignore=E203 --max-line-length=127 --statistics
 
     - name: Test with pytest
       run: |
