@@ -86,12 +86,12 @@ jobs:
         fi
 
         # Store in output variables
-        echo "filtered_files=$FILTERED_FILES" >> $GITHUB_OUTPUT
-        echo "all_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+        echo "filtered_files=${FILTERED_FILES}" >> $GITHUB_OUTPUT
+        echo "all_files=${CHANGED_FILES}" >> $GITHUB_OUTPUT
 
         # For debugging
-        echo "Changed Python files in tdwii_plus_examples: $CHANGED_FILES"
-        echo "After exclusions: $FILTERED_FILES"
+        echo "Changed Python files in tdwii_plus_examples: ${CHANGED_FILES}"
+        echo "After exclusions: ${FILTERED_FILES}"
 
     - name: Lint with flake8 (strict check on changed files only)
       if: steps.changed-py-files.outputs.all_files != ''
