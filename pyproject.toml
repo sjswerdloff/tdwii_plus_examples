@@ -44,6 +44,7 @@ doc8 = { version = "*", optional = true }            # groups = ["dev", "all"]
 # pyoxidizer = { version = "*", optional = true }      # groups = ["dev", "all", "build"]
 update = "^0.0.1"
 parameterized = "^0.9.0"
+isort = { version = "*", optional = true}            # groups = ["dev", "tests", "all"]
 
 
 
