@@ -12,19 +12,19 @@ from tdwii_plus_examples.basehandlers import handle_close, handle_open
 def get_full_call_stack():
     """Get the complete call stack including code outside the exception path"""
     stack = inspect.stack()
-    call_chain = []
-
-    for frame_info in stack:
-        call_chain.append(
-            {
-                "function": frame_info.function,
-                "filename": frame_info.filename,
-                "lineno": frame_info.lineno,
-                "code": frame_info.code_context[0].strip() if frame_info.code_context else None,
-            }
-        )
-
-    return call_chain
+    return [
+        {
+            "function": frame_info.function,
+            "filename": frame_info.filename,
+            "lineno": frame_info.lineno,
+            "code": (
+                frame_info.code_context[0].strip()
+                if frame_info.code_context
+                else None
+            ),
+        }
+        for frame_info in stack
+    ]
 
 
 class BaseSCP:
