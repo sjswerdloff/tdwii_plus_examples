@@ -1,19 +1,16 @@
-from argparse import Namespace
 import logging
+from argparse import Namespace
 
-from pydicom.uid import (
-    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian
-)
+from pydicom.uid import UID, ExplicitVRLittleEndian, ImplicitVRLittleEndian
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
-
 from pynetdicom.apps.common import setup_logging
 
+from tdwii_plus_examples._dicom_uids import (
+    UPS_SOP_CLASSES,
+    validate_transfer_syntaxes,
+)
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.upsneventhandler import handle_nevent, nevent_callback
-from tdwii_plus_examples._dicom_uids import (
-    validate_transfer_syntaxes,
-    UPS_SOP_CLASSES,
-)
 
 
 class UPSNEventReceiver(CEchoSCP):
@@ -51,14 +48,16 @@ class UPSNEventReceiver(CEchoSCP):
             instance.
     """
 
-    def __init__(self,
-                 ae_title: str = "EVENT_REPORT_RCV",
-                 bind_address: str = "",
-                 port: int = 11112,
-                 logger=None,
-                 transfer_syntaxes=None,
-                 ups_event_callback=None,
-                 **kwargs):
+    def __init__(
+        self,
+        ae_title: str = "EVENT_REPORT_RCV",
+        bind_address: str = "",
+        port: int = 11112,
+        logger=None,
+        transfer_syntaxes=None,
+        ups_event_callback=None,
+        **kwargs,
+    ):
         """
         Initializes a new instance of the NEventReceiver class.
         This method creates an AE with UPS Event presentation context.
@@ -98,60 +97,39 @@ class UPSNEventReceiver(CEchoSCP):
             Optional, default: None, upseventhandler.nevent_callback function
         """
         if logger is None:
-            self.logger = setup_logging(
-                Namespace(log_type=None, log_level="debug"), "nevent_receiver")
+            self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "nevent_receiver")
             self.logger.info(
-                "Logger not provided, using default logger with level %s",
-                logging.getLevelName(self.logger.level)
+                "Logger not provided, using default logger with level %s", logging.getLevelName(self.logger.level)
             )
         elif isinstance(logger, logging.Logger):
             self.logger = logger
-            self.logger.debug(
-                "Logger set to %s with level %s",
-                logger.name, logging.getLevelName(logger.getEffectiveLevel())
-            )
+            self.logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
         self.logger.debug("UPSNEventReceiver.__init__")
 
         if not ae_title:
             self.ae_title = "EVENT_REPORT_RCV"
-            self.logger.info("AE title not provided, using default: %s",
-                             self.ae_title)
+            self.logger.info("AE title not provided, using default: %s", self.ae_title)
         else:
             self.ae_title = ae_title
 
         self.transfer_syntaxes = transfer_syntaxes
         if transfer_syntaxes is not None:
-            self._valid_transfer_syntaxes, self._invalid_transfer_syntaxes = (
-                validate_transfer_syntaxes(transfer_syntaxes)
-            )
+            self._valid_transfer_syntaxes, self._invalid_transfer_syntaxes = validate_transfer_syntaxes(transfer_syntaxes)
             if self._invalid_transfer_syntaxes:
-                self.logger.warning(
-                    "Ignoring invalid Transfer Syntaxes: %s",
-                    list(self._invalid_transfer_syntaxes.keys()))
+                self.logger.warning("Ignoring invalid Transfer Syntaxes: %s", list(self._invalid_transfer_syntaxes.keys()))
 
-        self.logger.debug(
-            f"UPS Event Callback: {ups_event_callback} "
-            f"type is {type(ups_event_callback)}")
+        self.logger.debug(f"UPS Event Callback: {ups_event_callback} type is {type(ups_event_callback)}")
         if ups_event_callback is None:
-            self.logger.warning("No ups_event_callback defined, "
-                                "using default callback")
+            self.logger.warning("No ups_event_callback defined, using default callback")
             self.ups_event_callback = nevent_callback
         elif not callable(ups_event_callback):
-            self.logger.warning(f"{ups_event_callback} is not a known "
-                                "function, using default callback")
+            self.logger.warning(f"{ups_event_callback} is not a known function, using default callback")
             self.ups_event_callback = nevent_callback
         else:
             self.ups_event_callback = ups_event_callback
-            self.logger.debug(
-                f"UPS Event Callback: {self.ups_event_callback}"
-            )
+            self.logger.debug(f"UPS Event Callback: {self.ups_event_callback}")
 
-        super().__init__(
-            ae_title=ae_title,
-            bind_address=bind_address,
-            port=port,
-            logger=logger,
-            **kwargs)
+        super().__init__(ae_title=ae_title, bind_address=bind_address, port=port, logger=logger, **kwargs)
 
     def _add_contexts(self):
         """
@@ -173,19 +151,12 @@ class UPSNEventReceiver(CEchoSCP):
             transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
             # Make ExplicitVRLittleEndian the preferred transfer syntax
             transfer_syntaxes.remove(UID(ExplicitVRLittleEndian))
-            transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + \
-                transfer_syntaxes
+            transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + transfer_syntaxes
         else:
-            if ImplicitVRLittleEndian not in list(
-                    self._valid_transfer_syntaxes.values()):
-                transfer_syntaxes = (
-                    list(self._valid_transfer_syntaxes.values()) + [
-                        ImplicitVRLittleEndian
-                    ]
-                )
+            if ImplicitVRLittleEndian not in list(self._valid_transfer_syntaxes.values()):
+                transfer_syntaxes = list(self._valid_transfer_syntaxes.values()) + [ImplicitVRLittleEndian]
             else:
-                transfer_syntaxes = list(
-                    self._valid_transfer_syntaxes.values())
+                transfer_syntaxes = list(self._valid_transfer_syntaxes.values())
 
         self.logger.debug(f"Supported Transfer Syntaxes: {transfer_syntaxes}")
 
@@ -200,5 +171,4 @@ class UPSNEventReceiver(CEchoSCP):
         """
         self.logger.debug("UPSNEventReceiver._add_handlers")
         super()._add_handlers()
-        self.handlers.append((evt.EVT_N_EVENT_REPORT, handle_nevent,
-                              [self.ups_event_callback, self.logger]))
+        self.handlers.append((evt.EVT_N_EVENT_REPORT, handle_nevent, [self.ups_event_callback, self.logger]))

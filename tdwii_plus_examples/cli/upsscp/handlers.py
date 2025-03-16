@@ -1,4 +1,5 @@
 """Event handlers for upsscp.py"""
+
 import copy
 import logging
 import os
@@ -105,20 +106,20 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
 def _remove_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = False, logger=None):
     if subscriber_ae_title in _global_subscribers.keys():
         del _global_subscribers[subscriber_ae_title]
-        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed " "from global subscription")
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed from global subscription")
     else:
         if logger is not None:
-            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed " "from global subscription")
+            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed from global subscription")
     return
 
 
 def _remove_filtered_subscriber(subscriber_ae_title: str, query: Dataset = None, logger=None):
     if subscriber_ae_title in _filtered_subscribers.keys():
         del _filtered_subscribers[subscriber_ae_title]
-        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed " "from filtered global subscription")
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed from filtered global subscription")
     else:
         if logger is not None:
-            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed " "from filtered global subscription")
+            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed from filtered global subscription")
     return
 
 
@@ -647,8 +648,8 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
 
                 if (
                     (transaction_uid is None)
-                    or (len(transaction_uid) == 0)  # noqa: W503,W504
-                    or (current_step_state != "SCHEDULED" and transaction_uid != stored_transaction_uid)  # noqa: W503,W504
+                    or (len(transaction_uid) == 0)
+                    or (current_step_state != "SCHEDULED" and transaction_uid != stored_transaction_uid)
                 ):
                     service_status = 0xC301
                     error_str = "Transaction UID is missing, zero length, or not valid"
@@ -1093,7 +1094,7 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
 
         subscriber_ip_addr = tdwii_config.known_ae_ipaddr[globalsubscriber]
         subscriber_port = tdwii_config.known_ae_port[globalsubscriber]
-        logger.info(f"Requesting association with {globalsubscriber} " f"at {subscriber_ip_addr}:{subscriber_port}")
+        logger.info(f"Requesting association with {globalsubscriber} at {subscriber_ip_addr}:{subscriber_port}")
         assoc = ae.associate(
             subscriber_ip_addr,
             subscriber_port,
