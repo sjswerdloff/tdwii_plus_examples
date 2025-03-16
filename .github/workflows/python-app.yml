@@ -55,7 +55,7 @@ jobs:
 
     - name: Lint with ruff
       run: |
-        poetry run ruff check
+        poetry run ruff check --exclude="*/ui_*.py"
 
     - name: Test with pytest
       run: |
