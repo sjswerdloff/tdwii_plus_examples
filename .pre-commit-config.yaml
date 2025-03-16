@@ -21,48 +21,17 @@ repos:
     hooks:
       - id: nbstripout
 
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.0  # Specify the latest Ruff version
     hooks:
-      - id: isort
-        name: isort
-        entry: isort
-        language: system
+      - id: ruff
         types: [python]
-        args: ["--profile", "black"]
-
-      - id: black
-        name: black
-        entry: black
-        language: system
-        types: [python]
-        args: ["-l", "127"]
-
-      - id: flake8-strict
-        name: flake8 (strict)
-        entry: flake8
-        language: system
-        types: [python]
-        args: [
-          "--count",
-          "--select=E9,F63,F7,F82",
-          "--show-source",
-          "--statistics",
-        ]
-        files: ^tdwii_plus_examples/.*\.py$
-
-      - id: flake8-relaxed
-        name: flake8 (relaxed)
-        entry: flake8
-        language: system
-        types: [python]
-        args: [
-          "--count",
-          "--extend-ignore=E203",
-          "--max-line-length=127",
-          "--statistics",
-        ]
+        args: [--fix, --exit-non-zero-on-fix, --line-length=127]
         files: ^tdwii_plus_examples/.*\.py$
         exclude: ^tdwii_plus_examples/(tdd/ui_tdd\.py|rtbdi_creator/ui_form\.py|TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber\.py)$
+
+      - id: ruff-format
+        types: [python]
 
   # Keep this as a repo hook since it's specific to the pre-commit framework
   - repo: https://github.com/floatingpurr/sync_with_poetry
