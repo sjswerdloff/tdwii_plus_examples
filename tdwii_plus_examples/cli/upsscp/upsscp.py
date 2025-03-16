@@ -444,8 +444,7 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
             time.sleep(1)  # Sleep to prevent high CPU usage
     except KeyboardInterrupt:
         APP_LOGGER.info("Shutting down the DICOM Verification + UPS SCP...")
-
-    upsscp.stop()
+        loop_forever = False
 
 
 if __name__ == "__main__":
