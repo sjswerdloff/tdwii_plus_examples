@@ -24,14 +24,15 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.0  # Specify the latest Ruff version
     hooks:
-      - id: ruff
-        types: [python]
-        args: [--fix, --exit-non-zero-on-fix, --line-length=127]
-        files: ^tdwii_plus_examples/.*\.py$
-        exclude: ^tdwii_plus_examples/(tdd/ui_tdd\.py|rtbdi_creator/ui_form\.py|TDWII_PPVS_subscriber/ui_tdwii_ppvs_subscriber\.py)$
-
-      - id: ruff-format
-        types: [python]
+    - id: ruff
+      types: [python]
+      args: [--fix, --exit-non-zero-on-fix, --line-length=127]
+      files: ^tdwii_plus_examples/.*\.py$
+      exclude: ^tdwii_plus_examples/.*/ui_.*\.py$
+    - id: ruff-format
+      types: [python]
+      files: ^tdwii_plus_examples/.*\.py$
+      exclude: ^tdwii_plus_examples/.*/ui_.*\.py$
 
   # Keep this as a repo hook since it's specific to the pre-commit framework
   - repo: https://github.com/floatingpurr/sync_with_poetry
