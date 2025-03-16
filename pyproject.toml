@@ -100,8 +100,13 @@ pre-commit = "^4.1.0"
 ruff = "^0.11.0"
 
 [tool.ruff]
-extend-flake8-codes = true  # until I can go and change some # noqa statements
-
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+]
 
 [build-system]
 requires = ["poetry-core"]
