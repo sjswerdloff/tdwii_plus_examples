@@ -45,6 +45,7 @@ Options:
 """
 
 import argparse
+import atexit
 import os
 import sys
 import time
@@ -206,8 +207,7 @@ def _setup_argparser():
 
     # General Options
     gen_opts = parser.add_argument_group("General Options")
-    gen_opts.add_argument(
-        "--version", help="print version information and exit", action="store_true")
+    gen_opts.add_argument("--version", help="print version information and exit", action="store_true")
     output = gen_opts.add_mutually_exclusive_group()
     output.add_argument(
         "-q",
@@ -415,6 +415,7 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
         port=app_config.getint("port"),
         logger=APP_LOGGER,
     )
+
     ae = upsscp.ae
     ae.maximum_pdu_size = app_config.getint("max_pdu")
     ae.acse_timeout = app_config.getfloat("acse_timeout")
@@ -424,29 +425,26 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     # Unified Procedure Step SCP
     for cx in UnifiedProcedurePresentationContexts:
         if cx.abstract_syntax.keyword not in ("UnifiedProcedureStepEvent", "UnifiedProcedureStepQuery"):
-            ae.add_supported_context(
-                cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
+            ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
     # Set our handler bindings
-    upsscp.handlers.append((evt.EVT_C_FIND, handle_find, [
-                           instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append(
-        (evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]))
-    upsscp.handlers.append((evt.EVT_N_ACTION, handle_naction, [
-                           instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append((evt.EVT_N_CREATE, handle_ncreate, [
-                           instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append(
-        (evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_C_FIND, handle_find, [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_ACTION, handle_naction, [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_CREATE, handle_ncreate, [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]))
 
     # Listen for incoming association requests
     upsscp.run()
+    # Ensure that the SCP gets shut down when the application exits.
+    atexit.register(upsscp.stop)
     # Keep the main application running
     try:
         while loop_forever:
             time.sleep(1)  # Sleep to prevent high CPU usage
     except KeyboardInterrupt:
-        APP_LOGGER.info("Shutting down the DICOM Verification SCP...")
+        APP_LOGGER.info("Shutting down the DICOM Verification + UPS SCP...")
+        loop_forever = False
 
 
 if __name__ == "__main__":

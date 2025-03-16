@@ -22,13 +22,14 @@ Options:
 """
 
 import argparse
+import atexit
 import logging
 import time
 
-from tdwii_plus_examples.cstorescp import CStoreSCP
-
 from pydicom.uid import UID
 from pynetdicom.status import Status
+
+from tdwii_plus_examples.cstorescp import CStoreSCP
 
 
 def my_handler(event, args, logger):
@@ -66,9 +67,8 @@ def my_handler(event, args, logger):
         "AffectedSOPClassUID": event.request.AffectedSOPClassUID,
         "AffectedSOPInstanceUID": event.request.AffectedSOPInstanceUID,
         "Priority": event.request.Priority,
-        "MoveOriginatorApplicationEntityTitle":
-            event.request.MoveOriginatorApplicationEntityTitle,
-        "MoveOriginatorMessageID": event.request.MoveOriginatorMessageID
+        "MoveOriginatorApplicationEntityTitle": event.request.MoveOriginatorApplicationEntityTitle,
+        "MoveOriginatorMessageID": event.request.MoveOriginatorMessageID,
     }
 
     for key, value in request_info.items():
@@ -77,55 +77,25 @@ def my_handler(event, args, logger):
         else:
             logger.info("Command Set %s: %s", key, value)
 
-    data_set_info = (
-        f"{event.request.DataSet.getbuffer().nbytes} bytes"
-        if event.request.DataSet is not None else "Absent"
-    )
+    data_set_info = f"{event.request.DataSet.getbuffer().nbytes} bytes" if event.request.DataSet is not None else "Absent"
     logger.info("Command Set Data Set: %s", data_set_info)
 
     return Status.SUCCESS
 
 
 def main(loop_forever=True):  # Add a parameter to control the loop
-    parser = argparse.ArgumentParser(
-        description="Run a DICOM Storage SCP."
-    )
+    parser = argparse.ArgumentParser(description="Run a DICOM Storage SCP.")
+    parser.add_argument("-a", "--ae_title", type=str, default="ECHO_SCP", help="Application Entity Title")
     parser.add_argument(
-        '-a', '--ae_title', type=str, default='ECHO_SCP',
-        help='Application Entity Title'
+        "-b", "--bind_address", type=str, default="", help="Specific IP address or hostname, omit to bind to all interfaces"
     )
-    parser.add_argument(
-        '-b', '--bind_address', type=str, default='',
-        help='Specific IP address or hostname, omit to bind to all interfaces'
-    )
-    parser.add_argument(
-        '-p', '--port', type=int, default=11112,
-        help='Port number'
-    )
-    parser.add_argument(
-        '-s', '--sop_classes', nargs='+',
-        help='List of SOP Class UID or valid keywords from PS3.6 Annex A'
-    )
-    parser.add_argument(
-        '-t', '--transfer_syntaxes', nargs='+',
-        help='List of Transfer syntax to support'
-    )
-    parser.add_argument(
-        '-c', '--custom_handler', type=str,
-        help='Custom C-STORE handler function'
-    )
-    parser.add_argument(
-        '-o', '--output_directory', type=str,
-        help='Output directory, defaults to current working directory'
-    )
-    parser.add_argument(
-        '-v', '--verbose', action='store_true',
-        help='Set log level to INFO'
-    )
-    parser.add_argument(
-        '-d', '--debug', action='store_true',
-        help='Set log level to DEBUG'
-    )
+    parser.add_argument("-p", "--port", type=int, default=11112, help="Port number")
+    parser.add_argument("-s", "--sop_classes", nargs="+", help="List of SOP Class UID or valid keywords from PS3.6 Annex A")
+    parser.add_argument("-t", "--transfer_syntaxes", nargs="+", help="List of Transfer syntax to support")
+    parser.add_argument("-c", "--custom_handler", type=str, help="Custom C-STORE handler function")
+    parser.add_argument("-o", "--output_directory", type=str, help="Output directory, defaults to current working directory")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Set log level to INFO")
+    parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
 
     args = parser.parse_args()
 
@@ -136,7 +106,7 @@ def main(loop_forever=True):  # Add a parameter to control the loop
         log_level = logging.DEBUG
 
     logging.basicConfig(level=log_level)
-    logger = logging.getLogger('storescp')
+    logger = logging.getLogger("storescp")
 
     if args.custom_handler:
         # Custom handler should be a function defined in the global namespace
@@ -155,16 +125,18 @@ def main(loop_forever=True):  # Add a parameter to control the loop
         sop_classes=args.sop_classes,
         transfer_syntaxes=args.transfer_syntaxes,
         custom_handler=handler,
-        store_directory=args.output_directory
+        store_directory=args.output_directory,
     )
     cstorescp.run()
     logger.info("DICOM Storage SCP is running...")
+    atexit.register(cstorescp.stop)
     # Keep the main application running
     try:
         while loop_forever:
             time.sleep(1)  # Sleep to prevent high CPU usage
     except KeyboardInterrupt:
         logger.info("Shutting down the DICOM Storage SCP...")
+        loop_forever = False
 
 
 if __name__ == "__main__":
