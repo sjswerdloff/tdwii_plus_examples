@@ -22,16 +22,15 @@ Options:
     -d, --debug              Set log level to DEBUG
 """
 import argparse
+import atexit
 import logging
 import time
 
-from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 from tdwii_plus_examples.upsneventhandler import UPS_EVENT_TYPES
+from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 
 
-def my_upsevent_callback(
-    ups_instance, ups_event_type, ups_event_info, app_logger
-):
+def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logger):
     """
     Example of a UPS Event callback for processing incoming UPS events.
 
@@ -91,24 +90,14 @@ def my_upsevent_callback(
         """
         state = upseventinfo.ProcedureStepState
         readiness = upseventinfo.InputReadinessState
-        if state == 'SCHEDULED' and readiness != 'READY':
-            app_logger.info(
-                f"Waiting for UPS {upsinstance} inputs to be ready"
-            )
-        elif state == 'SCHEDULED' and readiness == 'READY':
-            app_logger.info(
-                f"Time to C-FIND UPS {upsinstance} and check if assigned "
-                f"to my station name"
-            )
-        elif state == 'IN PROGRESS':
-            app_logger.info(
-                f"Time to C-FIND UPS {upsinstance} and check if assigned "
-                f"to the station name I work with"
-            )
-        elif state == 'COMPLETED' or state == 'CANCELLED':
-            app_logger.info(
-                f"Time to close my session linked to UPS {upsinstance}"
-            )
+        if state == "SCHEDULED" and readiness != "READY":
+            app_logger.info(f"Waiting for UPS {upsinstance} inputs to be ready")
+        elif state == "SCHEDULED" and readiness == "READY":
+            app_logger.info(f"Time to C-FIND UPS {upsinstance} and check if assigned " f"to my station name")
+        elif state == "IN PROGRESS":
+            app_logger.info(f"Time to C-FIND UPS {upsinstance} and check if assigned " f"to the station name I work with")
+        elif state == "COMPLETED" or state == "CANCELLED":
+            app_logger.info(f"Time to close my session linked to UPS {upsinstance}")
 
     def process_ups_cancel_request(upsinstance, upseventinfo):
         """
@@ -149,9 +138,7 @@ def my_upsevent_callback(
         """
         requesting_ae = upseventinfo.RequestingAE
         app_logger.info(
-            f"Time to accept cancellation of UPS {upsinstance} "
-            f"if {requesting_ae} was its creator and reject "
-            f"otherwise"
+            f"Time to accept cancellation of UPS {upsinstance} " f"if {requesting_ae} was its creator and reject " f"otherwise"
         )
 
     def process_ups_progress_report(upsinstance, upseventinfo):
@@ -192,10 +179,7 @@ def my_upsevent_callback(
         None
         """
 
-        app_logger.info(
-            f"Time to check if the Beam (number) changed "
-            f"if working with UPS {upsinstance}"
-        )
+        app_logger.info(f"Time to check if the Beam (number) changed " f"if working with UPS {upsinstance}")
 
     def process_scp_status_change(upsinstance, upseventinfo):
         """
@@ -236,10 +220,7 @@ def my_upsevent_callback(
                 f"instance specific subscriptions {upsinstance}"
             )
         elif scpstatus == "GOING DOWN":
-            app_logger.info(
-                "Time to warn the user that the Worklist Manager is "
-                "going down "
-            )
+            app_logger.info("Time to warn the user that the Worklist Manager is " "going down ")
 
     def process_ups_assigned(upsinstance, upseventinfo):
         """
@@ -292,7 +273,7 @@ def my_upsevent_callback(
         "UPS Cancel Request": process_ups_cancel_request,
         "UPS Progress Report": process_ups_progress_report,
         "SCP Status Change": process_scp_status_change,
-        "UPS Assigned": process_ups_assigned
+        "UPS Assigned": process_ups_assigned,
     }
 
     # Get the event type
@@ -301,45 +282,22 @@ def my_upsevent_callback(
     # Call the appropriate processing function
     process_upsevent = upsevent_process_functions.get(
         event_type,
-        lambda upsinstance, upseventinfo: app_logger.info(
-            f"Unsupported UPS event type {event_type} for UPS {upsinstance}"
-        )
+        lambda upsinstance, upseventinfo: app_logger.info(f"Unsupported UPS event type {event_type} for UPS {upsinstance}"),
     )
     process_upsevent(ups_instance, ups_event_info)
 
 
 def main(loop_forever=True):  # Add a parameter to control the loop
-    parser = argparse.ArgumentParser(
-        description="Run a DICOM UPS Event Receiver (SCU)."
-    )
+    parser = argparse.ArgumentParser(description="Run a DICOM UPS Event Receiver (SCU).")
+    parser.add_argument("-a", "--ae_title", type=str, default="UPSEVENT_RCV", help="Application Entity Title")
     parser.add_argument(
-        '-a', '--ae_title', type=str, default='UPSEVENT_RCV',
-        help='Application Entity Title'
+        "-b", "--bind_address", type=str, default="", help="Specific IP address or hostname, omit to bind to all interfaces"
     )
-    parser.add_argument(
-        '-b', '--bind_address', type=str, default='',
-        help='Specific IP address or hostname, omit to bind to all interfaces'
-    )
-    parser.add_argument(
-        '-p', '--port', type=int, default=11112,
-        help='Port number'
-    )
-    parser.add_argument(
-        '-t', '--transfer_syntaxes', nargs='+',
-        help='List of Transfer syntax to support'
-    )
-    parser.add_argument(
-        '-c', '--callback', type=str,
-        help='UPS Event callback function'
-    )
-    parser.add_argument(
-        '-v', '--verbose', action='store_true',
-        help='Set log level to INFO'
-    )
-    parser.add_argument(
-        '-d', '--debug', action='store_true',
-        help='Set log level to DEBUG'
-    )
+    parser.add_argument("-p", "--port", type=int, default=11112, help="Port number")
+    parser.add_argument("-t", "--transfer_syntaxes", nargs="+", help="List of Transfer syntax to support")
+    parser.add_argument("-c", "--callback", type=str, help="UPS Event callback function")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Set log level to INFO")
+    parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
 
     args = parser.parse_args()
 
@@ -350,7 +308,7 @@ def main(loop_forever=True):  # Add a parameter to control the loop
         log_level = logging.DEBUG
 
     logging.basicConfig(level=log_level)
-    logger = logging.getLogger('upseventreceiver')
+    logger = logging.getLogger("upseventreceiver")
 
     if args.callback:
         # Callback should be a function defined in the global namespace
@@ -371,12 +329,14 @@ def main(loop_forever=True):  # Add a parameter to control the loop
     )
     upsneventrcv.run()
     logger.info("DICOM UPS Event Receiver (SCU) is running...")
+    atexit.register(upsneventrcv.stop)
     # Keep the main application running
     try:
         while loop_forever:
             time.sleep(1)  # Sleep to prevent high CPU usage
     except KeyboardInterrupt:
         logger.info("Shutting down the UPS Event Receiver (SCU) ...")
+        loop_forever = False
 
 
 if __name__ == "__main__":
