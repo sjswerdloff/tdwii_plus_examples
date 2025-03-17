@@ -5,7 +5,7 @@ def handle_open(event, logger):
     ----------
     event : pynetdicom.event.event
         The event corresponding to the opening of a TCP connection.
-    app_logger : logging.Logger
+    logger : logging.Logger
         The application's logger.
 
     Returns
@@ -28,7 +28,7 @@ def handle_close(event, logger):
     ----------
     event : pynetdicom.event.event
         The event corresponding to the closing of a TCP connection.
-    app_logger : logging.Logger
+    logger : logging.Logger
         The application's logger.
 
     Returns

@@ -1,8 +1,4 @@
-import logging
-from argparse import Namespace
-
 from pynetdicom import evt
-from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 
 from tdwii_plus_examples.basescp import BaseSCP
@@ -40,43 +36,11 @@ class CEchoSCP(BaseSCP):
         Initializes a new instance of the CEchoSCP class.
         This method creates an AE with the Verification presentation context.
 
-        Parameters
-        ----------
-        ae_title : str
-            The title of the Application Entity (AE)
-            Optional, default: "ECHO_SCP"
-
-        bind_address : str
-            A specific IP address or hostname of the AE
-            Optional, default: "" will bind to all interfaces.
-
-        port: int
-            The port number to listen on
-            Optional, default: 11112 (as registered for DICOM at IANA)
-
-        logger: logging.Logger
-            A logger instance
-            Optional, default: None, a debug logger will be used.
+        Parameters (see parent class documentation for details)
         """
-        if logger is None:
-            self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "cecho_scp")
-            self.logger.info(
-                "Logger not provided, using default logger with level %s", logging.getLevelName(self.logger.level)
-            )
-        elif isinstance(logger, logging.Logger):
-            self.logger = logger
-            self.logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
-        else:
-            raise TypeError("logger must be an instance of logging.Logger")
-        self.logger.debug("CEchoSCP.__init__")
-
-        if not ae_title:
-            self.ae_title = "ECHO_SCP"
-            self.logger.info("AE title not provided, using default: %s", self.ae_title)
-        else:
-            self.ae_title = ae_title
-
-        super().__init__(ae_title=self.ae_title, bind_address=bind_address, port=port, logger=logger, **kwargs)
+        # Set default AE title if not provided
+        ae_title = ae_title or "ECHO_SCP"
+        super().__init__(ae_title=ae_title, bind_address=bind_address, port=port, logger=logger, **kwargs)
 
     def _add_contexts(self):
         """

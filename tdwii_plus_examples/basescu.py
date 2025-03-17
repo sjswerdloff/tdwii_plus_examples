@@ -1,13 +1,12 @@
-import logging
-from argparse import Namespace
 from collections import namedtuple
 
 from pydicom.dataset import Dataset
 from pydicom.uid import UID
 from pynetdicom import AE, Association
-from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.status import GENERAL_STATUS, code_to_category
+
+from tdwii_plus_examples.utils.logger import init_logger
 
 
 class BaseSCU:
@@ -69,31 +68,25 @@ class BaseSCU:
         calling_ae_title : str
             The AE title of the calling AE.
         """
-        if logger is None:
-            self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "base_scu")
-            self.logger.info(
-                "Logger not provided, using default logger with level %s", logging.getLevelName(self.logger.level)
-            )
-        elif isinstance(logger, logging.Logger):
-            self.logger = logger
-            self.logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
-        else:
-            raise TypeError("logger must be an instance of logging.Logger")
-        self.logger.debug("BaseSCU.__init__")
+        self.logger = init_logger(logger, "base_scu", "BaseSCU")
 
         if calling_ae_title is None or calling_ae_title == "":
             self.calling_ae_title = "BASESCU"
             self.logger.warning(f"Using default Application Entity Title: {self.calling_ae_title}")
         else:
             self.calling_ae_title = calling_ae_title
-        if called_ip is not None or called_ip != "":
+
+        if called_ip is not None and called_ip != "":
             self.called_ip = called_ip
         else:
             self.called_ip = None
+
         self.called_port = called_port
 
-        if called_ae_title is not None or called_ae_title != "":
+        if called_ae_title is not None and called_ae_title != "":
             self.called_ae_title = called_ae_title
+        else:
+            self.called_ae_title = None
 
         # Create an AE instance
         self.ae = AE(ae_title=self.calling_ae_title)
@@ -223,10 +216,22 @@ class BaseSCU:
         return GENERAL_STATUS.get(status_code, ("Unknown", "Unknown status code"))[1]
 
     def set_called_ae(self, called_ip: str, called_port: int, called_ae_title: str = None):
+        """
+        Set the called AE parameters for this SCU.
+
+        Parameters
+        ----------
+        called_ip : str
+            The IP address of the called AE.
+        called_port : int
+            The port number of the called AE.
+        called_ae_title : str, optional
+            The AE title of the called AE. Default is "ANYSCP" if not provided.
+        """
         self.called_ip = called_ip
         self.called_port = called_port
         if called_ae_title is None or called_ae_title == "":
-            self.called_ae_title == "ANYSCP"
+            self.called_ae_title = "ANYSCP"  # Fixed assignment operator
             self.logger.warning(f"Using default Called Application Title: {self.called_ae_title}")
         else:
             self.called_ae_title = called_ae_title
