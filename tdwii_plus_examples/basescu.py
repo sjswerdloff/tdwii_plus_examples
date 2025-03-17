@@ -69,24 +69,17 @@ class BaseSCU:
             The AE title of the calling AE.
         """
         self.logger = init_logger(logger, "base_scu", "BaseSCU")
+        default_calling_ae_title = "BASESCU"
+        if not calling_ae_title:
+            self.logger.warning(f"Using default Application Entity Title: {default_calling_ae_title}")
+        self.calling_ae_title = calling_ae_title or default_calling_ae_title
 
-        if calling_ae_title is None or calling_ae_title == "":
-            self.calling_ae_title = "BASESCU"
-            self.logger.warning(f"Using default Application Entity Title: {self.calling_ae_title}")
-        else:
-            self.calling_ae_title = calling_ae_title
-
-        if called_ip is not None and called_ip != "":
-            self.called_ip = called_ip
-        else:
-            self.called_ip = None
+        
+        self.called_ip = called_ip or None
 
         self.called_port = called_port
 
-        if called_ae_title is not None and called_ae_title != "":
-            self.called_ae_title = called_ae_title
-        else:
-            self.called_ae_title = None
+        self.called_ae_title = called_ae_title or None
 
         # Create an AE instance
         self.ae = AE(ae_title=self.calling_ae_title)
@@ -115,13 +108,14 @@ class BaseSCU:
         Returns:
             AssociationResult: A named tuple containing the status, accepted SOP classes, and description.
         """
-        if (self.called_ip is None or self.called_ip == "") or self.called_port is None:
+        if not self.called_ip or not self.called_port:
             return self.AssociationResult(status="Error", description="Called AE parameters not set", accepted_sop_classes=[])
         else:
-            if self.called_ae_title is None:
-                self.called_ae_title = "ANYSCP"
-                self.logger.warning(f"Using default Called Application Entity Title: {self.called_ae_title}")
-
+            default_called_ae_title = "ANYSCP"
+            if not self.called_ae_title:
+                self.logger.warning(f"Using default Called Application Entity Title: {default_called_ae_title}")
+            self.called_ae_title = self.called_ae_title or default_called_ae_title
+            
             self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
             if not self.assoc.is_established:
                 return self.AssociationResult(
@@ -230,11 +224,10 @@ class BaseSCU:
         """
         self.called_ip = called_ip
         self.called_port = called_port
-        if called_ae_title is None or called_ae_title == "":
-            self.called_ae_title = "ANYSCP"  # Fixed assignment operator
-            self.logger.warning(f"Using default Called Application Title: {self.called_ae_title}")
-        else:
-            self.called_ae_title = called_ae_title
+        default_called_ae_title = "ANYSCP"
+        if not called_ae_title:
+            self.logger.warning(f"Using default Called Application Title: {default_called_ae_title}")
+        self.called_ae_title = called_ae_title or default_called_ae_title
 
     def verify(self):
         """
