@@ -37,7 +37,7 @@ class TestCEchoSCP(unittest.TestCase):
 
         scp = CEchoSCP(ae_title=ae_title, bind_address=bind_address, port=port, logger=logger)
 
-        self.assertEqual(scp.ae_title, "ECHO_SCP" if not ae_title else ae_title)
+        self.assertEqual(scp.ae_title, ae_title or "ECHO_SCP")
         self.assertEqual(scp.bind_address, bind_address)
         self.assertEqual(scp.port, port)
         self.assertEqual(scp.logger.name, "test_cechoscp" if logger_name else "base_scp")

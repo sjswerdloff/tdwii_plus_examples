@@ -4,7 +4,7 @@ from argparse import Namespace
 from pynetdicom.apps.common import setup_logging
 
 
-def init_logger(logger, default_name, class_name):
+def init_logger(logger: logging.Logger | None, default_name: str, class_name: str, level: int = logging.DEBUG):
     """Initialize and validate logger
 
     Parameters
@@ -15,7 +15,8 @@ def init_logger(logger, default_name, class_name):
         The name to use for the default logger if one is not provided
     class_name : str
         The name of the class initializing the logger for better log messages
-
+    level : Literal
+        The logging level to be used if no logger was passed in
     Returns
     -------
     logging.Logger
@@ -27,7 +28,7 @@ def init_logger(logger, default_name, class_name):
         If logger is not an instance of logging.Logger
     """
     if logger is None:
-        new_logger = setup_logging(Namespace(log_type=None, log_level="debug"), default_name)
+        new_logger = setup_logging(Namespace(log_type=None, log_level=str.lower(logging.getLevelName(level))), default_name)
         new_logger.info("Logger not provided, using default logger with level %s", logging.getLevelName(new_logger.level))
     elif isinstance(logger, logging.Logger):
         new_logger = logger

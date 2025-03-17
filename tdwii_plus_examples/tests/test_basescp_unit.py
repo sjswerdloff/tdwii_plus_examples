@@ -81,24 +81,24 @@ class TestBaseSCP(unittest.TestCase):
             scp = BaseSCP(ae_title, bind_address, port, logger)
 
             # Check ae_title
-            self.assertEqual(scp.ae_title, "BASE_SCP" if not ae_title else ae_title)
+            self.assertEqual(scp.ae_title, ae_title or "BASE_SCP")
 
             # Check bind_address
-            self.assertEqual(scp.bind_address, "" if not bind_address else bind_address)
+            self.assertEqual(scp.bind_address, bind_address or "")
 
             # Check port
-            self.assertEqual(scp.port, 11112 if not port else port)
+            self.assertEqual(scp.port, port or 11112)
 
             # Check logger
-            if logger is None:
-                self.assertEqual(scp.logger.name, "base_scp")
-            else:
-                self.assertEqual(scp.logger.name, logger.name)
-                self.assertIsInstance(scp.logger, logging.Logger)
+            expected_logger_name = logger.name if logger else "base_scp"
+            self.assertEqual(scp.logger.name, expected_logger_name)
+            self.assertIsInstanceOrNone(scp.logger, logging.Logger)  # see conftest.py
 
             # Check for expected warning
             self.memory_handler.flush()
             log_output = [record.getMessage() for record in self.memory_handler.buffer]
+            # this conditional is going to trigger guidance to avoid conditionals in tests
+            # but it doesn't look like there's a reasonable way to avoid it.
             if expected_warning:
                 self.assertIn(f"{expected_warning}", log_output)
 
