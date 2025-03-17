@@ -94,12 +94,11 @@ def _add_filtered_subscriber(subscriber_ae_title: str, query: Dataset, logger=No
         _filtered_subscribers[subscriber_ae_title] = query  # and you can get the deletion lock from the query
         if logger is not None:
             logger.debug(f"Receiving AE Title {subscriber_ae_title} is now subscribed using filter: {query}")
-    else:
-        if logger is not None:
-            logger.info(
-                f"Receiving AE Title {subscriber_ae_title} is already subscribed, \
-                    only supporting one kind of filter per receiving AE"
-            )
+    elif logger is not None:
+        logger.info(
+            f"Receiving AE Title {subscriber_ae_title} is already subscribed, \
+                only supporting one kind of filter per receiving AE"
+        )
     return
 
 
@@ -107,9 +106,8 @@ def _remove_global_subscriber(subscriber_ae_title: str, deletion_lock: bool = Fa
     if subscriber_ae_title in _global_subscribers.keys():
         del _global_subscribers[subscriber_ae_title]
         logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed from global subscription")
-    else:
-        if logger is not None:
-            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed from global subscription")
+    elif logger is not None:
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed from global subscription")
     return
 
 
@@ -117,9 +115,8 @@ def _remove_filtered_subscriber(subscriber_ae_title: str, query: Dataset = None,
     if subscriber_ae_title in _filtered_subscribers.keys():
         del _filtered_subscribers[subscriber_ae_title]
         logger.info(f"Receiving AE Title {subscriber_ae_title} was unsubscribed from filtered global subscription")
-    else:
-        if logger is not None:
-            logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed from filtered global subscription")
+    elif logger is not None:
+        logger.info(f"Receiving AE Title {subscriber_ae_title} was not subscribed from filtered global subscription")
     return
 
 
