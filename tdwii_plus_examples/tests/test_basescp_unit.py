@@ -92,7 +92,7 @@ class TestBaseSCP(unittest.TestCase):
             # Check logger
             expected_logger_name = logger.name if logger else "base_scp"
             self.assertEqual(scp.logger.name, expected_logger_name)
-            self.assertIsInstanceOrNone(scp.logger, logging.Logger)  # see conftest.py
+            self.assertIsInstanceOrNone(self, scp.logger, logging.Logger)  # see conftest.py
 
             # Check for expected warning
             self.memory_handler.flush()
