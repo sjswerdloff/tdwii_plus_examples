@@ -11,10 +11,8 @@ Arguments:
 """
 
 import sys
-from tdwii_plus_examples.tdwii_config import (
-    load_ae_config, load_machine_map,
-    known_ae_ipaddr, known_ae_port, machine_ae_map
-)
+
+from tdwii_plus_examples.tdwii_config import known_ae_ipaddr, known_ae_port, load_ae_config, load_machine_map, machine_ae_map
 
 
 def main():
@@ -34,9 +32,7 @@ def main():
     for key in machine_ae_map:
         try:
             value = machine_ae_map[key]
-            print(f"Machine Name:{key} AE Title:{value} "
-                  f"IPAddr:{known_ae_ipaddr[value]} "
-                  f"Port:{known_ae_port[value]}")
+            print(f"Machine Name:{key} AE Title:{value} IPAddr:{known_ae_ipaddr[value]} Port:{known_ae_port[value]}")
         except KeyError as e:
             print(f"AE Title {value} not found in AE config file")
             print(f"Error: {e}")

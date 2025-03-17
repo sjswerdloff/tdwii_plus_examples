@@ -1,5 +1,5 @@
-from pynetdicom import AllStoragePresentationContexts
 from pydicom.uid import AllTransferSyntaxes
+from pynetdicom import AllStoragePresentationContexts
 
 UPS_SOP_CLASSES = {
     "UnifiedProcedureStepPush": "1.2.840.10008.5.1.4.34.6.1",

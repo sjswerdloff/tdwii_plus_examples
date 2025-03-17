@@ -1,60 +1,40 @@
 import os
-from pynetdicom.status import Status
+
 from pydicom.dataset import Dataset
 from pydicom.filewriter import write_file_meta_info
 from pydicom.uid import DeflatedExplicitVRLittleEndian
 from pynetdicom.dsutils import encode
-
+from pynetdicom.status import Status
 
 # Define the specific Status Code values for the C-STORE Response
-Status.add('UNABLE_TO_DECODE_DATASET', 0xC210)  # Failure to decode the dataset
-Status.add('MISSING_ARGUMENT', 0xC212)  # Failure to process the request
-Status.add('OUT_OF_RESOURCES', 0xA700)  # Failure to store the dataset
-Status.add('UNABLE_TO_STORE_DATASET', 0xA701)  # Failure to store the dataset
+Status.add("UNABLE_TO_DECODE_DATASET", 0xC210)  # Failure to decode the dataset
+Status.add("MISSING_ARGUMENT", 0xC212)  # Failure to process the request
+Status.add("OUT_OF_RESOURCES", 0xA700)  # Failure to store the dataset
+Status.add("UNABLE_TO_STORE_DATASET", 0xA701)  # Failure to store the dataset
 
 # Define prefixes for SOP classes commmonly used in Radiotherapy
 SOP_CLASS_PREFIXES = {
     "1.2.840.10008.5.1.4.1.1.2": ("CT", "CT Image Storage"),
     "1.2.840.10008.5.1.4.1.1.4": ("MR", "MR Image Storage"),
     "1.2.840.10008.5.1.4.1.1.7": ("SC", "Secondary Capture Image Storage"),
-    "1.2.840.10008.5.1.4.1.1.128": (
-        "PT", "Positron Emission Tomography Image Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.1": (
-        "RI", "RTIMG", "RTIMAGE",
-        "RT Image Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.2": (
-        "RD", "RTDOSE",
-        "RT Dose Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.3": (
-        "RS", "RTSTRUCT", "RTSTRUCTURESET",
-        "RT Structure Set Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.4": (
-        "RR", "RTREC", "RTRECORD",
-        "RT Beam Treatment Record Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.5": (
-        "RP", "RTPLAN", "RTPLAN",
-        "RT Plan Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.6": (
-        "BR", "RTBYREC", "RTBRACHYRECORD",
-        "RT Brachy Treatment Record Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.7": (
-        "SUM", "SUMREC", "RTSUMRECORD",
-        "RT Treatment Summary Record Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.8": (
-        "RN", "RTIONPLN", "RTIONPLAN",
-        "RT Ion Plan Storage"),
-    "1.2.840.10008.5.1.4.1.1.481.9": (
-        "IR", "RTIONREC", "RTIONRECORD",
-        "RT Ion Beams Treatment Record Storage"),
-    "1.2.840.10008.5.1.4.34.7": (
-        "BDI", "RTBDI", "RTBEAMDELIVERYINSTRUCTION",
-        "RT Beams Delivery Instruction Storage"),
-    "1.2.840.10008.5.1.4.1.1.66.1": (
-        "REG", "IMREG", "IMAGEREGISTRATION",
-        "Spatial Registration Storage"),
+    "1.2.840.10008.5.1.4.1.1.128": ("PT", "Positron Emission Tomography Image Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.1": ("RI", "RTIMG", "RTIMAGE", "RT Image Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.2": ("RD", "RTDOSE", "RT Dose Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.3": ("RS", "RTSTRUCT", "RTSTRUCTURESET", "RT Structure Set Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.4": ("RR", "RTREC", "RTRECORD", "RT Beam Treatment Record Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.5": ("RP", "RTPLAN", "RTPLAN", "RT Plan Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.6": ("BR", "RTBYREC", "RTBRACHYRECORD", "RT Brachy Treatment Record Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.7": ("SUM", "SUMREC", "RTSUMRECORD", "RT Treatment Summary Record Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.8": ("RN", "RTIONPLN", "RTIONPLAN", "RT Ion Plan Storage"),
+    "1.2.840.10008.5.1.4.1.1.481.9": ("IR", "RTIONREC", "RTIONRECORD", "RT Ion Beams Treatment Record Storage"),
+    "1.2.840.10008.5.1.4.34.7": ("BDI", "RTBDI", "RTBEAMDELIVERYINSTRUCTION", "RT Beams Delivery Instruction Storage"),
+    "1.2.840.10008.5.1.4.1.1.66.1": ("REG", "IMREG", "IMAGEREGISTRATION", "Spatial Registration Storage"),
     "1.2.840.10008.5.1.4.1.1.66.3": (
-        "DIR", "DEFIMREG", "DEFORMABLEIMAGEREGISTRATION",
-        "Deformable Spatial Registration Storage")
+        "DIR",
+        "DEFIMREG",
+        "DEFORMABLEIMAGEREGISTRATION",
+        "Deformable Spatial Registration Storage",
+    ),
 }
 
 
@@ -87,18 +67,17 @@ def handle_cstore(event, args, app_logger):
     status_ds.Status = Status.SUCCESS
 
     # Return Success status code if the C-STORE request is to be ignored
-    if hasattr(args, 'ignore'):
+    if hasattr(args, "ignore"):
         if args.ignore:
             app_logger.info("Ignoring C-STORE request")
             return status_ds
         else:
             app_logger.info("Processing C-STORE request")
     else:
-        app_logger.warning(
-            "args.ignore attribute not present, processing C-STORE request")
+        app_logger.warning("args.ignore attribute not present, processing C-STORE request")
 
     # Check that the output directory argument is present and not None
-    if not hasattr(args, 'output_directory') or args.output_directory is None:
+    if not hasattr(args, "output_directory") or args.output_directory is None:
         app_logger.error("args.output_directory attribute not present or None")
         status_ds.Status = Status.MISSING_ARGUMENT
         return status_ds
@@ -125,9 +104,7 @@ def handle_cstore(event, args, app_logger):
         sop_class = ds.SOPClassUID
         sop_instance = ds.SOPInstanceUID
     except Exception:
-        app_logger.exception(
-            "Unable to decode the data set and/or the command set"
-        )
+        app_logger.exception("Unable to decode the data set and/or the command set")
         status_ds.Status = Status.UNABLE_TO_DECODE_DATASET
         return status_ds
 
@@ -147,9 +124,7 @@ def handle_cstore(event, args, app_logger):
     try:
         os.makedirs(args.output_directory, exist_ok=True)
     except Exception:
-        app_logger.exception(
-            f"Unable to create the output directory: {args.output_directory}"
-        )
+        app_logger.exception(f"Unable to create the output directory: {args.output_directory}")
         status_ds.Status = Status.OUT_OF_RESOURCES
         return status_ds
 
@@ -172,16 +147,10 @@ def handle_cstore(event, args, app_logger):
             ds.save_as(filename, write_like_original=False)
 
     except IOError:
-        app_logger.exception(
-            "Could not write file to specified directory: "
-            f"{os.path.dirname(filename)}"
-        )
+        app_logger.exception(f"Could not write file to specified directory: {os.path.dirname(filename)}")
         status_ds.Status = Status.OUT_OF_RESOURCES
     except Exception:
-        app_logger.exception(
-            "Could not write file to specified directory: "
-            f"{os.path.dirname(filename)}"
-        )
+        app_logger.exception(f"Could not write file to specified directory: {os.path.dirname(filename)}")
         status_ds.Status = Status.UNABLE_TO_STORE_DATASET
 
     return status_ds

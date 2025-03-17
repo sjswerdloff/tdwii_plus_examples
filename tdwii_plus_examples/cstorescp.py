@@ -1,20 +1,15 @@
+import logging
 import os
 from argparse import Namespace
-import logging
 
-from pydicom.uid import (
-    UID, ImplicitVRLittleEndian, ExplicitVRLittleEndian
-)
+from pydicom.uid import UID, ExplicitVRLittleEndian, ImplicitVRLittleEndian
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
+from pynetdicom.apps.common import setup_logging
 from pynetdicom.presentation import StoragePresentationContexts
 
-from pynetdicom.apps.common import setup_logging
-
+from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
-from tdwii_plus_examples._dicom_uids import (
-    validate_sop_classes, validate_transfer_syntaxes
-)
 
 
 class CStoreSCP(CEchoSCP):
@@ -49,17 +44,18 @@ class CStoreSCP(CEchoSCP):
             Adds handlers for DICOM communication events to the SCP instance.
     """
 
-    def __init__(self,
-                 ae_title: str = "STORE_SCP",
-                 bind_address: str = "",
-                 port: int = 11112,
-                 logger=None,
-                 sop_classes=None,
-                 transfer_syntaxes=None,
-                 custom_handler=None,
-                 store_directory=None,
-                 **kwargs
-                 ):
+    def __init__(
+        self,
+        ae_title: str = "STORE_SCP",
+        bind_address: str = "",
+        port: int = 11112,
+        logger=None,
+        sop_classes=None,
+        transfer_syntaxes=None,
+        custom_handler=None,
+        store_directory=None,
+        **kwargs,
+    ):
         """
         Initializes a new instance of the CStoreSCP class.
         This method creates an AE with storage presentation contexts.
@@ -107,55 +103,39 @@ class CStoreSCP(CEchoSCP):
             Optional, default: current directory
         """
         if logger is None:
-            self.logger = setup_logging(
-                Namespace(log_type=None, log_level="debug"), "cstore_scp")
+            self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "cstore_scp")
             self.logger.info(
-                "Logger not provided, using default logger with level %s",
-                logging.getLevelName(self.logger.level)
+                "Logger not provided, using default logger with level %s", logging.getLevelName(self.logger.level)
             )
         elif isinstance(logger, logging.Logger):
             self.logger = logger
-            self.logger.debug(
-                "Logger set to %s with level %s",
-                logger.name, logging.getLevelName(logger.getEffectiveLevel())
-            )
+            self.logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
         self.logger.debug("CStoreSCP.__init__")
 
         if not ae_title:
             self.ae_title = "STORE_SCP"
-            self.logger.info("AE title not provided, using default: %s",
-                             self.ae_title)
+            self.logger.info("AE title not provided, using default: %s", self.ae_title)
         else:
             self.ae_title = ae_title
 
         self.sop_classes = sop_classes
         if sop_classes is not None:
-            self._valid_sop_classes, self._invalid_sop_classes = (
-                validate_sop_classes(sop_classes)
-            )
+            self._valid_sop_classes, self._invalid_sop_classes = validate_sop_classes(sop_classes)
             if self._invalid_sop_classes:
-                self.logger.warning("Ignoring invalid SOP Classes: %s",
-                                    list(self._invalid_sop_classes.keys()))
+                self.logger.warning("Ignoring invalid SOP Classes: %s", list(self._invalid_sop_classes.keys()))
 
         self.transfer_syntaxes = transfer_syntaxes
         if transfer_syntaxes is not None:
-            self._valid_transfer_syntaxes, self._invalid_transfer_syntaxes = (
-                validate_transfer_syntaxes(transfer_syntaxes)
-            )
+            self._valid_transfer_syntaxes, self._invalid_transfer_syntaxes = validate_transfer_syntaxes(transfer_syntaxes)
             if self._invalid_transfer_syntaxes:
-                self.logger.warning(
-                    "Ignoring invalid Transfer Syntaxes: %s",
-                    list(self._invalid_transfer_syntaxes.keys()))
+                self.logger.warning("Ignoring invalid Transfer Syntaxes: %s", list(self._invalid_transfer_syntaxes.keys()))
 
-        self.logger.debug(
-            f"Custom handler: {custom_handler} type is {type(custom_handler)}")
+        self.logger.debug(f"Custom handler: {custom_handler} type is {type(custom_handler)}")
         if custom_handler is None:
-            self.logger.warning("No custom_handler defined, "
-                                "using default handler")
+            self.logger.warning("No custom_handler defined, using default handler")
             self.handle_store = handle_cstore
         elif not callable(custom_handler):
-            self.logger.warning(f"{custom_handler} is not a known function, "
-                                "using default handler")
+            self.logger.warning(f"{custom_handler} is not a known function, using default handler")
             self.handle_store = handle_cstore
         else:
             self.handle_store = custom_handler
@@ -167,12 +147,7 @@ class CStoreSCP(CEchoSCP):
             self.store_directory = store_directory
         self.logger.debug(f"Store directory: {self.store_directory}")
 
-        super().__init__(
-            ae_title=self.ae_title,
-            bind_address=bind_address,
-            port=port,
-            logger=logger,
-            **kwargs)
+        super().__init__(ae_title=self.ae_title, bind_address=bind_address, port=port, logger=logger, **kwargs)
 
     def _add_contexts(self):
         """
@@ -188,10 +163,7 @@ class CStoreSCP(CEchoSCP):
         self.logger.debug("CStoreSCP._add_contexts")
         super()._add_contexts()
         if self.sop_classes is None:
-            sop_classes = [
-                context.abstract_syntax
-                for context in StoragePresentationContexts
-            ]
+            sop_classes = [context.abstract_syntax for context in StoragePresentationContexts]
         else:
             sop_classes = list(self._valid_sop_classes.values())
         self.logger.debug(f"Supported Storage SOP Classes: {sop_classes}")
@@ -201,20 +173,12 @@ class CStoreSCP(CEchoSCP):
             transfer_syntaxes = DEFAULT_TRANSFER_SYNTAXES.copy()
             # Make ExplicitVRLittleEndian the preferred transfer syntax
             transfer_syntaxes.remove(UID(ExplicitVRLittleEndian))
-            transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + \
-                transfer_syntaxes
+            transfer_syntaxes = [UID(ExplicitVRLittleEndian)] + transfer_syntaxes
         else:
-            if ImplicitVRLittleEndian not in list(
-                    self._valid_transfer_syntaxes.values()):
-                transfer_syntaxes = (
-                    list(self._valid_transfer_syntaxes.values()) + [
-                        ImplicitVRLittleEndian
-                    ]
-                )
+            if ImplicitVRLittleEndian not in list(self._valid_transfer_syntaxes.values()):
+                transfer_syntaxes = list(self._valid_transfer_syntaxes.values()) + [ImplicitVRLittleEndian]
             else:
-                transfer_syntaxes = (
-                    list(self._valid_transfer_syntaxes.values())
-                )
+                transfer_syntaxes = list(self._valid_transfer_syntaxes.values())
         self.logger.debug(f"Supported Transfer Syntaxes: {transfer_syntaxes}")
 
         for sop_class in sop_classes:
@@ -230,5 +194,4 @@ class CStoreSCP(CEchoSCP):
         self.logger.debug("CStoreSCP._add_handlers")
         super()._add_handlers()
         args = Namespace(ignore=False, output_directory=self.store_directory)
-        self.handlers.append((evt.EVT_C_STORE, self.handle_store,
-                              [args, self.logger]))
+        self.handlers.append((evt.EVT_C_STORE, self.handle_store, [args, self.logger]))
