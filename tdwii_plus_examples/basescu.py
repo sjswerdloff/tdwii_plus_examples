@@ -74,7 +74,6 @@ class BaseSCU:
             self.logger.warning(f"Using default Application Entity Title: {default_calling_ae_title}")
         self.calling_ae_title = calling_ae_title or default_calling_ae_title
 
-        
         self.called_ip = called_ip or None
 
         self.called_port = called_port
@@ -115,7 +114,7 @@ class BaseSCU:
             if not self.called_ae_title:
                 self.logger.warning(f"Using default Called Application Entity Title: {default_called_ae_title}")
             self.called_ae_title = self.called_ae_title or default_called_ae_title
-            
+
             self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
             if not self.assoc.is_established:
                 return self.AssociationResult(
