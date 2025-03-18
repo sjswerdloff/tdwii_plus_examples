@@ -32,7 +32,11 @@ def init_logger(logger: logging.Logger | None, default_name: str, class_name: st
         new_logger.info("Logger not provided, using default logger with level %s", logging.getLevelName(new_logger.level))
     elif isinstance(logger, logging.Logger):
         new_logger = logger
-        new_logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
+        new_logger.debug(
+            "Logger set to %s with level %s",
+            new_logger.name,
+            logging.getLevelName(new_logger.getEffectiveLevel()),
+        )
     else:
         raise TypeError("logger must be an instance of logging.Logger")
     new_logger.debug(f"{class_name}.__init__")
