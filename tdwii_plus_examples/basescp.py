@@ -1,12 +1,11 @@
 import inspect
-import logging
 import traceback
-from argparse import Namespace
 
 from pynetdicom import AE, evt
-from pynetdicom.apps.common import setup_logging
 
 from tdwii_plus_examples.basehandlers import handle_close, handle_open
+from tdwii_plus_examples.utils.logger import init_logger
+from tdwii_plus_examples.utils.validation import validate_port
 
 
 def get_full_call_stack():
@@ -17,11 +16,7 @@ def get_full_call_stack():
             "function": frame_info.function,
             "filename": frame_info.filename,
             "lineno": frame_info.lineno,
-            "code": (
-                frame_info.code_context[0].strip()
-                if frame_info.code_context
-                else None
-            ),
+            "code": (frame_info.code_context[0].strip() if frame_info.code_context else None),
         }
         for frame_info in stack
     ]
@@ -80,17 +75,7 @@ class BaseSCP:
             A logger instance
             Optional, default: None, a debug level logger will be used.
         """
-        if logger is None:
-            self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "base_scp")
-            self.logger.info(
-                "Logger not provided, using default logger with level %s", logging.getLevelName(self.logger.level)
-            )
-        elif isinstance(logger, logging.Logger):
-            self.logger = logger
-            self.logger.debug("Logger set to %s with level %s", logger.name, logging.getLevelName(logger.getEffectiveLevel()))
-        else:
-            raise TypeError("logger must be an instance of logging.Logger")
-        self.logger.debug("BaseSCP.__init__")
+        self.logger = init_logger(logger, "base_scp", "BaseSCP")
 
         if not bind_address:
             self.bind_address = ""
@@ -101,27 +86,7 @@ class BaseSCP:
         else:
             raise TypeError("bind_address must be a string or None")
 
-        if port is None:
-            self.port = 11112
-            self.logger.info("Port not provided, using default: 11112")
-        elif isinstance(port, int):
-            if port < 0:
-                raise ValueError("port must not be negative")
-            elif 0 <= port <= 1023 and port != 104:
-                raise ValueError("port must not be in the range (0-1023), except 104")
-            elif port == 104:
-                self.port = port
-                self.logger.warning("DICOM port 104 may need admin privileges")
-            elif port in range(1024, 11111) or port in range(11161, 49151):
-                self.port = port
-                self.logger.warning("Registered port (1024-49151) may be used by others")
-            elif port > 65535:
-                raise ValueError("port must not exceed 65535")
-            else:
-                self.port = port
-                self.logger.debug(f"port set to {port}")
-        else:
-            raise TypeError("port must be an integer or None")
+        self.port = validate_port(port, self.logger)
 
         if not ae_title:
             self.ae_title = "BASE_SCP"

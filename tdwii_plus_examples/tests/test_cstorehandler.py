@@ -69,10 +69,10 @@ class TestHandleCStoreEvent(unittest.TestCase):
         # Create a mock args
         mock_args = MagicMock()
         mock_args.ignore = ignore
+
+        mock_args.output_directory = None
         if output_directory is not None:
             mock_args.output_directory = os.path.join(self.temp_dir, output_directory)
-        else:
-            mock_args.output_directory = None
 
         # Create an invalid dataset with missing SOPClassUID
         if expected_status == 0xC210:
