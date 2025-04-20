@@ -78,7 +78,7 @@ class UPSWatchNActionSCU(BaseSCU):
         super()._add_requested_context()
         self.ae.add_requested_context(UnifiedProcedureStepWatch)
         self.logger.debug(
-            "Verification Presentation context added:\n" + "\n".join(str(ctx) for ctx in self.ae.requested_contexts)
+            "UPS Watch Presentation context added:\n" + "\n".join(str(ctx) for ctx in self.ae.requested_contexts)
         )
 
     def _send_upswatchnaction_request(
@@ -94,6 +94,8 @@ class UPSWatchNActionSCU(BaseSCU):
 
         Parameters
         ----------
+        assoc : Association
+            The Association object representing the established connection to the SCP.
         action_type_id : int
             The *Action Type ID* to use.
         instance_uid: pydicom.uid.UID
@@ -169,6 +171,7 @@ class UPSWatchNActionSCU(BaseSCU):
             action_type=action_type_id,
             class_uid=UnifiedProcedureStepPush,
             instance_uid=instance_uid,
+            meta_uid=UnifiedProcedureStepWatch,
         )
 
         return self._handle_response(rsp_status, action_reply)

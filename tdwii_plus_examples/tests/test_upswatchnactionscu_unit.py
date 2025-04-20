@@ -111,6 +111,7 @@ class TestUPSWatchNActionSCU(unittest.TestCase):
                 action_type=action_type_id,
                 class_uid=UnifiedProcedureStepPush,
                 instance_uid=self.assoc.send_n_action.call_args[1]["instance_uid"],
+                meta_uid=UnifiedProcedureStepWatch,
             )
 
             # Verify the call to _handle_response
