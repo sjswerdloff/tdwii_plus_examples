@@ -174,3 +174,6 @@ scratchpad/
 # MacOS
 .DS_Store
 .qodo
+
+# Sourcery
+.sourcery.yaml

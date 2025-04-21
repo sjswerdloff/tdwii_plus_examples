@@ -15,11 +15,11 @@ class UPSPushNCreateSCU(BaseSCU):
     remote SCP.
 
     Attributes:
+        logger (logging.Logger): A logger instance.
         calling_ae_title (str): The title of the calling AE.
         called_ae_title (str): The title of the called AE.
         called_ip (str): The IP address or hostname of the called AE.
         called_port (int): The port number of the called AE.
-        logger (logging.Logger): A logger instance.
     """
 
     def __init__(
@@ -55,14 +55,14 @@ class UPSPushNCreateSCU(BaseSCU):
         Returns:
             int: The number of UPS instances successfully created.
         """
-        instances = [instance for instance in instances if instance.SOPClassUID == UnifiedProcedureStepPush]
+        valid_instances = [instance for instance in instances if instance.SOPClassUID == UnifiedProcedureStepPush]
         if not instances:
             self.logger.warning("No valid instances with SOPClassUID matching UnifiedProcedureStepPush.")
             return 0
-        if len(instances) < len(instances):
+        if len(valid_instances) < len(instances):
             self.logger.warning(
                 f"Some instances were ignored because their SOPClassUID did not match UnifiedProcedureStepPush. "
-                f"Total instances provided: {len(instances)}, valid instances: {len(instances)}"
+                f"Total instances provided: {len(instances)}, valid instances: {len(valid_instances)}"
             )
         assoc_result = self._associate()
         success_count = 0
@@ -83,7 +83,7 @@ class UPSPushNCreateSCU(BaseSCU):
 
         msg_id = 0
 
-        for instance in instances:
+        for instance in valid_instances:
             msg_id += 1
             result = self._send_upspushncreate_request(
                 assoc=self.assoc,
