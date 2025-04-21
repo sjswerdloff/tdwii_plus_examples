@@ -67,24 +67,10 @@ class UPSPushNCreateSCU(BaseSCU):
         assoc_result = self._associate()
         success_count = 0
 
-        if assoc_result.status == "Error":
-            result = self.PrimitiveResult("AssocFailure", 0xD000, assoc_result.description, None)
-            self.logger.error(f"Association failed: {result.status_description}")
-            return success_count
+        if not self._handle_association_status(assoc_result):
+            return 0
 
-        if assoc_result.status == "Warning":
-            accepted_sop_names = [f"[{UID(uid).name}]" for uid in assoc_result.accepted_sop_classes]
-            self.logger.warning(f"{assoc_result.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
-            if "[Unified Procedure Step - Watch SOP Class]" not in accepted_sop_names:
-                self.assoc.release()
-                result = self.PrimitiveResult("AssocFailure", 0xD001, assoc_result.description, None)
-                self.logger.error(f"Association failed: {result.status_description}")
-                return success_count
-
-        msg_id = 0
-
-        for instance in valid_instances:
-            msg_id += 1
+        for msg_id, instance in enumerate(valid_instances, start=0):
             result = self._send_upspushncreate_request(
                 assoc=self.assoc,
                 attribute_list=instance,
@@ -104,6 +90,19 @@ class UPSPushNCreateSCU(BaseSCU):
         self.logger.debug("Association released")
 
         return success_count
+
+    def _handle_association_status(self, assoc_result) -> bool:
+        if assoc_result.status == "Error":
+            self.logger.error(f"Association failed: {assoc_result.description}")
+            return False
+        if assoc_result.status == "Warning":
+            accepted_sop_names = [f"[{UID(uid).name}]" for uid in assoc_result.accepted_sop_classes]
+            self.logger.warning(f"{assoc_result.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
+            if "[Unified Procedure Step - Push SOP Class]" not in accepted_sop_names:
+                self.assoc.release()
+                self.logger.error(f"Association failed: {assoc_result.description}")
+                return False
+        return True
 
     def _send_upspushncreate_request(
         self,
