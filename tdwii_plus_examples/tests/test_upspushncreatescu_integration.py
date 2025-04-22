@@ -1,7 +1,7 @@
 import logging
 import subprocess
 import sys
-import time
+import threading
 import unittest
 from logging.handlers import MemoryHandler
 
@@ -73,11 +73,45 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         # Ensure the correct Python interpreter is used for the subprocess call
         python_executable = sys.executable
 
+        def read_stdout(process, logger, stdout_lines, server_started_flag):
+            for line in iter(process.stdout.readline, b""):
+                line = line.decode("utf-8").strip()
+                if line:
+                    stdout_lines.append(line)
+
+                    # Check if the server started successfully
+                    if "SCP server started successfully" in line:
+                        server_started_flag[0] = True
+                        break
+
         # Start the UPS Push SCP CLI App upsscp.py
-        process = subprocess.Popen([python_executable, "tdwii_plus_examples/cli/upsscp/upsscp.py"])
+        process = subprocess.Popen(
+            [python_executable, "tdwii_plus_examples/cli/upsscp/upsscp.py", "-v"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+
+        # Read stdout in a separate thread in order not to block execution of test
+        stdout_lines = []
+        server_started_flag = [False]  # Use a mutable object to share state between threads
+        stdout_thread = threading.Thread(
+            target=read_stdout, args=(process, self.test_logger, stdout_lines, server_started_flag)
+        )
+        stdout_thread.start()
+
+        # Wait for the server to start or timeout
+        stdout_thread.join(timeout=1)
+
+        # If the server did not start successfully, print stdout and exit with an error
+        if not server_started_flag[0]:
+            self.test_logger.error("Error starting the server:")
+            for line in stdout_lines:
+                self.test_logger.error(line)
+            process.terminate()
+            process.wait()
+            self.fail("SCP server did not start successfully.")
 
         # Check that the SCP is running
-        time.sleep(1)  # give some time for the SCP to start
         self.assertEqual(self.upspush_ncreate_scu.verify().status_category, "Success")
 
         # Run the test case
@@ -97,6 +131,9 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
             # Terminate the UPS SCP CLI App subprocess
             process.terminate()
             process.wait()
+
+            # Ensure the stdout thread has finished
+            stdout_thread.join()
 
 
 if __name__ == "__main__":

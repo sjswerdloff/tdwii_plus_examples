@@ -35,7 +35,7 @@ from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
 
 
 def get_contexts(fpaths, app_logger):
-    """Return the valid DICOM files and their context values.
+    """Return the valid DICOM files and their Presentation Context.
 
     Parameters
     ----------
@@ -120,43 +120,45 @@ def main():
     # Verification requested
     if args.echo:
         print("Verification (C-ECHO) request")
-        result = scu.verify()
-        if result.status_category == "Success":
+        num_created_instances = scu.verify()
+        if num_created_instances.status_category == "Success":
             print("Verification (C-ECHO) successful")
         else:
-            print(f"Verification (C-ECHO) failed: {result.status_description}")
+            print(f"Verification (C-ECHO) failed: {num_created_instances.status_description}")
 
     # UPS instances creation requested
     elif args.path is not None:
-        lfiles, badfiles = get_files(args.path, args.recurse)
+        valid_paths, invalid_paths = get_files(args.path, args.recurse)
 
-        for bad in badfiles:
-            logger.error(f"Cannot access path: {bad}")
+        for path in invalid_paths:
+            logger.error(f"Cannot access path: {path}")
 
         # TODO: restrict SCU to required transfer syntaxes only
         # this could be achieved by adding the required transfer syntaxes to the
         # initialization of the SCU instance and reading the required transfer syntaxes
         # from the file meta information of the DICOM files
-        lfiles, contexts = get_contexts(lfiles, logger)
+        dicom_file_paths, contexts = get_contexts(valid_paths, logger)
 
-        if not lfiles:
+        if not dicom_file_paths:
             logger.warning("No suitable DICOM files found")
             sys.exit()
 
         instances = []
-        for fpath in lfiles:
-            logger.info(f"Sending file: {fpath}")
+        for dicom_file_path in dicom_file_paths:
+            logger.info(f"Sending file: {dicom_file_path}")
             try:
-                ds = dcmread(fpath, force=True)  # set force flag to allow raw DICOM files
+                ds = dcmread(dicom_file_path, force=True)  # set force flag to allow raw DICOM files
                 instances.append(ds)
             except Exception as e:
-                logger.error(f"Failed to read DICOM file {fpath}: {e}")
+                logger.error(f"Failed to read DICOM file {dicom_file_path}: {e}")
                 continue
 
-        result = scu.create_ups_instances(instances)
+        num_created_instances = scu.create_ups_instances(instances)
 
-        if result != 0:
+        if num_created_instances == len(dicom_file_paths):
             print("UPS creation successful")
+        elif num_created_instances > 0:
+            print("Some UPS instances creation failed")
         else:
             print("UPS creation failed")
 
