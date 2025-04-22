@@ -180,7 +180,7 @@ class MainBDIWidget(QWidget):
         )
         write_ups(ups, Path(self.ui.lineedit_bdidir_selector.text()))
         tms_ae_title = self.ui.line_edit_tms_scp_ae_title.text()
-        if tms_ae_title is None or str(tms_ae_title.strip()) == 0:
+        if tms_ae_title is None or len(str(tms_ae_title.strip())) == 0:
             self.logger.warning("No TMS AE Title specified, will not attempt an N-CREATE")
         else:
             dest_ae_title = tms_ae_title.strip()
