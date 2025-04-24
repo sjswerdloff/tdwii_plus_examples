@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (  # pylint: disable=no-name-in-module
     QWidget,
 )
 
-from tdwii_plus_examples.rtbdi_creator.ncreatescu import NCreateSCU
+from tdwii_plus_examples import tdwii_config
 from tdwii_plus_examples.rtbdi_creator.rtbdi_factory import (
     create_rtbdi_from_rtion_plan,
     create_ups_from_plan_and_bdi,
@@ -33,6 +33,7 @@ from tdwii_plus_examples.rtbdi_creator.storescu import StoreSCU
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from tdwii_plus_examples.rtbdi_creator.ui_form import Ui_MainBDIWidget
+from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
 
 
 class MainBDIWidget(QWidget):
@@ -58,6 +59,8 @@ class MainBDIWidget(QWidget):
         self.ui.push_button_export_bdi.clicked.connect(self._bdi_export_button_clicked)
         self.ui.push_button_export_ups.clicked.connect(self._export_ups_button_clicked)
         self.ui.push_button_send_plan.clicked.connect(self._store_plan_button_clicked)
+
+        self.logger = logging.getLogger(__name__)
 
         self.plan = None
         self.plan_path = Path("~/").expanduser()
@@ -87,10 +90,10 @@ class MainBDIWidget(QWidget):
                     self.ui.line_edit_tms_scp_ae_title.setText(default_dict["ups_scp_ae_title"])
 
             else:
-                logging.warning("No [DEFAULT] section in toml config file")
+                self.logger.warning("No [DEFAULT] section in toml config file")
 
         except OSError as config_file_error:
-            logging.exception("Problem parsing config file: " + config_file_error)
+            self.logger.exception("Problem parsing config file: " + config_file_error)
 
     @Slot()
     def _plan_button_clicked(self):
@@ -136,7 +139,7 @@ class MainBDIWidget(QWidget):
         fraction_number = round(self.ui.double_spin_box_fraction_number.value())
         scheduled_date = self.ui.datetime_edit_scheduled_datetime.date()
         scheduled_time = self.ui.datetime_edit_scheduled_datetime.time()
-        print(f"Fraction Number: {fraction_number} " f"Scheduled Date: {scheduled_date} " f"Scheduled Time: {scheduled_time}")
+        print(f"Fraction Number: {fraction_number} Scheduled Date: {scheduled_date} Scheduled Time: {scheduled_time}")
         plan = load_plan(self.ui.lineedit_plan_selector.text())
         self.plan = plan
         fraction_number = round(self.ui.double_spin_box_fraction_number.value())
@@ -177,14 +180,24 @@ class MainBDIWidget(QWidget):
         )
         write_ups(ups, Path(self.ui.lineedit_bdidir_selector.text()))
         tms_ae_title = self.ui.line_edit_tms_scp_ae_title.text()
-        if tms_ae_title is None or str(tms_ae_title.strip()) == 0:
-            logging.warning("No TMS AE Title specified, will not attempt an N-CREATE")
+        if tms_ae_title is None or len(str(tms_ae_title.strip())) == 0:
+            self.logger.warning("No TMS AE Title specified, will not attempt an N-CREATE")
         else:
-            ncreate_scu = NCreateSCU(self.ae_title, tms_ae_title.strip())
+            dest_ae_title = tms_ae_title.strip()
+            tdwii_config.load_ae_config()
+            ip_addr = tdwii_config.known_ae_ipaddr[dest_ae_title]
+            port = tdwii_config.known_ae_port[dest_ae_title]
+            ncreate_scu = UPSPushNCreateSCU(
+                logger=self.logger,
+                calling_ae_title=self.ae_title,
+                called_ip=ip_addr,
+                called_port=port,
+                called_ae_title=dest_ae_title,
+            )
             ups_list = list()
             ups_list.append(ups)
-            success = ncreate_scu.create_ups(iods=ups_list)
-            self._command_outcome_message(success=success, command_name="N-CREATE")
+            num_created_inst = ncreate_scu.create_ups_instances(ups_list)
+            self._command_outcome_message(success=num_created_inst == len(ups_list), command_name="N-CREATE")
 
     def _command_outcome_message(self, success: bool, command_name: str, text: str = None):
         # apparently a known defect, see:
