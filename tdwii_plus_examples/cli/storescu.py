@@ -86,7 +86,7 @@ def main():
         "path", metavar="path", nargs="+", help="DICOM file or directory containing SOP instances to store", type=str
     )
     parser.add_argument("-r", "--recurse", help="recursively search the given directory", action="store_true")
-    parser.add_argument("-aet", "--ae_title", type=str, default="STOREZSCU", help="Application Entity Title")
+    parser.add_argument("-aet", "--ae_title", type=str, default="STORESCU", help="Application Entity Title")
     parser.add_argument("-aec", "--called_ae_title", type=str, default="ANYSCP", help="Called Application Entity Title")
     parser.add_argument("-e", "--echo", action="store_true", help="Verification of DICOM connection with Called AET")
     parser.add_argument("-v", "--verbose", action="store_true", help="Set log level to INFO")
