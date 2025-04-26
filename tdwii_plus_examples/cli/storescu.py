@@ -29,6 +29,7 @@ import sys
 from pathlib import Path
 
 from pydicom import dcmread
+from pynetdicom import build_context
 from pynetdicom.apps.common import get_files
 
 from tdwii_plus_examples.cstorescu import CStoreSCU
@@ -49,33 +50,33 @@ def get_contexts(fpaths, app_logger):
         [Transfer Syntax UIDs]} that can be used to create the required
         presentation contexts.
     """
-    good, bad = [], []
+    valid_files, invalid_files = [], []
     contexts = {}
     for fpath in fpaths:
         path = os.fspath(Path(fpath).resolve())
         try:
             ds = dcmread(path)
         except Exception:
-            bad.append(("Bad DICOM file", path))
+            invalid_files.append(("Bad DICOM file", path))
             continue
 
         try:
             sop_class = ds.SOPClassUID
             tsyntax = ds.file_meta.TransferSyntaxUID
         except Exception:
-            bad.append(("Unknown SOP Class or Transfer Syntax UID", path))
+            invalid_files.append(("Unknown SOP Class or Transfer Syntax UID", path))
             continue
 
         tsyntaxes = contexts.setdefault(sop_class, [])
         if tsyntax not in tsyntaxes:
             tsyntaxes.append(tsyntax)
 
-        good.append(path)
+        valid_files.append(path)
 
-    for reason, path in bad:
+    for reason, path in invalid_files:
         app_logger.error(f"{reason}: {path}")
 
-    return good, contexts
+    return valid_files, contexts
 
 
 def main():
@@ -141,7 +142,11 @@ def main():
             sys.exit()
 
         print(contexts)
-        scu.set_contexts(contexts)
+        presentation_contexts = []
+        for sop_class, transfer_syntaxes in contexts.items():
+            context = build_context(sop_class, transfer_syntaxes)
+            presentation_contexts.append(context)
+        scu.set_contexts(presentation_contexts)
         instances = []
         for dicom_file_path in dicom_file_paths:
             logger.info(f"Sending file: {dicom_file_path}")

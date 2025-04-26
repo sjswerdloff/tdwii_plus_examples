@@ -62,14 +62,16 @@ class CStoreSCU(BaseSCU):
                 self.logger.debug(f"Storage Presentation contexts added: \n{self.ae.requested_contexts[1:]}")
 
     def set_contexts(self, contexts: list[PresentationContext]):
-        for context in contexts:
-            self.ae.add_requested_context(context.abstract_syntax, context.transfer_syntax[0])
-            self.logger.debug(f"Storage Presentation contexts added: \n{self.ae.requested_contexts[1:]}")
-        self.contexts = self.contexts.append(contexts)
+        """Overrides the storage presentation contexts"""
+        # Remove all existing presentation contexts
+        self.ae.requested_contexts = []
+        self.contexts = self._validate_contexts(contexts)
+        self._add_requested_context()
 
     def set_contexts_from_files(self, instances: list[Dataset]):
         """
-        Adds storage presentation contexts from a list of DICOM datasets.
+        Overrides the storage presentation contexts with the contexts from a list
+        of DICOM datasets.
 
         This method determines the SOP Class UID from each dataset and adds
         a corresponding presentation context using ExplicitVRLittleEndian transfer
@@ -86,10 +88,7 @@ class CStoreSCU(BaseSCU):
         contexts_in_files = [
             build_context(instance.SOPClassUID, transfer_syntax=[ExplicitVRLittleEndian]) for instance in instances
         ]
-        for abstract_syntax, transfer_syntaxes in contexts_in_files.items():
-            self.ae.add_requested_context(abstract_syntax, transfer_syntaxes[0])
-            self.logger.debug(f"Storage Presentation contexts added: \n{self.ae.requested_contexts[1:]}")
-        self.contexts = self.contexts.append(contexts_in_files)
+        self.set_contexts(contexts_in_files)
 
     def store_instances(self, instances: list[Dataset]) -> int:
         """

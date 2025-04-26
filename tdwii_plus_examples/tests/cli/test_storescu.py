@@ -24,16 +24,20 @@ class TestStoreSCU(unittest.TestCase):
 
     @patch("tdwii_plus_examples.cli.storescu.CStoreSCU")
     @patch("tdwii_plus_examples.cli.storescu.get_files")
+    @patch("tdwii_plus_examples.cli.storescu.get_contexts")
     @patch("tdwii_plus_examples.cli.storescu.dcmread")
     @patch("sys.argv", new=["storescu.py", "127.0.0.1", "11112", "test_path"])
-    def test_store_instances(self, mock_dcmread, mock_get_files, mock_scu):
+    def test_store_instances(self, mock_dcmread, mock_get_contexts, mock_get_files, mock_scu):
         """Test storing SOP instances."""
         mock_scu_instance = MagicMock()
         mock_scu.return_value = mock_scu_instance
         mock_scu_instance.store_instances.return_value = 1  # Return an integer
 
-        # Mock get_files to return one valid file and one invalid file
+        # Mock get_files to return one valid file path and one invalid file path
         mock_get_files.return_value = (["valid_file.dcm"], ["invalid_file.dcm"])
+
+        # Mock get_contexts to return one valid file and a valid context dict
+        mock_get_contexts.return_value = (["valid_file.dcm"], {"1.2.840.10008.5.1.4.1.1.4": ["1.2.840.10008.1.2.1"]})
 
         # Mock dcmread to return a valid dataset for the valid file
         mock_dcmread.return_value = MagicMock()
@@ -78,7 +82,7 @@ class TestStoreSCU(unittest.TestCase):
         mock_scu.return_value = mock_scu_instance
         mock_scu_instance.store_instances.return_value = 1  # Return an integer
 
-        mock_get_contexts.return_value = ["valid_file.dcm"], []
+        mock_get_contexts.return_value = (["valid_file.dcm"], {"1.2.840.10008.5.1.4.1.1.4": ["1.2.840.10008.1.2.1"]})
 
         with self.assertLogs("storescu", level="ERROR") as log:
             main()
