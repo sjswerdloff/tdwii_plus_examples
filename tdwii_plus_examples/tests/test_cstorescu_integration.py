@@ -1,10 +1,13 @@
 import logging
 import os
 import shutil
+import signal
 import tempfile
 import unittest
 from logging.handlers import MemoryHandler
+from subprocess import TimeoutExpired
 
+import psutil
 from parameterized import parameterized
 from pydicom.uid import ExplicitVRLittleEndian
 from pynetdicom.presentation import build_context
@@ -20,12 +23,12 @@ class TestCStoreSCU(unittest.TestCase):
         # Set up the logger for the CStoreSCU to INFO level
         # with a memory handler to store up to 100 log messages
         self.scu_logger, self.memory_handler = get_configured_logger(
-            "cstorescu", level=logging.WARNING, handler_class=MemoryHandler, capacity=100
+            "cstorescu", level=logging.DEBUG, handler_class=MemoryHandler, capacity=100
         )
 
         # Set up the logger for this test to INFO level
         # with a stream handler to print the log messages to the console
-        self.test_logger, self.stream_handler = get_configured_logger("test_cstorescu")
+        self.test_logger, self.stream_handler = get_configured_logger("test_cstorescu", level=logging.DEBUG)
 
         # Create 3 10x10 SC Image instances for testing
         self.sc_images = generate_sc_images(3, 10, 10)
@@ -57,18 +60,41 @@ class TestCStoreSCU(unittest.TestCase):
         shutil.rmtree(self.temp_dir)
         self.test_logger.info(f"Removed the temp directory: {self.temp_dir} and its contents: {files_in_temp_dir}")
 
+        # Try to gracefully terminate the process.
+        self.test_logger.info(f"Terminating process with PID: {self.process.pid}")
+        try:
+            self.process.terminate()
+            self.process.wait(timeout=1)
+            self.test_logger.info("Process terminated gracefully.")
+        except (ChildProcessError, TimeoutExpired):
+            self.test_logger.warning("Process termination timed out or process already finished.")
+
+        # Try to kill child processes.
+        try:
+            parent = psutil.Process(self.process.pid)
+            for child in parent.children(recursive=True):
+                child.kill()
+            self.test_logger.info("Child processes terminated.")
+        except psutil.NoSuchProcess:
+            self.test_logger.warning("Error killing subprocesses. Parent process not found. Probably already terminated.")
+
+        # Try to forcefully kill the process.
+        try:
+            os.kill(self.process.pid, signal.SIGKILL)
+            self.process.wait(timeout=1)  # Ensure process termination
+            self.test_logger.info("Process forcefully terminated.")
+        except OSError:
+            self.test_logger.warning("Error killing process. Probably already terminated.")
+
+        finally:
+            # Ensure the stdout thread has finished
+            if self.stdout_thread:
+                self.stdout_thread.join(timeout=1.0)
+
         # Remove and close the memory handler for scu and test loggers
         for logger, handler in [(self.scu_logger, self.memory_handler), (self.test_logger, self.stream_handler)]:
             logger.removeHandler(handler)
             handler.close()
-
-        # Terminate the storescp CLI App subprocess
-        self.process.terminate()
-        self.process.wait()
-
-        # Ensure the stdout thread has finished
-        if self.stdout_thread:
-            self.stdout_thread.join(timeout=1.0)
 
     @parameterized.expand(
         [
@@ -86,6 +112,7 @@ class TestCStoreSCU(unittest.TestCase):
         command.extend(supported_contexts.split(","))
 
         self.storescp_started, self.process, self.stdout_thread = start_scp(command, self.test_logger)
+        self.test_logger.info(f"Started process with PID: {self.process.pid}")
 
         if not self.storescp_started:
             self.fail("storescp server failed to start.")
