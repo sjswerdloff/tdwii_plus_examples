@@ -23,6 +23,21 @@ class TestStoreSCU(unittest.TestCase):
         mock_scu_instance.verify.assert_called_once()
 
     @patch("tdwii_plus_examples.cli.storescu.CStoreSCU")
+    @patch("sys.argv", new=["storescu.py", "127.0.0.1", "11112", "test_path", "-e"])
+    def test_echo_failure(self, mock_scu):
+        """Test Verification option (C-ECHO) failure path."""
+        mock_scu_instance = MagicMock()
+        mock_scu.return_value = mock_scu_instance
+        mock_scu_instance.verify.return_value.status_category = "Failure"
+
+        with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
+            main()
+            output = mock_stdout.getvalue()
+
+        self.assertIn("Verification (C-ECHO) failed", output)
+        mock_scu_instance.verify.assert_called_once()
+
+    @patch("tdwii_plus_examples.cli.storescu.CStoreSCU")
     @patch("tdwii_plus_examples.cli.storescu.get_files")
     @patch("tdwii_plus_examples.cli.storescu.get_contexts")
     @patch("tdwii_plus_examples.cli.storescu.dcmread")

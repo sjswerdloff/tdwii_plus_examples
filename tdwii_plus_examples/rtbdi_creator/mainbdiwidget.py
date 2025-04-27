@@ -114,8 +114,9 @@ class MainBDIWidget(QWidget):
     @Slot()
     def _store_plan_button_clicked(self):
         dest_ae_title = self.ui.line_edit_move_scp_ae_title.text()
-        ip_addr = self.known_ae_ipaddr.get(dest_ae_title)
-        port = self.known_ae_port.get(dest_ae_title)
+        ip_addr, port = self._get_ae_config(dest_ae_title)
+        if ip_addr is None or port is None:
+            return
         store_scu = CStoreSCU(
             calling_ae_title=self.ae_title, called_ae_title=dest_ae_title, called_ip=ip_addr, called_port=port
         )
@@ -166,8 +167,10 @@ class MainBDIWidget(QWidget):
         self.export_path = bdi_path
 
         dest_ae_title = self.ui.line_edit_move_scp_ae_title.text()
-        ip_addr = self.known_ae_ipaddr.get(dest_ae_title)
-        port = self.known_ae_port.get(dest_ae_title)
+        ip_addr, port = self._get_ae_config(dest_ae_title)
+        if ip_addr is None or port is None:
+            return
+
         store_scu = CStoreSCU(
             calling_ae_title=self.ae_title, called_ae_title=dest_ae_title, called_ip=ip_addr, called_port=port
         )
@@ -175,6 +178,15 @@ class MainBDIWidget(QWidget):
         store_scu.set_contexts_from_files(iods)
         success = store_scu.store_instances(instances=iods)
         self._command_outcome_message(success=success, command_name="C-STORE")
+
+    def _get_ae_config(self, ae_title):
+        """Retrieves AE configuration (IP and port).  Logs an error and returns None if config is missing."""
+        ip_addr = self.known_ae_ipaddr.get(ae_title)
+        port = self.known_ae_port.get(ae_title)
+        if ip_addr is None or port is None:
+            self.logger.error(f"Missing configuration for AE title: {ae_title}")
+            return None, None  # Return None for both if config is missing
+        return ip_addr, port
 
     @Slot()
     def _export_ups_button_clicked(self):

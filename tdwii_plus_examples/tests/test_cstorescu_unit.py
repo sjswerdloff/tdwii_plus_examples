@@ -54,6 +54,42 @@ class TestCStoreSCU(unittest.TestCase):
         mock_assoc_instance.send_c_store.assert_called()
         self.assertEqual(mock_assoc_instance.send_c_store.call_count, 2)
 
+    @mock.patch("tdwii_plus_examples.cstorescu.CStoreSCU._handle_response")
+    @mock.patch("tdwii_plus_examples.cstorescu.CStoreSCU._associate")
+    def test_store_instances_partial(self, mock_associate, mock_handle_response):
+        """Test storing multiple DICOM instances with partial success."""
+        # Create 2 minimal DICOM instances
+        ds_1 = Dataset()
+        ds_1.SOPInstanceUID = generate_uid()
+        ds_2 = Dataset()
+        ds_2.SOPInstanceUID = generate_uid()
+        instances = [ds_1, ds_2]
+
+        # Mock the association instance
+        mock_assoc_instance = mock.Mock()
+        # Mock the release method
+        mock_assoc_instance.release = mock.Mock()
+        # Mock the send_c_store method to return a success status
+        mock_assoc_instance.send_c_store.return_value = Dataset()
+        # Mock _associate to return the mock association instance
+        mock_associate.return_value = mock_assoc_instance
+        # Assign the mock association instance to the SCU's assoc attribute
+        self.cstore_scu.assoc = mock_assoc_instance
+        # Set up side_effect for mock_handle_response to return different statuses
+        return_values = [
+            mock.Mock(status_category="Success"),
+            mock.Mock(status_category="Failure"),  # Different status for the second call
+        ]
+        mock_handle_response.side_effect = return_values
+
+        # Call the method
+        success_count = self.cstore_scu.store_instances(instances)
+
+        # Assert 2 C-STORE message were sent and 1 succeeded
+        self.assertEqual(success_count, 1)
+        mock_assoc_instance.send_c_store.assert_called()
+        self.assertEqual(mock_assoc_instance.send_c_store.call_count, 2)
+
     @mock.patch("tdwii_plus_examples.cstorescu.CStoreSCU._associate")
     def test_store_instances_association_failure(self, mock_associate):
         """Test storing instances with association failure."""
@@ -63,14 +99,48 @@ class TestCStoreSCU(unittest.TestCase):
         ds.SOPInstanceUID = generate_uid()
         instances = [ds]
 
-        # Mock the association instance
-        mock_assoc_instance = mock.Mock()
+        # Mock the association directly on the CStoreSCU instance
+        self.cstore_scu.assoc = mock.Mock()
         # Mock the release method
-        mock_assoc_instance.release = mock.Mock()
-        # Mock _associate to return the mock association instance
-        mock_associate.return_value = mock_assoc_instance
-        # Set the status to "Error" to simulate an association failure
-        mock_assoc_instance.status = "Error"
+        self.cstore_scu.assoc.release = mock.Mock()
+
+        # Mock the association result to simulate an association failure
+        mock_assoc_result = mock.Mock()
+        mock_assoc_result.status = "Error"  # Set status to "Error"
+        mock_associate.return_value = mock_assoc_result
+
+        # Call the method
+        success_count = self.cstore_scu.store_instances(instances)
+
+        # Assert storage failed
+        self.assertEqual(success_count, 0)
+
+    @mock.patch("tdwii_plus_examples.cstorescu.CStoreSCU._associate")
+    def test_store_instances_association_warning(self, mock_associate):
+        """Test storing instances with association failure."""
+        # Create 1 'valid' DICOM instance
+        ds = Dataset()
+        ds.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.2")  # CT Image Storage SOP Class UID
+        ds.SOPInstanceUID = generate_uid()
+        instances = [ds]
+
+        # Mock the contexts attribute
+        self.cstore_scu.contexts = [
+            build_context("1.2.840.10008.1.1"),
+            build_context("1.2.840.10008.5.1.4.1.1.2"),
+        ]  # Verification and CT Image Storage
+        # Mock the association directly on the CStoreSCU instance
+        self.cstore_scu.assoc = mock.Mock()
+        # Mock the release method
+        self.cstore_scu.assoc.release = mock.Mock()
+
+        # Mock the association result to simulate an association not supporting all requested contexts
+        mock_assoc_result = mock.Mock()
+        mock_assoc_result.status = "Warning"
+        mock_assoc_result.accepted_sop_classes = ["1.2.840.10008.1.1"]
+
+        # Mock _associate to return the mock association result within a tuple
+        mock_associate.return_value = mock_assoc_result
 
         # Call the method
         success_count = self.cstore_scu.store_instances(instances)
