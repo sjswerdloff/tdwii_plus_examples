@@ -1,42 +1,65 @@
 import logging
 import os
+import shutil
 import signal
+import tempfile
 import unittest
 from logging.handlers import MemoryHandler
 from subprocess import TimeoutExpired
 
 import psutil
+from parameterized import parameterized
+from pydicom.uid import ExplicitVRLittleEndian
+from pynetdicom.presentation import build_context
+from pynetdicom.sop_class import _STORAGE_CLASSES
 
-from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_ups
+from tdwii_plus_examples.cstorescu import CStoreSCU
+from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_sc_images
 from tdwii_plus_examples.tests.utils.utils import get_configured_logger, start_scp
-from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
 
 
-class TestUPSPushNCreateSCU(unittest.TestCase):
+class TestCStoreSCU(unittest.TestCase):
     def setUp(self):
-        # Set up the logger for the UPSPushNCreateSCU to INFO level
+        # Set up the logger for the CStoreSCU to INFO level
         # with a memory handler to store up to 100 log messages
         self.scu_logger, self.memory_handler = get_configured_logger(
-            "upspushscu", level=logging.DEBUG, handler_class=MemoryHandler, capacity=100
+            "cstorescu", level=logging.DEBUG, handler_class=MemoryHandler, capacity=100
         )
 
         # Set up the logger for this test to INFO level
         # with a stream handler to print the log messages to the console
-        self.test_logger, self.stream_handler = get_configured_logger("test_upspushscu", level=logging.DEBUG)
+        self.test_logger, self.stream_handler = get_configured_logger("test_cstorescu", level=logging.DEBUG)
+
+        # Create 3 10x10 SC Image instances for testing
+        self.sc_images = generate_sc_images(3, 10, 10)
+
+        # Create a temporary directory
+        self.temp_dir = tempfile.mkdtemp()
+        self.test_logger.info(f"{self.temp_dir} directory created")
 
         # Create a UPSPushNCreateSCU instance
-        self.upspush_ncreate_scu = UPSPushNCreateSCU(
-            calling_ae_title="UPSPUSH",
-            called_ae_title="UPSSCP",
+        required_contexts = [
+            build_context(sop_class_uid, ExplicitVRLittleEndian)
+            for sop_class_uid in [
+                _STORAGE_CLASSES["SecondaryCaptureImageStorage"],
+                _STORAGE_CLASSES["CTImageStorage"],
+            ]
+        ]
+        self.cstore_scu = CStoreSCU(
+            calling_ae_title="STORESCU",
+            called_ae_title="ANYSCP",
             called_ip="localhost",
-            called_port=11114,
+            called_port=11112,
+            contexts=required_contexts,
             logger=self.scu_logger,
         )
 
-        # Create a UPS instance for testing
-        self.ups_instance = generate_ups()
-
     def tearDown(self):
+        # Remove the temporary directory and its contents
+        files_in_temp_dir = os.listdir(self.temp_dir)
+        shutil.rmtree(self.temp_dir)
+        self.test_logger.info(f"Removed the temp directory: {self.temp_dir} and its contents: {files_in_temp_dir}")
+
         # Try to gracefully terminate the process.
         self.test_logger.info(f"Terminating process with PID: {self.process.pid}")
         try:
@@ -73,29 +96,39 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
             logger.removeHandler(handler)
             handler.close()
 
-    def test_verif_create(self):
-        # Start the UPS Push SCP CLI App upsscp.py
-        command = ["tdwii_plus_examples/cli/upsscp/upsscp.py", "-v"]
+    @parameterized.expand(
+        [
+            ("all_contexts_accepted", "SecondaryCaptureImageStorage,CTImageStorage", 3),
+            ("some_contexts_rejected", "CTImageStorage", 0),
+        ]
+    )
+    def test_verif_storage(self, name, supported_contexts, expected_success_count):
+        # sourcery skip: merge-list-append
+        """Test the Verification and Storage SOP Classes."""
 
-        self.upsscp_started, self.process, self.stdout_thread = start_scp(command, self.test_logger)
+        # Start the Storage SCP Server
+        command = ["./tdwii_plus_examples/cli/storescp.py", "-v", "-o", self.temp_dir]
+        command.append("-s")
+        command.extend(supported_contexts.split(","))
+
+        self.storescp_started, self.process, self.stdout_thread = start_scp(command, self.test_logger)
         self.test_logger.info(f"Started process with PID: {self.process.pid}")
 
-        if not self.upsscp_started:
+        if not self.storescp_started:
             self.fail("storescp server failed to start.")
             return
 
-        # Check that the SCP is running
-        self.assertEqual(self.upspush_ncreate_scu.verify().status_category, "Success")
+        # Test Verification SOP Class
+        self.assertEqual(self.cstore_scu.verify().status_category, "Success")
 
-        # Run the test case
+        # Test Secondary Capture Storage SOP Class
         try:
-            success_count = self.upspush_ncreate_scu.create_ups_instances([self.ups_instance])
+            success_count = self.cstore_scu.store_instances(self.sc_images)
 
-            self.assertEqual(success_count, 1)
-
-            # Get the log messages
             log_messages = [record.getMessage() for record in self.memory_handler.buffer]
             self.test_logger.info("Log messages: %s", log_messages)
+
+            self.assertEqual(success_count, expected_success_count)
 
         except Exception as e:
             self.test_logger.error(e)

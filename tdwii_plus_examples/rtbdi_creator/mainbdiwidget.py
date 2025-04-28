@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (  # pylint: disable=no-name-in-module
 )
 
 from tdwii_plus_examples import tdwii_config
+from tdwii_plus_examples.cstorescu import CStoreSCU
 from tdwii_plus_examples.rtbdi_creator.rtbdi_factory import (
     create_rtbdi_from_rtion_plan,
     create_ups_from_plan_and_bdi,
@@ -26,7 +27,6 @@ from tdwii_plus_examples.rtbdi_creator.rtbdi_factory import (
     write_rtbdi,
     write_ups,
 )
-from tdwii_plus_examples.rtbdi_creator.storescu import StoreSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -69,11 +69,14 @@ class MainBDIWidget(QWidget):
         self.fraction_number = 1
         self.retrieve_ae_title = ""
         self.scheduled_datetime = datetime.now
-        self.ae_title = "TMS"  # as an SCU... maybe should use a different AE Title?
-        config_file = "rtbdi.toml"
-        # TODO: command line argument specifying a different config file
+        self.ae_title = "TMS"
+        self.config_file = "rtbdi.toml"
+        self._load_ae_config()
+
+    def _load_ae_config(self):
+        """Loads AE configuration from the TOML and JSON files."""
         try:
-            with open(config_file, "rb") as f:
+            with open(self.config_file, "rb") as f:
                 toml_dict = tomli.load(f)
             if "DEFAULT" in toml_dict:
                 default_dict = toml_dict["DEFAULT"]
@@ -88,9 +91,12 @@ class MainBDIWidget(QWidget):
                     self.plan_path = str(Path(default_dict["plan_path"]).expanduser())
                 if "ups_scp_ae_title" in default_dict:
                     self.ui.line_edit_tms_scp_ae_title.setText(default_dict["ups_scp_ae_title"])
-
             else:
                 self.logger.warning("No [DEFAULT] section in toml config file")
+
+            tdwii_config.load_ae_config()
+            self.known_ae_ipaddr = tdwii_config.known_ae_ipaddr
+            self.known_ae_port = tdwii_config.known_ae_port
 
         except OSError as config_file_error:
             self.logger.exception("Problem parsing config file: " + config_file_error)
@@ -107,14 +113,21 @@ class MainBDIWidget(QWidget):
 
     @Slot()
     def _store_plan_button_clicked(self):
-        store_scu = StoreSCU(self.ae_title, self.ui.line_edit_move_scp_ae_title.text())
+        dest_ae_title = self.ui.line_edit_move_scp_ae_title.text()
+        ip_addr, port = self._get_ae_config(dest_ae_title)
+        if ip_addr is None or port is None:
+            return
+        store_scu = CStoreSCU(
+            calling_ae_title=self.ae_title, called_ae_title=dest_ae_title, called_ip=ip_addr, called_port=port
+        )
         # always re-load.  Not performant, but safe choice.
         # a more performant approach would be to force a re-load every time a plan is selected.
         # that's not really necessary unless the plan has to be (C-)stored
         plan = load_plan(self.ui.lineedit_plan_selector.text())
         iods = list()
         iods.append(plan)
-        success = store_scu.store(iods=iods)
+        store_scu.set_contexts_from_files(iods)
+        success = store_scu.store_instances(instances=iods)
         self._command_outcome_message(success=success, command_name="C-STORE")
 
         return
@@ -153,10 +166,27 @@ class MainBDIWidget(QWidget):
         write_rtbdi(rtbdi, bdi_path)
         self.export_path = bdi_path
 
-        store_scu = StoreSCU(self.ae_title, self.ui.line_edit_move_scp_ae_title.text())
+        dest_ae_title = self.ui.line_edit_move_scp_ae_title.text()
+        ip_addr, port = self._get_ae_config(dest_ae_title)
+        if ip_addr is None or port is None:
+            return
+
+        store_scu = CStoreSCU(
+            calling_ae_title=self.ae_title, called_ae_title=dest_ae_title, called_ip=ip_addr, called_port=port
+        )
         iods = [rtbdi]
-        success = store_scu.store(iods=iods)
+        store_scu.set_contexts_from_files(iods)
+        success = store_scu.store_instances(instances=iods)
         self._command_outcome_message(success=success, command_name="C-STORE")
+
+    def _get_ae_config(self, ae_title):
+        """Retrieves AE configuration (IP and port).  Logs an error and returns None if config is missing."""
+        ip_addr = self.known_ae_ipaddr.get(ae_title)
+        port = self.known_ae_port.get(ae_title)
+        if ip_addr is None or port is None:
+            self.logger.error(f"Missing configuration for AE title: {ae_title}")
+            return None, None  # Return None for both if config is missing
+        return ip_addr, port
 
     @Slot()
     def _export_ups_button_clicked(self):
@@ -184,9 +214,11 @@ class MainBDIWidget(QWidget):
             self.logger.warning("No TMS AE Title specified, will not attempt an N-CREATE")
         else:
             dest_ae_title = tms_ae_title.strip()
-            tdwii_config.load_ae_config()
-            ip_addr = tdwii_config.known_ae_ipaddr[dest_ae_title]
-            port = tdwii_config.known_ae_port[dest_ae_title]
+            ip_addr = self.known_ae_ipaddr.get(dest_ae_title)
+            port = self.known_ae_port.get(dest_ae_title)
+            if ip_addr is None or port is None:
+                self.logger.error(f"AE title '{dest_ae_title}' not found in configuration.")
+                return
             ncreate_scu = UPSPushNCreateSCU(
                 logger=self.logger,
                 calling_ae_title=self.ae_title,

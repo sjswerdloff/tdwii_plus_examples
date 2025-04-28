@@ -24,9 +24,9 @@ from PySide6.QtWidgets import (
 )
 
 from tdwii_plus_examples import cmove_inputs, tdwii_config
+from tdwii_plus_examples.cstorescu import CStoreSCU
 from tdwii_plus_examples.nactionscu import CANCELED, COMPLETED, IN_PROGRESS, NActionSCU
 from tdwii_plus_examples.nsetscu import NSetSCU
-from tdwii_plus_examples.rtbdi_creator.storescu import StoreSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -94,15 +94,16 @@ class TDD_Widget(QWidget):
                     self.ui.machine_name_line_edit.setText(machine_name)
                 logging.warning(f"Completed Parsing of {config_file_path}")
             except Exception:
-                logging.warning("Difficulty parsing config file " f"{config_file_path}")
+                logging.warning(f"Difficulty parsing config file {config_file_path}")
+
         except OSError as config_file_error:
-            logging.exception("Problem parsing config file " f"{config_file_path}: {config_file_error}")
+            logging.exception(f"Problem parsing config file {config_file_path}: {config_file_error}")
         self.ups_dataset_dict: Dict[str, Dataset] = dict()
         try:
             if "ae_title" in default_dict and "import_staging_directory" in default_dict:
                 self._restart_scp()
             else:
-                logging.error(f"AE Title and Staging Directory missing from " f"config file {config_file_path}")
+                logging.error(f"AE Title and Staging Directory missing from config file {config_file_path}")
 
         except Exception:
             logging.error(
@@ -634,9 +635,14 @@ class TDD_Widget(QWidget):
         tx_record_ds_list = self._get_treatment_record_datasets()
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         object_store_ae_title = self.ui.qr_ae_line_edit.text()
+        ip_addr = tdwii_config.known_ae_ipaddr[object_store_ae_title]
+        port = tdwii_config.known_ae_port[object_store_ae_title]
         if len(tx_record_ds_list) > 0:
-            store_scu = StoreSCU(my_ae_title, object_store_ae_title)
-            store_scu.store(tx_record_ds_list)
+            store_scu = CStoreSCU(
+                calling_ae_title=my_ae_title, called_ae_title=object_store_ae_title, called_ip=ip_addr, called_port=port
+            )
+            store_scu.set_contexts_from_files(tx_record_ds_list)
+            store_scu.store_instances(tx_record_ds_list)
 
         # Still the need the OutputInformationSequence even if there's no treatment records
         #  The Final Update can send an *empty* OutputInformationSequence, but the sequence and element
