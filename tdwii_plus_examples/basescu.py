@@ -138,13 +138,13 @@ class BaseSCU:
             - description (str): A description of the association result.
             - accepted_sop_classes (list of UID): A list of accepted SOP Class UIDs.
         """
+
+        result = self._attempt_association(required_sop_classes)
+        return result if verbose else (result.status == "Success")
+
+    def _attempt_association(self, required_sop_classes=None):
         if (self.called_ip is None or self.called_ip == "") or self.called_port is None:
-            if verbose:
-                return self.AssociationResult(
-                    status="Error", description="Called AE parameters not set", accepted_sop_classes=[]
-                )
-            else:
-                False
+            return self.AssociationResult(status="Error", description="Called AE parameters not set", accepted_sop_classes=[])
 
         if self.called_ae_title is None:
             self.called_ae_title = "ANYSCP"
@@ -152,33 +152,26 @@ class BaseSCU:
 
         self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
         if not self.assoc.is_established:
-            if verbose:
-                return self.AssociationResult(
-                    status="Error", description="Association could not be established", accepted_sop_classes=[]
-                )
-            else:
-                return False
+            return self.AssociationResult(
+                status="Error", description="Association could not be established", accepted_sop_classes=[]
+            )
 
         self.logger.debug("Association established")
 
         # Initialize status of future requests
         self.status = False
 
-        # Check if all requested contexts were accepted
-        assoc_result = self._check_accepted_sop_classes(self.assoc)
-        if assoc_result.status:
-            if verbose:
-                return self.AssociationResult(
-                    status="Success",
-                    description="All requested SOP Classes were accepted",
-                    accepted_sop_classes=[UID(uid) for uid in assoc_result.accepted_sop_classes],
-                )
-            else:
-                return True
+        # Check if all SOP Classes of requested contexts were accepted
+        result = self._check_accepted_sop_classes(self.assoc)
+        if result.status:
+            return self.AssociationResult(
+                status="Success",
+                description="All requested SOP Classes were accepted",
+                accepted_sop_classes=[UID(uid) for uid in result.accepted_sop_classes],
+            )
         else:
             # Check if all required contexts were accepted
-            assoc_result = self._validate_sop_classes(assoc_result, required_sop_classes)
-        return assoc_result if verbose else assoc_result.status == "Success"
+            return self._validate_sop_classes(result, required_sop_classes)
 
     def _check_accepted_sop_classes(self, assoc: Association) -> AssociationResult:
         """
