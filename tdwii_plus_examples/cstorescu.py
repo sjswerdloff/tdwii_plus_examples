@@ -1,5 +1,5 @@
 from pydicom import Dataset
-from pydicom.uid import UID, ExplicitVRLittleEndian
+from pydicom.uid import ExplicitVRLittleEndian
 from pynetdicom.association import Association
 from pynetdicom.presentation import PresentationContext, StoragePresentationContexts, build_context
 from pynetdicom.status import STORAGE_SERVICE_CLASS_STATUS
@@ -101,10 +101,11 @@ class CStoreSCU(BaseSCU):
         Returns:
             int: The number of DICOM instances successfully stored.
         """
-        assoc_result = self._associate()
+        required_sop_classes = [instance.SOPClassUID for instance in instances]
+        assoc_result = self._associate(required_sop_classes=required_sop_classes, verbose=False)
         success_count = 0
 
-        if not self._handle_association_status(assoc_result):
+        if not assoc_result:
             return 0
 
         for msg_id, instance in enumerate(instances, start=0):
@@ -153,36 +154,6 @@ class CStoreSCU(BaseSCU):
 
     def is_storage_presentation_context(self, context):
         return context in storage_sop_classes
-
-    def _handle_association_status(self, assoc_result) -> bool:
-        """Handles the association status returned by the SCP.
-
-        Handles the association result and verifies that all requested
-        presentation contexts have been accepted.
-
-        Args:
-            assoc_result: The result of the association request.
-
-        Returns:
-            True if the association was successful and all requested presentation
-            contexts were accepted, False otherwise.
-        """
-        if assoc_result.status == "Error":
-            self.logger.error(f"Association failed: {assoc_result.description}")
-            return False
-        if assoc_result.status == "Warning":
-            accepted_contexts = {UID(uid): 0x00 for uid in assoc_result.accepted_sop_classes}
-            if any(accepted_contexts.get(context.abstract_syntax) != 0x00 for context in self.contexts):
-                not_accepted = [
-                    str(context.abstract_syntax)
-                    for context in self.contexts
-                    if accepted_contexts.get(context.abstract_syntax) != 0x00
-                ]
-                self.logger.warning(f"{assoc_result.description} - Not Accepted SOP Classes: {', '.join(not_accepted)}")
-                self.assoc.release()
-                self.logger.error("Association failed: Not all required presentation contexts were accepted.")
-                return False
-        return True
 
     def _send_cstore_request(self, assoc: Association, dataset: Dataset, msg_id: int = 1) -> tuple:
         """

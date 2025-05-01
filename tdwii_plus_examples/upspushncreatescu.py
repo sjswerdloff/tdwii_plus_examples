@@ -64,10 +64,10 @@ class UPSPushNCreateSCU(BaseSCU):
                 f"Some instances were ignored because their SOPClassUID did not match UnifiedProcedureStepPush. "
                 f"Total instances provided: {len(instances)}, valid instances: {len(valid_instances)}"
             )
-        assoc_result = self._associate()
+        assoc_result = self._associate(required_sop_classes=[UnifiedProcedureStepPush], verbose=False)
         success_count = 0
 
-        if not self._handle_association_status(assoc_result):
+        if not assoc_result:
             return 0
 
         for msg_id, instance in enumerate(valid_instances, start=0):
@@ -90,19 +90,6 @@ class UPSPushNCreateSCU(BaseSCU):
         self.logger.debug("Association released")
 
         return success_count
-
-    def _handle_association_status(self, assoc_result) -> bool:
-        if assoc_result.status == "Error":
-            self.logger.error(f"Association failed: {assoc_result.description}")
-            return False
-        if assoc_result.status == "Warning":
-            accepted_sop_names = [f"[{UID(uid).name}]" for uid in assoc_result.accepted_sop_classes]
-            self.logger.warning(f"{assoc_result.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
-            if "[Unified Procedure Step - Push SOP Class]" not in accepted_sop_names:
-                self.assoc.release()
-                self.logger.error(f"Association failed: {assoc_result.description}")
-                return False
-        return True
 
     def _send_upspushncreate_request(
         self,
