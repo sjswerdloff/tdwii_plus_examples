@@ -95,7 +95,7 @@ class TestBaseSCU(unittest.TestCase):
         with patch.object(self.base_scu.assoc, "is_established", new_callable=PropertyMock) as mock_is_established:
             # Test association rejection
             mock_is_established.return_value = False
-            assoc_result = self.base_scu._associate()
+            assoc_result = self.base_scu._associate(verbose=True)
             self.assertEqual(assoc_result.status, "Error")
         self.test_logger.info("Test _associate with rejection")
 
@@ -109,7 +109,7 @@ class TestBaseSCU(unittest.TestCase):
     def test_associate_ae_params_not_set(self, called_ip, called_port):
         base_scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", called_ip, called_port, "SCP_AE_TITLE")
 
-        assoc_result = base_scu._associate()
+        assoc_result = base_scu._associate(verbose=True)
         self.assertEqual(assoc_result.status, "Error")
         self.assertEqual(str(assoc_result.description), "Called AE parameters not set")
         self.test_logger.info(
@@ -122,13 +122,13 @@ class TestBaseSCU(unittest.TestCase):
             (
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1"), MagicMock(abstract_syntax="1.2.840.10008.5.1.4.34.6.2")],
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1"), MagicMock(abstract_syntax="1.2.840.10008.5.1.4.34.6.2")],
-                "Success",
+                True,
             ),
             # Test case where some contexts are not accepted
             (
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1"), MagicMock(abstract_syntax="1.2.840.10008.5.1.4.34.6.2")],
                 [MagicMock(abstract_syntax="1.2.840.10008.1.1")],
-                "Warning",
+                False,
             ),
         ]
     )
@@ -142,7 +142,7 @@ class TestBaseSCU(unittest.TestCase):
         type(assoc).accepted_contexts = PropertyMock(return_value=accepted_contexts)
 
         if expected_result == "Warning":
-            assoc_result = self.base_scu._all_contexts_accepted(assoc)
+            assoc_result = self.base_scu._check_accepted_sop_classes(assoc)
             self.assertEqual(assoc_result.status, expected_result)
             self.assertEqual(len(assoc_result.accepted_sop_classes), len(accepted_contexts))
             # Check the log messages in the memory handler
@@ -150,7 +150,7 @@ class TestBaseSCU(unittest.TestCase):
             log_messages = [record.getMessage() for record in self.memory_handler.buffer]
             self.test_logger.debug("Warning expected - log messages: %s", log_messages)
         else:
-            assoc_result = self.base_scu._all_contexts_accepted(assoc)
+            assoc_result = self.base_scu._check_accepted_sop_classes(assoc)
             self.assertEqual(assoc_result.status, expected_result)
             self.memory_handler.flush()
             log_messages = [record.getMessage() for record in self.memory_handler.buffer]

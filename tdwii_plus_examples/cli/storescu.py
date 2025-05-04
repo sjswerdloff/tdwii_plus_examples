@@ -84,7 +84,7 @@ def main():
     parser.add_argument("ip", type=str, help="IP address or hotname of called AE")
     parser.add_argument("port", type=int, help="TCP port number of called AE")
     parser.add_argument(
-        "path", metavar="path", nargs="+", help="DICOM file or directory containing SOP instances to store", type=str
+        "path", metavar="path", nargs="*", help="DICOM file or directory containing SOP instances to store", type=str
     )
     parser.add_argument("-r", "--recurse", help="recursively search the given directory", action="store_true")
     parser.add_argument("-aet", "--ae_title", type=str, default="STORESCU", help="Application Entity Title")
@@ -95,6 +95,12 @@ def main():
     parser.add_argument("-q", "--quiet", action="store_true", help="Suppress all log output")
 
     args = parser.parse_args()
+
+    if not args.echo and not args.path:
+        parser.error("Either -e/--echo or a path must be provided")
+
+    if args.echo and args.path:
+        print("Warning: Path argument is ignored when using -e/--echo option")
 
     if args.quiet:
         log_level = logging.CRITICAL
@@ -129,7 +135,7 @@ def main():
             print(f"Verification (C-ECHO) failed: {num_created_instances.status_description}")
 
     # UPS instances creation requested
-    elif args.path is not None:
+    elif args.path:
         valid_paths, invalid_paths = get_files(args.path, args.recurse)
 
         for path in invalid_paths:

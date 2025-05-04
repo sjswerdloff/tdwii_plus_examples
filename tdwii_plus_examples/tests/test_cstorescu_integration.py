@@ -99,7 +99,8 @@ class TestCStoreSCU(unittest.TestCase):
     @parameterized.expand(
         [
             ("all_contexts_accepted", "SecondaryCaptureImageStorage,CTImageStorage", 3),
-            ("some_contexts_rejected", "CTImageStorage", 0),
+            ("required_contexts_rejected", "CTImageStorage", 0),
+            ("non_required_contexts_rejected", "SecondaryCaptureImageStorage", 3),
         ]
     )
     def test_verif_storage(self, name, supported_contexts, expected_success_count):

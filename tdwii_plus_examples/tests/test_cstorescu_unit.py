@@ -30,7 +30,9 @@ class TestCStoreSCU(unittest.TestCase):
         """Test storing multiple DICOM instances."""
         # Create 2 empty instances
         ds_1 = Dataset()
+        ds_1.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.2")  # CT Image Storage SOP Class UID
         ds_2 = Dataset()
+        ds_2.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.2")  # CT Image Storage SOP Class UID
         instances = [ds_1, ds_2]
 
         # Mock the association instance
@@ -60,8 +62,10 @@ class TestCStoreSCU(unittest.TestCase):
         """Test storing multiple DICOM instances with partial success."""
         # Create 2 minimal DICOM instances
         ds_1 = Dataset()
+        ds_1.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.2")  # CT Image Storage SOP Class UID
         ds_1.SOPInstanceUID = generate_uid()
         ds_2 = Dataset()
+        ds_2.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.2")  # CT Image Storage SOP Class UID
         ds_2.SOPInstanceUID = generate_uid()
         instances = [ds_1, ds_2]
 
@@ -106,7 +110,7 @@ class TestCStoreSCU(unittest.TestCase):
 
         # Mock the association result to simulate an association failure
         mock_assoc_result = mock.Mock()
-        mock_assoc_result.status = "Error"  # Set status to "Error"
+        mock_assoc_result = False
         mock_associate.return_value = mock_assoc_result
 
         # Call the method
@@ -116,37 +120,38 @@ class TestCStoreSCU(unittest.TestCase):
         self.assertEqual(success_count, 0)
 
     @mock.patch("tdwii_plus_examples.cstorescu.CStoreSCU._associate")
-    def test_store_instances_association_warning(self, mock_associate):
-        """Test storing instances with association failure."""
-        # Create 1 'valid' DICOM instance
-        ds = Dataset()
-        ds.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.2")  # CT Image Storage SOP Class UID
-        ds.SOPInstanceUID = generate_uid()
-        instances = [ds]
+    def test_store_instances_required_sop_classes(self, mock_associate):
+        """Test that required SOP classes are correctly extracted from instances."""
+        # Create instances with different SOP Class UIDs
+        ds1 = Dataset()
+        ds1.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.2")  # CT Image Storage
+        ds2 = Dataset()
+        ds2.SOPClassUID = UID("1.2.840.10008.5.1.4.1.1.4")  # MR Image Storage
+        instances = [ds1, ds2]
 
-        # Mock the contexts attribute
-        self.cstore_scu.contexts = [
-            build_context("1.2.840.10008.1.1"),
-            build_context("1.2.840.10008.5.1.4.1.1.2"),
-        ]  # Verification and CT Image Storage
-        # Mock the association directly on the CStoreSCU instance
-        self.cstore_scu.assoc = mock.Mock()
-        # Mock the release method
-        self.cstore_scu.assoc.release = mock.Mock()
-
-        # Mock the association result to simulate an association not supporting all requested contexts
+        # Mock the association result
         mock_assoc_result = mock.Mock()
-        mock_assoc_result.status = "Warning"
-        mock_assoc_result.accepted_sop_classes = ["1.2.840.10008.1.1"]
-
-        # Mock _associate to return the mock association result within a tuple
+        mock_assoc_result.status = True  # Assume successful association for this test
+        mock_assoc_result.accepted_sop_classes = [ds1.SOPClassUID, ds2.SOPClassUID]  # Mock accepted SOP classes
         mock_associate.return_value = mock_assoc_result
 
-        # Call the method
-        success_count = self.cstore_scu.store_instances(instances)
+        # Mock the association and release method
+        self.cstore_scu.assoc = mock.Mock()
+        self.cstore_scu.assoc.release = mock.Mock()
 
-        # Assert storage failed
-        self.assertEqual(success_count, 0)
+        # Mock the association, release, and send_c_store methods
+        self.cstore_scu.assoc = mock.Mock()
+        self.cstore_scu.assoc.release = mock.Mock()
+        status_dataset = Dataset()
+        status_dataset.Status = 0x0000  # Success status
+        self.cstore_scu.assoc.send_c_store.return_value = status_dataset
+
+        # Call the method
+        self.cstore_scu.store_instances(instances)
+
+        # Assert that _associate was called with the correct required_sop_classes
+        expected_required_sop_classes = [ds1.SOPClassUID, ds2.SOPClassUID]
+        mock_associate.assert_called_once_with(required_sop_classes=expected_required_sop_classes, verbose=False)
 
     def test_set_contexts_valid(self):
         """Test set_contexts."""

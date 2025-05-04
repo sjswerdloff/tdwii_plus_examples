@@ -12,16 +12,21 @@ from pynetdicom.status import GENERAL_STATUS, code_to_category
 
 class BaseSCU:
     """
-    The BaseSCU class is a base class for DICOM Service Class Providers (SCUs).
+    The BaseSCU class is a base class for DICOM Service Class Users (SCUs).
 
     This class provides basic functionality for creating and managing
     a DICOM Service Class Provider (SCU) including setting up the
     Application Entity (AE), establishing and Association with an SCP and
     handling incoming responses from SCP.
+    It also implements the Verification SOP Class SCU.
 
     Usage:
-        To use the BaseSCU class, create a subclass and override
-        the [_add_contexts] method to add requested presentation contexts.
+        To use the BaseSCU class, create a subclass then,
+        override:
+        - [_add_contexts] method to add requested presentation contexts.
+        - [_get_status_description] method to add response status codes.
+        use:
+        - [_associate] method to implement Service primitives requests
 
     Attributes:
         ae_title (str): The title of the Application Entity (AE)
@@ -30,16 +35,18 @@ class BaseSCU:
         logger(logging.Logger): A logger instance
 
     Methods:
-        _add_requested_contexts(self)
-            Adds presentation contexts to the SCU instance.
-        _associate(self)
-            Open an Association of the SCU instance to an SCP.
-        _handle_response(self)
-            Handle the response of the request sent by the SCU.
-        all_contexts_accepted(self, assoc)
-            Check if all requested presentation contexts were accepted.
+        _add_requested_context()
+            Adds the Verification SOP Class presentation context.
+            Should be overridden by subclasses.
+        _associate()
+            Establishes association with remote AE.
+        _get_status_description()
+            Retrieves the description for a given status code.
+            Should be overridden by subclasses.
+        set_called_ae()
+            Sets the called AE parameters.
         verify()
-            Send a Verification (C-ECHO) request from the SCU
+            Sends a verification request.
     """
 
     def __init__(
@@ -51,10 +58,11 @@ class BaseSCU:
         called_ae_title: str = None,
     ):
         """
-        Initializes a new instance of the Base SCU AE class.
-        This method sets up the AE with the provided parameters
-        and adds the requested presentation context to negotiate
-        the UPS Push SOP Class.
+        Initializes a BaseSCU instance.
+
+        This method sets up the AE and calls the method _add_requested_context
+        which is meant to be overriden by subclasses.
+        BaseSCU adds the Verification SOP Class presentation context.
 
         Parameters
         ----------
@@ -64,8 +72,8 @@ class BaseSCU:
             The IP address of the called AE.
         called_port : int
             The port number of the called AE.
-        called_ae_title : str
-            The AE title of the called AE.
+        called_ae_title : str, optional
+            The AE title of the called AE. If None, "ANY-SCP" is used.
         calling_ae_title : str
             The AE title of the calling AE.
         """
@@ -103,11 +111,11 @@ class BaseSCU:
 
     def _add_requested_context(self):
         """
-        Adds the DICOM UPS Push SOP Class presentation context to the AE.
+        Adds the DICOM Verification SOP Class presentation context to the AE.
         Default transfer syntaxes are included.
 
-        This method may be overridden in derived classes if another SOP
-        Class needs to be negotiated.
+        Derived classes *must* override this method to add the presentation
+        contexts for the specific SOP Classes they support.
         """
         self.ae.add_requested_context(Verification)
         self.logger.debug(f"Verification Presentation context added: \n {self.ae.requested_contexts[0]}")
@@ -115,60 +123,113 @@ class BaseSCU:
     # Create a named tuple to hold the result of the Association
     AssociationResult = namedtuple("AssociationResult", ["status", "description", "accepted_sop_classes"])
 
-    def _associate(self):
+    def _associate(self, required_sop_classes=None, verbose: bool = True):
         """
-        Establish an association with the remote AE and check contexts.
+        Establishes an association with the remote AE.
+
+        Returns an AssociationResult named tuple containing the status, accepted SOP classes, and a description.
+        The status is "Success" if all requested presentation contexts are accepted, "Warning" if only some are
+        accepted and "Error" if the association fails.
 
         Returns:
-            AssociationResult: A named tuple containing the status, accepted SOP classes, and description.
+            An AssociationResult namedtuple with the following fields:
+
+            - status (str): The status of the association ("Success", "Warning", or "Error").
+            - description (str): A description of the association result.
+            - accepted_sop_classes (list of UID): A list of accepted SOP Class UIDs.
         """
+
+        result = self._attempt_association(required_sop_classes)
+        return result if verbose else (result.status == "Success")
+
+    def _attempt_association(self, required_sop_classes=None):
         if (self.called_ip is None or self.called_ip == "") or self.called_port is None:
             return self.AssociationResult(status="Error", description="Called AE parameters not set", accepted_sop_classes=[])
+
+        if self.called_ae_title is None:
+            self.called_ae_title = "ANYSCP"
+            self.logger.warning(f"Using default Called Application Entity Title: {self.called_ae_title}")
+
+        self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
+        if not self.assoc.is_established:
+            return self.AssociationResult(
+                status="Error", description="Association could not be established", accepted_sop_classes=[]
+            )
+
+        self.logger.debug("Association established")
+
+        # Initialize status of future requests
+        self.status = False
+
+        # Check if all SOP Classes of requested contexts were accepted
+        result = self._check_accepted_sop_classes(self.assoc)
+        if result.status:
+            return self.AssociationResult(
+                status="Success",
+                description="All requested SOP Classes were accepted",
+                accepted_sop_classes=[UID(uid) for uid in result.accepted_sop_classes],
+            )
         else:
-            if self.called_ae_title is None:
-                self.called_ae_title = "ANYSCP"
-                self.logger.warning(f"Using default Called Application Entity Title: {self.called_ae_title}")
+            # Check if all required contexts were accepted
+            return self._validate_sop_classes(result, required_sop_classes)
 
-            self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
-            if not self.assoc.is_established:
-                return self.AssociationResult(
-                    status="Error", description="Association could not be established", accepted_sop_classes=[]
-                )
-            self.logger.debug("Association established")
-
-            # Initialize status of future requests
-            self.status = False
-
-            # Check if all requested contexts were accepted
-            return self._all_contexts_accepted(self.assoc)
-
-    def _all_contexts_accepted(self, assoc: Association) -> AssociationResult:
+    def _check_accepted_sop_classes(self, assoc: Association) -> AssociationResult:
         """
-        Check if all requested presentation contexts were accepted.
+        Check if all requested DICOM SOP classes are accepted.
+
+        Returns an AssociationResult indicating "Success" if all SOP classes are accepted
+        and "Warning" if only some are accepted.
 
         Args:
-            assoc (Association): The established association object.
+            assoc (pynetdicom.association.Association): The established association.
 
         Returns:
-            AssociationResult: A named tuple containing the status, accepted SOP classes, and description.
+            An AssociationResult namedtuple.
         """
         requested_abstract_syntaxes = {ctx.abstract_syntax for ctx in self.ae.requested_contexts}
         accepted_abstract_syntaxes = {ctx.abstract_syntax for ctx in assoc.accepted_contexts}
 
-        refused_abstract_syntaxes = requested_abstract_syntaxes - accepted_abstract_syntaxes
+        rejected_abstract_syntaxes = requested_abstract_syntaxes - accepted_abstract_syntaxes
 
-        if refused_abstract_syntaxes:
+        if rejected_abstract_syntaxes:
             accepted_sop_classes = [UID(uid) for uid in accepted_abstract_syntaxes]
-            description = "The following SOP classes were not accepted: " + ", ".join(
-                str(uid) for uid in refused_abstract_syntaxes
+            self.logger.warning(
+                "The following SOP Classes were rejected: " + ", ".join(str(uid) for uid in rejected_abstract_syntaxes)
             )
-            return self.AssociationResult(status="Warning", description=description, accepted_sop_classes=accepted_sop_classes)
+            return self.AssociationResult(status=False, description="", accepted_sop_classes=accepted_sop_classes)
 
         return self.AssociationResult(
-            status="Success",
-            description="All requested presentation contexts were accepted",
+            status=True,
+            description="",
             accepted_sop_classes=[UID(uid) for uid in accepted_abstract_syntaxes],
         )
+
+    def _validate_sop_classes(self, assoc_result, required_sop_classes=None):
+        """Validates if all required SOP classes are accepted.
+
+        Args:
+            assoc_result (AssociationResult): The association result.
+            required_sop_classes (list, optional): A list of required SOP Class UIDs.
+
+        Returns:
+            An AssociationResult namedtuple.
+        """
+        accepted_sop_classes = {UID(uid) for uid in assoc_result.accepted_sop_classes}
+
+        # Use a set for efficient check
+        if required_sop_classes:
+            required_sop_classes = {UID(uid) for uid in required_sop_classes}
+        else:
+            required_sop_classes = {context.abstract_syntax for context in self.ae.requested_contexts}
+
+        if not required_sop_classes.issubset(accepted_sop_classes):
+            missing_sop_classes = list(required_sop_classes - accepted_sop_classes)
+            description = f"The following required SOP classes were rejected: {', '.join(map(str, missing_sop_classes))}"
+            self.logger.error(description)
+            self.assoc.release()
+            return self.AssociationResult("Error", description, list(accepted_sop_classes))
+
+        return self.AssociationResult("Success", "All required SOP classes were accepted", list(accepted_sop_classes))
 
     # Create a named tuple to hold the response status and dataset
     PrimitiveResult = namedtuple("PrimitiveResult", ["status_category", "status_code", "status_description", "dataset"])
@@ -220,9 +281,37 @@ class BaseSCU:
         return self.PrimitiveResult(category, status_code, description, rsp_ds)
 
     def _get_status_description(self, status_code):
+        """
+        Retrieves the description for a given status code.
+
+        This method retrieves the description associated with a given status
+        code from the GENERAL_STATUS dictionary. If the status code is not
+        found, it returns "Unknown".  This method is intended to be overridden
+        by subclasses to provide more specific status descriptions.
+
+        Args:
+            status_code (int): The status code to look up.
+
+        Returns:
+            str: The description of the status code.
+        """
         return GENERAL_STATUS.get(status_code, ("Unknown", "Unknown status code"))[1]
 
     def set_called_ae(self, called_ip: str, called_port: int, called_ae_title: str = None):
+        """
+        Sets the called AE parameters.
+
+        This method allows setting the called AE parameters (IP, port, and
+        AE title) after the BaseSCU object has been initialized.  It's
+        useful when the called AE information is not available during
+        object creation.
+
+        Args:
+            called_ip (str): The IP address of the called AE.
+            called_port (int): The port number of the called AE.
+            called_ae_title (str, optional): The AE title of the called AE.
+                Defaults to "ANY-SCP".
+        """
         self.called_ip = called_ip
         self.called_port = called_port
         if called_ae_title is None or called_ae_title == "":
@@ -245,7 +334,7 @@ class BaseSCU:
         PrimitiveResult:
             A named tuple containing the status category, status code, status description, and dataset.
         """
-        assoc_result = self._associate()
+        assoc_result = self._associate(required_sop_classes=[Verification])
 
         if assoc_result.status == "Error":
             return self.PrimitiveResult("AssocFailure", 0xD000, assoc_result.description, None)

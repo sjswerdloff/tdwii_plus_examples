@@ -81,14 +81,14 @@ class PPVS_SubscriberWidget(QWidget):
                     self.ui.machine_name_line_edit.setText(machine_name)
                 logging.warning(f"Completed Parsing of {config_file_path}")
             except Exception:
-                logging.warning("Difficulty parsing config file " f"{config_file_path}")
+                logging.warning(f"Difficulty parsing config file {config_file_path}")
         except OSError as config_file_error:
-            logging.exception("Problem parsing config file " f"{config_file_path}: {config_file_error}")
+            logging.exception(f"Problem parsing config file {config_file_path}: {config_file_error}")
 
         if "ae_title" in default_dict and "import_staging_directory" in default_dict:
             self._restart_scp()
         else:
-            logging.error(f"AE Title and Staging Directory missing from " f"config file {config_file_path}")
+            logging.error(f"AE Title and Staging Directory missing from config file {config_file_path}")
 
     @Slot()
     def _import_staging_dir_clicked(self):
@@ -343,9 +343,10 @@ class PPVS_SubscriberWidget(QWidget):
         if result.status_category != "Success":
             status = False
             logging.error("Error subscribing to UPS: " + result.status_description)
-        if result.status_category == "Success" and self.watch_scu is None:
+        if result.status_category == "Success":
             status = True
-            self.watch_scu = watch_scu
+            if self.watch_scu is None:
+                self.watch_scu = watch_scu
 
         return status
 
