@@ -28,7 +28,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         # Mock association result
         mock_assoc_result = mock.Mock()
         mock_assoc_result.status = "Success"
-        mock_associate.return_value = mock_assoc_result
+        mock_associate.return_value = True, mock_assoc_result
 
         # Mock association object and send_n_set
         mock_assoc_obj = mock.Mock()
@@ -70,7 +70,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_assoc_result = mock.Mock()
         mock_assoc_result.status = "Error"
         mock_assoc_result.description = "Association failed"
-        mock_associate.return_value = mock_assoc_result
+        mock_associate.return_value = False, mock_assoc_result
 
         sop_instance_uid = "1.2.3.4.5"
         modification_list = Dataset()
@@ -90,7 +90,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_assoc_result.status = "Warning"
         mock_assoc_result.description = "Association warning"
         mock_assoc_result.accepted_sop_classes = ["1.2.840.10008.5.1.4.34.5"]
-        mock_associate.return_value = mock_assoc_result
+        mock_associate.return_value = True, mock_assoc_result
 
         # Mock association object and send_n_set
         mock_assoc_obj = mock.Mock()
