@@ -111,5 +111,6 @@ def generate_ups() -> Dataset:
     ds.ProcedureStepLabel = "Test UPS"
     ds.ScheduledProcedureStepStartDateTime = "20250101120000"
     ds.ScheduledProcedureStepPriority = "MEDIUM"
+    ds.ProcedureStepProgressInformationSequence = []
 
     return ds

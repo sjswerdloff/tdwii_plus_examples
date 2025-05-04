@@ -49,8 +49,10 @@ def start_scp(command: list[str], logger, timeout: float = 1.0, success_message=
     stdout_lines = []
     process_started_flag = [False]
     stdout_thread = threading.Thread(target=_read_stdout, args=(process, stdout_lines, process_started_flag, success_message))
+    stdout_thread.output = None  # Will be set after join
     stdout_thread.start()
     stdout_thread.join(timeout=timeout)
+    stdout_thread.output = "\n".join(stdout_lines)
 
     if not process_started_flag[0]:
         logger.error("Process did not start successfully.")
