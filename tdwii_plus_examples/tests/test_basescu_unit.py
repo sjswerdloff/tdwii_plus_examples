@@ -95,8 +95,8 @@ class TestBaseSCU(unittest.TestCase):
         with patch.object(self.base_scu.assoc, "is_established", new_callable=PropertyMock) as mock_is_established:
             # Test association rejection
             mock_is_established.return_value = False
-            assoc_result = self.base_scu._associate(verbose=True)
-            self.assertEqual(assoc_result.status, "Error")
+            success, details = self.base_scu._associate()
+            self.assertEqual(details.status, "Error")
         self.test_logger.info("Test _associate with rejection")
 
     @parameterized.expand(
@@ -109,9 +109,9 @@ class TestBaseSCU(unittest.TestCase):
     def test_associate_ae_params_not_set(self, called_ip, called_port):
         base_scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", called_ip, called_port, "SCP_AE_TITLE")
 
-        assoc_result = base_scu._associate(verbose=True)
-        self.assertEqual(assoc_result.status, "Error")
-        self.assertEqual(str(assoc_result.description), "Called AE parameters not set")
+        success, details = base_scu._associate()
+        self.assertEqual(details.status, "Error")
+        self.assertEqual(str(details.description), "Called AE parameters not set")
         self.test_logger.info(
             f"Test _associate with called AE parameters not set with called_ip={called_ip}, called_port={called_port}"
         )
@@ -271,6 +271,14 @@ class TestBaseSCU(unittest.TestCase):
     @patch("tdwii_plus_examples.basescu.BaseSCU._handle_response")
     def test_verify_success(self, mock_handle_response, mock_associate):
         # Mock the association and response handling
+        mock_associate.return_value = (
+            True,
+            BaseSCU.AssociationResult(
+                status="Success",
+                description="All requested SOP Classes were accepted",
+                accepted_sop_classes=[UID("1.2.840.10008.1.1")],
+            ),
+        )
         mock_assoc_instance = MagicMock()
         mock_assoc_instance.send_c_echo.return_value = MagicMock()
         mock_assoc_instance.release.return_value = None
@@ -317,10 +325,13 @@ class TestBaseSCU(unittest.TestCase):
         # Patch the _associate method with the appropriate result
         with patch(
             "tdwii_plus_examples.basescu.BaseSCU._associate",
-            return_value=BaseSCU.AssociationResult(
-                status="Warning",
-                description="Some SOP classes were refused",
-                accepted_sop_classes=accepted_sop_classes,
+            return_value=(
+                False,
+                BaseSCU.AssociationResult(
+                    status="Warning",
+                    description="Some SOP classes were refused",
+                    accepted_sop_classes=accepted_sop_classes,
+                ),
             ),
         ) as mock_associate:
             # Call the verify method

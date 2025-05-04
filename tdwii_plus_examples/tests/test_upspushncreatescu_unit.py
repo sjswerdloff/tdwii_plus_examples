@@ -4,6 +4,7 @@ from unittest import mock
 
 from pydicom import Dataset
 from pydicom.uid import UID, generate_uid
+from pynetdicom.sop_class import UnifiedProcedureStepPush
 
 from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
 
@@ -29,10 +30,10 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         """Test creating multiple valid UPS instances."""
         # Create 2 'valid' UPS instances
         ds_1 = Dataset()
-        ds_1.SOPClassUID = UID("1.2.840.10008.5.1.4.34.6.1")  # UPS Push SOP Class UID
+        ds_1.SOPClassUID = UnifiedProcedureStepPush
         ds_1.SOPInstanceUID = generate_uid()
         ds_2 = Dataset()
-        ds_2.SOPClassUID = UID("1.2.840.10008.5.1.4.34.6.1")  # UPS Push SOP Class UID
+        ds_2.SOPClassUID = UnifiedProcedureStepPush
         ds_2.SOPInstanceUID = generate_uid()
         instances = [ds_1, ds_2]
 
@@ -43,7 +44,7 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         # Mock the send_n_create method to return a success status and an empty dataset.
         mock_assoc_instance.send_n_create.return_value = (Dataset(), Dataset())
         # Mock _associate to return the mock association instance, preventing a real association.
-        mock_associate.return_value = mock_assoc_instance
+        mock_associate.return_value = True, mock_assoc_instance
         # Assign the mock association instance to the SCU's assoc attribute.
         self.upspush_ncreate_scu.assoc = mock_assoc_instance
         # Mock the _handle_response method to return a success status.
@@ -78,7 +79,7 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         """Test creating UPS instances with association failure."""
         # Create 1 'valid' UPS instance
         ds = Dataset()
-        ds.SOPClassUID = UID("1.2.840.10008.5.1.4.34.6.1")  # UPS Push SOP Class UID
+        ds.SOPClassUID = UnifiedProcedureStepPush
         ds.SOPInstanceUID = generate_uid()
         instances = [ds]
 
@@ -87,7 +88,7 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         # Mock the release method.
         mock_assoc_instance.release = mock.Mock()
         # Mock _associate to return the mock association instance, preventing a real association.
-        mock_associate.return_value = mock_assoc_instance
+        mock_associate.return_value = False, mock_assoc_instance
         # Set the status to "Error" to simulate an association failure.
         mock_assoc_instance.status = "Error"
 

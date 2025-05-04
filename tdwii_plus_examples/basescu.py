@@ -123,24 +123,17 @@ class BaseSCU:
     # Create a named tuple to hold the result of the Association
     AssociationResult = namedtuple("AssociationResult", ["status", "description", "accepted_sop_classes"])
 
-    def _associate(self, required_sop_classes=None, verbose: bool = True):
+    def _associate(self, required_sop_classes=None):
         """
         Establishes an association with the remote AE.
 
-        Returns an AssociationResult named tuple containing the status, accepted SOP classes, and a description.
-        The status is "Success" if all requested presentation contexts are accepted, "Warning" if only some are
-        accepted and "Error" if the association fails.
-
         Returns:
-            An AssociationResult namedtuple with the following fields:
-
-            - status (str): The status of the association ("Success", "Warning", or "Error").
-            - description (str): A description of the association result.
-            - accepted_sop_classes (list of UID): A list of accepted SOP Class UIDs.
+            tuple: (success: bool, result: AssociationResult)
+                - success (bool): True if association status is "Success", False otherwise.
+                - result (AssociationResult): The association result namedtuple.
         """
-
         result = self._attempt_association(required_sop_classes)
-        return result if verbose else (result.status == "Success")
+        return (result.status == "Success"), result
 
     def _attempt_association(self, required_sop_classes=None):
         if (self.called_ip is None or self.called_ip == "") or self.called_port is None:
@@ -334,17 +327,17 @@ class BaseSCU:
         PrimitiveResult:
             A named tuple containing the status category, status code, status description, and dataset.
         """
-        assoc_result = self._associate(required_sop_classes=[Verification])
+        success, details = self._associate(required_sop_classes=[Verification])
 
-        if assoc_result.status == "Error":
-            return self.PrimitiveResult("AssocFailure", 0xD000, assoc_result.description, None)
+        if details.status == "Error":
+            return self.PrimitiveResult("AssocFailure", 0xD000, details.description, None)
 
-        if assoc_result.status == "Warning":
-            accepted_sop_names = [f"[{UID(uid).name}]" for uid in assoc_result.accepted_sop_classes]
-            self.logger.warning(f"{assoc_result.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
+        if details.status == "Warning":
+            accepted_sop_names = [f"[{UID(uid).name}]" for uid in details.accepted_sop_classes]
+            self.logger.warning(f"{details.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
             if "[Verification SOP Class]" not in accepted_sop_names:
                 self.assoc.release()
-                return self.PrimitiveResult("AssocFailure", 0xD001, assoc_result.description, None)
+                return self.PrimitiveResult("AssocFailure", 0xD001, details.description, None)
 
         result = self._handle_response(self.assoc.send_c_echo(), None)
 

@@ -102,10 +102,10 @@ class CStoreSCU(BaseSCU):
             int: The number of DICOM instances successfully stored.
         """
         required_sop_classes = [instance.SOPClassUID for instance in instances]
-        assoc_result = self._associate(required_sop_classes=required_sop_classes, verbose=False)
+        success, _ = self._associate(required_sop_classes=required_sop_classes)
         success_count = 0
 
-        if not assoc_result:
+        if not success:
             return 0
 
         for msg_id, instance in enumerate(instances, start=0):

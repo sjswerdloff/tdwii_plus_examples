@@ -27,6 +27,7 @@ Options:
 
 import argparse
 import logging
+import sys
 
 from tdwii_plus_examples.upspullnactionscu import UPSPullNActionSCU
 
@@ -100,6 +101,7 @@ def main():
             print("Verification (C-ECHO) successful")
         else:
             print(f"Verification (C-ECHO) failed: {result.status_description}")
+            sys.exit(1)
 
     # UPS instances state change requested
     elif args.ups_uid is not None:
@@ -120,8 +122,11 @@ def main():
 
         if result:
             print(f"Change UPS State to {args.state} successful")
+            if args.state == "IN PROGRESS":
+                print(f"Transaction UID: {result}")
         else:
             print("Change UPS State failed")
+            sys.exit(1)
 
 
 if __name__ == "__main__":

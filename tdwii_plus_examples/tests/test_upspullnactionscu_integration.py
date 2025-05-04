@@ -55,11 +55,6 @@ class TestUPSPullNActionSCUIntegration(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # Remove the temporary directory and its contents
-        files_in_temp_dir = os.listdir(cls.temp_dir)
-        shutil.rmtree(cls.temp_dir)
-        cls.test_logger.info(f"Removed the temp directory: {cls.temp_dir} and its contents: {files_in_temp_dir}")
-
         # Try to gracefully terminate the process.
         cls.test_logger.info(f"Terminating process with PID: {cls.process.pid}")
         try:
@@ -90,6 +85,11 @@ class TestUPSPullNActionSCUIntegration(unittest.TestCase):
             # Ensure the stdout thread has finished
             if cls.stdout_thread:
                 cls.stdout_thread.join(timeout=1.0)
+
+        # Remove the temporary directory and its contents
+        files_in_temp_dir = os.listdir(cls.temp_dir)
+        shutil.rmtree(cls.temp_dir)
+        cls.test_logger.info(f"Removed the temp directory: {cls.temp_dir} and its contents: {files_in_temp_dir}")
 
         # Remove and close the memory handler for scu and test loggers
         for logger, handler in [(cls.scu_logger, cls.memory_handler), (cls.test_logger, cls.stream_handler)]:

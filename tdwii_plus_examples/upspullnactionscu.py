@@ -3,10 +3,8 @@ from pydicom.uid import UID, generate_uid
 from pynetdicom.sop_class import UnifiedProcedureStepPull, UnifiedProcedureStepPush
 from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
+from tdwii_plus_examples._ups_action_type_id import UPSActionTypeID
 from tdwii_plus_examples.basescu import BaseSCU
-
-# Action Type ID constants
-ACTION_TYPE_ID_CHANGEUPSSTATE = 1
 
 # UPS Procedure Step State constants
 SCHEDULED: str = "SCHEDULED"
@@ -194,20 +192,20 @@ class UPSPullNActionSCU(BaseSCU):
             status description, and response dataset.
         """
         # Establish association with the SCP
-        assoc_result = self._associate(required_sop_classes=[UnifiedProcedureStepPull])
+        success, details = self._associate(required_sop_classes=[UnifiedProcedureStepPull])
 
-        if assoc_result.status == "Error":
-            return self.PrimitiveResult("AssocFailure", 0xD000, assoc_result.description, None)
+        if details.status == "Error":
+            return self.PrimitiveResult("AssocFailure", 0xD000, details.description, None)
 
-        if assoc_result.status == "Warning":
-            accepted_sop_names = [f"[{UID(uid).name}]" for uid in assoc_result.accepted_sop_classes]
-            self.logger.warning(f"{assoc_result.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
+        if details.status == "Warning":
+            accepted_sop_names = [f"[{UID(uid).name}]" for uid in details.accepted_sop_classes]
+            self.logger.warning(f"{details.description} - Accepted SOP Classes: {', '.join(accepted_sop_names)}")
 
         # Send the N-ACTION request
         self.logger.debug(f"Sending N-ACTION request for SOP Instance UID: {sop_instance_uid}")
         rsp_status, action_reply = self.assoc.send_n_action(
             dataset=action_info,
-            action_type=ACTION_TYPE_ID_CHANGEUPSSTATE,
+            action_type=UPSActionTypeID.CHANGE_UPS_STATE.value,
             class_uid=UnifiedProcedureStepPull,
             instance_uid=sop_instance_uid,
             meta_uid=UnifiedProcedureStepPush,

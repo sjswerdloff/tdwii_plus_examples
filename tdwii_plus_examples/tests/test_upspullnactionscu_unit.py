@@ -41,7 +41,7 @@ class TestUPSPullNActionSCU(unittest.TestCase):
         # Mock the send_n_action method to return a tuple of (status, dataset)
         mock_assoc_instance.send_n_action.return_value = (Dataset(), Dataset())
         # Mock _associate to return the mock association instance
-        mock_associate.return_value = mock_assoc_instance
+        mock_associate.return_value = True, mock_assoc_instance
         # Assign the mock association instance to the SCU's assoc attribute
         self.scu.assoc = mock_assoc_instance
         # Mock the _handle_response method return value status
@@ -82,7 +82,7 @@ class TestUPSPullNActionSCU(unittest.TestCase):
         mock_assoc_instance = mock.Mock()
         mock_assoc_instance.release = mock.Mock()
         mock_assoc_instance.send_n_action.return_value = (Dataset(), Dataset())
-        mock_associate.return_value = mock_assoc_instance
+        mock_associate.return_value = True, mock_assoc_instance
         self.scu.assoc = mock_assoc_instance
         mock_handle_response.return_value = mock.Mock(status_category=status_category)
 
@@ -112,7 +112,7 @@ class TestUPSPullNActionSCU(unittest.TestCase):
         mock_assoc_instance = mock.Mock()
         mock_assoc_instance.release = mock.Mock()
         mock_assoc_instance.send_n_action.return_value = (Dataset(), Dataset())
-        mock_associate.return_value = mock_assoc_instance
+        mock_associate.return_value = True, mock_assoc_instance
         self.scu.assoc = mock_assoc_instance
         mock_handle_response.return_value = mock.Mock(status_category=status_category)
 
@@ -154,7 +154,7 @@ class TestUPSPullNActionSCU(unittest.TestCase):
             mock_assoc_instance = mock.Mock()
             mock_assoc_instance.release = mock.Mock()
             mock_assoc_instance.send_n_action.return_value = (Dataset(), Dataset())
-            mock_associate.return_value = mock_assoc_instance
+            mock_associate.return_value = True, mock_assoc_instance
             self.scu.assoc = mock_assoc_instance
             mock_handle_response.return_value = mock.Mock(status_category="Success")
 

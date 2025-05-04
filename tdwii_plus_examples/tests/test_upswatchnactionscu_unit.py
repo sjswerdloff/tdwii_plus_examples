@@ -159,14 +159,17 @@ class TestUPSWatchNActionSCU(unittest.TestCase):
         # Patch the _associate method with the appropriate result
         with patch(
             "tdwii_plus_examples.basescu.BaseSCU._associate",
-            return_value=UPSWatchNActionSCU.AssociationResult(
-                status=assoc_status,
-                description="Some SOP classes were refused"
-                if assoc_status == "Warning"
-                else "Association error"
-                if assoc_status == "Error"
-                else "Association successful",
-                accepted_sop_classes=accepted_sop_classes,
+            return_value=(
+                assoc_status == "Success",
+                UPSWatchNActionSCU.AssociationResult(
+                    status=assoc_status,
+                    description="Some SOP classes were refused"
+                    if assoc_status == "Warning"
+                    else "Association error"
+                    if assoc_status == "Error"
+                    else "Association successful",
+                    accepted_sop_classes=accepted_sop_classes,
+                ),
             ),
         ) as mock_associate:
             # Call the _toggle_subscription method
