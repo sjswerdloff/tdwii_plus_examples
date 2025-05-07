@@ -1065,7 +1065,12 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     # Only Scheduled Station Name is relevant for assignment to TDD in TDW-II
     # As the SCP may choose to not send duplicate messages to an AE, only UPS State Report events
     # could maybe be sent and properly documented in conformance statement
-    if "ScheduledStationNameCodeSequence" in ds:
+    # TODO: Send both UPS State Report and UPS Assigned notification when UPS Assigned is required
+    if (
+        "ScheduledStationNameCodeSequence" in ds
+        and isinstance(ds.ScheduledStationNameCodeSequence, (list, tuple))
+        and len(ds.ScheduledStationNameCodeSequence) > 0
+    ):
         event_type = 5
         event_info.ScheduledStationNameCodeSequence = ds.ScheduledStationNameCodeSequence
         if "ScheduledHumanPerformersSequence" in ds:

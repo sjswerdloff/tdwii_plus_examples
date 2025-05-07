@@ -91,11 +91,11 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         try:
             success_count = self.upspush_ncreate_scu.create_ups_instances([self.ups_instance])
 
-            self.assertEqual(success_count, 1)
-
             # Get the log messages
             log_messages = [record.getMessage() for record in self.memory_handler.buffer]
             self.test_logger.info("Log messages: %s", log_messages)
+
+            self.assertEqual(success_count, 1)
 
         except Exception as e:
             self.test_logger.error(e)
