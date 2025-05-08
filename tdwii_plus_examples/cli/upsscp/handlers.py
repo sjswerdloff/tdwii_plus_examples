@@ -3,6 +3,7 @@
 import copy
 import logging
 import os
+from datetime import datetime
 
 # from io import BytesIO
 from pathlib import Path
@@ -756,6 +757,9 @@ def handle_nset(
     # also need to validate the content and reject if it's not DICOM conformant and IHE-RO
     # TDW-II profile adherent
     ds_from_request = decode(event.request.ModificationList, True, True)
+    # Add the update of Scheduled Procedure Step Modification DateTime
+    ds_from_request.ScheduledProcedureStepModificationDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
+
     deep_copy_of_request = copy.deepcopy(ds_from_request)
     model = None
     try:
@@ -998,6 +1002,9 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     #  Worklist Label present and assign default value if empty
     #  Scheduled Processing Parameters Sequence present
     # ...
+
+    # Add the Scheduled Procedure Step Modification DateTime
+    ds.ScheduledProcedureStepModificationDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
 
     # Add the file meta information elements - must be before adding to DB
     #   ds.file_meta = event.file_meta

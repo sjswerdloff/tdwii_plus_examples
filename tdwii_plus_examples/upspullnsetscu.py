@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from pydicom import Dataset
 from pydicom.uid import UID
 from pynetdicom.sop_class import UnifiedProcedureStepPull, UnifiedProcedureStepPush
 from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
+from tdwii_plus_examples._dicom_macros import create_code_seq_item, create_referenced_instances_and_access_item
 from tdwii_plus_examples.basescu import BaseSCU
 
 
@@ -14,6 +17,8 @@ class UPSPullNSetSCU(BaseSCU):
     This class is derived from BaseSCU and implements the necessary methods
     to request UPS Pull presentation contexts and perform N-SET requests
     to modify a UPS instance.
+    It also provide methods to modify specific sets of attributes of the Progress
+    Information and Performed Procedure Information Modules.
 
     Attributes:
         logger: A logger instance.
@@ -125,3 +130,177 @@ class UPSPullNSetSCU(BaseSCU):
         self.assoc.release()
 
         return self.PrimitiveResult("Success", 0x0000, "", None) if success else result
+
+    def update_progress_information(self, sop_instance_uid: UID, tx_uid: UID, progress: int, description: str = None):
+        """
+        Updates the progress of a UPS instance by sending an N-SET request with progress information.
+
+        This method builds a modification list dataset containing the progress and optional description,
+        then calls modify_ups to send the update.
+
+        This method may be overridden by derived subclasses to update additional UPS attributes
+        as needed for specific workflows.
+
+        Args:
+            sop_instance_uid (str): The SOP Instance UID of the UPS to update.
+            tx_uid (str): The Transaction UID for the UPS.
+            progress (int): The progress percentage (0-100) to set for the UPS.
+            description (str, optional): The progress description to set for the UPS.
+
+        Returns:
+            PrimitiveResult: The result of the N-SET operation.
+        """
+        # TODO: Create a subclass overriding this method to add Procedure Step Progress Parameters Sequence Items
+        # required by TDW-II
+        modification_list = Dataset()
+        # TODO: remove as AffectedSOPInstanceUID and AffectedSOPClassUID are not expected in a Data Set as they are
+        # Command Set Elements. Also requires modification in UPS SCP N-SET handler.
+        modification_list.AffectedSOPInstanceUID = sop_instance_uid
+        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
+        modification_list.TransactionUID = tx_uid
+        sequence_item = Dataset()
+        sequence_item.ProcedureStepProgress = str(progress)
+        if description is not None:
+            sequence_item.ProcedureStepProgressDescription = description
+        modification_list.ProcedureStepProgressInformationSequence = [sequence_item]
+        return self.modify_ups(sop_instance_uid, modification_list)
+
+    def update_start_info(
+        self, sop_instance_uid: UID, tx_uid: UID, station_name, workitem_code, human_performer=None, human_performer_name=None
+    ):
+        """
+        Updates the start information of a UPS instance by sending an N-SET request with information
+        expected to be available after the UPS has been set in progress.
+
+        This method may be overridden by derived subclasses to update additional UPS attributes
+        as needed for specific workflows.
+
+        Args:
+            sop_instance_uid (str): The SOP Instance UID of the UPS to update.
+            tx_uid (str): The Transaction UID for the UPS.
+            station_name (tuple or Dataset): The station name code as a
+                Tuple (value, designator, meaning) or a Dataset.
+            workitem_code (tuple or Dataset): The workitem code as a
+                Tuple (value, designator, meaning) or a Dataset.
+            human_performer (tuple or Dataset, optional): The human performer code as a
+                Tuple (value, designator, meaning) or a Dataset.
+            human_performer_name (str, optional): The name of the human performer.
+
+        Returns:
+            PrimitiveResult: The result of the N-SET operation.
+        """
+        if station_name is None or workitem_code is None:
+            raise ValueError("Both station_name and workitem_code are required and must be provided.")
+
+        modification_list = Dataset()
+        modification_list.AffectedSOPInstanceUID = sop_instance_uid
+        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
+        modification_list.TransactionUID = tx_uid
+
+        sequence_item = Dataset()
+        sequence_item.PerformedProcedureStepStartDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
+
+        if isinstance(station_name, tuple):
+            sequence_item.StationNameCodeSequence = [create_code_seq_item(*station_name)]
+        else:
+            sequence_item.StationNameCodeSequence = [station_name]
+
+        if isinstance(workitem_code, tuple):
+            sequence_item.ScheduledWorkitemCodeSequence = [create_code_seq_item(*workitem_code)]
+        else:
+            sequence_item.ScheduledWorkitemCodeSequence = [workitem_code]
+
+        # Actual Human Performers Sequence (0040,4035)
+        if human_performer is not None or human_performer_name is not None:
+            performer_item = Dataset()
+            if human_performer is not None:
+                if isinstance(human_performer, tuple):
+                    performer_item.HumanPerformerCodeSequence = [create_code_seq_item(*human_performer)]
+                else:
+                    performer_item.HumanPerformerCodeSequence = [human_performer]
+            if human_performer_name is not None:
+                performer_item.HumanPerformerName = human_performer_name
+            sequence_item.ActualHumanPerformersSequence = [performer_item]
+
+        modification_list.UnifiedProcedureStepPerformedProcedureSequence = [sequence_item]
+        return self.modify_ups(sop_instance_uid, modification_list)
+
+    def update_end_info(self, sop_instance_uid: UID, tx_uid: UID):
+        """
+        Updates the end information of a UPS instance by sending an N-SET request with information
+        expected to be available just before the UPS completion.
+
+        This method may be overridden by derived subclasses to update additional UPS attributes
+        as needed for specific workflows.
+
+        Args:
+            sop_instance_uid (str): The SOP Instance UID of the UPS to update.
+            tx_uid (str): The Transaction UID for the UPS.
+
+        Returns:
+            PrimitiveResult: The result of the N-SET operation.
+        """
+        modification_list = Dataset()
+        modification_list.AffectedSOPInstanceUID = sop_instance_uid
+        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
+        modification_list.TransactionUID = tx_uid
+
+        sequence_item = Dataset()
+        sequence_item.PerformedProcedureStepEndDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
+
+        modification_list.UnifiedProcedureStepPerformedProcedureSequence = [sequence_item]
+        return self.modify_ups(sop_instance_uid, modification_list)
+
+    def update_cancel_info(self, sop_instance_uid: UID, tx_uid: UID, reason: str = None):
+        """
+        Updates the cancel information of a UPS instance by sending an N-SET request with information
+        expected to be available just before the UPS cancelation.
+
+        This method may be overridden by derived subclasses to update additional UPS attributes
+        as needed for specific workflows.
+
+        Args:
+            sop_instance_uid (str): The SOP Instance UID of the UPS to update.
+            tx_uid (str): The Transaction UID for the UPS.
+
+        Returns:
+            PrimitiveResult: The result of the N-SET operation.
+        """
+        modification_list = Dataset()
+        modification_list.AffectedSOPInstanceUID = sop_instance_uid
+        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
+        modification_list.TransactionUID = tx_uid
+        sequence_item = Dataset()
+        sequence_item.ProcedureStepCancellationDateTime = datetime.now().strftime("%Y%m%d%H%M%S")  # Could be filled by SCP
+        if reason is not None:
+            sequence_item.ReasonForCancellation = reason
+        modification_list.ProcedureStepProgressInformationSequence = [sequence_item]
+        return self.modify_ups(sop_instance_uid, modification_list)
+
+    def update_output_information(self, sop_instance_uid: str, tx_uid: str, output_information_args):
+        """
+        Updates the output information of a UPS instance by sending an N-SET request.
+
+        Args:
+            sop_instance_uid (str): The SOP Instance UID of the UPS to update.
+            tx_uid (str): The Transaction UID for the UPS.
+            output_information_args (list): List of tuples/lists, each containing the arguments for
+                create_referenced_instances_and_access_item. Each item should be:
+                    (retrieve_ae_title, study_instance_uid, series_instance_uid, sop_class_uid, sop_instance_uid)
+
+        Returns:
+            PrimitiveResult: The result of the N-SET operation.
+        """
+        modification_list = Dataset()
+        modification_list.AffectedSOPInstanceUID = sop_instance_uid
+        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
+        modification_list.TransactionUID = tx_uid
+
+        sequence_item = Dataset()
+        # Build OutputInformationSequence using the helper for each item in output_information_args
+        sequence_item.OutputInformationSequence = [
+            create_referenced_instances_and_access_item(*args) for args in output_information_args
+        ]
+
+        modification_list.UnifiedProcedureStepPerformedProcedureSequence = [sequence_item]
+        return self.modify_ups(sop_instance_uid, modification_list)
