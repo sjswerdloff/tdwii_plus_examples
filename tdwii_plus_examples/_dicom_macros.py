@@ -1,5 +1,6 @@
 from pydicom import Sequence
 from pydicom.dataset import Dataset
+from pydicom.uid import UID
 
 
 def create_measurement_unit_code_seq_item(value_unit: str = None) -> Dataset:
@@ -72,7 +73,11 @@ def create_content_item(value_type: str, value: any, code_seq_item: Dataset, val
 
 
 def create_referenced_instances_and_access_item(
-    retrieve_ae_title: str, study_instance_uid: str, series_instance_uid: str, sop_class_uid: str, sop_instance_uid: str
+    retrieve_ae_title: str | UID,
+    study_instance_uid: str | UID,
+    series_instance_uid: str | UID,
+    sop_class_uid: str | UID,
+    sop_instance_uid: str | UID,
 ) -> Dataset:
     """
     Create a DICOM Referenced Instances and Access item Dataset.
@@ -91,16 +96,16 @@ def create_referenced_instances_and_access_item(
     ref_instance_seq_item = Dataset()
 
     ref_instance_seq_item.TypeOfInstances = "DICOM"
-    ref_instance_seq_item.StudyInstanceUID = study_instance_uid
-    ref_instance_seq_item.SeriesInstanceUID = series_instance_uid
+    ref_instance_seq_item.StudyInstanceUID = str(study_instance_uid)
+    ref_instance_seq_item.SeriesInstanceUID = str(series_instance_uid)
 
     dicom_retrieval_seq_item = Dataset()
     dicom_retrieval_seq_item.RetrieveAETitle = retrieve_ae_title
     ref_instance_seq_item.DICOMRetrievalSequence = Sequence([dicom_retrieval_seq_item])
 
     ref_sop_seq_item = Dataset()
-    ref_sop_seq_item.ReferencedSOPClassUID = sop_class_uid
-    ref_sop_seq_item.ReferencedSOPInstanceUID = sop_instance_uid
+    ref_sop_seq_item.ReferencedSOPClassUID = str(sop_class_uid)
+    ref_sop_seq_item.ReferencedSOPInstanceUID = str(sop_instance_uid)
     ref_instance_seq_item.ReferencedSOPSequence = Sequence([ref_sop_seq_item])
 
     return ref_instance_seq_item

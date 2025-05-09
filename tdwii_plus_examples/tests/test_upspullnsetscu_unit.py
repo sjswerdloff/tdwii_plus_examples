@@ -3,6 +3,7 @@ import unittest
 from unittest import mock
 
 from pydicom import Dataset
+from pydicom.uid import generate_uid
 
 from tdwii_plus_examples.upspullnsetscu import UPSPullNSetSCU
 
@@ -39,7 +40,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock(status_category="Success")
         mock_handle_response.return_value = mock_result
 
-        sop_instance_uid = "1.2.3.4.5"
+        sop_instance_uid = generate_uid
 
         # Create the modification list dataset
         modification_list = Dataset()
@@ -72,7 +73,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_assoc_result.description = "Association failed"
         mock_associate.return_value = False, mock_assoc_result
 
-        sop_instance_uid = "1.2.3.4.5"
+        sop_instance_uid = generate_uid
         modification_list = Dataset()
         result = self.scu.modify_ups(sop_instance_uid, modification_list)
 
@@ -101,7 +102,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock(status_category="Success")
         mock_handle_response.return_value = mock_result
 
-        sop_instance_uid = "1.2.3.4.5"
+        sop_instance_uid = generate_uid
         modification_list = Dataset()
         result = self.scu.modify_ups(sop_instance_uid, modification_list)
 
@@ -109,4 +110,151 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_assoc_obj.send_n_set.assert_called_once()
         self.assertEqual(mock_handle_response.call_count, 2)
         mock_assoc_obj.release.assert_called_once()
+        self.assertEqual(result, mock_result)
+
+    from parameterized import parameterized
+
+    @parameterized.expand(
+        [
+            ("no_description", None),
+            ("with_description", "Halfway done"),
+        ]
+    )
+    @mock.patch("tdwii_plus_examples.upspullnsetscu.UPSPullNSetSCU.modify_ups")
+    def test_update_progress_information(self, name, description, mock_modify_ups):
+        """Test update_progress_information calls modify_ups with correct dataset and optional description."""
+        mock_result = mock.Mock()
+        mock_modify_ups.return_value = mock_result
+
+        sop_instance_uid = generate_uid
+        tx_uid = "1.2.3.4"
+        progress = 50
+
+        result = self.scu.update_progress_information(sop_instance_uid, tx_uid, progress, description)
+
+        mock_modify_ups.assert_called_once()
+        args, kwargs = mock_modify_ups.call_args
+        self.assertEqual(args[0], sop_instance_uid)
+        ds = args[1]
+        self.assertEqual(ds.TransactionUID, tx_uid)
+        self.assertEqual(ds.ProcedureStepProgressInformationSequence[0].ProcedureStepProgress, str(progress))
+        if description is not None:
+            self.assertEqual(ds.ProcedureStepProgressInformationSequence[0].ProcedureStepProgressDescription, description)
+        else:
+            self.assertFalse(hasattr(ds.ProcedureStepProgressInformationSequence[0], "ProcedureStepProgressDescription"))
+        self.assertEqual(result, mock_result)
+
+    from parameterized import parameterized
+
+    @parameterized.expand(
+        [
+            ("no_human_performer", None, None),
+            ("with_human_performer", ("AS", "TMS", "Alice Smith"), None),
+            ("with_human_performer_and_name", ("AS", "TMS", "Alice Smith"), "Alice"),
+            ("with_human_performer_name_only", None, "Bob"),
+        ]
+    )
+    @mock.patch("tdwii_plus_examples.upspullnsetscu.UPSPullNSetSCU.modify_ups")
+    def test_update_start_info(self, name, human_performer, human_performer_name, mock_modify_ups):
+        """Test update_start_info calls modify_ups with correct dataset and optional args."""
+        mock_result = mock.Mock()
+        mock_modify_ups.return_value = mock_result
+
+        sop_instance_uid = generate_uid
+        tx_uid = "1.2.3.4"
+        station_name = ("GTR", "TMS", "Gantry")
+        workitem_code = ("121726", "DCM", "RT Treatment with Internal Verification")
+
+        result = self.scu.update_start_info(
+            sop_instance_uid,
+            tx_uid,
+            station_name,
+            workitem_code,
+            human_performer=human_performer,
+            human_performer_name=human_performer_name,
+        )
+
+        mock_modify_ups.assert_called_once()
+        args, kwargs = mock_modify_ups.call_args
+        self.assertEqual(args[0], sop_instance_uid)
+        ds = args[1]
+        self.assertEqual(ds.TransactionUID, tx_uid)
+        seq = ds.UnifiedProcedureStepPerformedProcedureSequence[0]
+        self.assertTrue(hasattr(seq, "StationNameCodeSequence"))
+        self.assertTrue(hasattr(seq, "ScheduledWorkitemCodeSequence"))
+        if human_performer is not None or human_performer_name is not None:
+            self.assertTrue(hasattr(seq, "ActualHumanPerformersSequence"))
+            performer_item = seq.ActualHumanPerformersSequence[0]
+            if human_performer is not None:
+                self.assertTrue(hasattr(performer_item, "HumanPerformerCodeSequence"))
+            if human_performer_name is not None:
+                self.assertEqual(performer_item.HumanPerformerName, human_performer_name)
+        self.assertEqual(result, mock_result)
+
+    @mock.patch("tdwii_plus_examples.upspullnsetscu.UPSPullNSetSCU.modify_ups")
+    def test_update_end_info(self, mock_modify_ups):
+        """Test update_end_info calls modify_ups with correct dataset."""
+        mock_result = mock.Mock()
+        mock_modify_ups.return_value = mock_result
+
+        sop_instance_uid = generate_uid
+        tx_uid = "1.2.3.4"
+
+        result = self.scu.update_end_info(sop_instance_uid, tx_uid)
+
+        mock_modify_ups.assert_called_once()
+        args, kwargs = mock_modify_ups.call_args
+        self.assertEqual(args[0], sop_instance_uid)
+        ds = args[1]
+        self.assertEqual(ds.TransactionUID, tx_uid)
+        seq = ds.UnifiedProcedureStepPerformedProcedureSequence[0]
+        self.assertTrue(hasattr(seq, "PerformedProcedureStepEndDateTime"))
+        self.assertEqual(result, mock_result)
+
+    @parameterized.expand(
+        [
+            ("no_reason", None),
+            ("with_reason", "Test reason"),
+        ]
+    )
+    @mock.patch("tdwii_plus_examples.upspullnsetscu.UPSPullNSetSCU.modify_ups")
+    def test_update_cancel_info(self, name, reason, mock_modify_ups):
+        """Test update_cancel_info calls modify_ups with correct dataset and optional reason."""
+        mock_result = mock.Mock()
+        mock_modify_ups.return_value = mock_result
+
+        sop_instance_uid = generate_uid
+        tx_uid = "1.2.3.4"
+
+        result = self.scu.update_cancel_info(sop_instance_uid, tx_uid, reason)
+
+        mock_modify_ups.assert_called_once()
+        args, kwargs = mock_modify_ups.call_args
+        self.assertEqual(args[0], sop_instance_uid)
+        ds = args[1]
+        self.assertEqual(ds.TransactionUID, tx_uid)
+        seq = ds.ProcedureStepProgressInformationSequence[0]
+        if reason is not None:
+            self.assertEqual(seq.ReasonForCancellation, reason)
+        self.assertEqual(result, mock_result)
+
+    @mock.patch("tdwii_plus_examples.upspullnsetscu.UPSPullNSetSCU.modify_ups")
+    def test_update_output_information(self, mock_modify_ups):
+        """Test update_output_information calls modify_ups with correct dataset."""
+        mock_result = mock.Mock()
+        mock_modify_ups.return_value = mock_result
+
+        sop_instance_uid = generate_uid
+        tx_uid = "1.2.3.4"
+        output_information_args = [("AET", generate_uid, generate_uid, "1.2.840.10008.5.1.4.1.1.2", generate_uid)]
+
+        result = self.scu.update_output_information(sop_instance_uid, tx_uid, output_information_args)
+
+        mock_modify_ups.assert_called_once()
+        args, kwargs = mock_modify_ups.call_args
+        self.assertEqual(args[0], sop_instance_uid)
+        ds = args[1]
+        self.assertEqual(ds.TransactionUID, tx_uid)
+        seq = ds.UnifiedProcedureStepPerformedProcedureSequence[0]
+        self.assertTrue(hasattr(seq, "OutputInformationSequence"))
         self.assertEqual(result, mock_result)
