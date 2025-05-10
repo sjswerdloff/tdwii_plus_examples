@@ -2,7 +2,7 @@ import logging
 import os
 import signal
 import unittest
-from logging.handlers import MemoryHandler
+from logging import StreamHandler
 from subprocess import TimeoutExpired
 
 import psutil
@@ -14,14 +14,12 @@ from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
 
 class TestUPSPushNCreateSCU(unittest.TestCase):
     def setUp(self):
-        # Set up the logger for the UPSPushNCreateSCU to INFO level
-        # with a memory handler to store up to 100 log messages
-        self.scu_logger, self.memory_handler = get_configured_logger(
-            "upspushscu", level=logging.DEBUG, handler_class=MemoryHandler, capacity=100
+        # Set up the logger for the UPSPushNCreateSCU to DEBUG level with a stream handler
+        self.scu_logger, self.stream_handler = get_configured_logger(
+            "upspushscu", level=logging.DEBUG, handler_class=StreamHandler
         )
 
-        # Set up the logger for this test to INFO level
-        # with a stream handler to print the log messages to the console
+        # Set up the logger for this test to DEBUG level with a stream handler
         self.test_logger, self.stream_handler = get_configured_logger("test_upspushscu", level=logging.DEBUG)
 
         # Create a UPSPushNCreateSCU instance
@@ -68,8 +66,20 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
             if self.stdout_thread:
                 self.stdout_thread.join(timeout=1.0)
 
-        # Remove and close the memory handler for scu and test loggers
-        for logger, handler in [(self.scu_logger, self.memory_handler), (self.test_logger, self.stream_handler)]:
+        # Print the SCP server output
+        if hasattr(self, "stdout_lines"):
+            print(
+                "\n"
+                + "*" * 80
+                + "\n*** BEGIN SCP SERVER OUTPUT ***\n"
+                + "\n".join(self.stdout_lines)
+                + "\n*** END SCP SERVER OUTPUT ***\n"
+                + "*" * 80
+                + "\n"
+            )
+
+        # Remove and close the handlers for scu and test loggers
+        for logger, handler in [(self.scu_logger, self.stream_handler), (self.test_logger, self.stream_handler)]:
             logger.removeHandler(handler)
             handler.close()
 
@@ -77,7 +87,7 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         # Start the UPS Push SCP CLI App upsscp.py
         command = ["tdwii_plus_examples/cli/upsscp/upsscp.py", "-v"]
 
-        self.upsscp_started, self.process, self.stdout_thread = start_scp(command, self.test_logger)
+        self.upsscp_started, self.process, self.stdout_thread, self.stdout_lines = start_scp(command, self.test_logger)
         self.test_logger.info(f"Started process with PID: {self.process.pid}")
 
         if not self.upsscp_started:
@@ -92,10 +102,6 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
             success_count = self.upspush_ncreate_scu.create_ups_instances([self.ups_instance])
 
             self.assertEqual(success_count, 1)
-
-            # Get the log messages
-            log_messages = [record.getMessage() for record in self.memory_handler.buffer]
-            self.test_logger.info("Log messages: %s", log_messages)
 
         except Exception as e:
             self.test_logger.error(e)

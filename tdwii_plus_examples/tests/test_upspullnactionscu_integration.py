@@ -41,7 +41,7 @@ class TestUPSPullNActionSCUIntegration(unittest.TestCase):
             cls.temp_dir,
         ]
 
-        cls.upsscp_started, cls.process, cls.stdout_thread = start_scp(command, cls.test_logger)
+        cls.upsscp_started, cls.process, cls.stdout_thread, cls.stdout_lines = start_scp(command, cls.test_logger)
         cls.test_logger.info(f"Started process with PID: {cls.process.pid}")
 
         # Create the UPSPullNActionSCU instance
@@ -85,6 +85,18 @@ class TestUPSPullNActionSCUIntegration(unittest.TestCase):
             # Ensure the stdout thread has finished
             if cls.stdout_thread:
                 cls.stdout_thread.join(timeout=1.0)
+
+        # Print the SCP server output
+        if hasattr(cls, "stdout_lines"):
+            print(
+                "\n"
+                + "*" * 80
+                + "\n*** BEGIN SCP SERVER OUTPUT ***\n"
+                + "\n".join(cls.stdout_lines)
+                + "\n*** END SCP SERVER OUTPUT ***\n"
+                + "*" * 80
+                + "\n"
+            )
 
         # Remove the temporary directory and its contents
         files_in_temp_dir = os.listdir(cls.temp_dir)

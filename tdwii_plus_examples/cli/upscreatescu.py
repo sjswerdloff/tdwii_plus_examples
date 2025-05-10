@@ -55,15 +55,15 @@ def get_contexts(fpaths, app_logger):
         path = os.fspath(Path(fpath).resolve())
         try:
             ds = dcmread(path)
-        except Exception:
-            bad.append(("Bad DICOM file", path))
+        except Exception as e:
+            bad.append((f"Bad DICOM file: {e}", path))
             continue
 
         try:
             sop_class = ds.SOPClassUID
             tsyntax = ds.file_meta.TransferSyntaxUID
-        except Exception:
-            bad.append(("Unknown SOP Class or Transfer Syntax UID", path))
+        except Exception as e:
+            bad.append((f"Unknown SOP Class or Transfer Syntax UID: {e}", path))
             continue
 
         tsyntaxes = contexts.setdefault(sop_class, [])

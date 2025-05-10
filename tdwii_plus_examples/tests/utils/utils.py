@@ -2,6 +2,7 @@ import logging
 import subprocess
 import sys
 import threading
+import time
 
 
 def get_configured_logger(logger_name, level=logging.INFO, handler_class=logging.StreamHandler, capacity=None):
@@ -48,9 +49,27 @@ def start_scp(command: list[str], logger, timeout: float = 1.0, success_message=
 
     stdout_lines = []
     process_started_flag = [False]
-    stdout_thread = threading.Thread(target=_read_stdout, args=(process, stdout_lines, process_started_flag, success_message))
+    # Start a thread to read stdout for the entire process lifetime
+
+    def _continuous_read_stdout(proc, lines, started_flag, success_msg):
+        for line in iter(proc.stdout.readline, b""):
+            line = line.decode("utf-8").strip()
+            if line:
+                lines.append(line)
+                if success_msg in line:
+                    started_flag[0] = True
+        proc.stdout.close()
+
+    stdout_thread = threading.Thread(
+        target=_continuous_read_stdout, args=(process, stdout_lines, process_started_flag, success_message)
+    )
+    stdout_thread.daemon = True
     stdout_thread.start()
-    stdout_thread.join(timeout=timeout)
+
+    # Wait for the success message or timeout
+    start_time = time.time()
+    while not process_started_flag[0] and (time.time() - start_time) < timeout:
+        time.sleep(0.05)
 
     if not process_started_flag[0]:
         logger.error("Process did not start successfully.")
@@ -58,9 +77,9 @@ def start_scp(command: list[str], logger, timeout: float = 1.0, success_message=
             logger.error(line)
         process.terminate()
         process.wait()
-        return False, process, stdout_thread
+        return False, process, stdout_thread, stdout_lines
 
-    return True, process, stdout_thread
+    return True, process, stdout_thread, stdout_lines
 
 
 def _read_stdout(process, stdout_lines, process_started_flag, success_message):
