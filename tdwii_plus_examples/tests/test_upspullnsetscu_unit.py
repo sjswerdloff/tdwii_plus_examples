@@ -180,8 +180,8 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         ds = args[1]
         self.assertEqual(ds.TransactionUID, tx_uid)
         seq = ds.UnifiedProcedureStepPerformedProcedureSequence[0]
-        self.assertTrue(hasattr(seq, "StationNameCodeSequence"))
-        self.assertTrue(hasattr(seq, "ScheduledWorkitemCodeSequence"))
+        self.assertTrue(hasattr(seq, "PerformedStationNameCodeSequence"))
+        self.assertTrue(hasattr(seq, "PerformedWorkitemCodeSequence"))
         if human_performer is not None or human_performer_name is not None:
             self.assertTrue(hasattr(seq, "ActualHumanPerformersSequence"))
             performer_item = seq.ActualHumanPerformersSequence[0]

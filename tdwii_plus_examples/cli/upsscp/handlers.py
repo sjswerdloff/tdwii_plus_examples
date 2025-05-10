@@ -681,7 +681,10 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 )
                 response.ProcedureStepState = requested_step_state
                 response.is_little_endian = True
-                response.is_implicit_VR = True
+                response.is_implicit_VR = False
+                response.ensure_file_meta()
+                response.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+                response.fix_meta_info()
                 # Updates to content of database below for next state change request
                 match.procedure_step_state = requested_step_state
                 match.transaction_uid = transaction_uid
@@ -690,7 +693,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 dcmwrite(
                     Path(instance_dir).joinpath(str(match.sop_instance_uid)),
                     response,
-                    write_like_original=True,
+                    write_like_original=False,
                 )
                 response.TransactionUID = transaction_uid
                 response.Status = service_status

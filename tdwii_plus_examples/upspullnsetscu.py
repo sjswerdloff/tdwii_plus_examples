@@ -209,14 +209,14 @@ class UPSPullNSetSCU(BaseSCU):
         sequence_item.PerformedProcedureStepStartDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
 
         if isinstance(station_name, tuple):
-            sequence_item.StationNameCodeSequence = [create_code_seq_item(*station_name)]
+            sequence_item.PerformedStationNameCodeSequence = [create_code_seq_item(*station_name)]
         else:
-            sequence_item.StationNameCodeSequence = [station_name]
+            sequence_item.PerformedStationNameCodeSequence = [station_name]
 
         if isinstance(workitem_code, tuple):
-            sequence_item.ScheduledWorkitemCodeSequence = [create_code_seq_item(*workitem_code)]
+            sequence_item.PerformedWorkitemCodeSequence = [create_code_seq_item(*workitem_code)]
         else:
-            sequence_item.ScheduledWorkitemCodeSequence = [workitem_code]
+            sequence_item.PerformedWorkitemCodeSequence = [workitem_code]
 
         # Actual Human Performers Sequence (0040,4035)
         if human_performer is not None or human_performer_name is not None:
