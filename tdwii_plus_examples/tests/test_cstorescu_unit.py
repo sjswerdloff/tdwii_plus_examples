@@ -174,11 +174,11 @@ class TestCStoreSCU(unittest.TestCase):
 
     def test_set_contexts_invalid(self):
         """Test set_contexts with an invalid context."""
-        qr_abstract__syntax = StudyRootQueryRetrieveInformationModelFind  # not a storage context
-        invalid_context = build_context(qr_abstract__syntax)
+        qr_abstract_syntax = StudyRootQueryRetrieveInformationModelFind  # not a storage context
+        invalid_context = build_context(qr_abstract_syntax)
 
         with self.assertRaisesRegex(
-            ValueError, f"Only Storage Presentation Contexts are allowed. Invalid contexts: \\['{qr_abstract__syntax}'\\]"
+            ValueError, f"Only Storage Presentation Contexts are allowed. Invalid contexts: \\['{qr_abstract_syntax}'\\]"
         ):
             self.cstore_scu.set_contexts([invalid_context])
 
