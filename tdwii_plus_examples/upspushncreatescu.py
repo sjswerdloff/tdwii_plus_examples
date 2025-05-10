@@ -64,10 +64,10 @@ class UPSPushNCreateSCU(BaseSCU):
                 f"Some instances were ignored because their SOPClassUID did not match UnifiedProcedureStepPush. "
                 f"Total instances provided: {len(instances)}, valid instances: {len(valid_instances)}"
             )
-        assoc_result = self._associate(required_sop_classes=[UnifiedProcedureStepPush], verbose=False)
+        success, _ = self._associate(required_sop_classes=[UnifiedProcedureStepPush])
         success_count = 0
 
-        if not assoc_result:
+        if not success:
             return 0
 
         for msg_id, instance in enumerate(valid_instances, start=0):

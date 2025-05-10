@@ -25,7 +25,6 @@ from PySide6.QtWidgets import (
 
 from tdwii_plus_examples import cmove_inputs, tdwii_config
 from tdwii_plus_examples.cstorescu import CStoreSCU
-from tdwii_plus_examples.nactionscu import CANCELED, COMPLETED, IN_PROGRESS, NActionSCU
 from tdwii_plus_examples.nsetscu import NSetSCU
 
 # Important:
@@ -38,6 +37,7 @@ from tdwii_plus_examples.TDWII_PPVS_subscriber.upsfindscu import (
     create_ups_query,
     get_ups,
 )
+from tdwii_plus_examples.upspullnactionscu import UPSPullNActionSCU
 from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
@@ -117,15 +117,18 @@ class TDD_Widget(QWidget):
         self.clearing_flag = False
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         tms_ae_title = self.ui.ups_ae_line_edit.text()
-        naction_scu = NActionSCU(calling_ae_title=my_ae_title, called_ae_title=tms_ae_title)
+        ip_addr = tdwii_config.known_ae_ipaddr[tms_ae_title]
+        port = tdwii_config.known_ae_port[tms_ae_title]
+        naction_scu = UPSPullNActionSCU(
+            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, called_ip=ip_addr, called_port=port
+        )
         ups_uid = self._get_currently_selected_ups_uid()
         if self.current_transaction_uid is not None:
             logging.warning(
                 "There is a Transaction UID in use, starting multiple procedures in parallel \
                     with the TMS is not typical behavior"
             )
-        naction_scu.send_procedure_step_state_change(IN_PROGRESS, ups_uid=ups_uid)
-        self.current_transaction_uid = naction_scu.current_transaction_uid()
+        self.current_transaction_uid = naction_scu.claim_ups(sop_instance_uid=ups_uid)
         self.ui.transaction_uid_line_edit.setText(str(self.current_transaction_uid))
         self._send_beam_and_session_percentage_update()  # need to send first beam and 0% progress
 
@@ -133,15 +136,16 @@ class TDD_Widget(QWidget):
     def _cancel_procedure(self):
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         tms_ae_title = self.ui.ups_ae_line_edit.text()
-        naction_scu = NActionSCU(
-            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, transaction_uid=self.current_transaction_uid
+        ip_addr = tdwii_config.known_ae_ipaddr[tms_ae_title]
+        port = tdwii_config.known_ae_port[tms_ae_title]
+        naction_scu = UPSPullNActionSCU(
+            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, called_ip=ip_addr, called_port=port
         )
-        # naction_scu.transaction_uid = self.current_transaction_uid
         ups_uid = self._get_currently_selected_ups_uid()
         if self.current_transaction_uid is None:
             logging.warning("There is no Transaction UID in use, unable to cancel")
             return
-        naction_scu.send_procedure_step_state_change(CANCELED, ups_uid=ups_uid)
+        naction_scu.cancel_ups(sop_instance_uid=ups_uid, transaction_uid=self.current_transaction_uid)
         self.current_transaction_uid = None
         self.ui.transaction_uid_line_edit.setText("")
         self.clearing_flag = True
@@ -152,16 +156,16 @@ class TDD_Widget(QWidget):
     def _complete_procedure(self):
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         tms_ae_title = self.ui.ups_ae_line_edit.text()
-        naction_scu = NActionSCU(
-            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, transaction_uid=self.current_transaction_uid
+        ip_addr = tdwii_config.known_ae_ipaddr[tms_ae_title]
+        port = tdwii_config.known_ae_port[tms_ae_title]
+        naction_scu = UPSPullNActionSCU(
+            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, called_ip=ip_addr, called_port=port
         )
-
-        # naction_scu.current_transaction_uid = self.current_transaction_uid
         ups_uid = self._get_currently_selected_ups_uid()
         if self.current_transaction_uid is None:
             logging.warning("There is no Transaction UID in use, unable to complete")
             return
-        naction_scu.send_procedure_step_state_change(COMPLETED, ups_uid=ups_uid)
+        naction_scu.complete_ups(sop_instance_uid=ups_uid, transaction_uid=self.current_transaction_uid)
         self.current_transaction_uid = None
         self.ui.transaction_uid_line_edit.setText("")
         self.clearing_flag = True

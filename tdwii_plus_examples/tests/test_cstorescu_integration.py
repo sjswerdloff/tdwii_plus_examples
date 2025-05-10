@@ -55,11 +55,6 @@ class TestCStoreSCU(unittest.TestCase):
         )
 
     def tearDown(self):
-        # Remove the temporary directory and its contents
-        files_in_temp_dir = os.listdir(self.temp_dir)
-        shutil.rmtree(self.temp_dir)
-        self.test_logger.info(f"Removed the temp directory: {self.temp_dir} and its contents: {files_in_temp_dir}")
-
         # Try to gracefully terminate the process.
         self.test_logger.info(f"Terminating process with PID: {self.process.pid}")
         try:
@@ -90,6 +85,11 @@ class TestCStoreSCU(unittest.TestCase):
             # Ensure the stdout thread has finished
             if self.stdout_thread:
                 self.stdout_thread.join(timeout=1.0)
+
+        # Remove the temporary directory and its contents
+        files_in_temp_dir = os.listdir(self.temp_dir)
+        shutil.rmtree(self.temp_dir)
+        self.test_logger.info(f"Removed the temp directory: {self.temp_dir} and its contents: {files_in_temp_dir}")
 
         # Remove and close the memory handler for scu and test loggers
         for logger, handler in [(self.scu_logger, self.memory_handler), (self.test_logger, self.stream_handler)]:
