@@ -1,5 +1,6 @@
 import datetime
 import os
+from typing import Optional
 
 import numpy as np
 from pydicom import Sequence
@@ -409,7 +410,7 @@ def generate_ups() -> Dataset:
     return ds
 
 
-def generate_ups_file(folder_path: str) -> Dataset:
+def generate_ups_file(folder_path: str, output_filename: Optional[str] = None) -> str:
     """
     Generates a DICOM UPS dataset and saves it to the specified folder.
 
@@ -417,7 +418,7 @@ def generate_ups_file(folder_path: str) -> Dataset:
         folder_path: The directory where the DICOM file will be saved.
 
     Returns:
-        A DICOM dataset representing a UPS.
+        The file path of the saved DICOM UPS file.
     """
 
     ups_dataset = generate_ups()
@@ -432,11 +433,15 @@ def generate_ups_file(folder_path: str) -> Dataset:
     # Add the File Meta Information
     ups_dataset.file_meta = file_meta
 
-    # Ensure the folder exists
+    # Generate output filename using SOP Instance UID
+    if output_filename is None:
+        output_filename = f"UPS_{ups_dataset.SOPInstanceUID}.dcm"
+    # Ensure the output folder exists
     os.makedirs(folder_path, exist_ok=True)
-    file_path = os.path.join(folder_path, "sample_ups.dcm")
+    # Build the full path
+    file_path = os.path.join(folder_path, output_filename)
 
-    # Save the dataset to a file
+    # Save the dataset as a DICOM Part 10 file
     ups_dataset.save_as(file_path, write_like_original=False)
 
-    return ups_dataset
+    return file_path

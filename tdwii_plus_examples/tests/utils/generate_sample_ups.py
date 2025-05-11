@@ -4,12 +4,13 @@ from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_ups_
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python create_sample_ups.py <folder_path>")
+    if len(sys.argv) not in (2, 3):
+        print("Usage: python create_sample_ups.py <folder_path> [file_name]")
         sys.exit(1)
     folder_path = sys.argv[1]
-    generate_ups_file(folder_path)
-    print(f"Sample UPS file created in: {folder_path}")
+    file_name = sys.argv[2] if len(sys.argv) == 3 else None
+    file_path = generate_ups_file(folder_path, file_name)
+    print(f"Sample UPS file succesfully created: {file_path}")
 
 
 if __name__ == "__main__":

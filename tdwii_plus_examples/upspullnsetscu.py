@@ -54,6 +54,15 @@ class UPSPullNSetSCU(BaseSCU):
         )
         self.logger.debug("UPSNSetSCU initialized")
 
+    def _init_mod_list(self, sop_instance_uid, tx_uid) -> Dataset:
+        ds = Dataset()
+        # TODO: remove as AffectedSOPInstanceUID and AffectedSOPClassUID are not expected in a Data Set as they are
+        # Command Set Elements. Also requires modification in UPS SCP N-SET handler.
+        ds.AffectedSOPInstanceUID = str(sop_instance_uid)
+        ds.AffectedSOPClassUID = UnifiedProcedureStepPush
+        ds.TransactionUID = str(tx_uid)
+        return ds
+
     def _add_requested_context(self):
         """Adds the Unified Procedure Step Pull SOP Class presentation context."""
         super()._add_requested_context()
@@ -154,12 +163,7 @@ class UPSPullNSetSCU(BaseSCU):
         """
         # TODO: Create a subclass overriding this method to add Procedure Step Progress Parameters Sequence Items
         # required by TDW-II
-        modification_list = Dataset()
-        # TODO: remove as AffectedSOPInstanceUID and AffectedSOPClassUID are not expected in a Data Set as they are
-        # Command Set Elements. Also requires modification in UPS SCP N-SET handler.
-        modification_list.AffectedSOPInstanceUID = str(sop_instance_uid)
-        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
-        modification_list.TransactionUID = str(tx_uid)
+        modification_list = self._init_mod_list(str(sop_instance_uid), str(tx_uid))
         sequence_item = Dataset()
         sequence_item.ProcedureStepProgress = str(progress)
         if description is not None:
@@ -200,11 +204,7 @@ class UPSPullNSetSCU(BaseSCU):
         if station_name is None or workitem_code is None:
             raise ValueError("Both station_name and workitem_code are required and must be provided.")
 
-        modification_list = Dataset()
-        modification_list.AffectedSOPInstanceUID = str(sop_instance_uid)
-        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
-        modification_list.TransactionUID = str(tx_uid)
-
+        modification_list = self._init_mod_list(str(sop_instance_uid), str(tx_uid))
         sequence_item = Dataset()
         sequence_item.PerformedProcedureStepStartDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -248,11 +248,7 @@ class UPSPullNSetSCU(BaseSCU):
         Returns:
             PrimitiveResult: The result of the N-SET operation.
         """
-        modification_list = Dataset()
-        modification_list.AffectedSOPInstanceUID = str(sop_instance_uid)
-        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
-        modification_list.TransactionUID = str(tx_uid)
-
+        modification_list = self._init_mod_list(str(sop_instance_uid), str(tx_uid))
         sequence_item = Dataset()
         sequence_item.PerformedProcedureStepEndDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -274,10 +270,7 @@ class UPSPullNSetSCU(BaseSCU):
         Returns:
             PrimitiveResult: The result of the N-SET operation.
         """
-        modification_list = Dataset()
-        modification_list.AffectedSOPInstanceUID = str(sop_instance_uid)
-        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
-        modification_list.TransactionUID = str(tx_uid)
+        modification_list = self._init_mod_list(str(sop_instance_uid), str(tx_uid))
         sequence_item = Dataset()
         sequence_item.ProcedureStepCancellationDateTime = datetime.now().strftime("%Y%m%d%H%M%S")  # Could be filled by SCP
         if reason is not None:
@@ -299,11 +292,7 @@ class UPSPullNSetSCU(BaseSCU):
         Returns:
             PrimitiveResult: The result of the N-SET operation.
         """
-        modification_list = Dataset()
-        modification_list.AffectedSOPInstanceUID = str(sop_instance_uid)
-        modification_list.AffectedSOPClassUID = UnifiedProcedureStepPush
-        modification_list.TransactionUID = str(tx_uid)
-
+        modification_list = self._init_mod_list(str(sop_instance_uid), str(tx_uid))
         sequence_item = Dataset()
         # Build OutputInformationSequence using the helper for each item in output_information_args
         sequence_item.OutputInformationSequence = [

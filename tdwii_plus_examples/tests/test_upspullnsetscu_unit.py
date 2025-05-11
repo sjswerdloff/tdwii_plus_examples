@@ -32,8 +32,9 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_associate.return_value = True, mock_assoc_result
 
         # Mock association object and send_n_set
+        # simulating current handler implementation returning 2 responses (pending and dataset)
         mock_assoc_obj = mock.Mock()
-        mock_assoc_obj.send_n_set.return_value = (Dataset(), Dataset())
+        mock_assoc_obj.send_n_set.return_value = [(Dataset(), Dataset()), (Dataset(), Dataset())]
         self.scu.assoc = mock_assoc_obj
 
         # Mock handle_response to return a successful result
@@ -94,8 +95,9 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_associate.return_value = True, mock_assoc_result
 
         # Mock association object and send_n_set
+        # simulating current handler implementation returning 2 responses (pending and dataset)
         mock_assoc_obj = mock.Mock()
-        mock_assoc_obj.send_n_set.return_value = ("rsp_status", "rsp_dataset")
+        mock_assoc_obj.send_n_set.return_value = [(Dataset(), Dataset()), (Dataset(), Dataset())]
         self.scu.assoc = mock_assoc_obj
 
         # Mock handle_response to return a successful result
