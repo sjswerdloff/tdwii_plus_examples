@@ -86,6 +86,18 @@ class TestCStoreSCU(unittest.TestCase):
             if self.stdout_thread:
                 self.stdout_thread.join(timeout=1.0)
 
+        # Print the SCP server output
+        if hasattr(self, "stdout_lines"):
+            print(
+                "\n"
+                + "*" * 80
+                + "\n*** BEGIN SCP SERVER OUTPUT ***\n"
+                + "\n".join(self.stdout_lines)
+                + "\n*** END SCP SERVER OUTPUT ***\n"
+                + "*" * 80
+                + "\n"
+            )
+
         # Remove the temporary directory and its contents
         files_in_temp_dir = os.listdir(self.temp_dir)
         shutil.rmtree(self.temp_dir)
@@ -112,7 +124,7 @@ class TestCStoreSCU(unittest.TestCase):
         command.append("-s")
         command.extend(supported_contexts.split(","))
 
-        self.storescp_started, self.process, self.stdout_thread = start_scp(command, self.test_logger)
+        self.storescp_started, self.process, self.stdout_thread, self.stdout_lines = start_scp(command, self.test_logger)
         self.test_logger.info(f"Started process with PID: {self.process.pid}")
 
         if not self.storescp_started:

@@ -3,6 +3,7 @@
 import copy
 import logging
 import os
+from datetime import datetime
 
 # from io import BytesIO
 from pathlib import Path
@@ -680,7 +681,10 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 )
                 response.ProcedureStepState = requested_step_state
                 response.is_little_endian = True
-                response.is_implicit_VR = True
+                response.is_implicit_VR = False
+                response.ensure_file_meta()
+                response.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+                response.fix_meta_info()
                 # Updates to content of database below for next state change request
                 match.procedure_step_state = requested_step_state
                 match.transaction_uid = transaction_uid
@@ -689,7 +693,7 @@ def handle_naction(event, instance_dir, db_path, cli_config, logger):
                 dcmwrite(
                     Path(instance_dir).joinpath(str(match.sop_instance_uid)),
                     response,
-                    write_like_original=True,
+                    write_like_original=False,
                 )
                 response.TransactionUID = transaction_uid
                 response.Status = service_status
@@ -756,6 +760,9 @@ def handle_nset(
     # also need to validate the content and reject if it's not DICOM conformant and IHE-RO
     # TDW-II profile adherent
     ds_from_request = decode(event.request.ModificationList, True, True)
+    # Add the update of Scheduled Procedure Step Modification DateTime
+    ds_from_request.ScheduledProcedureStepModificationDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
+
     deep_copy_of_request = copy.deepcopy(ds_from_request)
     model = None
     try:
@@ -999,6 +1006,9 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     #  Scheduled Processing Parameters Sequence present
     # ...
 
+    # Add the Scheduled Procedure Step Modification DateTime
+    ds.ScheduledProcedureStepModificationDateTime = datetime.now().strftime("%Y%m%d%H%M%S")
+
     # Add the file meta information elements - must be before adding to DB
     #   ds.file_meta = event.file_meta
     # file_meta = FileMetaDataset()
@@ -1065,7 +1075,12 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
     # Only Scheduled Station Name is relevant for assignment to TDD in TDW-II
     # As the SCP may choose to not send duplicate messages to an AE, only UPS State Report events
     # could maybe be sent and properly documented in conformance statement
-    if "ScheduledStationNameCodeSequence" in ds:
+    # TODO: Send both UPS State Report and UPS Assigned notification when UPS Assigned is required
+    if (
+        "ScheduledStationNameCodeSequence" in ds
+        and isinstance(ds.ScheduledStationNameCodeSequence, (list, tuple))
+        and len(ds.ScheduledStationNameCodeSequence) > 0
+    ):
         event_type = 5
         event_info.ScheduledStationNameCodeSequence = ds.ScheduledStationNameCodeSequence
         if "ScheduledHumanPerformersSequence" in ds:

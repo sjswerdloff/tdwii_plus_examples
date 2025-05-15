@@ -29,6 +29,7 @@ import sys
 from pathlib import Path
 
 from pydicom import dcmread
+from pydicom.errors import InvalidDicomError
 from pynetdicom.apps.common import get_files
 
 from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
@@ -55,15 +56,21 @@ def get_contexts(fpaths, app_logger):
         path = os.fspath(Path(fpath).resolve())
         try:
             ds = dcmread(path)
-        except Exception:
-            bad.append(("Bad DICOM file", path))
+        except InvalidDicomError as e:
+            bad.append((f"Bad DICOM file (InvalidDicomError): {e}", path))
+            continue
+        except Exception as e:
+            bad.append((f"Bad DICOM file: {e}", path))
             continue
 
         try:
             sop_class = ds.SOPClassUID
             tsyntax = ds.file_meta.TransferSyntaxUID
-        except Exception:
-            bad.append(("Unknown SOP Class or Transfer Syntax UID", path))
+        except AttributeError as e:
+            bad.append((f"Unknown SOP Class or Transfer Syntax UID (AttributeError): {e}", path))
+            continue
+        except Exception as e:
+            bad.append((f"Unknown SOP Class or Transfer Syntax UID: {e}", path))
             continue
 
         tsyntaxes = contexts.setdefault(sop_class, [])
@@ -149,6 +156,9 @@ def main():
             try:
                 ds = dcmread(dicom_file_path, force=True)  # set force flag to allow raw DICOM files
                 instances.append(ds)
+            except InvalidDicomError as e:
+                logger.error(f"Failed to read DICOM file {dicom_file_path} (InvalidDicomError): {e}")
+                continue
             except Exception as e:
                 logger.error(f"Failed to read DICOM file {dicom_file_path}: {e}")
                 continue
