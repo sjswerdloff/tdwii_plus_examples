@@ -33,10 +33,7 @@ from tdwii_plus_examples.nsetscu import NSetSCU
 #     pyside2-uic form.ui -o ui_form.py
 from tdwii_plus_examples.tdd.ui_tdd import Ui_MainTDDWidget
 from tdwii_plus_examples.TDWII_PPVS_subscriber.ppvsscp import PPVS_SCP
-from tdwii_plus_examples.TDWII_PPVS_subscriber.upsfindscu import (
-    create_ups_query,
-    get_ups,
-)
+from tdwii_plus_examples.upspullcfindscu import UPSPullCFindSCU
 from tdwii_plus_examples.upspullnactionscu import UPSPullNActionSCU
 from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
@@ -373,20 +370,26 @@ class TDD_Widget(QWidget):
         # do C-FIND-RQ
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         upsscp_ae_title = self.ui.ups_ae_line_edit.text()
+        upsscp_ip_addr = tdwii_config.known_ae_ipaddr[upsscp_ae_title]
+        upsscp_port = tdwii_config.known_ae_port[upsscp_ae_title]
         machine_name = self.ui.machine_name_line_edit.text()
         soonest_datetime_widget = self.ui.soonest_date_time_edit
         procedure_step_state = self.ui.step_status_combo_box.currentText()
         if procedure_step_state == "ANY":
             procedure_step_state = ""
 
-        query_ds = create_ups_query(
+        cfind_scu = UPSPullCFindSCU(
+            calling_ae_title=my_ae_title, called_ae_title=upsscp_ae_title, called_ip=upsscp_ip_addr, called_port=upsscp_port
+        )
+
+        query_ds = cfind_scu.create_ups_query(
             ups_uid=ups_uid,
             machine_name=machine_name,
             procedure_step_state=procedure_step_state,
             scheduled_no_sooner_than=soonest_datetime_widget.dateTime().toString("yyyyMMddhhmm"),
             scheduled_no_later_than=self.ui.latest_date_time_edit.dateTime().toString("yyyyMMddhhmm"),
         )
-        responses = get_ups(query_ds, my_ae_title, upsscp_ae_title)
+        responses = cfind_scu.get_ups(query_ds)
 
         self.ui.ups_response_tree_widget.clear()
         self.ups_dataset_dict.clear()
