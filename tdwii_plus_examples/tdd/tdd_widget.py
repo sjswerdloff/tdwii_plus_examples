@@ -25,7 +25,6 @@ from PySide6.QtWidgets import (
 
 from tdwii_plus_examples import cmove_inputs, tdwii_config
 from tdwii_plus_examples.cstorescu import CStoreSCU
-from tdwii_plus_examples.nsetscu import NSetSCU
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -35,6 +34,7 @@ from tdwii_plus_examples.tdd.ui_tdd import Ui_MainTDDWidget
 from tdwii_plus_examples.TDWII_PPVS_subscriber.ppvsscp import PPVS_SCP
 from tdwii_plus_examples.upspullcfindscu import UPSPullCFindSCU
 from tdwii_plus_examples.upspullnactionscu import UPSPullNActionSCU
+from tdwii_plus_examples.upspullnsetscu import UPSPullNSetSCU
 from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
@@ -190,11 +190,15 @@ class TDD_Widget(QWidget):
     def _send_beam_and_session_percentage_update(self):
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         tms_ae_title = self.ui.ups_ae_line_edit.text()
+        tms_ip_addr = tdwii_config.known_ae_ipaddr[tms_ae_title]
+        tms_port = tdwii_config.known_ae_port[tms_ae_title]
         beam_number = self.ui.beam_number_spin_box.text()
         percent_complete = self.ui.session_percent_spin_box.text()
         if self.clearing_flag:
             return  # it was a reset/clear from cancel or complete.  Don't try to do an N-SET, it's no longer IN PROGRESS
-        n_set_scu = NSetSCU(sending_ae_title=my_ae_title, receiving_ae_title=tms_ae_title)
+        n_set_scu = UPSPullNSetSCU(
+            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, called_ip=tms_ip_addr, called_port=tms_port
+        )
 
         ups_uid = self._get_currently_selected_ups_uid()
         transaction_uid = self.current_transaction_uid
@@ -229,9 +233,8 @@ class TDD_Widget(QWidget):
 
         ups_ds = self.ups_dataset_dict[ups_uid]
         ups_ds.update(ds)  # include UnifiedProcedureStepPerformedProcedureSequence. Needed for final update
-        status, ups_responses = n_set_scu.n_set_ups(n_set_ds=ds, receiving_ae_title=tms_ae_title)
-        logging.info(str(status))
-        logging.info(str(ups_responses))
+        result = n_set_scu.modify_ups(sop_instance_uid=ups_uid, modification_list=ds)
+        logging.info(result.status_category)
 
     @Slot()
     def _get_input_information(self):
@@ -693,8 +696,15 @@ class TDD_Widget(QWidget):
     def _final_update(self):
         my_ae_title = self.ui.tdd_ae_line_edit.text()
         tms_ae_title = self.ui.ups_ae_line_edit.text()
+        tms_ip_addr = tdwii_config.known_ae_ipaddr[tms_ae_title]
+        tms_port = tdwii_config.known_ae_port[tms_ae_title]
+
         transaction_uid = self.current_transaction_uid
-        n_set_scu = NSetSCU(sending_ae_title=my_ae_title, receiving_ae_title=tms_ae_title)
+
+        n_set_scu = UPSPullNSetSCU(
+            calling_ae_title=my_ae_title, called_ae_title=tms_ae_title, called_ip=tms_ip_addr, called_port=tms_port
+        )
+
         ups_uid = self._get_currently_selected_ups_uid()
         ups_ds = self.ups_dataset_dict[ups_uid]
         ds = Dataset()
@@ -724,7 +734,9 @@ class TDD_Widget(QWidget):
             ].OutputInformationSequence
         ds.update(update_ds)
 
-        n_set_scu.n_set_ups(ds)
+        result = n_set_scu.modify_ups(sop_instance_uid=ups_uid, modification_list=ds)
+
+        logging.info(result.status_category)
 
         return
 
