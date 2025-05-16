@@ -8,8 +8,10 @@ This application modifies a UPS instance on a remote SCP using the N-SET DIMSE s
 import argparse
 import logging
 import sys
+from typing import Any
 
 from pydicom import dcmread
+from pydicom.uid import UID
 
 from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_ups
 from tdwii_plus_examples.upspullnactionscu import UPSPullNActionSCU
@@ -17,7 +19,7 @@ from tdwii_plus_examples.upspullnsetscu import UPSPullNSetSCU
 from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
 
 
-def _parse_code_seq_item(val):
+def _parse_code_seq_item(val: str) -> tuple[str, ...]:
     return tuple(x.strip() for x in val.split(",")) if "," in val else val
 
 
@@ -48,31 +50,24 @@ def main():  # sourcery skip: remove-redundant-if
         print(f"Updating progress info: progress_value={progress_value}, progress_description={progress_description}")
         result = scu.update_progress_information(sop_instance_uid, tx_uid, progress_value, progress_description)
 
-    # Update UPS Performed Start Information if requested
     elif args.start:
         result = _modify_start_info(args, scu, sop_instance_uid, tx_uid)
 
-    # Update UPS end information if requested
     elif args.end:
         print("Updating end info")
         result = scu.update_end_info(sop_instance_uid, tx_uid)
 
-    # Update UPS cancel information if requested
     elif args.cancel is not None:
         print(f"Updating cancel info with reason: {args.cancel}")
         result = scu.update_cancel_info(sop_instance_uid, tx_uid, args.cancel)
 
-    # Update UPS output information if requested
     elif args.output:
         # Parse each output info string into a tuple
         output_information_args = []
-        for info_str in args.output:
-            parts = [x.strip() for x in info_str.split(",")]
-            output_information_args.append(tuple(parts))
+        output_information_args.extend(_parse_code_seq_item(info_str) for info_str in args.output)
         print(f"Updating output information with: {output_information_args}")
         result = scu.update_output_information(sop_instance_uid, tx_uid, output_information_args)
 
-    # Update UPS with provided Modifition List if no specific update requested
     elif args.list:
         # Load the modification list from raw DICOM dataset file
         modification_list = dcmread(args.list, force=True)
@@ -86,14 +81,18 @@ def main():  # sourcery skip: remove-redundant-if
         print(f"UPS modification failed: {result.status_description}")
 
 
-# TODO Rename this here and in `main`
-def _modify_start_info(args, scu, sop_instance_uid, tx_uid):
+def _modify_start_info(
+    args: argparse.Namespace,
+    scu: "UPSPullNSetSCU",
+    sop_instance_uid: str,
+    tx_uid: str,
+) -> "UPSPullNSetSCU.PrimitiveResult":
     station_name = args.start[0]
     workitem_code = args.start[1]
     human_performer = args.start[2] if len(args.start) > 2 else None
     human_performer_name = args.start[3] if len(args.start) > 3 else None
 
-    # Convert to tuple if comma-separated (e.g. "CODE,DESIGNATOR,MEANING")
+    # Convert to tuple if comma-separated (e.g. "CODE, DESIGNATOR, MEANING")
     station_name = _parse_code_seq_item(station_name)
     workitem_code = _parse_code_seq_item(workitem_code)
     human_performer = _parse_code_seq_item(human_performer) if human_performer else None
@@ -114,7 +113,7 @@ def _modify_start_info(args, scu, sop_instance_uid, tx_uid):
     )
 
 
-def _build_parser():
+def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Modify a DICOM UPS instance using N-SET", formatter_class=argparse.RawTextHelpFormatter
     )
@@ -168,7 +167,11 @@ def _build_parser():
     return parser
 
 
-def _prepare_modification_context(args, parser, logger):
+def _prepare_modification_context(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+    logger: logging.Logger,
+) -> tuple[str, str]:
     """
     Prepare and validate all required context for UPS modification:
     - Handles creation and claiming of UPS if requested.
@@ -177,7 +180,7 @@ def _prepare_modification_context(args, parser, logger):
     """
     # Optionally create a new UPS instance
     if args.create:
-        sop_instance_uid = _create_sample_ups(args, logger)
+        sop_instance_uid = _ncreate_sample_ups(args, logger)
     else:
         if not args.sop_instance_uid:
             print("You must provide --sop_instance_uid if not creating a new UPS.")
@@ -236,11 +239,11 @@ def _prepare_modification_context(args, parser, logger):
     return sop_instance_uid, tx_uid
 
 
-def _is_tuple_of_3(val):
+def _is_tuple_of_3(val: Any) -> bool:
     return isinstance(val, tuple) and len(val) == 3 and all(isinstance(x, str) for x in val)
 
 
-def _is_code_seq_arg(val):
+def _is_code_seq_arg(val: Any) -> bool:
     from pydicom.dataset import Dataset
 
     if isinstance(val, Dataset):
@@ -250,7 +253,7 @@ def _is_code_seq_arg(val):
     return isinstance(val, str) and val.count(",") == 2
 
 
-def _setup_logger(args):
+def _setup_logger(args: argparse.Namespace) -> logging.Logger:
     if args.quiet:
         log_level = logging.CRITICAL
     elif args.verbose:
@@ -266,7 +269,7 @@ def _setup_logger(args):
     return logger
 
 
-def _create_sample_ups(args, logger):
+def _ncreate_sample_ups(args: argparse.Namespace, logger: logging.Logger) -> str:
     ups_instance = generate_ups()
     push_scu = UPSPushNCreateSCU(
         calling_ae_title="UPSPUSH",
@@ -277,14 +280,18 @@ def _create_sample_ups(args, logger):
     )
     num_created_instances = push_scu.create_ups_instances([ups_instance])
     if num_created_instances != 1:
-        print("Failed to create UPS instance.")
+        print("Failed to create UPS instance in SCP.")
         sys.exit(1)
     result = ups_instance.SOPInstanceUID
-    print(f"Created UPS instance: {result}")
+    print(f"Created UPS instance in SCP: {result}")
     return result
 
 
-def _claim_ups(args, sop_instance_uid, logger):
+def _claim_ups(
+    args: argparse.Namespace,
+    sop_instance_uid: str,
+    logger: logging.Logger,
+) -> str | UID:
     change_state_scu = UPSPullNActionSCU(
         calling_ae_title="UPSPULL",
         called_ae_title=args.ae_title,

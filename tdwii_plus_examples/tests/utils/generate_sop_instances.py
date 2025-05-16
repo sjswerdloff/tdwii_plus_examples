@@ -9,6 +9,7 @@ from pydicom.uid import PYDICOM_IMPLEMENTATION_UID, UID, ExplicitVRLittleEndian,
 from pynetdicom.sop_class import RTBeamsDeliveryInstructionStorage, RTIonPlanStorage
 
 from tdwii_plus_examples._dicom_macros import (
+    ValueType,
     create_code_seq_item,
     create_content_item,
     create_referenced_instances_and_access_item,
@@ -330,22 +331,24 @@ def generate_ups() -> Dataset:
 
     treatment_delivery_concept = create_code_seq_item("121740", "DCM", "Treatment Delivery Type")
     treatment_delivery_type = "TREATMENT"
-    treatment_param_item = create_content_item("TEXT", treatment_delivery_type, treatment_delivery_concept)
+    treatment_param_item = create_content_item(ValueType.TEXT, treatment_delivery_type, treatment_delivery_concept)
     scheduled_processing_parameters_list.append(treatment_param_item)
 
     plan_label_concept = create_code_seq_item("2018001", "99IHERO2018", "Plan Label")
     plan_label_value = "No Plan Label"
-    plan_label_item = create_content_item("TEXT", plan_label_value, plan_label_concept)
+    plan_label_item = create_content_item(ValueType.TEXT, plan_label_value, plan_label_concept)
     scheduled_processing_parameters_list.append(plan_label_item)
 
     current_fraction_concept = create_code_seq_item("2018002", "99IHERO2018", "Current Fraction Number")
     current_fraction_number = "1"
-    current_fraction_item = create_content_item("NUMERIC", int(current_fraction_number), current_fraction_concept)
+    current_fraction_item = create_content_item(ValueType.NUMERIC, int(current_fraction_number), current_fraction_concept)
     scheduled_processing_parameters_list.append(current_fraction_item)
 
     fractions_planned_concept = create_code_seq_item("2018003", "99IHERO2018", "Number of Fractions Planned")
     number_of_fractions_planned = "30"
-    fractions_planned_item = create_content_item("NUMERIC", int(number_of_fractions_planned), fractions_planned_concept)
+    fractions_planned_item = create_content_item(
+        ValueType.NUMERIC, int(number_of_fractions_planned), fractions_planned_concept
+    )
     scheduled_processing_parameters_list.append(fractions_planned_item)
 
     ds.ScheduledProcessingParametersSequence = Sequence(scheduled_processing_parameters_list)  # Type 2. RC+*

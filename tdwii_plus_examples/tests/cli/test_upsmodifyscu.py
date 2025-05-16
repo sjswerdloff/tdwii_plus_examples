@@ -10,7 +10,7 @@ class TestUpsModifySCU(unittest.TestCase):
         # Patch sys.argv for argparse
         with (
             patch.object(sys, "argv", test_args),
-            patch("tdwii_plus_examples.cli.upsmodifyscu._create_sample_ups", return_value="1.2.3.4.5"),
+            patch("tdwii_plus_examples.cli.upsmodifyscu._ncreate_sample_ups", return_value="1.2.3.4.5"),
             patch("tdwii_plus_examples.cli.upsmodifyscu._claim_ups", return_value="1.2.3.4.5.6"),
             patch("tdwii_plus_examples.cli.upsmodifyscu.UPSPullNSetSCU") as mock_scu_class,
             patch("tdwii_plus_examples.cli.upsmodifyscu.dcmread", return_value="mock_ds"),
@@ -118,7 +118,7 @@ class TestUpsModifySCU(unittest.TestCase):
 
         print("Test: Happy path - create and claim")
         with (
-            patch("tdwii_plus_examples.cli.upsmodifyscu._create_sample_ups", return_value="created_uid"),
+            patch("tdwii_plus_examples.cli.upsmodifyscu._ncreate_sample_ups", return_value="created_uid"),
             patch("tdwii_plus_examples.cli.upsmodifyscu._claim_ups", return_value="claimed_tx_uid"),
         ):
 
