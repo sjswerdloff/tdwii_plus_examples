@@ -41,7 +41,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock(status_category="Success")
         mock_handle_response.return_value = mock_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
 
         # Create the modification list dataset
         modification_list = Dataset()
@@ -74,7 +74,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_assoc_result.description = "Association failed"
         mock_associate.return_value = False, mock_assoc_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
         modification_list = Dataset()
         result = self.scu.modify_ups(sop_instance_uid, modification_list)
 
@@ -104,7 +104,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock(status_category="Success")
         mock_handle_response.return_value = mock_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
         modification_list = Dataset()
         result = self.scu.modify_ups(sop_instance_uid, modification_list)
 
@@ -128,7 +128,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock()
         mock_modify_ups.return_value = mock_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
         tx_uid = "1.2.3.4"
         progress = 50
 
@@ -162,7 +162,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock()
         mock_modify_ups.return_value = mock_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
         tx_uid = "1.2.3.4"
         station_name = ("GTR", "TMS", "Gantry")
         workitem_code = ("121726", "DCM", "RT Treatment with Internal Verification")
@@ -199,7 +199,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock()
         mock_modify_ups.return_value = mock_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
         tx_uid = "1.2.3.4"
 
         result = self.scu.update_end_info(sop_instance_uid, tx_uid)
@@ -225,7 +225,7 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock()
         mock_modify_ups.return_value = mock_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
         tx_uid = "1.2.3.4"
 
         result = self.scu.update_cancel_info(sop_instance_uid, tx_uid, reason)
@@ -246,9 +246,9 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         mock_result = mock.Mock()
         mock_modify_ups.return_value = mock_result
 
-        sop_instance_uid = generate_uid
+        sop_instance_uid = generate_uid()
         tx_uid = "1.2.3.4"
-        output_information_args = [("AET", generate_uid, generate_uid, "1.2.840.10008.5.1.4.1.1.2", generate_uid)]
+        output_information_args = [("AET", generate_uid(), generate_uid(), "1.2.840.10008.5.1.4.1.1.2", generate_uid())]
 
         result = self.scu.update_output_information(sop_instance_uid, tx_uid, output_information_args)
 

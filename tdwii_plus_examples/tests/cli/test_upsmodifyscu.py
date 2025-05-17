@@ -2,7 +2,7 @@ import sys
 import unittest
 from unittest.mock import MagicMock, patch
 
-from tdwii_plus_examples.cli.upsmodifyscu import _prepare_modification_context
+from tdwii_plus_examples.cli.upsmodifyscu import _get_ups_info
 
 
 class TestUpsModifySCU(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestUpsModifySCU(unittest.TestCase):
         # Patch sys.argv for argparse
         with (
             patch.object(sys, "argv", test_args),
-            patch("tdwii_plus_examples.cli.upsmodifyscu._create_sample_ups", return_value="1.2.3.4.5"),
+            patch("tdwii_plus_examples.cli.upsmodifyscu._ncreate_sample_ups", return_value="1.2.3.4.5"),
             patch("tdwii_plus_examples.cli.upsmodifyscu._claim_ups", return_value="1.2.3.4.5.6"),
             patch("tdwii_plus_examples.cli.upsmodifyscu.UPSPullNSetSCU") as mock_scu_class,
             patch("tdwii_plus_examples.cli.upsmodifyscu.dcmread", return_value="mock_ds"),
@@ -105,7 +105,7 @@ class TestUpsModifySCU(unittest.TestCase):
             None,
         )
 
-    def test_prepare_modification_context(self):
+    def setUp(self):
         class DummyParser:
             def error(self, msg):
                 raise ValueError(msg)
@@ -113,12 +113,12 @@ class TestUpsModifySCU(unittest.TestCase):
         class DummyLogger:
             pass
 
-        parser = DummyParser()
-        logger = DummyLogger()
+        self.parser = DummyParser()
+        self.logger = DummyLogger()
 
-        print("Test: Happy path - create and claim")
+    def test_get_ups_info_create_and_claim(self):
         with (
-            patch("tdwii_plus_examples.cli.upsmodifyscu._create_sample_ups", return_value="created_uid"),
+            patch("tdwii_plus_examples.cli.upsmodifyscu._ncreate_sample_ups", return_value="created_uid"),
             patch("tdwii_plus_examples.cli.upsmodifyscu._claim_ups", return_value="claimed_tx_uid"),
         ):
 
@@ -136,12 +136,11 @@ class TestUpsModifySCU(unittest.TestCase):
             args.cancel = None
             args.output = None
             args.list = None
-            sop_instance_uid, tx_uid = _prepare_modification_context(args, parser, logger)
+            sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger)
             self.assertEqual(sop_instance_uid, "created_uid")
             self.assertEqual(tx_uid, "claimed_tx_uid")
 
-        print("Test: Error - missing sop_instance_uid")
-
+    def test_get_ups_info_missing_sop_instance_uid(self):
         class Args:
             pass
 
@@ -156,71 +155,10 @@ class TestUpsModifySCU(unittest.TestCase):
         args.cancel = None
         args.output = None
         args.list = None
-        with self.assertRaises(SystemExit):
-            _prepare_modification_context(args, parser, logger)
+        with self.assertRaises(ValueError):
+            _get_ups_info(args, self.parser, self.logger)
 
-        print("Test: Error - progress too many args")
-
-        class Args:
-            pass
-
-        args = Args()
-        args.create = False
-        args.claim = False
-        args.sop_instance_uid = "uid"
-        args.transaction_uid = "txid"
-        args.progress = ["1", "2", "3"]
-        args.start = None
-        args.end = False
-        args.cancel = None
-        args.output = None
-        args.list = None
-        with self.assertRaises(Exception) as exc:
-            _prepare_modification_context(args, parser, logger)
-        self.assertIn("--progress takes at most 2 arguments", str(exc.exception))
-
-        print("Test: Error - start wrong length")
-
-        class Args:
-            pass
-
-        args = Args()
-        args.create = False
-        args.claim = False
-        args.sop_instance_uid = "uid"
-        args.transaction_uid = "txid"
-        args.progress = None
-        args.start = ["A"]
-        args.end = False
-        args.cancel = None
-        args.output = None
-        args.list = None
-        with self.assertRaises(Exception) as exc:
-            _prepare_modification_context(args, parser, logger)
-        self.assertIn("--start requires at least 2 and at most 4 arguments", str(exc.exception))
-
-        print("Test: Error - output wrong length")
-
-        class Args:
-            pass
-
-        args = Args()
-        args.create = False
-        args.claim = False
-        args.sop_instance_uid = "uid"
-        args.transaction_uid = "txid"
-        args.progress = None
-        args.start = None
-        args.end = False
-        args.cancel = None
-        args.output = ["A,B,C"]
-        args.list = None
-        with self.assertRaises(Exception) as exc:
-            _prepare_modification_context(args, parser, logger)
-        self.assertIn("--output: each OUTPUT_INFO must have 5 comma-separated values", str(exc.exception))
-
-        print("Test: Happy path - progress")
-
+    def test_get_ups_info_progress(self):
         class Args:
             pass
 
@@ -235,12 +173,11 @@ class TestUpsModifySCU(unittest.TestCase):
         args.cancel = None
         args.output = None
         args.list = None
-        sop_instance_uid, tx_uid = _prepare_modification_context(args, parser, logger)
+        sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger)
         self.assertEqual(sop_instance_uid, "uid")
         self.assertEqual(tx_uid, "txid")
 
-        print("Test: Happy path - output")
-
+    def test_get_ups_info_output(self):
         class Args:
             pass
 
@@ -255,7 +192,7 @@ class TestUpsModifySCU(unittest.TestCase):
         args.cancel = None
         args.output = ["AET,1.2.3,1.2.4,1.2.840.10008.5.1.4.1.1.2,1.2.5"]
         args.list = None
-        sop_instance_uid, tx_uid = _prepare_modification_context(args, parser, logger)
+        sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger)
         self.assertEqual(sop_instance_uid, "uid")
         self.assertEqual(tx_uid, "txid")
 

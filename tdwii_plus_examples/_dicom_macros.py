@@ -1,6 +1,34 @@
+from enum import Enum, unique
+
 from pydicom import Sequence
 from pydicom.dataset import Dataset
 from pydicom.uid import UID
+
+
+@unique
+class ValueType(Enum):
+    """
+    Enumerates the allowed Content Item Value Type as defined in PS3.3 C.17.3.2.1
+
+    """
+
+    TEXT = "TEXT"
+    NUM = "NUM"
+    NUMERIC = "NUMERIC"  # not in Table C.17.3-7 !?
+    CODE = "CODE"
+    DATETIME = "DATETIME"
+    DATE = "DATE"
+    TIME = "TIME"
+    UIDREF = "UIDREF"
+    PNAME = "PNAME"
+    COMPOSITE = "COMPOSITE"
+    IMAGE = "IMAGE"
+    WAVEFORM = "WAVEFORM"
+    SCOORD = "SCOORD"
+    SCOORD3D = "SCOORD3D"
+    TCOORD = "TCOORD"
+    CONTAINER = "CONTAINER"
+    TABLE = "TABLE"
 
 
 def create_measurement_unit_code_seq_item(value_unit: str = None) -> Dataset:
@@ -43,14 +71,14 @@ def create_code_seq_item(value: str | int, designator: str, meaning: str) -> Dat
     return code_seq_item
 
 
-def create_content_item(value_type: str, value: any, code_seq_item: Dataset, value_unit: str = None) -> Dataset:
+def create_content_item(value_type: ValueType, value: any, code_seq_item: Dataset, value_unit: str = None) -> Dataset:
     """
-    Create a DICOM Content Item Dataset for use in structured reports or UPS.
+    Create a DICOM Content Item Dataset for use in Code Sequences of UPS.
     See PS3.3 Table 10-2. Content Item Macro Attributes
     See PS3.16 7.2.2 Measurement Unit
 
     Args:
-        value_type (str): The type of value ("TEXT" or "NUMERIC").
+        value_type (ValueType): The VT (ValueType.TEXT or ValueType.NUMERIC).
         value_unit (str): The unit of a value of type NUMERIC. Defaults to None.
         value (any): The value to store.
         code_seq_item (Dataset): The concept name code sequence item.
@@ -59,16 +87,16 @@ def create_content_item(value_type: str, value: any, code_seq_item: Dataset, val
         Dataset: DICOM content item.
     """
     content_item = Dataset()
-    content_item.ValueType = value_type
+    content_item.ValueType = value_type.value
     if code_seq_item is not None:
         content_item.ConceptNameCodeSequence = Sequence([code_seq_item])
-    if value_type == "TEXT":
+    if value_type == ValueType.TEXT:
         content_item.TextValue = str(value)
-    elif value_type == "NUMERIC":
+    elif value_type == ValueType.NUMERIC:
         content_item.MeasurementUnitsCodeSequence = Sequence([create_measurement_unit_code_seq_item()])
         content_item.NumericValue = value
     else:
-        raise ValueError(f"Value Type {value_type} not supported")
+        raise NotImplementedError(f"Value Type {value_type} not supported")
     return content_item
 
 

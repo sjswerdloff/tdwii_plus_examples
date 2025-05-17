@@ -5,7 +5,7 @@ from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_ups_
 
 def main():
     if len(sys.argv) not in (2, 3):
-        print("Usage: python create_sample_ups.py <folder_path> [file_name]")
+        print("Usage: python generate_sample_ups.py <folder_path> [file_name]")
         sys.exit(1)
     folder_path = sys.argv[1]
     file_name = sys.argv[2] if len(sys.argv) == 3 else None
