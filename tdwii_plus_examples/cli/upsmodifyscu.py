@@ -19,15 +19,16 @@ from tdwii_plus_examples.upspullnsetscu import UPSPullNSetSCU
 from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
 
 
-def _parse_code_seq_item(val: str) -> tuple[str, ...]:
-    return tuple(x.strip() for x in val.split(",")) if "," in val else val
+def _csv_to_tuple(val: str) -> tuple[str, ...]:
+    return tuple(x.strip() for x in val.split(","))
 
 
 def main():  # sourcery skip: remove-redundant-if
     parser = _build_parser()
     args = parser.parse_args()
+    _check_args(args, parser)
     logger = _setup_logger(args)
-    sop_instance_uid, tx_uid = _prepare_modification_context(args, parser, logger)
+    sop_instance_uid, tx_uid = _get_ups_info(args, parser, logger)
 
     # Create the N-SET SCU instance
     scu = UPSPullNSetSCU(
@@ -64,7 +65,7 @@ def main():  # sourcery skip: remove-redundant-if
     elif args.output:
         # Parse each output info string into a tuple
         output_information_args = []
-        output_information_args.extend(_parse_code_seq_item(info_str) for info_str in args.output)
+        output_information_args.extend(_csv_to_tuple(info_str) for info_str in args.output)
         print(f"Updating output information with: {output_information_args}")
         result = scu.update_output_information(sop_instance_uid, tx_uid, output_information_args)
 
@@ -89,13 +90,19 @@ def _modify_start_info(
 ) -> "UPSPullNSetSCU.PrimitiveResult":
     station_name = args.start[0]
     workitem_code = args.start[1]
-    human_performer = args.start[2] if len(args.start) > 2 else None
-    human_performer_name = args.start[3] if len(args.start) > 3 else None
+    human_performer = None
+    human_performer_name = None
 
-    # Convert to tuple if comma-separated (e.g. "CODE, DESIGNATOR, MEANING")
-    station_name = _parse_code_seq_item(station_name)
-    workitem_code = _parse_code_seq_item(workitem_code)
-    human_performer = _parse_code_seq_item(human_performer) if human_performer else None
+    # Convert comma-separated strings to to tuple
+    station_name = _csv_to_tuple(station_name)
+    workitem_code = _csv_to_tuple(workitem_code)
+
+    if len(args.start) > 2:
+        val = args.start[2]
+        if _is_code_seq_arg(val):
+            human_performer = _csv_to_tuple(val)
+        else:
+            human_performer_name = val
 
     # Update UPS start info
     print(
@@ -137,8 +144,10 @@ def _build_parser() -> argparse.ArgumentParser:
         type=str,
         metavar=("STATION_NAME", "OTHERS"),
         help=(
-            "Update UPS start info: station_name workitem_code [human_performer] [human_performer_name].\n"
-            'Example: --start "GTR1, TMS, Gantry 1" "121726, DCM, RT Treatment with Internal Verification"'
+            "Update UPS start info: station_name workitem_code [human_performer|human_performer_name].\n"
+            "Provide 2 code sequence items, each as a comma-separated string.\n"
+            "Optionally provide either a code sequence (3 comma-separated components) or a Person Name string (no spaces).\n"
+            'Example: --start "GTR1, TMS, Gantry 1" "121726, DCM, RT Treatment with Internal Verification" "Alice^Smith"'
         ),
     )
     parser.add_argument("--end", action="store_true", help="Update UPS end info.")
@@ -151,8 +160,8 @@ def _build_parser() -> argparse.ArgumentParser:
         metavar="OUTPUT_INFO",
         help=(
             "Update UPS output information.\n"
-            "Provide 1 or more output info items, each as a comma-separated string:\n"
-            "retrieve_ae_title,study_instance_uid,series_instance_uid,sop_class_uid,sop_instance_uid\n"
+            "Provide a comma-separated string with the following information:\n"
+            "retrieve_ae_title, study_instance_uid, series_instance_uid, sop_class_uid, sop_instance_uid\n"
             'Example: --output "<AET>, <StudyInstanceUID>, <SeriesInstanceUID>, <SOPClassUID>, <SOPInstanceUID>"'
         ),
     )
@@ -167,7 +176,50 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _prepare_modification_context(
+def _check_args(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+):
+    # Argument checks for progress
+    if args.progress and len(args.progress) > 2:
+        parser.error("--progress takes at most 2 arguments: value [description]")
+
+    # Argument checks for start
+    if args.start:
+        if len(args.start) < 2 or len(args.start) > 3:
+            parser.error(
+                "--start requires at least 2 and at most 3 arguments: "
+                "station_name workitem_code [human_performer|human_performer_name]. "
+            )
+
+        # Validate station_name and workitem_code
+        for idx, label in enumerate(("station_name", "workitem_code")):
+            if not _is_code_seq_arg(args.start[idx]):
+                parser.error(f"--start: {label} must be a string of 3 comma-separated components")
+
+        # Validate human_performer or human_performer_name if present
+        if len(args.start) > 2:
+            val = args.start[2]
+            if not isinstance(val, str):
+                parser.error("--start: third argument must be a string (either a code sequence item or a Person Name)")
+            is_code_seq = _is_code_seq_arg(val)
+            is_valid_pn = "," not in val and " " not in val and val != ""
+            if not (is_code_seq or is_valid_pn):
+                parser.error(
+                    "--start: third argument must be either a string of 3 comma-separated components (code sequence)"
+                    " or a Person Name (PN) string without spaces"
+                )
+
+    # Argument checks for output
+    if args.output:
+        if len(args.output) < 1:
+            parser.error("--output requires at least one string with 5 comma-separated values")
+        for info_str in args.output:
+            if not _is_csv(info_str, 5):
+                parser.error("--output: each OUTPUT_INFO must be a string with 5 comma-separated values: ")
+
+
+def _get_ups_info(
     args: argparse.Namespace,
     parser: argparse.ArgumentParser,
     logger: logging.Logger,
@@ -183,74 +235,33 @@ def _prepare_modification_context(
         sop_instance_uid = _ncreate_sample_ups(args, logger)
     else:
         if not args.sop_instance_uid:
-            print("You must provide --sop_instance_uid if not creating a new UPS.")
-            sys.exit(1)
+            parser.error("You must provide --sop_instance_uid if not creating a new UPS.")
         sop_instance_uid = args.sop_instance_uid
 
     # Optionally claim the UPS
     if args.claim:
         tx_uid = _claim_ups(args, sop_instance_uid, logger)
         if not tx_uid:
-            print("Failed to claim UPS instance.")
-            sys.exit(1)
+            parser.error("Failed to claim UPS instance.")
         print(f"Claimed UPS instance with Transaction UID: {tx_uid}")
     else:
         tx_uid = args.transaction_uid
         if not tx_uid:
-            print("You must provide --transaction_uid if not claiming the UPS.")
-            sys.exit(1)
-
-    # Argument checks for progress
-    if args.progress and len(args.progress) > 2:
-        parser.error("--progress takes at most 2 arguments: value [description]")
-
-    # Argument checks for start
-    if args.start:
-        if not (len(args.start) >= 2 and len(args.start) <= 4):
-            parser.error(
-                "--start requires at least 2 and at most 4 arguments: "
-                "station_name workitem_code [human_performer] [human_performer_name]"
-            )
-
-        # Only checks, no assignments
-        if not _is_code_seq_arg(args.start[0]):
-            parser.error("--start: station_name must be a tuple of 3 strings or a pydicom.Dataset")
-        if not _is_code_seq_arg(args.start[1]):
-            parser.error("--start: workitem_code must be a tuple of 3 strings or a pydicom.Dataset")
-        if len(args.start) > 2:
-            if args.start[2] is not None and not _is_code_seq_arg(args.start[2]):
-                parser.error("--start: human_performer must be a tuple of 3 strings or a pydicom.Dataset")
-        if len(args.start) > 3:
-            if args.start[3] is not None and not isinstance(args.start[3], str):
-                parser.error("--start: human_performer_name must be a string if provided")
-
-    # Argument checks for output
-    if args.output:
-        if len(args.output) < 1:
-            parser.error("--output requires at least one output info item")
-        for info_str in args.output:
-            parts = [x.strip() for x in info_str.split(",")]
-            if len(parts) != 5:
-                parser.error(
-                    "--output: each OUTPUT_INFO must have 5 comma-separated values: "
-                    "retrieve_ae_title,study_instance_uid,series_instance_uid,sop_class_uid,sop_instance_uid"
-                )
+            parser.error("You must provide --transaction_uid if not claiming the UPS.")
 
     return sop_instance_uid, tx_uid
 
 
-def _is_tuple_of_3(val: Any) -> bool:
-    return isinstance(val, tuple) and len(val) == 3 and all(isinstance(x, str) for x in val)
-
-
 def _is_code_seq_arg(val: Any) -> bool:
-    from pydicom.dataset import Dataset
+    return _is_csv(val, 3)
 
-    if isinstance(val, Dataset):
-        return True
-    if _is_tuple_of_3(val):
-        return True
-    return isinstance(val, str) and val.count(",") == 2
+
+def _is_csv(val: Any, n: int) -> bool:
+    """Return True if val is a string with n comma-separated components."""
+    if isinstance(val, str):
+        parts = [x.strip() for x in val.split(",")]
+        return len(parts) == n
+    return False
 
 
 def _setup_logger(args: argparse.Namespace) -> logging.Logger:

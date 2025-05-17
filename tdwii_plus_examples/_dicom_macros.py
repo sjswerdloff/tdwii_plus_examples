@@ -96,7 +96,7 @@ def create_content_item(value_type: ValueType, value: any, code_seq_item: Datase
         content_item.MeasurementUnitsCodeSequence = Sequence([create_measurement_unit_code_seq_item()])
         content_item.NumericValue = value
     else:
-        raise ValueError(f"Value Type {value_type} not supported")
+        raise NotImplementedError(f"Value Type {value_type} not supported")
     return content_item
 
 

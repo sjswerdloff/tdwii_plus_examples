@@ -2,6 +2,8 @@
 import argparse
 import logging
 import os
+import sys
+from typing import NoReturn
 
 from pydicom.dataset import FileMetaDataset
 from pydicom.uid import PYDICOM_IMPLEMENTATION_UID, ExplicitVRLittleEndian
@@ -9,7 +11,7 @@ from pydicom.uid import PYDICOM_IMPLEMENTATION_UID, ExplicitVRLittleEndian
 from tdwii_plus_examples.upspullcfindscu import UPSPullCFindSCU
 
 
-def main():
+def main() -> NoReturn:
     parser = argparse.ArgumentParser(description="UPS C-FIND SCU (UPS Query)")
     parser.add_argument("ip", type=str, help="IP address or hostname of called AE")
     parser.add_argument("port", type=int, help="TCP port number of called AE")
@@ -36,10 +38,10 @@ def main():
 
     if args.quiet:
         log_level = logging.CRITICAL
-    elif args.verbose:
-        log_level = logging.INFO
     elif args.debug:
         log_level = logging.DEBUG
+    elif args.verbose:
+        log_level = logging.INFO
     else:
         log_level = logging.WARNING
 
@@ -70,35 +72,35 @@ def main():
 
     if not ups_responses:
         print("No UPS instances found matching the query.")
-    else:
-        print(f"Found {len(ups_responses)} UPS instance(s):")
-        for i, ds in enumerate(ups_responses, 1):
-            print(f"\n--- UPS Instance {i} ---")
-            print(ds)
-            if args.save:
-                os.makedirs(args.save, exist_ok=True)
-                # Use SOPInstanceUID as filename if present, else index
-                if hasattr(ds, "SOPInstanceUID") and ds.SOPInstanceUID:
-                    filename = f"UPS_{ds.SOPInstanceUID}.dcm"
-                else:
-                    filename = f"UPS_{i}.dcm"
-                file_path = os.path.join(args.save, filename)
-                # Set transfer syntax attributes before saving
-                ds.is_little_endian = True
-                ds.is_implicit_VR = False
-                if not args.raw:
-                    # Add file meta information for Part 10
-                    file_meta = FileMetaDataset()
-                    file_meta.MediaStorageSOPClassUID = ds.SOPClassUID
-                    file_meta.MediaStorageSOPInstanceUID = ds.SOPInstanceUID
-                    file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
-                    file_meta.ImplementationClassUID = PYDICOM_IMPLEMENTATION_UID
-                    ds.file_meta = file_meta
-                try:
-                    ds.save_as(file_path, write_like_original=args.raw)
-                    print(f"Saved UPS Identifier {i} to {file_path}")
-                except Exception as e:
-                    print(f"Failed to save UPS Identifier {i} to {file_path}: {e}")
+        sys.exit(1)
+    print(f"Found {len(ups_responses)} UPS instance(s):")
+    for i, ds in enumerate(ups_responses, 1):
+        print(f"\n--- UPS Instance {i} ---")
+        print(ds)
+        if args.save:
+            os.makedirs(args.save, exist_ok=True)
+            # Use SOPInstanceUID as filename if present, else index
+            file_path = os.path.join(
+                args.save,
+                f"UPS_{ds.SOPInstanceUID}.dcm" if hasattr(ds, "SOPInstanceUID") and ds.SOPInstanceUID else f"UPS_{i}.dcm",
+            )
+            # Set transfer syntax attributes before saving
+            ds.is_little_endian = True
+            ds.is_implicit_VR = False
+            if not args.raw:
+                # Add file meta information for Part 10
+                file_meta = FileMetaDataset()
+                file_meta.MediaStorageSOPClassUID = ds.SOPClassUID
+                file_meta.MediaStorageSOPInstanceUID = ds.SOPInstanceUID
+                file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+                file_meta.ImplementationClassUID = PYDICOM_IMPLEMENTATION_UID
+                ds.file_meta = file_meta
+            try:
+                ds.save_as(file_path, write_like_original=args.raw)
+                print(f"Saved UPS Identifier {i} to {file_path}")
+            except Exception as e:
+                print(f"Failed to save UPS Identifier {i} to {file_path}: {e}")
+    sys.exit(0)
 
 
 if __name__ == "__main__":

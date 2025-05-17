@@ -22,7 +22,9 @@ class TestUpsFindSCU(unittest.TestCase):
             mock_scu.create_ups_query.return_value = mock_query
             mock_scu.get_ups.return_value = []
 
-            upsfind_main()
+            with self.assertRaises(SystemExit) as cm:
+                upsfind_main()
+            self.assertEqual(cm.exception.code, 1)
 
             mock_scu.create_ups_query.assert_called_once()
             mock_scu.get_ups.assert_called_once_with(mock_query)
@@ -51,7 +53,9 @@ class TestUpsFindSCU(unittest.TestCase):
             ds2.save_as = MagicMock()
             mock_scu.get_ups.return_value = [ds1, ds2]
 
-            upsfind_main()
+            with self.assertRaises(SystemExit) as cm:
+                upsfind_main()
+            self.assertEqual(cm.exception.code, 0)
 
             mock_scu.create_ups_query.assert_called_once()
             mock_scu.get_ups.assert_called_once_with(mock_query)
@@ -60,6 +64,32 @@ class TestUpsFindSCU(unittest.TestCase):
             mock_makedirs.assert_called_with("testdir", exist_ok=True)
             ds1.save_as.assert_called_with(unittest.mock.ANY, write_like_original=False)
             ds2.save_as.assert_called_with(unittest.mock.ANY, write_like_original=False)
+
+    def test_raw_save_option(self):
+        # Test that --raw triggers save_as(write_like_original=True)
+        ds = Dataset()
+        ds.save_as = MagicMock()
+
+        with (
+            patch.object(sys, "argv", ["upsfind.py", "localhost", "11114", "--raw", "--save", "outdir"]),
+            patch("tdwii_plus_examples.cli.upsfind.UPSPullCFindSCU") as mock_scu_class,
+            patch("builtins.print"),
+            patch("os.makedirs"),
+        ):
+            mock_scu = MagicMock()
+            mock_scu.create_ups_query.return_value = Dataset()
+            mock_scu.get_ups.return_value = [ds]
+            mock_scu_class.return_value = mock_scu
+            from tdwii_plus_examples.cli.upsfind import main as upsfind_main
+
+            with self.assertRaises(SystemExit) as cm:
+                upsfind_main()
+            self.assertEqual(cm.exception.code, 0)
+
+        # Verify save_as was invoked with write_like_original=True
+        ds.save_as.assert_called_once()
+        _, kwargs = ds.save_as.call_args
+        self.assertTrue(kwargs.get("write_like_original", False))
 
     def test_ups_found_missing_sopinstanceuid(self):
         # Test a dataset without SOPInstanceUID (should use index in filename)
@@ -78,7 +108,9 @@ class TestUpsFindSCU(unittest.TestCase):
             ds.save_as = MagicMock()
             mock_scu.get_ups.return_value = [ds]
 
-            upsfind_main()
+            with self.assertRaises(SystemExit) as cm:
+                upsfind_main()
+            self.assertEqual(cm.exception.code, 0)
 
             # Check that the fallback filename (using index) is used in print output
             found = any("UPS_1.dcm" in str(call) for call in mock_print.call_args_list)
@@ -115,9 +147,11 @@ class TestUpsFindSCU(unittest.TestCase):
             mock_scu_class.return_value = mock_scu
             mock_query = Dataset()
             mock_scu.create_ups_query.return_value = mock_query
-            mock_scu.get_ups.return_value = []
+            mock_scu.get_ups.return_value = [Dataset()]  # Return a non-empty list to avoid exit(1)
 
-            upsfind_main()
+            with self.assertRaises(SystemExit) as cm:
+                upsfind_main()
+            self.assertEqual(cm.exception.code, 0)
 
             mock_scu.create_ups_query.assert_called_once_with(
                 ups_uid=uid,

@@ -159,10 +159,6 @@ class TestUPSPullCFindSCU(unittest.TestCase):
 
         # Mock association object and send_c_find
         mock_assoc_obj = mock.Mock()
-        # If there are Dataset() objects in send_c_find_return, replace with unique objects for assertion
-        for idx, (status, ds) in enumerate(send_c_find_return):
-            if isinstance(ds, Dataset):
-                send_c_find_return[idx] = (status, Dataset())
         mock_assoc_obj.send_c_find.return_value = send_c_find_return
         mock_assoc_obj.release = mock.Mock()
         self.scu.assoc = mock_assoc_obj
@@ -179,10 +175,15 @@ class TestUPSPullCFindSCU(unittest.TestCase):
         # Compare the number of datasets returned, since Dataset() objects are not the same
         self.assertEqual(len(result), len(expected_result))
 
-    def test_create_ups_query(self):
-        """Test the creation of a UPS query dataset with various parameters."""
-        # Test with all defaults
-        ds = self.scu.create_ups_query()
+    def test_create_ups_query_with_ups_uid(self):
+        """Test UPS query dataset creation when ups_uid is specified (ProcedureStepState should be '')."""
+        sop_instance_uid = generate_uid()
+        ds = self.scu.create_ups_query(
+            ups_uid=sop_instance_uid,
+            machine_name="Gantry1",
+            procedure_step_state="IN PROGRESS",
+        )
+
         self.assertIn("SOPInstanceUID", ds)
         self.assertIn("PatientName", ds)
         self.assertIn("PatientID", ds)
@@ -193,19 +194,80 @@ class TestUPSPullCFindSCU(unittest.TestCase):
         self.assertIn("ScheduledProcessingParametersSequence", ds)
         self.assertIn("WorklistLabel", ds)
         self.assertIn("ScheduledProcedureStepStartDateTime", ds)
-        # Test with specific values
-        sop_instance_uid = generate_uid()
-        ds2 = self.scu.create_ups_query(
-            ups_uid=sop_instance_uid,
+
+        self.assertEqual(ds.ProcedureStepState, "")
+        self.assertEqual(ds.SOPInstanceUID, sop_instance_uid)
+        self.assertEqual(ds.ScheduledStationNameCodeSequence[0].CodeValue, "Gantry1")
+
+    @parameterized.expand(
+        [
+            (
+                "all_defaults",
+                {},
+                "SCHEDULED",
+                "",
+            ),
+            (
+                "start_and_end",
+                {
+                    "scheduled_no_sooner_than": "202501010000",
+                    "scheduled_no_later_than": "202501012359",
+                },
+                "IN PROGRESS",
+                "202501010000-202501012359",
+            ),
+            (
+                "start_only",
+                {
+                    "scheduled_no_sooner_than": "202501010000",
+                    "scheduled_no_later_than": None,
+                },
+                "IN PROGRESS",
+                "202501010000",
+            ),
+            (
+                "end_only",
+                {
+                    "scheduled_no_sooner_than": None,
+                    "scheduled_no_later_than": "202501012359",
+                },
+                "IN PROGRESS",
+                "",
+            ),
+            (
+                "neither_start_nor_end",
+                {
+                    "scheduled_no_sooner_than": None,
+                    "scheduled_no_later_than": None,
+                },
+                "IN PROGRESS",
+                "",
+            ),
+        ]
+    )
+    def test_create_ups_query_without_ups_uid(self, name, query_kwargs, expected_state, expected_dtmatch):
+        """Test UPS query dataset creation when ups_uid is not specified (ProcedureStepState should be as passed)."""
+        ds = self.scu.create_ups_query(
             machine_name="Gantry1",
-            procedure_step_state="IN PROGRESS",
-            scheduled_no_sooner_than="202501010000",
-            scheduled_no_later_than="202501012359",
+            procedure_step_state="IN PROGRESS" if name != "all_defaults" else "SCHEDULED",
+            scheduled_no_sooner_than=query_kwargs.get("scheduled_no_sooner_than"),
+            scheduled_no_later_than=query_kwargs.get("scheduled_no_later_than"),
         )
-        self.assertEqual(ds2.SOPInstanceUID, sop_instance_uid)
-        self.assertEqual(ds2.ScheduledStationNameCodeSequence[0].CodeValue, "Gantry1")
-        self.assertEqual(ds2.ProcedureStepState, "")
-        self.assertEqual(ds2.ScheduledProcedureStepStartDateTime, "202501010000-202501012359")
+
+        self.assertIn("SOPInstanceUID", ds)
+        self.assertIn("PatientName", ds)
+        self.assertIn("PatientID", ds)
+        self.assertIn("ScheduledWorkitemCodeSequence", ds)
+        self.assertIn("InputInformationSequence", ds)
+        self.assertIn("ScheduledStationNameCodeSequence", ds)
+        self.assertIn("ProcedureStepState", ds)
+        self.assertIn("ScheduledProcessingParametersSequence", ds)
+        self.assertIn("WorklistLabel", ds)
+        self.assertIn("ScheduledProcedureStepStartDateTime", ds)
+
+        self.assertEqual(ds.ProcedureStepState, expected_state)
+        self.assertEqual(ds.ScheduledProcedureStepStartDateTime, expected_dtmatch)
+        self.assertEqual(ds.ScheduledStationNameCodeSequence[0].CodeValue, "Gantry1")
 
 
 if __name__ == "__main__":

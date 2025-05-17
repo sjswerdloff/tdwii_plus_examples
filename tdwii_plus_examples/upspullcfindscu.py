@@ -63,8 +63,8 @@ class UPSPullCFindSCU(BaseSCU):
             machine_name (str): The name of the treatment machine as specified in the RT (Ion) Plan.
                 Empty default but should be populated.
             procedure_step_state (str): SCHEDULED/IN PROGRESS/COMPLETED/CANCELED, "SCHEDULED" default
-            scheduled_no_sooner_than (datetime):  earliest possible matching start datetime. Empty default
-            scheduled_no_later_than (datetime): latest possible matching start datetime. Empty default
+            scheduled_no_sooner_than (str):  earliest possible matching start datetime. Empty default
+            scheduled_no_later_than (str): latest possible matching start datetime. Empty default
 
         Returns:
             Dataset: A query dataset requesting the specific UPS instance
@@ -77,12 +77,11 @@ class UPSPullCFindSCU(BaseSCU):
         # Request only the UPS with matching UID
         ds.add(DataElement("SOPInstanceUID", VR.UI, None))
 
-        if ups_uid:  # Really weird, with an empty string ups_uid is said to be bool
-            if len(ups_uid) > 0:
-                ds.SOPInstanceUID = ups_uid
-                # avoid over filtering.  If the UID is known, the caller can determine if the procedure step state
-                # is a value that makes it uninteresting, i.e. if they only wanted it if it was still scheduled.
-                procedure_step_state = ""
+        if ups_uid and len(ups_uid) > 0:  # Really weird, with an empty string ups_uid is said to be bool
+            ds.SOPInstanceUID = ups_uid
+            # avoid over filtering.  If the UID is known, the caller can determine if the procedure step state
+            # is a value that makes it uninteresting, i.e. if they only wanted it if it was still scheduled.
+            procedure_step_state = ""
 
         # Request that the patient name and patient id be populated in the response
         ds.add(DataElement("PatientName", VR.PN, ""))
@@ -122,17 +121,26 @@ class UPSPullCFindSCU(BaseSCU):
 
         ds.add(DataElement("WorklistLabel", VR.LO, ""))
 
-        start_datetime_string = ""
-        end_datetime_string = ""
-        if scheduled_no_sooner_than is not None:
-            start_datetime_string = scheduled_no_sooner_than
-        if scheduled_no_later_than is not None:
-            end_datetime_string = scheduled_no_later_than
-
-        if scheduled_no_sooner_than is None and scheduled_no_later_than is None:
-            ds.add(DataElement("ScheduledProcedureStepStartDateTime", VR.DT, ""))
+        # Only include value in Matching Key Attribute if start is specified
+        if scheduled_no_sooner_than:
+            if scheduled_no_later_than:
+                # Use Range Matching when end is specified
+                # TODO: Restrict to this case. See IHE-RO TDW-II Table 7.5.1.1.1-1 Note 3
+                ds.add(
+                    DataElement(
+                        "ScheduledProcedureStepStartDateTime", VR.DT, f"{scheduled_no_sooner_than}-{scheduled_no_later_than}"
+                    )
+                )
+            else:
+                # Use Single Value Matching when end is not specified
+                ds.add(DataElement("ScheduledProcedureStepStartDateTime", VR.DT, f"{scheduled_no_sooner_than}"))
         else:
-            ds.add(DataElement("ScheduledProcedureStepStartDateTime", VR.DT, f"{start_datetime_string}-{end_datetime_string}"))
+            if scheduled_no_later_than:
+                self.logger.warning(
+                    "ScheduledProcedureStepStartDateTime: End value specified without start value. End will be ignored."
+                )
+            # Set Return Key Attribute
+            ds.add(DataElement("ScheduledProcedureStepStartDateTime", VR.DT, ""))
 
         return ds
 

@@ -133,7 +133,7 @@ class TestUPSPullCFindSCUIntegration(unittest.TestCase):
     def test_find_ups_by_uid(self):
         """Integration test: find a UPS by SOPInstanceUID."""
         scu = UPSPullCFindSCU(
-            calling_ae_title="UPSPUSHSCU",
+            calling_ae_title="UPSFINDSCU",
             called_ae_title="UPSSCP",
             called_ip="localhost",
             called_port=11114,
@@ -150,7 +150,7 @@ class TestUPSPullCFindSCUIntegration(unittest.TestCase):
     def test_find_ups_by_machine(self):
         """Integration test: find UPS by machine name and check all created instances are found."""
         scu = UPSPullCFindSCU(
-            calling_ae_title="UPSPUSHSCU",
+            calling_ae_title="UPSFINDSCU",
             called_ae_title="UPSSCP",
             called_ip="localhost",
             called_port=11114,
@@ -168,6 +168,23 @@ class TestUPSPullCFindSCUIntegration(unittest.TestCase):
         response_uids = sorted(ds.SOPInstanceUID for ds in ups_responses)
         created_uids = sorted(self.sop_instance_uids)
         self.assertEqual(response_uids, created_uids)
+
+    def test_no_ups_found(self):
+        """Integration test: query with a machine name that does not exist, expect no UPS returned."""
+        scu = UPSPullCFindSCU(
+            calling_ae_title="UPSFINDSCU",
+            called_ae_title="UPSSCP",
+            called_ip="localhost",
+            called_port=11114,
+            logger=self.scu_logger,
+        )
+        ds_query = scu.create_ups_query(
+            ups_uid="",
+            machine_name="UNKNOWN_MACHINE",
+            procedure_step_state="SCHEDULED",
+        )
+        ups_responses = scu.get_ups(ds_query)
+        self.assertEqual(len(ups_responses), 0)
 
 
 if __name__ == "__main__":
