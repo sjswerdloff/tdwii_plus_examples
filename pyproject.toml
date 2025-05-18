@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "tdwii_plus_examples"
-version = "0.2.0"
+version = "0.3.0"
 description = "Working sample code for implementing some tdw-ii transactions and some extensions such as UPSWatch and UPSWEvent based subscriptions for activities of interest in a treatment room"
-authors = ["Stuart Swerdloff <sjswerdloff@gmail.com>"]
+authors = ["Stuart Swerdloff <sjswerdloff@gmail.com>", "David Wikler <dwikler@ulb.be>"]
 license = "Apache 2.0"
 readme = "README.md"
 packages = [{include = "tdwii_plus_examples"}]
