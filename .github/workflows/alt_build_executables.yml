@@ -1,7 +1,14 @@
-name: Alt Build Executables
+name: Build Windows Executables
 
 on:
   workflow_dispatch:  # Manual trigger
+  push:
+    branches: [main]  # Automatically run on main branch updates
+    paths:
+      - 'tdwii_plus_examples/**'
+      - 'poetry.lock'
+      - 'pyproject.toml'
+      - '.github/workflows/build_executables.yml'
 
 permissions:
   contents: write  # This allows creating releases and tags
@@ -10,33 +17,63 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest]  # , macos-latest, ubuntu-latest]
+        os: [windows-latest]  # Currently only building for Windows
         include:
           - os: windows-latest
             asset-name: tdwii_plus_examples
-            # platform-name: windows
-            # path-sep: ";"
-
-          # - os: macos-latest
-          #   platform-name: macos
-          #   asset-name: tdwii_plus_examples-macos
-          #   path-sep: ":"
-
-          # - os: ubuntu-latest
-          #   platform-name: ubuntu
-          #   asset-name: tdwii_plus_examples-ubuntu
-          #   path-sep: ":"
 
     runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for proper versioning
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+
+    # Setup cache keys with security considerations
+    - name: Set up cache key
+      id: cache-key
+      shell: bash
+      run: |
+        echo "python-version=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")' | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+        echo "poetry-version=2.1.1" >> $GITHUB_OUTPUT
+        echo "dep-hash=${{ runner.os }}-$(cat poetry.lock 2>/dev/null | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+        echo "branch-id=$(echo ${{ github.ref }} | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+        # Add weekly cache rotation for security
+        echo "weekly-rotation=$(( $(date +%s) / (7*24*60*60) ))" >> $GITHUB_OUTPUT
+
+    # Cache Poetry installation
+    - name: Cache Poetry installation
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pypoetry
+        key: poetry-${{ steps.cache-key.outputs.poetry-version }}-${{ steps.cache-key.outputs.python-version }}
+        restore-keys: |
+          poetry-${{ steps.cache-key.outputs.poetry-version }}-
+
+    # Cache Python dependencies with security controls
+    - name: Cache Python dependencies
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.cache-key.outputs.python-version }}-${{ steps.cache-key.outputs.dep-hash }}-${{ steps.cache-key.outputs.branch-id }}-${{ steps.cache-key.outputs.weekly-rotation }}
+        restore-keys: |
+          venv-${{ runner.os }}-${{ steps.cache-key.outputs.python-version }}-${{ steps.cache-key.outputs.dep-hash }}-${{ steps.cache-key.outputs.branch-id }}-
+          venv-${{ runner.os }}-${{ steps.cache-key.outputs.python-version }}-${{ steps.cache-key.outputs.dep-hash }}-
+
+    # Cache PyInstaller artifacts
+    - name: Cache PyInstaller
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~\AppData\Local\pyinstaller
+          ~/.cache/pyinstaller
+        key: ${{ runner.os }}-pyinstaller-${{ steps.cache-key.outputs.python-version }}-${{ steps.cache-key.outputs.weekly-rotation }}
 
     - name: Install Poetry
       uses: snok/install-poetry@v1
@@ -50,66 +87,106 @@ jobs:
       run: |
         poetry install --with=dev
 
-    - name: Build with PyInstaller (Windows)
-      if: matrix.os == 'windows-latest'
+    # Security scan of dependencies
+    - name: Security scan of dependencies
       shell: bash
       run: |
-        poetry run pyinstaller --onefile --name=tdwii_config_dump.exe  tdwii_plus_examples/cli/config_dump.py
-        poetry run pyinstaller --onefile --windowed --name=eScheduler.exe  tdwii_plus_examples/rtbdi_creator/mainbdiwidget.py
-        poetry run pyinstaller --onefile --windowed --name=ppvs_proxy.exe  tdwii_plus_examples/TDWII_PPVS_subscriber/ppvs_subscriber_widget.py
-        poetry run pyinstaller --onefile  --name=eTMS.exe tdwii_plus_examples/cli/upsscp/upsscp.py
+        poetry run pip install safety
+        poetry run safety check --full-report || echo "Security vulnerabilities found - review the report above"
+
+    # Build Windows executables with PyInstaller
+    - name: Build with PyInstaller (Windows)
+      shell: bash
+      run: |
+        poetry run pyinstaller --onefile --name=tdwii_config_dump.exe tdwii_plus_examples/cli/config_dump.py
+        poetry run pyinstaller --onefile --windowed --name=eScheduler.exe tdwii_plus_examples/rtbdi_creator/mainbdiwidget.py
+        poetry run pyinstaller --onefile --windowed --name=ppvs_proxy.exe tdwii_plus_examples/TDWII_PPVS_subscriber/ppvs_subscriber_widget.py
+        poetry run pyinstaller --onefile --name=eTMS.exe tdwii_plus_examples/cli/upsscp/upsscp.py
         cp rtbdi.toml dist/
         cp ppvs.toml dist/
-        mkdir dist/config
+        mkdir -p dist/config
         cp ./tdwii_plus_examples/config/ApplicationEntities.json dist/config/
         cp ./tdwii_plus_examples/config/MachineMap.json dist/config/
-        cp ./tdwii_plus_examples/cli/upsscp/config/upsscp_default.ini dist/config
+        cp ./tdwii_plus_examples/cli/upsscp/config/upsscp_default.ini dist/config/
 
-
-    # - name: Create distribution package (macOS/Linux)
-    #   if: matrix.os != 'windows-latest'
-    #   run: |
-    #     mkdir dist-package
-    #     if [ "${{ matrix.os }}" = "macos-latest" ]; then
-    #       cp -r dist/tdwii_plus_examples.app dist-package/
-    #       # Create a DMG file for easier distribution
-    #       hdiutil create -volname tdwii_plus_examples -srcfolder dist-package -ov -format UDZO dist/tdwii_plus_examples.dmg
-    #     elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-    #       cp -r dist/tdwii_plus_examples dist-package/
-    #       # Create a tarball for Linux
-    #       tar -czvf dist/tdwii_plus_examples-linux.tar.gz -C dist-package .
-    #     fi
-    #   shell: bash
-
+    # Create distribution package with fixed PowerShell commands
     - name: Create distribution package (Windows)
-      if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Compress-Archive -Path "dist/config" -DestinationPath "dist/config.zip" -Force
-        if (Test-Path "dist\config") {
-          Remove-Item -Path "dist\config" -Force -Recurse
-        }
-        Compress-Archive -Path "dist/" -DestinationPath "./twdii_plus_examples.zip" -Force
-        Remove-Item -Path "dist/*.exe" -Force
-        Remove-Item -Path "dist/*.toml" -Force
-        Remove-Item -Path "dist/config.zip" -Force
-        Copy-Item -Path "./twdii_plus_examples.zip" -DestinationPath "dist/" -Force
+        # Create config archive
+        Compress-Archive -Path "dist\config\*" -DestinationPath "dist\config.zip" -Force
 
+        # Remove config directory with proper error handling
+        if (Test-Path "dist\config") {
+            Remove-Item -Path "dist\config" -Recurse -Force
+        }
+
+        # Create full archive of distribution files
+        Compress-Archive -Path "dist\*" -DestinationPath ".\twdii_plus_examples.zip" -Force
+
+        # Cleanup dist directory
+        if (Test-Path "dist\*.exe") {
+            Remove-Item -Path "dist\*.exe" -Force
+        }
+
+        if (Test-Path "dist\*.toml") {
+            Remove-Item -Path "dist\*.toml" -Force
+        }
+
+        if (Test-Path "dist\config.zip") {
+            Remove-Item -Path "dist\config.zip" -Force
+        }
+
+        # Copy the archive back to dist
+        Copy-Item -Path ".\twdii_plus_examples.zip" -DestinationPath "dist\" -Force
+
+    # Upload artifact for workflow run
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: twdii_plus_examples.zip
+        name: twdii_plus_examples
         path: dist/twdii_plus_examples.zip
+        retention-days: 30
 
+    # Generate release notes
+    - name: Generate Release Notes
+      id: release_notes
+      shell: bash
+      run: |
+        # Get commit messages since last release
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [ -z "$LAST_TAG" ]; then
+          # If no tags exist, get all commits
+          CHANGES=$(git log --pretty=format:"* %s (%h)" -10)
+        else
+          # Get commits since last tag
+          CHANGES=$(git log --pretty=format:"* %s (%h)" $LAST_TAG..HEAD)
+        fi
+
+        # Create formatted release notes with date
+        RELEASE_NOTES="## Changes in this release ($(date +%Y-%m-%d))\n\n$CHANGES"
+        echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+        echo -e "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    # Create GitHub Release
     - name: Create Release
       uses: softprops/action-gh-release@v1
       if: github.ref == 'refs/heads/main'
       with:
         tag_name: v${{ github.run_number }}
         name: Release ${{ github.run_number }}
+        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
         draft: true
+        fail_on_unmatched_files: true
         files: |
-          dist/
-
+          dist/tdwii_config_dump.exe
+          dist/eScheduler.exe
+          dist/ppvs_proxy.exe
+          dist/eTMS.exe
+          dist/config.zip
+          dist/rtbdi.toml
+          dist/ppvs.toml
+          dist/twdii_plus_examples.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
