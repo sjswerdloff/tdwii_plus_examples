@@ -79,7 +79,7 @@ REMOTE_AE_CONFIG_FILE = os.path.join(fdir, "../../config/ApplicationEntities.jso
 if not os.path.exists(fdir) or not os.path.exists(REMOTE_AE_CONFIG_FILE):
     fdir = os.path.abspath(os.path.dirname(sys.executable))
     if not os.path.exists(fdir):
-        raise FileExistsError(f"Cannot find config directory in {fdir}")
+        raise FileNotFoundError(f"Cannot find config directory in {fdir}")
     REMOTE_AE_CONFIG_FILE = os.path.join(fdir, "config/ApplicationEntities.json")
 tdwii_config.load_ae_config(REMOTE_AE_CONFIG_FILE)
 

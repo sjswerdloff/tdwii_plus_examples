@@ -9,7 +9,7 @@ fdir = os.path.abspath(os.path.dirname(__file__))
 if not os.path.exists(fdir):
     fdir = os.path.abspath(os.path.dirname(sys.executable))
     if not os.path.exists(fdir):
-        raise FileExistsError(f"Cannot find config directory in {fdir}")
+        raise FileNotFoundError(f"Cannot find config directory in {fdir}")
 
 known_ae_ipaddr = {}
 known_ae_port = {}
