@@ -13,16 +13,18 @@ jobs:
         os: [windows-latest]  # , macos-latest, ubuntu-latest]
         include:
           - os: windows-latest
-            asset-name: tdwii_config_dump
+            asset-name: tdwii_plus_examples
+            # platform-name: windows
+            # path-sep: ";"
 
           # - os: macos-latest
           #   platform-name: macos
-          #   asset-name: dcmQTreePy-macos
+          #   asset-name: tdwii_plus_examples-macos
           #   path-sep: ":"
 
           # - os: ubuntu-latest
           #   platform-name: ubuntu
-          #   asset-name: dcmQTreePy-ubuntu
+          #   asset-name: tdwii_plus_examples-ubuntu
           #   path-sep: ":"
 
     runs-on: ${{ matrix.os }}
@@ -69,13 +71,13 @@ jobs:
     #   run: |
     #     mkdir dist-package
     #     if [ "${{ matrix.os }}" = "macos-latest" ]; then
-    #       cp -r dist/dcmQTreePy.app dist-package/
+    #       cp -r dist/tdwii_plus_examples.app dist-package/
     #       # Create a DMG file for easier distribution
-    #       hdiutil create -volname dcmQTreePy -srcfolder dist-package -ov -format UDZO dist/dcmQTreePy.dmg
+    #       hdiutil create -volname tdwii_plus_examples -srcfolder dist-package -ov -format UDZO dist/tdwii_plus_examples.dmg
     #     elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-    #       cp -r dist/dcmQTreePy dist-package/
+    #       cp -r dist/tdwii_plus_examples dist-package/
     #       # Create a tarball for Linux
-    #       tar -czvf dist/dcmQTreePy-linux.tar.gz -C dist-package .
+    #       tar -czvf dist/tdwii_plus_examples-linux.tar.gz -C dist-package .
     #     fi
     #   shell: bash
 
@@ -91,11 +93,11 @@ jobs:
         Remove-Item -Path "dist/config.zip" -Force
         Copy-Item -Path "./twdii_plus_examples.zip" -DestinationPath "dist/" -Force
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: twdii_plus_examples.zip
-          path: dist/twdii_plus_examples.zip
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: twdii_plus_examples.zip
+        path: dist/twdii_plus_examples.zip
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
