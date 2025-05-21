@@ -89,6 +89,7 @@ jobs:
         Remove-Item -Path "dist/config" -Force
         Compress-Archive -Path "dist/" -DestinationPath "./twdii_plus_examples.zip" -Force
         Remove-Item -Path "dist/*.exe" -Force
+        Remove-Item -Path "dist/*.toml" -Force
         Remove-Item -Path "dist/config.zip" -Force
         Copy-Item -Path "./twdii_plus_examples.zip" -DestinationPath "dist/" -Force
 
