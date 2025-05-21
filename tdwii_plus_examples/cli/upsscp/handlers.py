@@ -3,6 +3,7 @@
 import copy
 import logging
 import os
+import sys
 from datetime import datetime
 
 # from io import BytesIO
@@ -72,7 +73,14 @@ _filtered_subscribers = dict()  # AE Title and the Dataset acting as the query f
 
 fdir = os.path.abspath(os.path.dirname(__file__))
 REMOTE_AE_CONFIG_FILE = os.path.join(fdir, "../../config/ApplicationEntities.json")
-
+# if this gets bundled in to an executable, e.g. with pyinstaller,
+# __file__ is not going to point to a place on the file system.
+# drop back to the path of where the executable is installed
+if not os.path.exists(fdir) or not os.path.exists(REMOTE_AE_CONFIG_FILE):
+    fdir = os.path.abspath(os.path.dirname(sys.executable))
+    if not os.path.exists(fdir):
+        raise FileExistsError(f"Cannot find config directory in {fdir}")
+    REMOTE_AE_CONFIG_FILE = os.path.join(fdir, "config/ApplicationEntities.json")
 tdwii_config.load_ae_config(REMOTE_AE_CONFIG_FILE)
 
 
