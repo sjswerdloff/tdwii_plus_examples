@@ -48,6 +48,7 @@ isort = { version = "*", optional = true}            # groups = ["dev", "tests",
 ruff = { version = "*", optional = true}             # groups = ["dev", "tests", "all"]
 numpy = "^2.2.5"
 psutil = "^7.0.0"
+pyinstaller = "*"
 
 
 
@@ -74,6 +75,7 @@ dev = [
     "flake8",
     "dill",
     "ruff",
+    "pyinstaller"
 ]
 
 all = [
@@ -91,6 +93,7 @@ all = [
     "flake8",
     "dill",
     "ruff",
+    "pyinstaller"
 ]
 
 
@@ -100,6 +103,7 @@ flake8 = "^7.1.1"
 pytest = "^8.3.4"
 pre-commit = "^4.1.0"
 ruff = "^0.11.0"
+pyinstaller = "*"
 
 [tool.ruff]
 line-length = 127

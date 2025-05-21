@@ -1,8 +1,15 @@
 import json
 import os
+import sys
 
 fdir = os.path.abspath(os.path.dirname(__file__))
-
+# if this gets bundled in to an executable, e.g. with pyinstaller,
+# __file__ is not going to point to a place on the file system.
+# drop back to the path of where the executable is installed
+if not os.path.exists(fdir):
+    fdir = os.path.abspath(os.path.dirname(sys.argv[0]))
+    if not os.path.exists(fdir):
+        raise FileExistsError(f"Cannot find config directory in {fdir}")
 
 known_ae_ipaddr = {}
 known_ae_port = {}
