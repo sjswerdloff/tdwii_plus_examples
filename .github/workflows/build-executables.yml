@@ -91,11 +91,11 @@ jobs:
         Remove-Item -Path "dist/config.zip" -Force
         Copy-Item -Path "./twdii_plus_examples.zip" -DestinationPath "dist/" -Force
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.asset-name }}
-        path: dist/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: twdii_plus_examples.zip
+          path: dist/twdii_plus_examples.zip
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
