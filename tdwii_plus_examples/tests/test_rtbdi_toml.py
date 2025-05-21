@@ -1,11 +1,16 @@
 import os
+import sys
 
 import pytest
 
 
 def test_tomli_availability():
     try:
-        import tomli  # noqa: F401
+        if sys.version_info >= (3, 11):  # sourcery skip: no-conditionals-in-tests
+            import tomllib as tomli  # noqa: F401, I001
+        else:
+            import tomli  # noqa: F401
+
     except ImportError:
         pytest.fail("tomli package is not installed")
 
