@@ -243,6 +243,14 @@ def _setup_argparser():
     )
     fdir = os.path.abspath(os.path.dirname(__file__))
     fpath = os.path.join(fdir, "./config/upsscp_default.ini")
+    internal_fpath = fpath
+    if not os.path.exists(fdir) or not os.path.exists(fpath):
+        fdir = os.path.abspath(os.path.dirname(sys.executable))
+        fpath = os.path.join(fdir, "./config/upsscp_default.ini")
+
+    if not os.path.exists(fdir) or not os.path.exists(fpath):
+        raise FileNotFoundError(f"Cannot find config file in {fpath} or {internal_fpath}")
+
     fabspath = os.path.abspath(fpath)
     gen_opts.add_argument(
         "-c",
@@ -310,7 +318,7 @@ def _setup_argparser():
     )
     db_opts.add_argument(
         "--clean",
-        help=("remove all entries from the database and delete the " "corresponding stored instances"),
+        help=("remove all entries from the database and delete the corresponding stored instances"),
         action="store_true",
     )
 
