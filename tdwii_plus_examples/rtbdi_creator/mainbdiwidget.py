@@ -6,7 +6,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import tomli
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 from PySide6.QtCore import QDateTime, Qt, Slot  # pylint: disable=no-name-in-module
 from PySide6.QtWidgets import (  # pylint: disable=no-name-in-module
     QApplication,
