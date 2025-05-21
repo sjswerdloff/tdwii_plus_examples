@@ -92,7 +92,7 @@ jobs:
       shell: bash
       run: |
         poetry run pip install safety
-        poetry run safety check --full-report || echo "Security vulnerabilities found - review the report above"
+        poetry run safety scan --full-report || echo "Security vulnerabilities found - review the report above"
 
     # Build Windows executables with PyInstaller
     - name: Build with PyInstaller (Windows)
