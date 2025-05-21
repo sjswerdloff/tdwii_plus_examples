@@ -7,7 +7,7 @@ fdir = os.path.abspath(os.path.dirname(__file__))
 # __file__ is not going to point to a place on the file system.
 # drop back to the path of where the executable is installed
 if not os.path.exists(fdir):
-    fdir = os.path.abspath(os.path.dirname(sys.argv[0]))
+    fdir = os.path.abspath(os.path.dirname(sys.executable))
     if not os.path.exists(fdir):
         raise FileExistsError(f"Cannot find config directory in {fdir}")
 
