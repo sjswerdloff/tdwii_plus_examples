@@ -13,9 +13,7 @@ jobs:
         os: [windows-latest]  # , macos-latest, ubuntu-latest]
         include:
           - os: windows-latest
-            platform-name: windows
             asset-name: tdwii_config_dump
-            path-sep: ";"
 
           # - os: macos-latest
           #   platform-name: macos
