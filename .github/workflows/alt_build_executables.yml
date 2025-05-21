@@ -138,7 +138,7 @@ jobs:
         }
 
         # Copy the archive back to dist
-        Copy-Item -Path ".\twdii_plus_examples.zip" -DestinationPath "dist\" -Force
+        Copy-Item -Path ".\twdii_plus_examples.zip" -Destination "dist\" -Force
 
     # Upload artifact for workflow run
     - name: Upload artifacts
