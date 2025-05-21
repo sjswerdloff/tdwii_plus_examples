@@ -249,7 +249,7 @@ def _setup_argparser():
         fpath = os.path.join(fdir, "./config/upsscp_default.ini")
 
     if not os.path.exists(fdir) or not os.path.exists(fpath):
-        raise FileExistsError(f"Cannot find config file in {fpath} or {internal_fpath}")
+        raise FileNotFoundError(f"Cannot find config file in {fpath} or {internal_fpath}")
 
     fabspath = os.path.abspath(fpath)
     gen_opts.add_argument(
