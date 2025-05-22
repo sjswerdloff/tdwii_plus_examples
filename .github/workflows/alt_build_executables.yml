@@ -87,12 +87,14 @@ jobs:
       run: |
         poetry install --with=dev
 
-    # Security scan of dependencies
-    - name: Security scan of dependencies
-      shell: bash
-      run: |
-        poetry run pip install safety
-        poetry run safety scan --full-report || echo "Security vulnerabilities found - review the report above"
+    # # Security scan of dependencies
+    # # Eliminated because it's a paid service (which is OK for a business, not for this)
+    # # and because it forces downgrade of psutil which then conflicts with other needs.
+    # - name: Security scan of dependencies
+    #   shell: bash
+    #   run: |
+    #     poetry run pip install safety
+    #     poetry run safety scan --full-report || echo "Security vulnerabilities found - review the report above"
 
     # Build Windows executables with PyInstaller
     - name: Build with PyInstaller (Windows)
