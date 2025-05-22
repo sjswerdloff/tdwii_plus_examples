@@ -103,6 +103,7 @@ jobs:
         poetry run pyinstaller --onefile --windowed --name=ppvs_proxy.exe tdwii_plus_examples/TDWII_PPVS_subscriber/ppvs_subscriber_widget.py
         poetry run pyinstaller --onefile --name=eTMS.exe tdwii_plus_examples/cli/upsscp/upsscp.py
         poetry run pyinstaller --onefile --windowed --name=TDD.exe tdwii_plus_examples/tdd/tdd_widget.py
+        poetry run pyinstaller --onefile --name=generate_treatment_record_from_plan.exe tdwii_plus_examples/generate_treatment_record_from_plan.py
         cp rtbdi.toml dist/
         cp ppvs.toml dist/
         cp tdd.toml dist/
@@ -173,7 +174,7 @@ jobs:
 
     # Create GitHub Release
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: github.ref == 'refs/heads/main'
       with:
         tag_name: v${{ github.run_number }}
@@ -182,13 +183,6 @@ jobs:
         draft: true
         fail_on_unmatched_files: true
         files: |
-          dist/tdwii_config_dump.exe
-          dist/eScheduler.exe
-          dist/ppvs_proxy.exe
-          dist/eTMS.exe
-          dist/config.zip
-          dist/rtbdi.toml
-          dist/ppvs.toml
           dist/twdii_plus_examples.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
