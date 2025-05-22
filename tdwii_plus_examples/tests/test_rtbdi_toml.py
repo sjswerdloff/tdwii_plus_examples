@@ -1,11 +1,16 @@
 import os
+import sys
 
 import pytest
 
 
 def test_tomli_availability():
     try:
-        import tomli  # noqa: F401
+        if sys.version_info >= (3, 11):  # sourcery skip: no-conditionals-in-tests
+            import tomllib as tomli  # noqa: F401, I001
+        else:
+            import tomli  # noqa: F401
+
     except ImportError:
         pytest.fail("tomli package is not installed")
 
@@ -19,7 +24,10 @@ def test_toml_file_readable():
 
 
 def test_load_toml_file():
-    import tomli
+    if sys.version_info >= (3, 11):  # sourcery skip: no-conditionals-in-tests
+        import tomllib as tomli  # noqa: F401, I001
+    else:
+        import tomli  # noqa: F401
 
     with open("rtbdi.toml", "rb") as f:
         try:
@@ -31,7 +39,10 @@ def test_load_toml_file():
 
 
 def test_default_section_exists():
-    import tomli
+    if sys.version_info >= (3, 11):  # sourcery skip: no-conditionals-in-tests
+        import tomllib as tomli  # noqa: F401, I001
+    else:
+        import tomli  # noqa: F401
 
     with open("rtbdi.toml", "rb") as f:
         config = tomli.load(f)
@@ -40,7 +51,10 @@ def test_default_section_exists():
 
 
 def test_default_section_values():
-    import tomli
+    if sys.version_info >= (3, 11):  # sourcery skip: no-conditionals-in-tests
+        import tomllib as tomli  # noqa: F401, I001
+    else:
+        import tomli  # noqa: F401
 
     with open("rtbdi.toml", "rb") as f:
         config = tomli.load(f)
