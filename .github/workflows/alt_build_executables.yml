@@ -102,8 +102,10 @@ jobs:
         poetry run pyinstaller --onefile --windowed --name=eScheduler.exe tdwii_plus_examples/rtbdi_creator/mainbdiwidget.py
         poetry run pyinstaller --onefile --windowed --name=ppvs_proxy.exe tdwii_plus_examples/TDWII_PPVS_subscriber/ppvs_subscriber_widget.py
         poetry run pyinstaller --onefile --name=eTMS.exe tdwii_plus_examples/cli/upsscp/upsscp.py
+        poetry run pyinstaller --onefile --windowed --name=TDD.exe tdwii_plus_examples/tdd/tdd_widget.py
         cp rtbdi.toml dist/
         cp ppvs.toml dist/
+        cp tdd.toml dist/
         mkdir -p dist/config
         cp ./tdwii_plus_examples/config/ApplicationEntities.json dist/config/
         cp ./tdwii_plus_examples/config/MachineMap.json dist/config/

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """Create an RT Ion Beams Treatment Record from a provided RT Ion Plan
-    Run as a script, it writes the RT Ion Beams Treatment Record to the local directory with RX_{SOPInstanceUID}.dcm file name
-    Returns:
-        RtIonBeamsTreatmentRecord: the treatment record as a domain model object wrapped around a pydicom dataset
+Run as a script, it writes the RT Ion Beams Treatment Record to the local directory with RX_{SOPInstanceUID}.dcm file name
+Returns:
+    RtIonBeamsTreatmentRecord: the treatment record as a domain model object wrapped around a pydicom dataset
 """
+
 import inspect
 import logging
 import sys
@@ -344,7 +345,13 @@ def populate_rt_ion_beams_treatment_record(
             session_beam.add_IonControlPointDelivery(delivery_cp)
             delivery_cp.SpecifiedMeterset = cp.CumulativeMetersetWeight * meterset_scaling_factor
             delivery_cp.DeliveredMeterset = delivery_cp.SpecifiedMeterset  # perfect delivery
-            delivery_cp.ScanSpotMetersetsDelivered = [x * meterset_scaling_factor for x in cp.ScanSpotMetersetWeights]
+            if cp.ScanSpotMetersetWeights is not None:
+                if isinstance(cp.ScanSpotMetersetWeights, list):
+                    delivery_cp.ScanSpotMetersetsDelivered = [x * meterset_scaling_factor for x in cp.ScanSpotMetersetWeights]
+                elif isinstance(cp.ScanSpotMetersetWeights, float):
+                    # single value gets returned as float instead of list of float
+                    delivery_cp.ScanSpotMetersetsDelivered = [meterset_scaling_factor * cp.ScanSpotMetersetWeights]
+
             control_point_start_time += cp_time_duration
             dicom_date, dicom_time = DICOMDateAndTime(control_point_start_time)
             delivery_cp.TreatmentControlPointDate = dicom_date
