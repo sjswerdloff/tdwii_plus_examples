@@ -100,7 +100,7 @@ jobs:
         path: dist/twdii_plus_examples.zip
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: github.ref == 'refs/heads/main'
       with:
         tag_name: v${{ github.run_number }}
