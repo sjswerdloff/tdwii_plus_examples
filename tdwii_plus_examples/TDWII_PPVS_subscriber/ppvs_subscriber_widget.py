@@ -6,7 +6,10 @@ import sys
 from pathlib import Path
 from typing import Dict
 
-import tomli
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 from pydicom import Dataset, dcmread, uid
 from pydicom.valuerep import VR
 from pynetdicom.presentation import build_context

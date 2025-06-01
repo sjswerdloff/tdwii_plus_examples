@@ -243,6 +243,14 @@ def _setup_argparser():
     )
     fdir = os.path.abspath(os.path.dirname(__file__))
     fpath = os.path.join(fdir, "./config/upsscp_default.ini")
+    internal_fpath = fpath
+    if not os.path.exists(fdir) or not os.path.exists(fpath):
+        fdir = os.path.abspath(os.path.dirname(sys.executable))
+        fpath = os.path.join(fdir, "./config/upsscp_default.ini")
+
+    if not os.path.exists(fdir) or not os.path.exists(fpath):
+        raise FileNotFoundError(f"Cannot find config file in {fpath} or {internal_fpath}")
+
     fabspath = os.path.abspath(fpath)
     gen_opts.add_argument(
         "-c",
@@ -310,7 +318,7 @@ def _setup_argparser():
     )
     db_opts.add_argument(
         "--clean",
-        help=("remove all entries from the database and delete the " "corresponding stored instances"),
+        help=("remove all entries from the database and delete the corresponding stored instances"),
         action="store_true",
     )
 
@@ -378,7 +386,12 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
 
     # Set the instance storage and database directories to current directory
     # if setting is not an absolute path
-    current_dir = os.path.abspath(os.path.dirname(__file__))
+    if getattr(sys, "frozen", False):
+        current_dir = os.path.dirname(sys.executable)
+    elif __file__:
+        current_dir = os.path.dirname(__file__)
+
+    # current_dir = os.path.abspath(os.path.dirname(__file__))
     instance_dir = os.path.join(current_dir, app_config["instance_location"])
     instance_dir_path = os.path.abspath(instance_dir)
     if not os.path.exists(instance_dir_path):
