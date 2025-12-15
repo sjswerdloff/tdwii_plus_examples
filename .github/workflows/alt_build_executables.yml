@@ -94,7 +94,7 @@ jobs:
         Copy-Item -Path "./twdii_plus_examples.zip" -DestinationPath "dist/" -Force
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: twdii_plus_examples.zip
         path: dist/twdii_plus_examples.zip
