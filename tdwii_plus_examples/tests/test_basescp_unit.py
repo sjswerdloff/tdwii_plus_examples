@@ -7,7 +7,7 @@ from parameterized import parameterized
 from pynetdicom import evt
 
 from tdwii_plus_examples.basehandlers import handle_close, handle_open
-from tdwii_plus_examples.basescp import BaseSCP
+from tdwii_plus_examples.basescp import BaseSCP, TLSConfig
 
 
 class TestBaseSCP(unittest.TestCase):
@@ -116,7 +116,7 @@ class TestBaseSCP(unittest.TestCase):
         self.mock_ae.start_server.return_value = self.mock_server
         self.base_scp.run()
         self.mock_ae.start_server.assert_called_once_with(
-            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False
+            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False, ssl_context=None
         )
 
         # Check the log messages
@@ -132,7 +132,7 @@ class TestBaseSCP(unittest.TestCase):
         self.mock_ae.start_server.side_effect = Exception("Failed to start server")
         self.base_scp.run()
         self.mock_ae.start_server.assert_called_once_with(
-            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False
+            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False, ssl_context=None
         )
 
         # Check the log messages
@@ -141,6 +141,28 @@ class TestBaseSCP(unittest.TestCase):
         # Print the log output for debugging
         # self.test_logger.info(f"Log output: {log_output}")
         self.assertIn("SCP server failed to start: Failed to start server", log_output)
+
+    def test_run_success_with_tls(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+        self.base_scp = BaseSCP(bind_address="localhost", logger=self.scp_logger, tls_config=tls_config)
+
+        self.mock_server = MagicMock()
+        mock_ssl_context = MagicMock()
+        with patch.object(TLSConfig, "create_ssl_context", return_value=mock_ssl_context):
+            self.mock_ae.start_server.return_value = self.mock_server
+            self.base_scp.run()
+            self.mock_ae.start_server.assert_called_once_with(
+                ("localhost", 11112),
+                evt_handlers=self.base_scp.handlers,
+                block=False,
+                ssl_context=mock_ssl_context,
+            )
+
+        # Check the log messages
+        self.memory_handler.flush()
+        log_output = [record.getMessage() for record in self.memory_handler.buffer]
+        self.assertIn("Configuring TLS for SCP server", log_output)
+        self.assertIn("SCP server started successfully", log_output)
 
     # Other unit tests
 

@@ -1,11 +1,12 @@
 import logging
 from argparse import Namespace
+from typing import Optional
 
 from pynetdicom import evt
 from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 
-from tdwii_plus_examples.basescp import BaseSCP
+from tdwii_plus_examples.basescp import BaseSCP, TLSConfig
 from tdwii_plus_examples.cechohandler import handle_cecho
 
 
@@ -27,6 +28,7 @@ class CEchoSCP(BaseSCP):
         bind_address (str): The IP address or hostname of the AE
         port (int): The port number the AE will listen on
         logger (logging.Logger): A logger instance
+        tls_config (TLSConfig): Optional TLS configuration
 
     Methods:
         _add_contexts(self)
@@ -35,7 +37,15 @@ class CEchoSCP(BaseSCP):
             Adds handlers for DICOM communication events to the SCP instance.
     """
 
-    def __init__(self, ae_title: str = "ECHO_SCP", bind_address: str = "", port: int = 11112, logger=None, **kwargs):
+    def __init__(
+        self,
+        ae_title: str = "ECHO_SCP",
+        bind_address: str = "",
+        port: int = 11112,
+        logger=None,
+        tls_config: Optional[TLSConfig] = None,
+        **kwargs,
+    ):
         """
         Initializes a new instance of the CEchoSCP class.
         This method creates an AE with the Verification presentation context.
@@ -57,6 +67,9 @@ class CEchoSCP(BaseSCP):
         logger: logging.Logger
             A logger instance
             Optional, default: None, a debug logger will be used.
+
+        tls_config: TLSConfig or None
+            Optional TLS configuration for secure communication.
         """
         if logger is None:
             self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "cecho_scp")
@@ -76,7 +89,14 @@ class CEchoSCP(BaseSCP):
         else:
             self.ae_title = ae_title
 
-        super().__init__(ae_title=self.ae_title, bind_address=bind_address, port=port, logger=logger, **kwargs)
+        super().__init__(
+            ae_title=self.ae_title,
+            bind_address=bind_address,
+            port=port,
+            logger=logger,
+            tls_config=tls_config,
+            **kwargs,
+        )
 
     def _add_contexts(self):
         """

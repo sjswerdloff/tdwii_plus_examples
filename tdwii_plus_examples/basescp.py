@@ -1,12 +1,43 @@
 import inspect
 import logging
+import ssl
 import traceback
 from argparse import Namespace
+from dataclasses import dataclass
+from typing import Optional
 
 from pynetdicom import AE, evt
 from pynetdicom.apps.common import setup_logging
 
 from tdwii_plus_examples.basehandlers import handle_close, handle_open
+
+
+@dataclass
+class TLSConfig:
+    """
+    Configuration for TLS communication.
+
+    Attributes:
+        cert_file (str): Path to the certificate file.
+        key_file (str): Path to the private key file.
+        ca_cert (str, optional): Path to the CA certificate file for mTLS.
+        require_mtls (bool): Whether to require mutual TLS (mTLS).
+    """
+
+    cert_file: str
+    key_file: str
+    ca_cert: Optional[str] = None
+    require_mtls: bool = False
+
+    def create_ssl_context(self) -> ssl.SSLContext:
+        """Creates an SSLContext based on the configuration."""
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(certfile=self.cert_file, keyfile=self.key_file)
+        if self.ca_cert:
+            context.load_verify_locations(cafile=self.ca_cert)
+        if self.require_mtls:
+            context.verify_mode = ssl.CERT_REQUIRED
+        return context
 
 
 def get_full_call_stack():
@@ -17,11 +48,7 @@ def get_full_call_stack():
             "function": frame_info.function,
             "filename": frame_info.filename,
             "lineno": frame_info.lineno,
-            "code": (
-                frame_info.code_context[0].strip()
-                if frame_info.code_context
-                else None
-            ),
+            "code": (frame_info.code_context[0].strip() if frame_info.code_context else None),
         }
         for frame_info in stack
     ]
@@ -57,7 +84,15 @@ class BaseSCP:
             Stops the SCP AE.
     """
 
-    def __init__(self, ae_title: str = "BASE_SCP", bind_address: str = "", port: int = 11112, logger=None, **kwargs):
+    def __init__(
+        self,
+        ae_title: str = "BASE_SCP",
+        bind_address: str = "",
+        port: int = 11112,
+        logger=None,
+        tls_config: Optional[TLSConfig] = None,
+        **kwargs,
+    ):
         """
         Initializes a new instance of the BaseSCP class.
         This method creates an AE without presentation contexts.
@@ -79,6 +114,9 @@ class BaseSCP:
         logger: logging.Logger or None
             A logger instance
             Optional, default: None, a debug level logger will be used.
+
+        tls_config: TLSConfig or None
+            Optional TLS configuration for secure communication.
         """
         if logger is None:
             self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "base_scp")
@@ -91,6 +129,8 @@ class BaseSCP:
         else:
             raise TypeError("logger must be an instance of logging.Logger")
         self.logger.debug("BaseSCP.__init__")
+
+        self.tls_config = tls_config
 
         if not bind_address:
             self.bind_address = ""
@@ -172,8 +212,13 @@ class BaseSCP:
         self.logger.debug("BaseSCP.run")
         # Listen for incoming association requests
         try:
+            ssl_context = None
+            if self.tls_config:
+                self.logger.info("Configuring TLS for SCP server")
+                ssl_context = self.tls_config.create_ssl_context()
+
             self.threaded_server = self.ae.start_server(
-                (self.bind_address, self.port), evt_handlers=self.handlers, block=False
+                (self.bind_address, self.port), evt_handlers=self.handlers, block=False, ssl_context=ssl_context
             )
             if self.threaded_server is not None:
                 self.logger.info("SCP server started successfully")
