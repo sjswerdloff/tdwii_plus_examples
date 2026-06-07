@@ -59,6 +59,15 @@ def nevent_cb(**kwargs):
 
 
 class NEventReceiver(CEchoSCP):
+    """N-EVENT-REPORT receiver of the PPVS subscriber.
+
+    Superseded by tdwii_plus_examples.upsneventreceiver.UPSNEventReceiver, which is the maintained implementation.
+    This class is only kept for applications that may still depend on it.
+
+    Do not add features or fixes here, add them to UPSNEventReceiver instead.
+    For example, TLS support is only available in UPSNEventReceiver.
+    """
+
     def __init__(
         self, nevent_callback=None, ae_title: str = "NEVENT_RECEIVER", port: int = 11115, logger=None, bind_address: str = ""
     ):
