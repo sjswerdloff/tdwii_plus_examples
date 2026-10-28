@@ -1,6 +1,8 @@
 import logging
 import os
+import shutil
 import signal
+import tempfile
 import unittest
 from logging import StreamHandler
 from subprocess import TimeoutExpired
@@ -21,6 +23,10 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
 
         # Set up the logger for this test to DEBUG level with a stream handler
         self.test_logger, self.stream_handler = get_configured_logger("test_upspushscu", level=logging.DEBUG)
+
+        # Create a temporary directory for UPSSCP staging area
+        self.temp_dir = tempfile.mkdtemp()
+        self.test_logger.info(f"{self.temp_dir} directory created")
 
         # Create a UPSPushNCreateSCU instance
         self.upspush_ncreate_scu = UPSPushNCreateSCU(
@@ -78,6 +84,11 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
                 + "\n"
             )
 
+        # Remove the temporary directory and its contents
+        files_in_temp_dir = os.listdir(self.temp_dir)
+        shutil.rmtree(self.temp_dir)
+        self.test_logger.info(f"Removed the temp directory: {self.temp_dir} and its contents: {files_in_temp_dir}")
+
         # Remove and close the handlers for scu and test loggers
         for logger, handler in [(self.scu_logger, self.stream_handler), (self.test_logger, self.stream_handler)]:
             logger.removeHandler(handler)
@@ -85,7 +96,14 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
 
     def test_verif_create(self):
         # Start the UPS Push SCP CLI App upsscp.py
-        command = ["tdwii_plus_examples/cli/upsscp/upsscp.py", "-v"]
+        command = [
+            "tdwii_plus_examples/cli/upsscp/upsscp.py",
+            "-v",
+            "--database-location",
+            f"{self.temp_dir}/test.sqlite",
+            "--instance-location",
+            self.temp_dir,
+        ]
 
         self.upsscp_started, self.process, self.stdout_thread, self.stdout_lines = start_scp(command, self.test_logger)
         self.test_logger.info(f"Started process with PID: {self.process.pid}")
