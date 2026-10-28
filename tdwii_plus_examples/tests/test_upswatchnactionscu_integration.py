@@ -1,13 +1,13 @@
 import logging
-import subprocess
-import sys
-import time
+import shutil
+import tempfile
 import unittest
 from logging.handlers import MemoryHandler
 
 from parameterized import parameterized
 from pydicom import Dataset, Sequence
 
+from tdwii_plus_examples.tests.utils.utils import start_scp
 from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
@@ -37,6 +37,10 @@ class TestUPSWatchNActionSCU(unittest.TestCase):
         self.test_logger.setLevel(logging.INFO)
         self.stream_handler = logging.StreamHandler()
         self.test_logger.addHandler(self.stream_handler)
+
+        # Create a temporary directory for UPSSCP staging area, with removal at teardown even if setUp fails
+        self.temp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.temp_dir, ignore_errors=True)
 
         # Create a UPSWatchNActionSCU instance
         self.upswatch_scu = UPSWatchNActionSCU(called_ip="localhost", called_port=11114, logger=self.scu_logger)
@@ -81,18 +85,24 @@ class TestUPSWatchNActionSCU(unittest.TestCase):
         expected_status_code,
         expected_status_description,
     ):
-        # Ensure the correct Python interpreter is used for the subprocess call
-        python_executable = sys.executable
-
         # Start the UPS Watch SCP CLI App upsscp.py
-        process = subprocess.Popen([python_executable, "tdwii_plus_examples/cli/upsscp/upsscp.py"])
+        command = [
+            "tdwii_plus_examples/cli/upsscp/upsscp.py",
+            "-v",
+            "--database-location",
+            f"{self.temp_dir}/test.sqlite",
+            "--instance-location",
+            self.temp_dir,
+        ]
+        upsscp_started, process, stdout_thread, _ = start_scp(command, self.test_logger)
 
-        # Check that the SCP is running
-        time.sleep(1)  # give some time for the SCP to start
-        self.assertEqual(self.upswatch_scu.verify().status_category, "Success")
-
-        # Run the test case
         try:
+            self.assertTrue(upsscp_started, "upsscp server failed to start.")
+
+            # Check that the SCP is running
+            self.assertEqual(self.upswatch_scu.verify().status_category, "Success")
+
+            # Run the test case
             if method_name == "subscribe_globally":
                 result = getattr(self.upswatch_scu, method_name)(lock=lock, matching_keys=matching_keys)
             elif method_name == "unsubscribe_globally" or method_name == "suspend_global_subscription":
@@ -116,8 +126,11 @@ class TestUPSWatchNActionSCU(unittest.TestCase):
             raise
         finally:
             # Terminate the UPS Watch SCP CLI App subprocess
-            process.terminate()
-            process.wait()
+            if process:
+                process.terminate()
+                process.wait()
+            if stdout_thread:
+                stdout_thread.join(timeout=1.0)
 
 
 if __name__ == "__main__":
