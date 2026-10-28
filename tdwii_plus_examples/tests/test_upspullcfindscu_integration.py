@@ -97,7 +97,7 @@ class TestUPSPullCFindSCUIntegration(unittest.TestCase):
 
         # Try to forcefully kill the process.
         try:
-            os.kill(cls.process.pid, signal.SIGKILL)
+            os.kill(cls.process.pid, getattr(signal, "SIGKILL", signal.SIGTERM))
             cls.process.wait(timeout=1)  # Ensure process termination
             cls.test_logger.info("Process forcefully terminated.")
         except OSError:

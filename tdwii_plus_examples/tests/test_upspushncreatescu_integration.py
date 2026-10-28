@@ -55,7 +55,7 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
 
         # Try to forcefully kill the process.
         try:
-            os.kill(self.process.pid, signal.SIGKILL)
+            os.kill(self.process.pid, getattr(signal, "SIGKILL", signal.SIGTERM))
             self.process.wait(timeout=1)  # Ensure process termination
             self.test_logger.info("Process forcefully terminated.")
         except OSError:
