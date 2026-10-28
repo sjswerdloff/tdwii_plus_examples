@@ -24,7 +24,7 @@ def get_configured_logger(logger_name, level=logging.INFO, handler_class=logging
     return logger, handler
 
 
-def start_scp(command: list[str], logger, timeout: float = 1.0, success_message="SCP server started successfully") -> bool:
+def start_scp(command: list[str], logger, timeout: float = 10.0, success_message="SCP server started successfully") -> bool:
     """Starts an external SCP process and waits for a success message.
 
     Args:
@@ -45,7 +45,7 @@ def start_scp(command: list[str], logger, timeout: float = 1.0, success_message=
         )
     except Exception as e:
         logger.error(f"Error starting process: {e}")
-        return False, None, None  # Return False and None for process and thread
+        return False, None, None, None  # Return False and None for process, thread and output lines
 
     stdout_lines = []
     process_started_flag = [False]
