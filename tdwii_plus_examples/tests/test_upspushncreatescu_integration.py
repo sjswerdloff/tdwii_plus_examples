@@ -24,8 +24,9 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
         # Set up the logger for this test to DEBUG level with a stream handler
         self.test_logger, self.stream_handler = get_configured_logger("test_upspushscu", level=logging.DEBUG)
 
-        # Create a temporary directory for UPSSCP staging area
+        # Create a temporary directory for UPSSCP staging area, with removal at teardown even if setUp fails
         self.temp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.temp_dir, ignore_errors=True)
         self.test_logger.info(f"{self.temp_dir} directory created")
 
         # Create a UPSPushNCreateSCU instance
@@ -83,11 +84,6 @@ class TestUPSPushNCreateSCU(unittest.TestCase):
                 + "*" * 80
                 + "\n"
             )
-
-        # Remove the temporary directory and its contents
-        files_in_temp_dir = os.listdir(self.temp_dir)
-        shutil.rmtree(self.temp_dir)
-        self.test_logger.info(f"Removed the temp directory: {self.temp_dir} and its contents: {files_in_temp_dir}")
 
         # Remove and close the handlers for scu and test loggers
         for logger, handler in [(self.scu_logger, self.stream_handler), (self.test_logger, self.stream_handler)]:
