@@ -8,7 +8,10 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List
 
-import tomli
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import tomli
 from pydicom import DataElement, Dataset, Sequence, dcmread, uid
 from pydicom.valuerep import VR
 from pynetdicom.presentation import build_context
