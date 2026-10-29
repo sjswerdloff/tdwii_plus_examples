@@ -109,6 +109,28 @@ class TestDescribeTlsSession(unittest.TestCase):
     def test_tls_session_without_cipher(self):
         self.assertEqual(describe_tls_session(make_tls_event(cipher=None)), "TLSv1.3, unknown cipher")
 
+    def test_client_certificate_subject_cannot_forge_log_records(self):
+        # A subject chosen by a client to forge a log record: a carriage return and a line feed, then text imitating
+        # a connection record, ended with a Unicode line separator
+        hostile_value = "client\r\nSuccessful connection from 6.6.6.6:104\u2028"
+        client_certificate = {"subject": ((("commonName", hostile_value),),)}
+
+        description = describe_tls_session(make_tls_event(client_certificate))
+
+        # The description stays on a single line: the carriage return, the line feed and the line separator are
+        # replaced by their visible escape sequences, and the imitated record remains inside the subject text
+        self.assertTrue(description.isprintable())
+        self.assertIn(r"commonName=client\r\nSuccessful connection from 6.6.6.6:104\u2028", description)
+
+    def test_client_certificate_subject_keeps_printable_characters(self):
+        # A subject with a printable non-ASCII character, as found in the names of organizations
+        client_certificate = {"subject": ((("organizationName", "Hôpital Pitié Salpêtrière"),),)}
+
+        description = describe_tls_session(make_tls_event(client_certificate))
+
+        # Printable characters are logged as they are: only the non-printable ones are escaped
+        self.assertIn("organizationName=Hôpital Pitié Salpêtrière", description)
+
 
 if __name__ == "__main__":
     unittest.main()

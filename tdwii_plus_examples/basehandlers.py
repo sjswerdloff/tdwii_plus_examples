@@ -1,6 +1,11 @@
 import ssl
 
 
+def _escape_non_printable(text):
+    """Escape the non-printable characters of a text, so that it cannot span several lines in a log."""
+    return "".join(char if char.isprintable() else char.encode("unicode_escape").decode("ascii") for char in text)
+
+
 def describe_tls_session(event):
     """Describe the TLS session of the connection of an event.
 
@@ -29,7 +34,10 @@ def describe_tls_session(event):
 
     client_certificate = connection_socket.getpeercert()
     if client_certificate:
-        subject = ", ".join(f"{name}={value}" for rdn in client_certificate["subject"] for name, value in rdn)
+        # Escape the subject to prevent clients from forging log  records and corrupt audit trails
+        subject = ", ".join(
+            _escape_non_printable(f"{name}={value}") for rdn in client_certificate["subject"] for name, value in rdn
+        )
         description += f", client certificate subject: {subject}"
 
     return description
