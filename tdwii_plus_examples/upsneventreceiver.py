@@ -1,5 +1,6 @@
 import logging
 from argparse import Namespace
+from typing import Optional
 
 from pydicom.uid import UID, ExplicitVRLittleEndian, ImplicitVRLittleEndian
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
@@ -9,6 +10,7 @@ from tdwii_plus_examples._dicom_uids import (
     UPS_SOP_CLASSES,
     validate_transfer_syntaxes,
 )
+from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.upsneventhandler import handle_nevent, nevent_callback
 
@@ -56,6 +58,7 @@ class UPSNEventReceiver(CEchoSCP):
         logger=None,
         transfer_syntaxes=None,
         ups_event_callback=None,
+        tls_config: Optional[TLSConfig] = None,
         **kwargs,
     ):
         """
@@ -95,6 +98,9 @@ class UPSNEventReceiver(CEchoSCP):
             A function to process UPS State Changes Reports in received
             N-EVENT-REPORT requests.
             Optional, default: None, upseventhandler.nevent_callback function
+
+        tls_config: TLSConfig or None
+            Optional TLS configuration for secure communication.
         """
         if logger is None:
             self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "nevent_receiver")
@@ -129,7 +135,14 @@ class UPSNEventReceiver(CEchoSCP):
             self.ups_event_callback = ups_event_callback
             self.logger.debug(f"UPS Event Callback: {self.ups_event_callback}")
 
-        super().__init__(ae_title=ae_title, bind_address=bind_address, port=port, logger=logger, **kwargs)
+        super().__init__(
+            ae_title=ae_title,
+            bind_address=bind_address,
+            port=port,
+            logger=logger,
+            tls_config=tls_config,
+            **kwargs,
+        )
 
     def _add_contexts(self):
         """

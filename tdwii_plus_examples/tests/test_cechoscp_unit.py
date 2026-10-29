@@ -6,6 +6,7 @@ from parameterized import parameterized
 from pynetdicom import evt
 from pynetdicom.sop_class import Verification
 
+from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.cechohandler import handle_cecho
 from tdwii_plus_examples.cechoscp import CEchoSCP
 
@@ -51,6 +52,16 @@ class TestCEchoSCP(unittest.TestCase):
     def test_add_handlers(self):
         handlers = [(evt.EVT_C_ECHO, handle_cecho, [self.scp_logger])]
         self.assertIn(handlers[0], self.scp.handlers)
+
+    def test_tls_config_is_forwarded(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+
+        scp = CEchoSCP(logger=self.scp_logger, tls_config=tls_config)
+
+        self.assertIs(scp.tls_config, tls_config)
+
+    def test_tls_config_defaults_to_none(self):
+        self.assertIsNone(self.scp.tls_config)
 
 
 if __name__ == "__main__":

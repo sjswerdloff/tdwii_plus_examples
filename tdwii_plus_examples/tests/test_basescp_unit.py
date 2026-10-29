@@ -1,4 +1,5 @@
 import logging
+import ssl
 import unittest
 from logging.handlers import MemoryHandler
 from unittest.mock import MagicMock, patch
@@ -7,7 +8,7 @@ from parameterized import parameterized
 from pynetdicom import evt
 
 from tdwii_plus_examples.basehandlers import handle_close, handle_open
-from tdwii_plus_examples.basescp import BaseSCP
+from tdwii_plus_examples.basescp import BaseSCP, TLSConfig
 
 
 class TestBaseSCP(unittest.TestCase):
@@ -116,7 +117,7 @@ class TestBaseSCP(unittest.TestCase):
         self.mock_ae.start_server.return_value = self.mock_server
         self.base_scp.run()
         self.mock_ae.start_server.assert_called_once_with(
-            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False
+            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False, ssl_context=None
         )
 
         # Check the log messages
@@ -132,7 +133,7 @@ class TestBaseSCP(unittest.TestCase):
         self.mock_ae.start_server.side_effect = Exception("Failed to start server")
         self.base_scp.run()
         self.mock_ae.start_server.assert_called_once_with(
-            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False
+            ("localhost", 11112), evt_handlers=self.base_scp.handlers, block=False, ssl_context=None
         )
 
         # Check the log messages
@@ -141,6 +142,37 @@ class TestBaseSCP(unittest.TestCase):
         # Print the log output for debugging
         # self.test_logger.info(f"Log output: {log_output}")
         self.assertIn("SCP server failed to start: Failed to start server", log_output)
+
+    def test_run_success_with_tls(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+        self.base_scp = BaseSCP(bind_address="localhost", logger=self.scp_logger, tls_config=tls_config)
+
+        self.mock_server = MagicMock()
+        mock_ssl_context = MagicMock()
+        with patch.object(TLSConfig, "create_ssl_context", return_value=mock_ssl_context):
+            self.mock_ae.start_server.return_value = self.mock_server
+            self.base_scp.run()
+            self.mock_ae.start_server.assert_called_once_with(
+                ("localhost", 11112),
+                evt_handlers=self.base_scp.handlers,
+                block=False,
+                ssl_context=mock_ssl_context,
+            )
+
+        # Check the log messages
+        self.memory_handler.flush()
+        log_output = [record.getMessage() for record in self.memory_handler.buffer]
+        self.assertIn("Configuring TLS for SCP server", log_output)
+        self.assertIn("SCP server started successfully", log_output)
+
+    def test_run_with_invalid_tls_configuration_raises(self):
+        tls_config = TLSConfig(cert_file="missing_cert.pem", key_file="missing_key.pem")
+        self.base_scp = BaseSCP(bind_address="localhost", logger=self.scp_logger, tls_config=tls_config)
+
+        with self.assertRaises(FileNotFoundError):
+            self.base_scp.run()
+
+        self.mock_ae.start_server.assert_not_called()
 
     # Other unit tests
 
@@ -155,6 +187,59 @@ class TestBaseSCP(unittest.TestCase):
         # Print the actual handlers for debugging
         # self.test_logger.info(f"Actual handlers: {self.base_scp.handlers}")
         self.assertEqual(self.base_scp.handlers, expected_handlers)
+
+
+class TestTLSConfig(unittest.TestCase):
+    def test_require_mtls_without_ca_cert_raises(self):
+        with self.assertRaisesRegex(ValueError, "require_mtls=True needs ca_cert"):
+            TLSConfig(cert_file="cert.pem", key_file="key.pem", require_mtls=True)
+
+    def test_require_mtls_with_ca_cert_is_accepted(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem", ca_cert="ca.pem", require_mtls=True)
+        self.assertTrue(tls_config.require_mtls)
+        self.assertEqual(tls_config.ca_cert, "ca.pem")
+
+    def test_default_config_without_ca_cert_is_accepted(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+        self.assertFalse(tls_config.require_mtls)
+        self.assertIsNone(tls_config.ca_cert)
+
+    @patch("tdwii_plus_examples.basescp.ssl.SSLContext")
+    def test_create_ssl_context_loads_server_certificate_only(self, mock_ssl_context_class):
+        mock_context = mock_ssl_context_class.return_value
+        mock_context.verify_mode = ssl.CERT_NONE
+
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+
+        context = tls_config.create_ssl_context()
+
+        mock_ssl_context_class.assert_called_once_with(ssl.PROTOCOL_TLS_SERVER)
+        mock_context.load_cert_chain.assert_called_once_with(certfile="cert.pem", keyfile="key.pem")
+        mock_context.load_verify_locations.assert_not_called()
+        self.assertEqual(context.verify_mode, ssl.CERT_NONE)
+
+    @patch("tdwii_plus_examples.basescp.ssl.SSLContext")
+    def test_create_ssl_context_loads_ca_without_requiring_client_certificate(self, mock_ssl_context_class):
+        mock_context = mock_ssl_context_class.return_value
+        mock_context.verify_mode = ssl.CERT_NONE
+
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem", ca_cert="ca.pem")
+
+        context = tls_config.create_ssl_context()
+
+        mock_context.load_verify_locations.assert_called_once_with(cafile="ca.pem")
+        self.assertEqual(context.verify_mode, ssl.CERT_NONE)
+
+    @patch("tdwii_plus_examples.basescp.ssl.SSLContext")
+    def test_create_ssl_context_requires_client_certificate_for_mtls(self, mock_ssl_context_class):
+        mock_context = mock_ssl_context_class.return_value
+
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem", ca_cert="ca.pem", require_mtls=True)
+
+        context = tls_config.create_ssl_context()
+
+        mock_context.load_verify_locations.assert_called_once_with(cafile="ca.pem")
+        self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
 
 
 if __name__ == "__main__":
