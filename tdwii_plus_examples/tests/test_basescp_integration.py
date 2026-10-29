@@ -178,6 +178,8 @@ class TestBaseSCP(unittest.TestCase):
     # Connection events logged by the SCP (EVT_CONN_OPEN and EVT_CONN_CLOSE)
     CONN_OPEN_PATTERN = r"^Successful connection from " + r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})"
     CONN_CLOSE_PATTERN = r"^Closed connection with " + r"([\w]+)@" + r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):([\w]{3,5})"
+    # TLS session logged when a connection is opened over TLS
+    TLS_SESSION_PATTERN = r"^TLS session with \S+: TLSv[\d.]+, \w+"
 
     def _logged_messages(self, pattern):
         """Return the SCP log messages matching the pattern."""
@@ -211,6 +213,8 @@ class TestBaseSCP(unittest.TestCase):
         matching_messages = self._wait_for_logged_messages(self.CONN_OPEN_PATTERN)
         self.test_logger.info(f"EVT_CONN_OPEN event log message found: {matching_messages}")
         self.assertTrue(matching_messages, "EVT_CONN_OPEN event log message not found")
+        # A connection that is not secured with TLS does not log any TLS session
+        self.assertEqual(self._logged_messages(self.TLS_SESSION_PATTERN), [])
         # Stop the SCP
         self.scp.stop()
 
@@ -268,6 +272,11 @@ class TestBaseSCP(unittest.TestCase):
         self.assertTrue(self._wait_for_logged_messages(self.CONN_OPEN_PATTERN), "EVT_CONN_OPEN event log message not found")
         self.assertTrue(self._wait_for_logged_messages(self.CONN_CLOSE_PATTERN), "EVT_CONN_CLOSE event log message not found")
 
+        # Check that the TLS session was logged, without client certificate as the client did not present one
+        tls_sessions = self._wait_for_logged_messages(self.TLS_SESSION_PATTERN)
+        self.assertTrue(tls_sessions, "TLS session log message not found")
+        self.assertNotIn("client certificate", tls_sessions[0])
+
     # mTLS: the server requires a client certificate signed by the configured CA
 
     MTLS_PORT = 11116
@@ -311,6 +320,11 @@ class TestBaseSCP(unittest.TestCase):
             # The SCP logged the connection events for the accepted client
             self.assertTrue(self._wait_for_logged_messages(self.CONN_OPEN_PATTERN), "EVT_CONN_OPEN not logged")
             self.assertTrue(self._wait_for_logged_messages(self.CONN_CLOSE_PATTERN), "EVT_CONN_CLOSE not logged")
+
+            # The TLS session logged identifies the client through its certificate
+            tls_sessions = self._wait_for_logged_messages(self.TLS_SESSION_PATTERN)
+            self.assertTrue(tls_sessions, "TLS session not logged")
+            self.assertIn("client certificate subject: commonName=client", tls_sessions[0])
         finally:
             if assoc is not None and assoc.is_established:
                 assoc.release()
