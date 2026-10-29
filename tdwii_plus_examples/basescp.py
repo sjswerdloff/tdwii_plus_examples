@@ -29,6 +29,11 @@ class TLSConfig:
     ca_cert: Optional[str] = None
     require_mtls: bool = False
 
+    def __post_init__(self):
+        """Reject a configuration that requires client certificates without a CA to verify them."""
+        if self.require_mtls and not self.ca_cert:
+            raise ValueError("require_mtls=True needs ca_cert to verify client certificates")
+
     def create_ssl_context(self) -> ssl.SSLContext:
         """Creates an SSLContext based on the configuration."""
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)

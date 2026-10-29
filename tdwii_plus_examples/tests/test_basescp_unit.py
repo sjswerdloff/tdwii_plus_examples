@@ -179,5 +179,21 @@ class TestBaseSCP(unittest.TestCase):
         self.assertEqual(self.base_scp.handlers, expected_handlers)
 
 
+class TestTLSConfig(unittest.TestCase):
+    def test_require_mtls_without_ca_cert_raises(self):
+        with self.assertRaisesRegex(ValueError, "require_mtls=True needs ca_cert"):
+            TLSConfig(cert_file="cert.pem", key_file="key.pem", require_mtls=True)
+
+    def test_require_mtls_with_ca_cert_is_accepted(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem", ca_cert="ca.pem", require_mtls=True)
+        self.assertTrue(tls_config.require_mtls)
+        self.assertEqual(tls_config.ca_cert, "ca.pem")
+
+    def test_default_config_without_ca_cert_is_accepted(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+        self.assertFalse(tls_config.require_mtls)
+        self.assertIsNone(tls_config.ca_cert)
+
+
 if __name__ == "__main__":
     unittest.main()
