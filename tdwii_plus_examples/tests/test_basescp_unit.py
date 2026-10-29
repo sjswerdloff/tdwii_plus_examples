@@ -165,6 +165,15 @@ class TestBaseSCP(unittest.TestCase):
         self.assertIn("Configuring TLS for SCP server", log_output)
         self.assertIn("SCP server started successfully", log_output)
 
+    def test_run_with_invalid_tls_configuration_raises(self):
+        tls_config = TLSConfig(cert_file="missing_cert.pem", key_file="missing_key.pem")
+        self.base_scp = BaseSCP(bind_address="localhost", logger=self.scp_logger, tls_config=tls_config)
+
+        with self.assertRaises(FileNotFoundError):
+            self.base_scp.run()
+
+        self.mock_ae.start_server.assert_not_called()
+
     # Other unit tests
 
     def test_add_handlers(self):

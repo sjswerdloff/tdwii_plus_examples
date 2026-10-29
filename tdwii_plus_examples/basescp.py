@@ -213,15 +213,24 @@ class BaseSCP:
         This method starts an SCP server and begins listening for incoming
         association requests.  The server is run in a separate thread and will
         not block the calling thread.
+
+        Raises
+        ------
+        OSError
+            If the certificate or the key file of the TLS configuration
+            is missing or unreadable.
+        ssl.SSLError
+            If the certificate and the key of the TLS configuration
+            cannot be loaded.
         """
         self.logger.debug("BaseSCP.run")
+        ssl_context = None
+        if self.tls_config:
+            self.logger.info("Configuring TLS for SCP server")
+            ssl_context = self.tls_config.create_ssl_context()
+
         # Listen for incoming association requests
         try:
-            ssl_context = None
-            if self.tls_config:
-                self.logger.info("Configuring TLS for SCP server")
-                ssl_context = self.tls_config.create_ssl_context()
-
             self.threaded_server = self.ae.start_server(
                 (self.bind_address, self.port), evt_handlers=self.handlers, block=False, ssl_context=ssl_context
             )
