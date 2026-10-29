@@ -9,6 +9,7 @@ from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, UID
 from pynetdicom.sop_class import Verification
 
 from tdwii_plus_examples._dicom_uids import UPS_SOP_CLASSES, validate_transfer_syntaxes
+from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.upsneventhandler import nevent_callback
 from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 
@@ -131,3 +132,15 @@ class TestUPSNEventReceiver(unittest.TestCase):
         else:
             self.test_logger.debug("Asserting default callback is set")
             self.assertEqual(receiver.ups_event_callback, nevent_callback)
+
+    def test_tls_config_is_forwarded(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+
+        receiver = UPSNEventReceiver(logger=self.test_logger, tls_config=tls_config)
+
+        self.assertIs(receiver.tls_config, tls_config)
+
+    def test_tls_config_defaults_to_none(self):
+        receiver = UPSNEventReceiver(logger=self.test_logger)
+
+        self.assertIsNone(receiver.tls_config)

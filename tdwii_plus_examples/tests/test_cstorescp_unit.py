@@ -9,6 +9,7 @@ from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, UID
 from pynetdicom.sop_class import Verification
 
 from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
+from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.cstorescp import CStoreSCP
 
 # Define test lists of valid and invalid SOP Classes and Transfer syntaxes
@@ -186,3 +187,15 @@ class TestCStoreSCP(unittest.TestCase):
             self.assertEqual(scp.handle_store, handler)
         elif store_directory:
             self.assertEqual(scp.store_directory, store_directory)
+
+    def test_tls_config_is_forwarded(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+
+        scp = CStoreSCP(logger=self.test_logger, tls_config=tls_config)
+
+        self.assertIs(scp.tls_config, tls_config)
+
+    def test_tls_config_defaults_to_none(self):
+        scp = CStoreSCP(logger=self.test_logger)
+
+        self.assertIsNone(scp.tls_config)
