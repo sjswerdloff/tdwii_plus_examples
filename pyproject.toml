@@ -27,7 +27,7 @@ pytest-sugar = { version = "*", optional = true }         # groups = ["all", "te
 # psutil = { version = "*", optional = true }               # groups = ["all", "tests"]
 pylint = { version = "*", optional = true }               # groups = ["all", "tests"]
 pytest-rerunfailures = { version = "*", optional = true } # groups = ["all", "tests"]
-
+cryptography = { version = "*", optional = true }         # groups = ["all", "tests"]
 
 # ---------------- #
 # Development Only #
@@ -61,7 +61,8 @@ tests = [
     "toml",
     "flake8",
     "dill",
-    "ruff"
+    "ruff",
+    "cryptography"
 ]
 
 dev = [
@@ -91,6 +92,7 @@ all = [
     "flake8",
     "dill",
     "ruff",
+    "cryptography",
 ]
 
 
