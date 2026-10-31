@@ -9,9 +9,9 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.presentation import StoragePresentationContexts
 
 from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
-from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 class CStoreSCP(CEchoSCP):
