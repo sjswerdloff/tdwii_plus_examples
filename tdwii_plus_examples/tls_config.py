@@ -61,7 +61,17 @@ class TLSConfig:
             raise ValueError("require_mtls=True needs cert_file and key_file")
 
     def create_server_ssl_context(self) -> ssl.SSLContext:
-        """Creates the SSLContext of a server based on the configuration."""
+        """
+        Create the SSLContext of a server.
+
+        Returns:
+            ssl.SSLContext: The context to start the server with.
+
+        Raises:
+            ValueError: If the configuration does not have the serverAuth usage.
+            OSError: If the certificate, the key or the CA file is missing or unreadable.
+            ssl.SSLError: If the certificate and the key cannot be loaded.
+        """
         if TLSUsage.SERVER_AUTH not in self.usage:
             raise ValueError("a server SSL context needs the serverAuth usage")
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -70,4 +80,30 @@ class TLSConfig:
             context.load_verify_locations(cafile=self.ca_cert)
         if self.require_mtls:
             context.verify_mode = ssl.CERT_REQUIRED
+        return context
+
+    def create_client_ssl_context(self) -> ssl.SSLContext:
+        """
+        Create the SSLContext of a client.
+
+        Returns:
+            ssl.SSLContext: The context to connect to a server with.
+
+        Raises:
+            ValueError: If the configuration does not have the clientAuth usage.
+            OSError: If the certificate, the key or the CA file is missing or unreadable.
+            ssl.SSLError: If the certificate and the key cannot be loaded.
+        """
+        if TLSUsage.CLIENT_AUTH not in self.usage:
+            raise ValueError("a client SSL context needs the clientAuth usage")
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        # Do not check hostname of the server certificate: DICOM nodes are identified by AE title
+        # and usually addressed by IP address, not by host name
+        context.check_hostname = False
+        if self.ca_cert:
+            context.load_verify_locations(cafile=self.ca_cert)
+        else:
+            context.load_default_certs(ssl.Purpose.SERVER_AUTH)
+        if self.cert_file:
+            context.load_cert_chain(certfile=self.cert_file, keyfile=self.key_file)
         return context

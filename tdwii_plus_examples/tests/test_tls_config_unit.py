@@ -122,5 +122,49 @@ class TestTLSConfigServerContext(unittest.TestCase):
         self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
 
 
+class TestTLSConfigClientContext(unittest.TestCase):
+    def test_create_client_ssl_context_needs_client_auth(self):
+        tls_config = TLSConfig(cert_file="cert.pem", key_file="key.pem")
+        with self.assertRaisesRegex(ValueError, "clientAuth"):
+            tls_config.create_client_ssl_context()
+
+    def test_client_context_verifies_the_server_certificate_but_not_its_host_name(self):
+        context = TLSConfig(usage=TLSUsage.CLIENT_AUTH).create_client_ssl_context()
+
+        self.assertEqual(context.protocol, ssl.PROTOCOL_TLS_CLIENT)
+        self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
+        self.assertFalse(context.check_hostname)
+
+    @patch("tdwii_plus_examples.tls_config.ssl.SSLContext")
+    def test_client_context_trusts_the_ca_cert_only(self, mock_ssl_context_class):
+        mock_context = mock_ssl_context_class.return_value
+
+        TLSConfig(ca_cert="ca.pem", usage=TLSUsage.CLIENT_AUTH).create_client_ssl_context()
+
+        mock_ssl_context_class.assert_called_once_with(ssl.PROTOCOL_TLS_CLIENT)
+        mock_context.load_verify_locations.assert_called_once_with(cafile="ca.pem")
+        mock_context.load_default_certs.assert_not_called()
+        mock_context.load_cert_chain.assert_not_called()
+
+    @patch("tdwii_plus_examples.tls_config.ssl.SSLContext")
+    def test_client_context_trusts_the_system_certificates_without_ca_cert(self, mock_ssl_context_class):
+        mock_context = mock_ssl_context_class.return_value
+
+        TLSConfig(usage=TLSUsage.CLIENT_AUTH).create_client_ssl_context()
+
+        mock_context.load_default_certs.assert_called_once_with(ssl.Purpose.SERVER_AUTH)
+        mock_context.load_verify_locations.assert_not_called()
+
+    @patch("tdwii_plus_examples.tls_config.ssl.SSLContext")
+    def test_client_context_presents_its_certificate(self, mock_ssl_context_class):
+        mock_context = mock_ssl_context_class.return_value
+
+        TLSConfig(
+            cert_file="cert.pem", key_file="key.pem", ca_cert="ca.pem", usage=TLSUsage.CLIENT_AUTH
+        ).create_client_ssl_context()
+
+        mock_context.load_cert_chain.assert_called_once_with(certfile="cert.pem", keyfile="key.pem")
+
+
 if __name__ == "__main__":
     unittest.main()
