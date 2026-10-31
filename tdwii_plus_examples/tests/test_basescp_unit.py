@@ -8,6 +8,7 @@ from pynetdicom import evt
 
 from tdwii_plus_examples.basehandlers import handle_close, handle_open
 from tdwii_plus_examples.basescp import BaseSCP, TLSConfig
+from tdwii_plus_examples.tls_config import TLSUsage
 
 
 class TestBaseSCP(unittest.TestCase):
@@ -148,7 +149,7 @@ class TestBaseSCP(unittest.TestCase):
 
         self.mock_server = MagicMock()
         mock_ssl_context = MagicMock()
-        with patch.object(TLSConfig, "create_ssl_context", return_value=mock_ssl_context):
+        with patch.object(TLSConfig, "create_server_ssl_context", return_value=mock_ssl_context):
             self.mock_ae.start_server.return_value = self.mock_server
             self.base_scp.run()
             self.mock_ae.start_server.assert_called_once_with(
@@ -169,6 +170,15 @@ class TestBaseSCP(unittest.TestCase):
         self.base_scp = BaseSCP(bind_address="localhost", logger=self.scp_logger, tls_config=tls_config)
 
         with self.assertRaises(FileNotFoundError):
+            self.base_scp.run()
+
+        self.mock_ae.start_server.assert_not_called()
+
+    def test_run_with_client_only_tls_configuration_raises(self):
+        tls_config = TLSConfig(usage=TLSUsage.CLIENT_AUTH)
+        self.base_scp = BaseSCP(bind_address="localhost", logger=self.scp_logger, tls_config=tls_config)
+
+        with self.assertRaisesRegex(ValueError, "serverAuth"):
             self.base_scp.run()
 
         self.mock_ae.start_server.assert_not_called()

@@ -182,6 +182,8 @@ class BaseSCP:
 
         Raises
         ------
+        ValueError
+            If the TLS configuration does not have the serverAuth usage.
         OSError
             If the certificate or the key file of the TLS configuration
             is missing or unreadable.
@@ -193,7 +195,7 @@ class BaseSCP:
         ssl_context = None
         if self.tls_config:
             self.logger.info("Configuring TLS for SCP server")
-            ssl_context = self.tls_config.create_ssl_context()
+            ssl_context = self.tls_config.create_server_ssl_context()
 
         # Listen for incoming association requests
         try:
