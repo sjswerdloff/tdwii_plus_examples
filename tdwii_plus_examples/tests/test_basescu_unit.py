@@ -11,6 +11,7 @@ from pynetdicom.sop_class import Verification
 from pynetdicom.status import Status
 
 from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 
 
 class TestBaseSCU(unittest.TestCase):
@@ -380,3 +381,37 @@ class TestBaseSCU(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestBaseSCUTLS(unittest.TestCase):
+    def setUp(self):
+        self.scu_logger = logging.getLogger("basescu_tls")
+
+    def test_no_tls_config_associates_without_tls_arguments(self):
+        scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", "192.168.1.1", 11112, "SCP_AE_TITLE")
+        scu.ae = MagicMock()
+        scu._associate()
+        scu.ae.associate.assert_called_once_with("192.168.1.1", 11112, ae_title="SCP_AE_TITLE", tls_args=None)
+
+    def test_server_only_tls_config_raises_at_construction(self):
+        config = TLSConfig(cert_file="scu.pem", key_file="scu.key")
+        with self.assertRaises(ValueError):
+            BaseSCU(self.scu_logger, "MY_AE_TITLE", "192.168.1.1", 11112, "SCP_AE_TITLE", tls_config=config)
+
+    def test_ssl_context_is_built_once_at_construction(self):
+        config = MagicMock(spec=TLSConfig)
+        scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", "192.168.1.1", 11112, "SCP_AE_TITLE", tls_config=config)
+        scu.ae = MagicMock()
+        scu._associate()
+        scu._associate()
+        config.create_client_ssl_context.assert_called_once_with()
+
+    def test_associate_passes_the_ssl_context_and_the_current_called_ip(self):
+        config = TLSConfig(usage=TLSUsage.CLIENT_AUTH)
+        scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", "192.168.1.1", 11112, "SCP_AE_TITLE", tls_config=config)
+        scu.ae = MagicMock()
+        scu.called_ip = "192.168.1.2"
+        scu._associate()
+        scu.ae.associate.assert_called_once_with(
+            "192.168.1.2", 11112, ae_title="SCP_AE_TITLE", tls_args=(scu._ssl_context, "192.168.1.2")
+        )

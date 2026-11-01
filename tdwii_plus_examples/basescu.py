@@ -1,6 +1,7 @@
 import logging
 from argparse import Namespace
 from collections import namedtuple
+from typing import Optional
 
 from pydicom.dataset import Dataset
 from pydicom.uid import UID
@@ -8,6 +9,8 @@ from pynetdicom import AE, Association
 from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 from pynetdicom.status import GENERAL_STATUS, code_to_category
+
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 class BaseSCU:
@@ -56,6 +59,7 @@ class BaseSCU:
         called_ip: str = None,
         called_port: int = None,
         called_ae_title: str = None,
+        tls_config: Optional[TLSConfig] = None,
     ):
         """
         Initializes a BaseSCU instance.
@@ -76,6 +80,22 @@ class BaseSCU:
             The AE title of the called AE. If None, "ANYSCP" is used.
         calling_ae_title : str
             The AE title of the calling AE.
+        tls_config : TLSConfig or None
+            Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+
+        Raises
+        ------
+        ValueError
+            If the usage of tls_config does not include clientAuth.
+        ssl.SSLError
+            If the certificate and the key of tls_config cannot be loaded.
+
+        Notes
+        -----
+        When tls_config is given, the certificate, key and CA files are read once, at construction.
+        The instance keeps using the certificates read at construction, even if the files are renewed or
+        replaced afterwards, or the certificate expires. To use new files, create a new instance.
         """
         if logger is None:
             self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "base_scu")
@@ -98,6 +118,9 @@ class BaseSCU:
         self.called_port = called_port
 
         self.called_ae_title = called_ae_title or None
+
+        self.tls_config = tls_config
+        self._ssl_context = tls_config.create_client_ssl_context() if tls_config else None
 
         # Create an AE instance
         self.ae = AE(ae_title=self.calling_ae_title)
@@ -139,7 +162,9 @@ class BaseSCU:
             self.called_ae_title = "ANYSCP"
             self.logger.warning(f"Using default Called Application Entity Title: {self.called_ae_title}")
 
-        self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title)
+        # called_ip can change through set_called_ae, so the TLS arguments are formed for each association
+        tls_args = (self._ssl_context, self.called_ip) if self._ssl_context else None
+        self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title, tls_args=tls_args)
         if not self.assoc.is_established:
             return self.AssociationResult(
                 status="Error", description="Association could not be established", accepted_sop_classes=[]
