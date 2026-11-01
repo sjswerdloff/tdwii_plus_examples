@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydicom import DataElement, Dataset, Sequence
 from pydicom.uid import UID
 from pydicom.valuerep import VR
@@ -5,6 +7,7 @@ from pynetdicom.sop_class import UnifiedProcedureStepPull
 
 from tdwii_plus_examples._dicom_macros import create_code_seq_item
 from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 class UPSPullCFindSCU(BaseSCU):
@@ -17,7 +20,15 @@ class UPSPullCFindSCU(BaseSCU):
     to query UPS instances.
     """
 
-    def __init__(self, logger=None, calling_ae_title=None, called_ip=None, called_port=None, called_ae_title=None):
+    def __init__(
+        self,
+        logger=None,
+        calling_ae_title=None,
+        called_ip=None,
+        called_port=None,
+        called_ae_title=None,
+        tls_config: Optional[TLSConfig] = None,
+    ):
         """
         Initializes a UPSPullCFindSCU instance.
 
@@ -33,6 +44,10 @@ class UPSPullCFindSCU(BaseSCU):
             The port number of the called AE.
         called_ae_title : str, optional
             The AE title of the called AE.
+        tls_config : TLSConfig, optional
+            Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
         """
         super().__init__(
             logger,
@@ -40,6 +55,7 @@ class UPSPullCFindSCU(BaseSCU):
             called_ip=called_ip,
             called_port=called_port,
             called_ae_title=called_ae_title,
+            tls_config=tls_config,
         )
         self.logger.debug("UPSPullCFindSCU initialized")
 

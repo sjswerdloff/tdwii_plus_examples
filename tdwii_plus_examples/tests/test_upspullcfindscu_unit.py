@@ -6,6 +6,7 @@ from pydicom import Dataset
 from pydicom.uid import generate_uid
 from pynetdicom.sop_class import UnifiedProcedureStepPull
 
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 from tdwii_plus_examples.upspullcfindscu import UPSPullCFindSCU
 
 
@@ -268,6 +269,22 @@ class TestUPSPullCFindSCU(unittest.TestCase):
         self.assertEqual(ds.ProcedureStepState, expected_state)
         self.assertEqual(ds.ScheduledProcedureStepStartDateTime, expected_dtmatch)
         self.assertEqual(ds.ScheduledStationNameCodeSequence[0].CodeValue, "Gantry1")
+
+    def test_tls_config_is_forwarded(self):
+        tls_config = TLSConfig(usage=TLSUsage.CLIENT_AUTH)
+
+        scu = UPSPullCFindSCU(
+            calling_ae_title="CALLING_AE",
+            called_ip="127.0.0.1",
+            called_port=11112,
+            called_ae_title="CALLED_AE",
+            tls_config=tls_config,
+        )
+
+        self.assertIs(scu.tls_config, tls_config)
+
+    def test_tls_config_defaults_to_none(self):
+        self.assertIsNone(self.scu.tls_config)
 
 
 if __name__ == "__main__":

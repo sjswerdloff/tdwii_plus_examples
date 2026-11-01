@@ -1,9 +1,12 @@
+from typing import Optional
+
 from pydicom import Dataset
 from pydicom.uid import UID
 from pynetdicom.association import Association
 from pynetdicom.sop_class import UnifiedProcedureStepPush
 
 from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 class UPSPushNCreateSCU(BaseSCU):
@@ -20,6 +23,9 @@ class UPSPushNCreateSCU(BaseSCU):
         called_ae_title (str): The title of the called AE.
         called_ip (str): The IP address or hostname of the called AE.
         called_port (int): The port number of the called AE.
+        tls_config (TLSConfig): Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
     """
 
     def __init__(
@@ -29,6 +35,7 @@ class UPSPushNCreateSCU(BaseSCU):
         called_ip: str = None,
         called_port: int = None,
         called_ae_title: str = None,
+        tls_config: Optional[TLSConfig] = None,
     ):
         super().__init__(
             logger,
@@ -36,6 +43,7 @@ class UPSPushNCreateSCU(BaseSCU):
             called_ip=called_ip,
             called_port=called_port,
             called_ae_title=called_ae_title,
+            tls_config=tls_config,
         )
 
     def _add_requested_context(self):

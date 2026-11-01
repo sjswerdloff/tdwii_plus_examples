@@ -13,6 +13,7 @@ from pynetdicom.sop_class import (
 )
 
 from tdwii_plus_examples.cstorescu import CStoreSCU
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 
 LOGGER = logging.getLogger(__name__)
 
@@ -216,3 +217,19 @@ class TestCStoreSCU(unittest.TestCase):
             ValueError, f"Only Storage Presentation Contexts are allowed. Invalid contexts: \\['{qr_abstract__syntax}'\\]"
         ):
             self.cstore_scu._validate_contexts(contexts)
+
+    def test_tls_config_is_forwarded(self):
+        tls_config = TLSConfig(usage=TLSUsage.CLIENT_AUTH)
+
+        scu = CStoreSCU(
+            calling_ae_title="CALLING_AE",
+            called_ip="127.0.0.1",
+            called_port=11112,
+            called_ae_title="CALLED_AE",
+            tls_config=tls_config,
+        )
+
+        self.assertIs(scu.tls_config, tls_config)
+
+    def test_tls_config_defaults_to_none(self):
+        self.assertIsNone(self.cstore_scu.tls_config)

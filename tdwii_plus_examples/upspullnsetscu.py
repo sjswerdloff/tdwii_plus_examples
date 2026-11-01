@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydicom import Dataset
 from pydicom.uid import UID
@@ -7,6 +8,7 @@ from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
 from tdwii_plus_examples._dicom_macros import create_code_seq_item, create_referenced_instances_and_access_item
 from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 class UPSPullNSetSCU(BaseSCU):
@@ -26,9 +28,20 @@ class UPSPullNSetSCU(BaseSCU):
         called_ae_title: The title of the called AE.
         called_ip: The IP address or hostname of the called AE.
         called_port: The port number of the called AE.
+        tls_config: Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
     """
 
-    def __init__(self, logger=None, calling_ae_title=None, called_ip=None, called_port=None, called_ae_title=None):
+    def __init__(
+        self,
+        logger=None,
+        calling_ae_title=None,
+        called_ip=None,
+        called_port=None,
+        called_ae_title=None,
+        tls_config: Optional[TLSConfig] = None,
+    ):
         """
         Initializes a UPSNSetSCU instance.
 
@@ -44,6 +57,10 @@ class UPSPullNSetSCU(BaseSCU):
             The port number of the called AE.
         called_ae_title : str, optional
             The AE title of the called AE.
+        tls_config : TLSConfig, optional
+            Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
         """
         super().__init__(
             logger,
@@ -51,6 +68,7 @@ class UPSPullNSetSCU(BaseSCU):
             called_ip=called_ip,
             called_port=called_port,
             called_ae_title=called_ae_title,
+            tls_config=tls_config,
         )
         self.logger.debug("UPSNSetSCU initialized")
 
