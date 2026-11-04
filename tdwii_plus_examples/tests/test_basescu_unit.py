@@ -77,6 +77,25 @@ class TestBaseSCU(unittest.TestCase):
                 called_ae_title,
             )
 
+    def test_init_empty_called_ae_parameters(self):
+        base_scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", "", 11112, "")
+
+        self.assertIsNone(base_scu.called_ip)
+        self.assertIsNone(base_scu.called_ae_title)
+
+    def test_set_called_ae(self):
+        self.base_scu.set_called_ae("192.168.1.2", 11113, "OTHER_AE_TITLE")
+
+        self.assertEqual(self.base_scu.called_ip, "192.168.1.2")
+        self.assertEqual(self.base_scu.called_port, 11113)
+        self.assertEqual(self.base_scu.called_ae_title, "OTHER_AE_TITLE")
+
+    @parameterized.expand([(None,), ("",)])
+    def test_set_called_ae_default_title(self, called_ae_title):
+        self.base_scu.set_called_ae("192.168.1.2", 11113, called_ae_title)
+
+        self.assertEqual(self.base_scu.called_ae_title, "ANYSCP")
+
     def test_add_requested_context(self):
         with patch.object(self.base_scu.ae, "add_requested_context") as mock_add_requested_context:
             self.base_scu._add_requested_context()
