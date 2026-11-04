@@ -73,7 +73,7 @@ class BaseSCU:
         called_port : int
             The port number of the called AE.
         called_ae_title : str, optional
-            The AE title of the called AE. If None, "ANY-SCP" is used.
+            The AE title of the called AE. If None, "ANYSCP" is used.
         calling_ae_title : str
             The AE title of the calling AE.
         """
@@ -94,14 +94,10 @@ class BaseSCU:
             self.logger.warning(f"Using default Application Entity Title: {self.calling_ae_title}")
         else:
             self.calling_ae_title = calling_ae_title
-        if called_ip is not None or called_ip != "":
-            self.called_ip = called_ip
-        else:
-            self.called_ip = None
+        self.called_ip = called_ip or None
         self.called_port = called_port
 
-        if called_ae_title is not None or called_ae_title != "":
-            self.called_ae_title = called_ae_title
+        self.called_ae_title = called_ae_title or None
 
         # Create an AE instance
         self.ae = AE(ae_title=self.calling_ae_title)
@@ -303,12 +299,12 @@ class BaseSCU:
             called_ip (str): The IP address of the called AE.
             called_port (int): The port number of the called AE.
             called_ae_title (str, optional): The AE title of the called AE.
-                Defaults to "ANY-SCP".
+                Defaults to "ANYSCP".
         """
         self.called_ip = called_ip
         self.called_port = called_port
         if called_ae_title is None or called_ae_title == "":
-            self.called_ae_title == "ANYSCP"
+            self.called_ae_title = "ANYSCP"
             self.logger.warning(f"Using default Called Application Title: {self.called_ae_title}")
         else:
             self.called_ae_title = called_ae_title
