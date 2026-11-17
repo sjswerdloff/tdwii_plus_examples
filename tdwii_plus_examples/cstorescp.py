@@ -1,6 +1,7 @@
 import logging
 import os
 from argparse import Namespace
+from typing import Optional
 
 from pydicom.uid import UID, ExplicitVRLittleEndian, ImplicitVRLittleEndian
 from pynetdicom import DEFAULT_TRANSFER_SYNTAXES, evt
@@ -8,6 +9,7 @@ from pynetdicom.apps.common import setup_logging
 from pynetdicom.presentation import StoragePresentationContexts
 
 from tdwii_plus_examples._dicom_uids import validate_sop_classes, validate_transfer_syntaxes
+from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cstorehandler import handle_cstore
 
@@ -36,6 +38,7 @@ class CStoreSCP(CEchoSCP):
         transfer_syntaxes (list): A list of transfer syntaxes to support
         custom_handler (function): A function to handle C-STORE requests
         store_directory (str): The directory to store files
+        tls_config (TLSConfig): Optional TLS configuration
 
     Methods:
         _add_contexts(self)
@@ -54,6 +57,7 @@ class CStoreSCP(CEchoSCP):
         transfer_syntaxes=None,
         custom_handler=None,
         store_directory=None,
+        tls_config: Optional[TLSConfig] = None,
         **kwargs,
     ):
         """
@@ -101,6 +105,9 @@ class CStoreSCP(CEchoSCP):
         store_directory: str
             The directory to store files
             Optional, default: current directory
+
+        tls_config: TLSConfig or None
+            Optional TLS configuration for secure communication.
         """
         if logger is None:
             self.logger = setup_logging(Namespace(log_type=None, log_level="debug"), "cstore_scp")
@@ -147,7 +154,14 @@ class CStoreSCP(CEchoSCP):
             self.store_directory = store_directory
         self.logger.debug(f"Store directory: {self.store_directory}")
 
-        super().__init__(ae_title=self.ae_title, bind_address=bind_address, port=port, logger=logger, **kwargs)
+        super().__init__(
+            ae_title=self.ae_title,
+            bind_address=bind_address,
+            port=port,
+            logger=logger,
+            tls_config=tls_config,
+            **kwargs,
+        )
 
     def _add_contexts(self):
         """
