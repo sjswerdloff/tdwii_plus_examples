@@ -42,6 +42,8 @@ class TestBaseSCUTLS(unittest.TestCase):
     def _run_scp(self, tls_config=None):
         scp = CEchoSCP(bind_address=self.ADDRESS, port=self.PORT, logger=self.logger, tls_config=tls_config)
         scp.run()
+        # run() only logs a failure to start, so check that the server is listening
+        self.assertIsNotNone(scp.threaded_server, f"the SCP server did not start on port {self.PORT}")
         self.addCleanup(scp.stop)
 
     def _verify(self, tls_config=None):
