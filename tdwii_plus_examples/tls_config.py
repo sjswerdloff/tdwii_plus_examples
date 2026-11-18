@@ -98,7 +98,8 @@ class TLSConfig:
             raise ValueError("a client SSL context needs the clientAuth usage")
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         # Do not check hostname of the server certificate: DICOM nodes are identified by AE title
-        # and usually addressed by IP address, not by host name
+        # and usually addressed by IP address, not by host name. No specification binds the AE title
+        # to the certificate yet, so only the certificate chain is verified.
         context.check_hostname = False
         if self.ca_cert:
             context.load_verify_locations(cafile=self.ca_cert)
