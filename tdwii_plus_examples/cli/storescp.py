@@ -19,6 +19,11 @@ Options:
     -o --output_directory   Output directory (defaults; current directory)
     -v --verbose            Set log level to INFO
     -d --debug              Set log level to DEBUG
+    --tls                   Use TLS, needs --tls-cert and --tls-key
+    --mtls                  Use mutual TLS, needs --tls-cert, --tls-key and --tls-ca
+    --tls-cert              PEM certificate of the application
+    --tls-key               PEM private key of the application
+    --tls-ca                PEM certificate authorities trusted to verify the peers
 """
 
 import argparse
@@ -29,6 +34,7 @@ import time
 from pydicom.uid import UID
 from pynetdicom.status import Status
 
+from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
 from tdwii_plus_examples.cstorescp import CStoreSCP
 
 
@@ -96,8 +102,10 @@ def main(loop_forever=True):  # Add a parameter to control the loop
     parser.add_argument("-o", "--output_directory", type=str, help="Output directory, defaults to current working directory")
     parser.add_argument("-v", "--verbose", action="store_true", help="Set log level to INFO")
     parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
+    add_tls_arguments(parser)
 
     args = parser.parse_args()
+    tls_config = tls_config_from_args(parser, args)
 
     log_level = logging.WARNING
     if args.verbose:
@@ -126,6 +134,7 @@ def main(loop_forever=True):  # Add a parameter to control the loop
         transfer_syntaxes=args.transfer_syntaxes,
         custom_handler=handler,
         store_directory=args.output_directory,
+        tls_config=tls_config,
     )
     cstorescp.run()
     logger.info("DICOM Storage SCP is running...")

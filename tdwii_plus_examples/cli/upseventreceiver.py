@@ -20,12 +20,19 @@ Options:
     -c, --callback           UPS Event callback function
     -v, --verbose            Set log level to INFO
     -d, --debug              Set log level to DEBUG
+    --tls                    Use TLS, needs --tls-cert and --tls-key
+    --mtls                   Use mutual TLS, needs --tls-cert, --tls-key and --tls-ca
+    --tls-cert               PEM certificate of the application
+    --tls-key                PEM private key of the application
+    --tls-ca                 PEM certificate authorities trusted to verify the peers
 """
+
 import argparse
 import atexit
 import logging
 import time
 
+from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
 from tdwii_plus_examples.upsneventhandler import UPS_EVENT_TYPES
 from tdwii_plus_examples.upsneventreceiver import UPSNEventReceiver
 
@@ -93,9 +100,9 @@ def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logge
         if state == "SCHEDULED" and readiness != "READY":
             app_logger.info(f"Waiting for UPS {upsinstance} inputs to be ready")
         elif state == "SCHEDULED" and readiness == "READY":
-            app_logger.info(f"Time to C-FIND UPS {upsinstance} and check if assigned " f"to my station name")
+            app_logger.info(f"Time to C-FIND UPS {upsinstance} and check if assigned to my station name")
         elif state == "IN PROGRESS":
-            app_logger.info(f"Time to C-FIND UPS {upsinstance} and check if assigned " f"to the station name I work with")
+            app_logger.info(f"Time to C-FIND UPS {upsinstance} and check if assigned to the station name I work with")
         elif state == "COMPLETED" or state == "CANCELLED":
             app_logger.info(f"Time to close my session linked to UPS {upsinstance}")
 
@@ -138,7 +145,7 @@ def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logge
         """
         requesting_ae = upseventinfo.RequestingAE
         app_logger.info(
-            f"Time to accept cancellation of UPS {upsinstance} " f"if {requesting_ae} was its creator and reject " f"otherwise"
+            f"Time to accept cancellation of UPS {upsinstance} if {requesting_ae} was its creator and reject otherwise"
         )
 
     def process_ups_progress_report(upsinstance, upseventinfo):
@@ -179,7 +186,7 @@ def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logge
         None
         """
 
-        app_logger.info(f"Time to check if the Beam (number) changed " f"if working with UPS {upsinstance}")
+        app_logger.info(f"Time to check if the Beam (number) changed if working with UPS {upsinstance}")
 
     def process_scp_status_change(upsinstance, upseventinfo):
         """
@@ -220,7 +227,7 @@ def my_upsevent_callback(ups_instance, ups_event_type, ups_event_info, app_logge
                 f"instance specific subscriptions {upsinstance}"
             )
         elif scpstatus == "GOING DOWN":
-            app_logger.info("Time to warn the user that the Worklist Manager is " "going down ")
+            app_logger.info("Time to warn the user that the Worklist Manager is going down ")
 
     def process_ups_assigned(upsinstance, upseventinfo):
         """
@@ -298,8 +305,10 @@ def main(loop_forever=True):  # Add a parameter to control the loop
     parser.add_argument("-c", "--callback", type=str, help="UPS Event callback function")
     parser.add_argument("-v", "--verbose", action="store_true", help="Set log level to INFO")
     parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
+    add_tls_arguments(parser)
 
     args = parser.parse_args()
+    tls_config = tls_config_from_args(parser, args)
 
     log_level = logging.WARNING
     if args.verbose:
@@ -326,6 +335,7 @@ def main(loop_forever=True):  # Add a parameter to control the loop
         logger=logger,
         transfer_syntaxes=args.transfer_syntaxes,
         ups_event_callback=callback,
+        tls_config=tls_config,
     )
     upsneventrcv.run()
     logger.info("DICOM UPS Event Receiver (SCU) is running...")
