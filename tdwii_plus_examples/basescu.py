@@ -155,16 +155,19 @@ class BaseSCU:
         return (result.status == "Success"), result
 
     def _attempt_association(self, required_sop_classes=None):
-        if (self.called_ip is None or self.called_ip == "") or self.called_port is None:
+        # Copy the called AE parameters to local variables, so that a set_called_ae call made after this line
+        # cannot change the endpoint of the attempt
+        called_ip, called_port, called_ae_title = self.called_ip, self.called_port, self.called_ae_title
+        if (called_ip is None or called_ip == "") or called_port is None:
             return self.AssociationResult(status="Error", description="Called AE parameters not set", accepted_sop_classes=[])
 
-        if self.called_ae_title is None:
-            self.called_ae_title = "ANYSCP"
-            self.logger.warning(f"Using default Called Application Entity Title: {self.called_ae_title}")
+        if called_ae_title is None:
+            called_ae_title = self.called_ae_title = "ANYSCP"
+            self.logger.warning(f"Using default Called Application Entity Title: {called_ae_title}")
 
         # called_ip can change through set_called_ae, so the TLS arguments are formed for each association
-        tls_args = (self._ssl_context, self.called_ip) if self._ssl_context else None
-        self.assoc = self.ae.associate(self.called_ip, self.called_port, ae_title=self.called_ae_title, tls_args=tls_args)
+        tls_args = (self._ssl_context, called_ip) if self._ssl_context else None
+        self.assoc = self.ae.associate(called_ip, called_port, ae_title=called_ae_title, tls_args=tls_args)
         if not self.assoc.is_established:
             return self.AssociationResult(
                 status="Error", description="Association could not be established", accepted_sop_classes=[]

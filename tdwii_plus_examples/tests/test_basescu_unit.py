@@ -119,6 +119,36 @@ class TestBaseSCU(unittest.TestCase):
             self.assertEqual(details.status, "Error")
         self.test_logger.info("Test _associate with rejection")
 
+    def test_set_called_ae_during_an_association_attempt_does_not_change_its_endpoint(self):
+        """
+        Address the endpoint that was set when the attempt started: its address, port and AE title together.
+
+        set_called_ae writes the three values one after the other and can be called while an attempt is running.
+        """
+        scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", "192.168.1.1", 11112, None)
+        scu.ae = MagicMock()
+        # Without a called AE title, the attempt logs a warning: call set_called_ae from there, during the attempt
+        scu.logger = MagicMock()
+        scu.logger.warning.side_effect = lambda message: scu.set_called_ae("192.168.1.2", 11113, "OTHER_AE_TITLE")
+
+        scu._associate()
+
+        self.assertEqual(scu.called_ip, "192.168.1.2")  # set_called_ae was called during the attempt
+        scu.ae.associate.assert_called_once_with("192.168.1.1", 11112, ae_title="ANYSCP", tls_args=None)
+
+    def test_association_attempt_without_called_ae_title_uses_and_keeps_the_default(self):
+        """
+        Store the default called AE title in the instance, not only use it for the attempt.
+
+        The attempt works on copies of the parameters, so the default has to be written back
+        for the next attempts and for the callers that read the called AE title.
+        """
+        base_scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", "192.168.1.1", 11112, None)
+        base_scu.ae = MagicMock()
+        base_scu._associate()
+        base_scu.ae.associate.assert_called_once_with("192.168.1.1", 11112, ae_title="ANYSCP", tls_args=None)
+        self.assertEqual(base_scu.called_ae_title, "ANYSCP")
+
     @parameterized.expand(
         [
             (None, 11112),
@@ -414,4 +444,25 @@ class TestBaseSCUTLS(unittest.TestCase):
         scu._associate()
         scu.ae.associate.assert_called_once_with(
             "192.168.1.2", 11112, ae_title="SCP_AE_TITLE", tls_args=(scu._ssl_context, "192.168.1.2")
+        )
+
+    def test_set_called_ae_during_an_association_attempt_does_not_change_the_tls_server_name(self):
+        """
+        Keep the TLS server name on the address that the attempt started with.
+
+        The called IP is the server name of the TLS arguments: if it changed during the attempt, the handshake
+        would name another host than the one the association request connects to.
+        """
+        config = TLSConfig(usage=TLSUsage.CLIENT_AUTH)
+        scu = BaseSCU(self.scu_logger, "MY_AE_TITLE", "192.168.1.1", 11112, None, tls_config=config)
+        scu.ae = MagicMock()
+        # Without a called AE title, the attempt logs a warning: call set_called_ae from there, during the attempt
+        scu.logger = MagicMock()
+        scu.logger.warning.side_effect = lambda message: scu.set_called_ae("192.168.1.2", 11113, "OTHER_AE_TITLE")
+
+        scu._associate()
+
+        self.assertEqual(scu.called_ip, "192.168.1.2")  # set_called_ae was called during the attempt
+        scu.ae.associate.assert_called_once_with(
+            "192.168.1.1", 11112, ae_title="ANYSCP", tls_args=(scu._ssl_context, "192.168.1.1")
         )
