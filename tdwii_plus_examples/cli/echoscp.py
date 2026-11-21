@@ -29,6 +29,7 @@ import time
 
 from tdwii_plus_examples.cechoscp import CEchoSCP
 from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
+from tdwii_plus_examples.tls_config import TLSUsage
 
 
 def main(loop_forever=True):  # Add a parameter to control the loop
@@ -40,10 +41,10 @@ def main(loop_forever=True):  # Add a parameter to control the loop
     parser.add_argument("-p", "--port", type=int, default=None, help="Port number")
     parser.add_argument("-v", "--verbose", action="store_true", help="Set log level to INFO")
     parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
-    add_tls_arguments(parser)
+    add_tls_arguments(parser, usage=TLSUsage.SERVER_AUTH)
 
     args = parser.parse_args()
-    tls_config = tls_config_from_args(parser, args)
+    tls_config = tls_config_from_args(parser, args, usage=TLSUsage.SERVER_AUTH)
 
     log_level = logging.WARNING
     if args.verbose:
