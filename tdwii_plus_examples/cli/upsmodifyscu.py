@@ -13,7 +13,9 @@ from typing import Any
 from pydicom import dcmread
 from pydicom.uid import UID
 
+from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
 from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_ups
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 from tdwii_plus_examples.upspullnactionscu import UPSPullNActionSCU
 from tdwii_plus_examples.upspullnsetscu import UPSPullNSetSCU
 from tdwii_plus_examples.upspushncreatescu import UPSPushNCreateSCU
@@ -26,9 +28,14 @@ def _csv_to_tuple(val: str) -> tuple[str, ...]:
 def main():  # sourcery skip: remove-redundant-if
     parser = _build_parser()
     args = parser.parse_args()
+
+    # Validate the TLS options and build the TLS configuration
+    tls_config = tls_config_from_args(parser, args, usage=TLSUsage.CLIENT_AUTH)
+
+    # Validate the other options
     _check_args(args, parser)
     logger = _setup_logger(args)
-    sop_instance_uid, tx_uid = _get_ups_info(args, parser, logger)
+    sop_instance_uid, tx_uid = _get_ups_info(args, parser, logger, tls_config)
 
     # Create the N-SET SCU instance
     scu = UPSPullNSetSCU(
@@ -37,6 +44,7 @@ def main():  # sourcery skip: remove-redundant-if
         called_ip=args.ip,
         called_port=args.port,
         logger=logger,
+        tls_config=tls_config,
     )
 
     # Update UPS Progress Information if requested
@@ -173,6 +181,9 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-v", "--verbose", action="store_true", help="Set log level to INFO")
     parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
     parser.add_argument("-q", "--quiet", action="store_true", help="Suppress all log output")
+
+    add_tls_arguments(parser, usage=TLSUsage.CLIENT_AUTH)
+
     return parser
 
 
@@ -223,6 +234,7 @@ def _get_ups_info(
     args: argparse.Namespace,
     parser: argparse.ArgumentParser,
     logger: logging.Logger,
+    tls_config: TLSConfig | None,
 ) -> tuple[str, str]:
     """
     Prepare and validate all required context for UPS modification:
@@ -232,7 +244,7 @@ def _get_ups_info(
     """
     # Optionally create a new UPS instance
     if args.create:
-        sop_instance_uid = _ncreate_sample_ups(args, logger)
+        sop_instance_uid = _ncreate_sample_ups(args, logger, tls_config)
     else:
         if not args.sop_instance_uid:
             parser.error("You must provide --sop_instance_uid if not creating a new UPS.")
@@ -240,7 +252,7 @@ def _get_ups_info(
 
     # Optionally claim the UPS
     if args.claim:
-        tx_uid = _claim_ups(args, sop_instance_uid, logger)
+        tx_uid = _claim_ups(args, sop_instance_uid, logger, tls_config)
         if not tx_uid:
             parser.error("Failed to claim UPS instance.")
         print(f"Claimed UPS instance with Transaction UID: {tx_uid}")
@@ -280,7 +292,7 @@ def _setup_logger(args: argparse.Namespace) -> logging.Logger:
     return logger
 
 
-def _ncreate_sample_ups(args: argparse.Namespace, logger: logging.Logger) -> str:
+def _ncreate_sample_ups(args: argparse.Namespace, logger: logging.Logger, tls_config: TLSConfig | None) -> str:
     ups_instance = generate_ups()
     push_scu = UPSPushNCreateSCU(
         calling_ae_title="UPSPUSH",
@@ -288,6 +300,7 @@ def _ncreate_sample_ups(args: argparse.Namespace, logger: logging.Logger) -> str
         called_ip=args.ip,
         called_port=args.port,
         logger=logger,
+        tls_config=tls_config,
     )
     num_created_instances = push_scu.create_ups_instances([ups_instance])
     if num_created_instances != 1:
@@ -302,6 +315,7 @@ def _claim_ups(
     args: argparse.Namespace,
     sop_instance_uid: str,
     logger: logging.Logger,
+    tls_config: TLSConfig | None,
 ) -> str | UID:
     change_state_scu = UPSPullNActionSCU(
         calling_ae_title="UPSPULL",
@@ -309,6 +323,7 @@ def _claim_ups(
         called_ip=args.ip,
         called_port=args.port,
         logger=logger,
+        tls_config=tls_config,
     )
     return change_state_scu.claim_ups(sop_instance_uid)
 

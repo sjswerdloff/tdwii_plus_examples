@@ -1,8 +1,13 @@
+import contextlib
+import io
+import os
 import sys
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
-from tdwii_plus_examples.cli.upsmodifyscu import _get_ups_info
+from tdwii_plus_examples.cli.upsmodifyscu import _claim_ups, _get_ups_info, _ncreate_sample_ups, main
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 
 
 class TestUpsModifySCU(unittest.TestCase):
@@ -136,7 +141,7 @@ class TestUpsModifySCU(unittest.TestCase):
             args.cancel = None
             args.output = None
             args.list = None
-            sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger)
+            sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger, None)
             self.assertEqual(sop_instance_uid, "created_uid")
             self.assertEqual(tx_uid, "claimed_tx_uid")
 
@@ -156,7 +161,7 @@ class TestUpsModifySCU(unittest.TestCase):
         args.output = None
         args.list = None
         with self.assertRaises(ValueError):
-            _get_ups_info(args, self.parser, self.logger)
+            _get_ups_info(args, self.parser, self.logger, None)
 
     def test_get_ups_info_progress(self):
         class Args:
@@ -173,7 +178,7 @@ class TestUpsModifySCU(unittest.TestCase):
         args.cancel = None
         args.output = None
         args.list = None
-        sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger)
+        sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger, None)
         self.assertEqual(sop_instance_uid, "uid")
         self.assertEqual(tx_uid, "txid")
 
@@ -192,9 +197,76 @@ class TestUpsModifySCU(unittest.TestCase):
         args.cancel = None
         args.output = ["AET,1.2.3,1.2.4,1.2.840.10008.5.1.4.1.1.2,1.2.5"]
         args.list = None
-        sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger)
+        sop_instance_uid, tx_uid = _get_ups_info(args, self.parser, self.logger, None)
         self.assertEqual(sop_instance_uid, "uid")
         self.assertEqual(tx_uid, "txid")
+
+
+class TestUpsModifySCUWithTLS(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp_dir = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.temp_dir.cleanup)
+        # Create empty certificate, key and CA files, as only their existence is checked
+        for name in ("cert", "key", "ca"):
+            path = os.path.join(cls.temp_dir.name, f"{name}.pem")
+            open(path, "w").close()
+            setattr(cls, name, path)
+
+    def setUp(self):
+        scu_patch = patch("tdwii_plus_examples.cli.upsmodifyscu.UPSPullNSetSCU")
+        self.mock_scu_class = scu_patch.start()
+        self.addCleanup(scu_patch.stop)
+
+    def run_main(self, *argv):
+        base_argv = ["upsmodifyscu.py", "localhost", "11114", "--sop_instance_uid", "1.2.3", "--transaction_uid", "4.5.6"]
+        with patch.object(sys, "argv", [*base_argv, "--progress", "50", *argv]), patch("builtins.print"):
+            main()
+
+    def test_tls_options_are_forwarded(self):
+        self.run_main("--tls", "--tls-ca", self.ca)
+
+        tls_config = self.mock_scu_class.call_args.kwargs["tls_config"]
+        self.assertEqual(tls_config, TLSConfig(ca_cert=self.ca, usage=TLSUsage.CLIENT_AUTH))
+
+    def test_mtls_options_are_forwarded(self):
+        self.run_main("--mtls", "--tls-cert", self.cert, "--tls-key", self.key, "--tls-ca", self.ca)
+
+        tls_config = self.mock_scu_class.call_args.kwargs["tls_config"]
+        self.assertEqual(
+            tls_config,
+            TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, require_mtls=True, usage=TLSUsage.CLIENT_AUTH),
+        )
+
+    def test_no_tls_options_means_no_tls(self):
+        self.run_main()
+
+        self.assertIsNone(self.mock_scu_class.call_args.kwargs["tls_config"])
+
+    def test_invalid_tls_options_prevent_the_association(self):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+            self.run_main("--tls")
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("--tls requires --tls-ca", stderr.getvalue())
+        self.mock_scu_class.assert_not_called()
+
+    def test_tls_configuration_is_forwarded_to_the_helper_scus(self):
+        tls_config = TLSConfig(ca_cert=self.ca, usage=TLSUsage.CLIENT_AUTH)
+        args = MagicMock(ae_title="UPSSCP", ip="localhost", port=11114)
+
+        with (
+            patch("tdwii_plus_examples.cli.upsmodifyscu.UPSPushNCreateSCU") as mock_push_scu_class,
+            patch("tdwii_plus_examples.cli.upsmodifyscu.UPSPullNActionSCU") as mock_change_state_scu_class,
+            patch("builtins.print"),
+        ):
+            mock_push_scu_class.return_value.create_ups_instances.return_value = 1
+            _ncreate_sample_ups(args, MagicMock(), tls_config)
+            _claim_ups(args, "1.2.3", MagicMock(), tls_config)
+
+        self.assertEqual(mock_push_scu_class.call_args.kwargs["tls_config"], tls_config)
+        self.assertEqual(mock_change_state_scu_class.call_args.kwargs["tls_config"], tls_config)
 
 
 if __name__ == "__main__":
