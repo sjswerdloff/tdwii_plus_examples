@@ -1,9 +1,14 @@
+import contextlib
+import io
+import os
+import tempfile
 import unittest
 from io import StringIO
 from unittest.mock import MagicMock, patch
 
 # Import the main function from upscreatescu.py
 from tdwii_plus_examples.cli.upscreatescu import main
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 
 
 class TestUPSCreateSCU(unittest.TestCase):
@@ -83,6 +88,55 @@ class TestUPSCreateSCU(unittest.TestCase):
 
         # Assert that the error message is in the logs
         self.assertIn("Failed to read DICOM file valid_file.dcm", log.output[-1])
+
+
+class TestUPSCreateSCUWithTLS(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp_dir = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.temp_dir.cleanup)
+        # Create empty certificate, key and CA files, as only their existence is checked
+        for name in ("cert", "key", "ca"):
+            path = os.path.join(cls.temp_dir.name, f"{name}.pem")
+            open(path, "w").close()
+            setattr(cls, name, path)
+
+    def run_main(self, *argv):
+        with patch("sys.argv", ["upscreatescu.py", "127.0.0.1", "104", "test_path", "-e", *argv]):
+            main()
+
+    @patch("tdwii_plus_examples.cli.upscreatescu.UPSPushNCreateSCU")
+    def test_tls_options_are_forwarded(self, mock_scu):
+        self.run_main("--tls", "--tls-ca", self.ca)
+
+        tls_config = mock_scu.call_args.kwargs["tls_config"]
+        self.assertEqual(tls_config, TLSConfig(ca_cert=self.ca, usage=TLSUsage.CLIENT_AUTH))
+
+    @patch("tdwii_plus_examples.cli.upscreatescu.UPSPushNCreateSCU")
+    def test_mtls_options_are_forwarded(self, mock_scu):
+        self.run_main("--mtls", "--tls-cert", self.cert, "--tls-key", self.key, "--tls-ca", self.ca)
+
+        tls_config = mock_scu.call_args.kwargs["tls_config"]
+        self.assertEqual(
+            tls_config,
+            TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, require_mtls=True, usage=TLSUsage.CLIENT_AUTH),
+        )
+
+    @patch("tdwii_plus_examples.cli.upscreatescu.UPSPushNCreateSCU")
+    def test_no_tls_options_means_no_tls(self, mock_scu):
+        self.run_main()
+
+        self.assertIsNone(mock_scu.call_args.kwargs["tls_config"])
+
+    @patch("tdwii_plus_examples.cli.upscreatescu.UPSPushNCreateSCU")
+    def test_invalid_tls_options_prevent_the_association(self, mock_scu):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+            self.run_main("--tls")
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("--tls requires --tls-ca", stderr.getvalue())
+        mock_scu.assert_not_called()
 
 
 if __name__ == "__main__":
