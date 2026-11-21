@@ -369,6 +369,11 @@ Either Cancel or Complete for RO-65.
 
 
 
+# Securing connections with TLS
+
+The `echoscp`, `storescp` and `upseventreceiver` applications can secure their connections with TLS (`--tls` and `--mtls`).
+This requires creating certificates and keys: [Securing connections with TLS](docs/tls.md) explains how to do it for testing, and describes how to use the applications with TLS.
+
 # Abbreviations
 | Abbr. | Description |
 |-------| ------------|
