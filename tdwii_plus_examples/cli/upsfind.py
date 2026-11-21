@@ -8,6 +8,8 @@ from typing import NoReturn
 from pydicom.dataset import FileMetaDataset
 from pydicom.uid import PYDICOM_IMPLEMENTATION_UID, ExplicitVRLittleEndian
 
+from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
+from tdwii_plus_examples.tls_config import TLSUsage
 from tdwii_plus_examples.upspullcfindscu import UPSPullCFindSCU
 
 
@@ -34,7 +36,12 @@ def main() -> NoReturn:
     parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
     parser.add_argument("-q", "--quiet", action="store_true", help="Suppress all log output")
 
+    add_tls_arguments(parser, usage=TLSUsage.CLIENT_AUTH)
+
     args = parser.parse_args()
+
+    # Validate the TLS options and build the TLS configuration
+    tls_config = tls_config_from_args(parser, args, usage=TLSUsage.CLIENT_AUTH)
 
     if args.quiet:
         log_level = logging.CRITICAL
@@ -56,6 +63,7 @@ def main() -> NoReturn:
         called_ip=args.ip,
         called_port=args.port,
         called_ae_title=args.called_ae_title,
+        tls_config=tls_config,
     )
 
     # Build the UPS query dataset using the provided options

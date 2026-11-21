@@ -1,4 +1,8 @@
+import contextlib
+import io
+import os
 import sys
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -7,6 +11,7 @@ from pydicom.uid import generate_uid
 from pynetdicom.sop_class import UnifiedProcedureStepPush
 
 from tdwii_plus_examples.cli.upsfind import main as upsfind_main
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 
 
 class TestUpsFindSCU(unittest.TestCase):
@@ -160,6 +165,67 @@ class TestUpsFindSCU(unittest.TestCase):
                 scheduled_no_sooner_than="202501010000",
                 scheduled_no_later_than="202501011200",
             )
+
+
+class TestUpsFindSCUWithTLS(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp_dir = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.temp_dir.cleanup)
+        # Create empty certificate, key and CA files, as only their existence is checked
+        for name in ("cert", "key", "ca"):
+            path = os.path.join(cls.temp_dir.name, f"{name}.pem")
+            open(path, "w").close()
+            setattr(cls, name, path)
+
+    def run_main(self, *argv):
+        with (
+            patch.object(sys, "argv", ["upsfind.py", "localhost", "11114", *argv]),
+            patch("builtins.print"),
+            self.assertRaises(SystemExit),
+        ):
+            upsfind_main()
+
+    @patch("tdwii_plus_examples.cli.upsfind.UPSPullCFindSCU")
+    def test_tls_options_are_forwarded(self, mock_scu_class):
+        mock_scu_class.return_value.get_ups.return_value = []
+
+        self.run_main("--tls", "--tls-ca", self.ca)
+
+        tls_config = mock_scu_class.call_args.kwargs["tls_config"]
+        self.assertEqual(tls_config, TLSConfig(ca_cert=self.ca, usage=TLSUsage.CLIENT_AUTH))
+
+    @patch("tdwii_plus_examples.cli.upsfind.UPSPullCFindSCU")
+    def test_mtls_options_are_forwarded(self, mock_scu_class):
+        mock_scu_class.return_value.get_ups.return_value = []
+
+        self.run_main("--mtls", "--tls-cert", self.cert, "--tls-key", self.key, "--tls-ca", self.ca)
+
+        tls_config = mock_scu_class.call_args.kwargs["tls_config"]
+        self.assertEqual(
+            tls_config,
+            TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, require_mtls=True, usage=TLSUsage.CLIENT_AUTH),
+        )
+
+    @patch("tdwii_plus_examples.cli.upsfind.UPSPullCFindSCU")
+    def test_no_tls_options_means_no_tls(self, mock_scu_class):
+        mock_scu_class.return_value.get_ups.return_value = []
+
+        self.run_main()
+
+        self.assertIsNone(mock_scu_class.call_args.kwargs["tls_config"])
+
+    @patch("tdwii_plus_examples.cli.upsfind.UPSPullCFindSCU")
+    def test_invalid_tls_options_prevent_the_association(self, mock_scu_class):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            with self.assertRaises(SystemExit) as raised:
+                with patch.object(sys, "argv", ["upsfind.py", "localhost", "11114", "--tls"]):
+                    upsfind_main()
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("--tls requires --tls-ca", stderr.getvalue())
+        mock_scu_class.assert_not_called()
 
 
 if __name__ == "__main__":
