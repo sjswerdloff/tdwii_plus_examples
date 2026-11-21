@@ -5,11 +5,13 @@ import os
 import tempfile
 import unittest
 
-from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
-class TestTLSOptions(unittest.TestCase):
+class TLSOptionsTestCase(unittest.TestCase):
+    """Helpers shared by the tests of the TLS options."""
+
     @classmethod
     def setUpClass(cls):
         # Only the existence of the files is checked here, their content is not loaded
@@ -35,6 +37,8 @@ class TestTLSOptions(unittest.TestCase):
         self.assertEqual(raised.exception.code, 2)
         self.assertIn(message, stderr.getvalue())
 
+
+class TestSCPTLSOptions(TLSOptionsTestCase):
     def test_no_options_means_no_tls(self):
         self.assertIsNone(self.config_from())
 

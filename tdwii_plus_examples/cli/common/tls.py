@@ -18,7 +18,7 @@ import argparse
 import os
 from typing import Optional
 
-from tdwii_plus_examples.basescp import TLSConfig
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 def add_tls_arguments(parser: argparse.ArgumentParser) -> None:
@@ -36,32 +36,52 @@ def add_tls_arguments(parser: argparse.ArgumentParser) -> None:
     group.add_argument("--tls-ca", metavar="FILE", help="PEM file with the CA certificates trusted to verify the remote AEs")
 
 
-def _check_server_options(args: argparse.Namespace) -> None:
-    """Raise a ValueError when the TLS options cannot configure a server."""
-    options = {"--tls-cert": args.tls_cert, "--tls-key": args.tls_key, "--tls-ca": args.tls_ca}
+def _tls_file_options(args: argparse.Namespace) -> dict:
+    """Return the file options by name."""
+    return {"--tls-cert": args.tls_cert, "--tls-key": args.tls_key, "--tls-ca": args.tls_ca}
 
-    # tls or mtls must be explicitly selected when any of the file options is given
-    if not (args.tls or args.mtls):
-        tls_file_options = [name for name, path in options.items() if path]
-        if tls_file_options:
-            raise ValueError(f"{', '.join(tls_file_options)} requires --tls or --mtls")
-        return
 
-    # Cert and Key file options must be present for tls or mtls, and CA file option must be present for mtls
-    mode = "--mtls" if args.mtls else "--tls"
-    required = ["--tls-cert", "--tls-key"] + (["--tls-ca"] if args.mtls else [])
+def _selected_mode(args: argparse.Namespace) -> Optional[str]:
+    """
+    Return the selected mode, "--tls" or "--mtls", or None when neither is selected.
+
+    Raise a ValueError when a file option is present without a mode.
+    """
+    if args.mtls:
+        return "--mtls"
+    if args.tls:
+        return "--tls"
+    tls_file_options = [name for name, path in _tls_file_options(args).items() if path]
+    if tls_file_options:
+        raise ValueError(f"{', '.join(tls_file_options)} requires --tls or --mtls")
+    return None
+
+
+def _check_required_options(mode: str, args: argparse.Namespace, required: list) -> None:
+    """Raise a ValueError when a file option required by the mode is missing."""
+    options = _tls_file_options(args)
     missing = [name for name in required if not options[name]]
     if missing:
         raise ValueError(f"{mode} requires {', '.join(missing)}")
+
+
+def _check_files_exist(args: argparse.Namespace) -> None:
+    """Raise a ValueError when a file option does not point to an existing file."""
+    for name, path in _tls_file_options(args).items():
+        if path and not os.path.isfile(path):
+            raise ValueError(f"{name}: file not found: {path}")
+
+
+def _check_scp_options(mode: str, args: argparse.Namespace) -> None:
+    """Raise a ValueError when the TLS options are not valid for an SCP."""
+    # Cert and Key file options must be present for tls or mtls, and CA file option must be present for mtls
+    _check_required_options(mode, args, ["--tls-cert", "--tls-key"] + (["--tls-ca"] if args.mtls else []))
 
     # mtls must be explicitly selected when CA file option is present, to avoid client certificates not being verified
     if args.tls_ca and not args.mtls:
         raise ValueError("--tls-ca requires --mtls")
 
-    # All file options must point to existing files
-    for name, path in options.items():
-        if path and not os.path.isfile(path):
-            raise ValueError(f"{name}: file not found: {path}")
+    _check_files_exist(args)
 
 
 def tls_config_from_args(parser: argparse.ArgumentParser, args: argparse.Namespace) -> Optional[TLSConfig]:
@@ -72,10 +92,11 @@ def tls_config_from_args(parser: argparse.ArgumentParser, args: argparse.Namespa
     combination of options with ``parser.error``, which exits the application.
     """
     try:
-        _check_server_options(args)
+        mode = _selected_mode(args)
+        if mode is None:
+            return None
+        _check_scp_options(mode, args)
     except ValueError as error:
         parser.error(str(error))
 
-    if not (args.tls or args.mtls):
-        return None
     return TLSConfig(cert_file=args.tls_cert, key_file=args.tls_key, ca_cert=args.tls_ca, require_mtls=args.mtls)
