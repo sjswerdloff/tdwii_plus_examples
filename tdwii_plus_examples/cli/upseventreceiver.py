@@ -22,9 +22,9 @@ Options:
     -d, --debug              Set log level to DEBUG
     --tls                    Use TLS, needs --tls-cert and --tls-key
     --mtls                   Use mutual TLS, needs --tls-cert, --tls-key and --tls-ca
-    --tls-cert               PEM certificate of the application
-    --tls-key                PEM private key of the application
-    --tls-ca                 PEM certificate authorities trusted to verify the peers
+    --tls-cert               PEM file with the certificate of the AE
+    --tls-key                PEM file with the private key of the AE
+    --tls-ca                 PEM file with the CA certificates trusted to verify the remote AEs
 """
 
 import argparse

@@ -6,9 +6,9 @@ the files used by that mode.
 
     --tls       Use TLS
     --mtls      Use mutual TLS
-    --tls-cert  PEM certificate of the application
-    --tls-key   PEM private key of the application
-    --tls-ca    PEM certificate authorities trusted to verify the peers
+    --tls-cert  PEM file with the certificate of the AE
+    --tls-key   PEM file with the private key of the AE
+    --tls-ca    PEM file with the CA certificates trusted to verify the remote AEs
 
 Only the rules of an AE acting as an SCP (server) are implemented for now.
 
@@ -31,9 +31,9 @@ def add_tls_arguments(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="Use mutual TLS, needs --tls-cert, --tls-key and --tls-ca",
     )
-    group.add_argument("--tls-cert", metavar="FILE", help="PEM certificate of the application")
-    group.add_argument("--tls-key", metavar="FILE", help="PEM private key of the application")
-    group.add_argument("--tls-ca", metavar="FILE", help="PEM certificate authorities trusted to verify the peers")
+    group.add_argument("--tls-cert", metavar="FILE", help="PEM file with the certificate of the AE")
+    group.add_argument("--tls-key", metavar="FILE", help="PEM file with the private key of the AE")
+    group.add_argument("--tls-ca", metavar="FILE", help="PEM file with the CA certificates trusted to verify the remote AEs")
 
 
 def _check_server_options(args: argparse.Namespace) -> None:
