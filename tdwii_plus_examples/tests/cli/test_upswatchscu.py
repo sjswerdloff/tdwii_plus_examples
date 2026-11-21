@@ -1,5 +1,9 @@
 import argparse
+import contextlib
+import io
+import os
 import sys
+import tempfile
 import unittest
 from io import StringIO
 from unittest.mock import MagicMock, patch
@@ -9,6 +13,7 @@ from pydicom import Dataset
 from pydicom.uid import UID
 
 from tdwii_plus_examples.cli import upswatchscu
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 
 
 class TestUPSWatchSCU(unittest.TestCase):
@@ -60,6 +65,11 @@ class TestUPSWatchSCU(unittest.TestCase):
             verbose=False,
             debug=False,
             quiet=False,
+            tls=False,
+            mtls=False,
+            tls_cert=None,
+            tls_key=None,
+            tls_ca=None,
         )
 
         # Mock the association object and its methods
@@ -116,6 +126,57 @@ class TestUPSWatchSCU(unittest.TestCase):
                 self.assertIn("Single UPS Subscription successful", captured_output.getvalue())
             else:
                 self.assertIn("Single UPS Unsubscription successful", captured_output.getvalue())
+
+
+class TestUPSWatchSCUWithTLS(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp_dir = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.temp_dir.cleanup)
+        # Create empty certificate, key and CA files, as only their existence is checked
+        for name in ("cert", "key", "ca"):
+            path = os.path.join(cls.temp_dir.name, f"{name}.pem")
+            open(path, "w").close()
+            setattr(cls, name, path)
+
+    def setUp(self):
+        scu_patch = patch("tdwii_plus_examples.cli.upswatchscu.UPSWatchNActionSCU")
+        self.mock_scu_class = scu_patch.start()
+        self.addCleanup(scu_patch.stop)
+        self.mock_scu_class.return_value.verify.return_value = MagicMock(status_category="Success")
+
+    def run_main(self, *argv):
+        with patch.object(sys, "argv", ["upswatchscu.py", "127.0.0.1", "104", "--echo", *argv]), patch("builtins.print"):
+            upswatchscu.main()
+
+    def test_tls_options_are_forwarded(self):
+        self.run_main("--tls", "--tls-ca", self.ca)
+
+        tls_config = self.mock_scu_class.call_args.kwargs["tls_config"]
+        self.assertEqual(tls_config, TLSConfig(ca_cert=self.ca, usage=TLSUsage.CLIENT_AUTH))
+
+    def test_mtls_options_are_forwarded(self):
+        self.run_main("--mtls", "--tls-cert", self.cert, "--tls-key", self.key, "--tls-ca", self.ca)
+
+        tls_config = self.mock_scu_class.call_args.kwargs["tls_config"]
+        self.assertEqual(
+            tls_config,
+            TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, require_mtls=True, usage=TLSUsage.CLIENT_AUTH),
+        )
+
+    def test_no_tls_options_means_no_tls(self):
+        self.run_main()
+
+        self.assertIsNone(self.mock_scu_class.call_args.kwargs["tls_config"])
+
+    def test_invalid_tls_options_prevent_the_association(self):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+            self.run_main("--tls")
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("--tls requires --tls-ca", stderr.getvalue())
+        self.mock_scu_class.assert_not_called()
 
 
 if __name__ == "__main__":
