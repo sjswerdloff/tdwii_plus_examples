@@ -5,14 +5,20 @@ TLS is off unless `--tls` or `--mtls` is given.
 
 ## Quick start
 
-From the top level directory of the project:
+From the top level directory of the project, set up the Python environment with Poetry:
+
+```shell
+poetry install
+```
+
+Then start an application with TLS:
 
 ```shell
 python tdwii_plus_examples/cli/echoscp.py --port 2762 \
   --tls --tls-cert scp.pem --tls-key scp.key
 ```
 
-With mutual TLS:
+Or with mutual TLS:
 
 ```shell
 python tdwii_plus_examples/cli/storescp.py --port 2762 \
@@ -31,10 +37,10 @@ One of `--tls or `--mtls` is needed to enable TLS:
 | Option | Meaning |
 |---|---|
 | `--tls` | Use TLS, needs `--tls-cert` and `--tls-key` |
-| `--mtls` | Use mutual TLS: the peers must also authenticate themselves, needs `--tls-cert`, `--tls-key` and `--tls-ca` |
+| `--mtls` | Use mutual TLS: the remote AEs must also authenticate themselves, needs `--tls-cert`, `--tls-key` and `--tls-ca` |
 | `--tls-cert FILE` | PEM certificate of the application |
 | `--tls-key FILE` | PEM private key of the application |
-| `--tls-ca FILE` | PEM certificate authorities trusted to verify the peers (`--mtls` only) |
+| `--tls-ca FILE` | PEM certificate authorities trusted to verify the remote AEs (`--mtls` only) |
 
 `--tls` and `--mtls` cannot be combined, and the application refuses to start when the options are inconsistent
 (for example a `--tls-*` option without `--tls` or `--mtls`, a missing file, or `--tls-ca` without `--mtls`),
@@ -48,10 +54,10 @@ A root certificate authority (CA) is not provided either. A CA is an entity that
 that trusts a CA trusts the certificates it signed. A root CA is at the top of that chain of trust, and its own
 certificate is self-signed. It can delegate the signing to intermediate CAs, whose certificates it signed.
 
-The `--tls-ca` file holds the root CAs that an application trusts to verify its peers, concatenated if there are
+The `--tls-ca` file holds the root CAs that an application trusts to verify the remote AEs, concatenated if there are
 several (it can also hold individual certificates to trust).
 When the certificate of an application was signed by an intermediate CA, the `--tls-cert` file must hold that
-certificate followed by the certificates of the intermediate CAs, so that the peers can verify the whole chain
+certificate followed by the certificates of the intermediate CAs, so that the remote AEs can verify the whole chain
 up to a root CA they trust.
 
 The following creates, with [OpenSSL](https://www.openssl.org/), a root certificate authority, a certificate for a
@@ -81,11 +87,10 @@ keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
 
 The configuration of an application is the same for the SCP and the SCU, with its own name.
 Save this one as `scp.cnf` and, for the SCU, as `scu.cnf` with `CN = RO SCU`.
-A client verifies the host name of a server against the subject alternative names (`subjectAltName`) of its
-certificate, and the common name (`CN`) only identifies the certificate, for instance in the logs.
-A server does not check any host name of a client: it only verifies that the client certificate was issued by a CA
-it trusts, so the `subjectAltName` of a client certificate is not used then (it is when the application acts as a
-server).
+The subject alternative names (`subjectAltName`) can be used to hold the host names and IP addresses a certificate
+is valid for, and the common name (`CN`) can be used to identify the certificate, for instance in security log
+messages.
+The SCP and SCU classes of this project do not verify the host name of the remote AE against its `subjectAltName`.
 
 ```ini
 [ req ]
@@ -126,7 +131,7 @@ for name in scp scu; do
 done
 ```
 
-This produces `rootCA.pem` (to be trusted by the peers), `scp.pem` and `scp.key` for the SCP,
+This produces `rootCA.pem` (to be trusted by the remote AEs), `scp.pem` and `scp.key` for the SCP,
 and `scu.pem` and `scu.key` for the SCU.
 
 ## Checking with OpenSSL
@@ -134,7 +139,8 @@ and `scu.pem` and `scu.key` for the SCU.
 `openssl s_client` checks that an application started as in the [Quick start](#quick-start) accepts TLS connections
 and that its certificate is trusted.
 Add `-cert scu.pem -key scu.key` when the application was started with `--mtls`.
-With TLS 1.3, it does not show that a connection without a client certificate is refused.
+With TLS 1.3, `s_client` considers the handshake complete before the server checks the client certificate, so a refusal
+only shows afterwards, as the alert `certificate required`.
 
 ```shell
 openssl s_client -connect localhost:2762 -servername localhost -CAfile rootCA.pem -verify_return_error
@@ -175,19 +181,44 @@ echoscu-tls -v +tla +cf rootCA.pem -aec ECHOSCP localhost 2762
 Download and install the [dcm4che utilities](https://github.com/dcm4che/dcm4che/releases).
 With Windows, use the `.bat` launchers (`storescu.bat`).
 
-dcm4che is a Java application that does not read PEM files: certificates and keys are in PKCS#12 files.
-In the Java terminology, a **keystore** holds keys, each with its certificate, and a **truststore** holds the certificates
-of the trusted authorities.
+dcm4che is a Java application that does not read the PEM files created above.
+The next two steps create PKCS#12 files from the PEM files.
 
-Create the keystore of the SCU with `openssl`, and the truststore from the root certificate authority with `keytool`,
-which is part of the Java JDK and asks to confirm that the certificate is trusted.
-OpenSSL 3.2 or later can also create the truststore, with `openssl pkcs12 -export -nokeys -jdktrust anyExtendedKeyUsage`;
-without `-jdktrust`, Java finds no entry in a PKCS#12 file made from a certificate alone.
+#### 1. Create the keystore
+
+A **keystore** holds keys, each with its certificate, here the key and the certificate of the SCU.
+Create it from `scu.pem` and `scu.key` with `openssl`:
 
 ```shell
 openssl pkcs12 -export -in scu.pem -inkey scu.key -out scu.p12 -passout pass:secret
+```
+
+#### 2. Create the truststore
+
+A **truststore** holds the certificates of the trusted authorities, here the root CA.
+The tool to create it from `rootCA.pem` depends on the version of OpenSSL:
+
+```shell
+openssl version
+```
+
+With OpenSSL 3.2 or later, use `openssl`:
+
+```shell
+openssl pkcs12 -export -nokeys -jdktrust anyExtendedKeyUsage -in rootCA.pem -out rootCA.p12 -passout pass:secret
+```
+
+With an older version, use `keytool`, a tool of the Java JDK.
+It will ask you to confirm that the certificate is trusted: answer `yes`.
+
+```shell
 keytool -importcert -keystore rootCA.p12 -storetype PKCS12 -storepass secret -file rootCA.pem -alias rootca
 ```
+
+If you run `keytool` again, for instance with a new root CA, delete `rootCA.p12` first, or `keytool` will fail
+because that file already has a `rootca` entry.
+
+#### 3. Verify the connection
 
 With no file to send, `storescu` does a verification (C-ECHO). Run it against the application started above with
 `--mtls`:
