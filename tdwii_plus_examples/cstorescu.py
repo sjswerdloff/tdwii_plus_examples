@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydicom import Dataset
 from pydicom.uid import ExplicitVRLittleEndian
 from pynetdicom.association import Association
@@ -5,6 +7,7 @@ from pynetdicom.presentation import PresentationContext, StoragePresentationCont
 from pynetdicom.status import STORAGE_SERVICE_CLASS_STATUS
 
 from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.tls_config import TLSConfig
 
 # List of storage SOP Classes
 storage_sop_classes = [cx.abstract_syntax for cx in StoragePresentationContexts]
@@ -26,6 +29,9 @@ class CStoreSCU(BaseSCU):
         called_port (int): The port number of the called AE.
         contexts (list[PresentationContext]): The Storage Presentation
             Contexts to use for C-STORE operations
+        tls_config (TLSConfig): Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
     """
 
     def __init__(
@@ -36,6 +42,7 @@ class CStoreSCU(BaseSCU):
         called_port: int = None,
         called_ae_title: str = None,
         contexts: PresentationContext = None,
+        tls_config: Optional[TLSConfig] = None,
     ):
         self.contexts = self._validate_contexts(contexts)
         super().__init__(
@@ -44,6 +51,7 @@ class CStoreSCU(BaseSCU):
             called_ip=called_ip,
             called_port=called_port,
             called_ae_title=called_ae_title,
+            tls_config=tls_config,
         )
 
     def _add_requested_context(self):

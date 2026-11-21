@@ -5,6 +5,7 @@ from unittest import mock
 from pydicom import Dataset
 from pydicom.uid import generate_uid
 
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 from tdwii_plus_examples.upspullnsetscu import UPSPullNSetSCU
 
 LOGGER = logging.getLogger(__name__)
@@ -260,3 +261,19 @@ class TestUPSPullNSetSCU(unittest.TestCase):
         seq = ds.UnifiedProcedureStepPerformedProcedureSequence[0]
         self.assertTrue(hasattr(seq, "OutputInformationSequence"))
         self.assertEqual(result, mock_result)
+
+    def test_tls_config_is_forwarded(self):
+        tls_config = TLSConfig(usage=TLSUsage.CLIENT_AUTH)
+
+        scu = UPSPullNSetSCU(
+            calling_ae_title="CALLING_AE",
+            called_ip="127.0.0.1",
+            called_port=11112,
+            called_ae_title="CALLED_AE",
+            tls_config=tls_config,
+        )
+
+        self.assertIs(scu.tls_config, tls_config)
+
+    def test_tls_config_defaults_to_none(self):
+        self.assertIsNone(self.scu.tls_config)

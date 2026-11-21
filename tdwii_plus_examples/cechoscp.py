@@ -6,8 +6,9 @@ from pynetdicom import evt
 from pynetdicom.apps.common import setup_logging
 from pynetdicom.sop_class import Verification
 
-from tdwii_plus_examples.basescp import BaseSCP, TLSConfig
+from tdwii_plus_examples.basescp import BaseSCP
 from tdwii_plus_examples.cechohandler import handle_cecho
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 class CEchoSCP(BaseSCP):

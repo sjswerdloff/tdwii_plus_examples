@@ -15,6 +15,7 @@ from pynetdicom.sop_class import (
     Verification,
 )
 
+from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 from tdwii_plus_examples.upswatchnactionscu import UPSWatchNActionSCU
 
 
@@ -214,6 +215,22 @@ class TestUPSWatchNActionSCU(unittest.TestCase):
                 self.assertTrue(
                     any(f"Accepted SOP Classes: {expected_abstract_syntax}" in message for message in log_messages)
                 )
+
+    def test_tls_config_is_forwarded(self):
+        tls_config = TLSConfig(usage=TLSUsage.CLIENT_AUTH)
+
+        scu = UPSWatchNActionSCU(
+            calling_ae_title="CALLING_AE",
+            called_ip="127.0.0.1",
+            called_port=11112,
+            called_ae_title="CALLED_AE",
+            tls_config=tls_config,
+        )
+
+        self.assertIs(scu.tls_config, tls_config)
+
+    def test_tls_config_defaults_to_none(self):
+        self.assertIsNone(self.scu.tls_config)
 
 
 if __name__ == "__main__":

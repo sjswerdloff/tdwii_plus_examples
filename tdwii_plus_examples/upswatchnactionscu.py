@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydicom import Dataset
 from pydicom.uid import UID
 from pynetdicom.association import Association
@@ -11,6 +13,7 @@ from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
 from tdwii_plus_examples._ups_action_type_id import UPSActionTypeID
 from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.tls_config import TLSConfig
 
 
 class UPSWatchNActionSCU(BaseSCU):
@@ -33,6 +36,9 @@ class UPSWatchNActionSCU(BaseSCU):
         called_ip (str)        : The IP address or hostname of the called AE
         called_port (int)      : The port number of the called AE
         logger(logging.Logger) : A logger instance
+        tls_config (TLSConfig) : Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
 
     Methods:
         subscribe_globally(lock: bool = False, matching_keys = None)
@@ -57,6 +63,7 @@ class UPSWatchNActionSCU(BaseSCU):
         called_ip: str = None,
         called_port: int = None,
         called_ae_title: str = None,
+        tls_config: Optional[TLSConfig] = None,
     ):
         super().__init__(
             logger,
@@ -64,6 +71,7 @@ class UPSWatchNActionSCU(BaseSCU):
             called_ip=called_ip,
             called_port=called_port,
             called_ae_title=called_ae_title,
+            tls_config=tls_config,
         )
 
     def _add_requested_context(self):

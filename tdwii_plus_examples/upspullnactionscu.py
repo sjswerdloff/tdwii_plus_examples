@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydicom import Dataset
 from pydicom.uid import UID, generate_uid
 from pynetdicom.sop_class import UnifiedProcedureStepPull, UnifiedProcedureStepPush
@@ -5,6 +7,7 @@ from pynetdicom.status import UNIFIED_PROCEDURE_STEP_SERVICE_CLASS_STATUS
 
 from tdwii_plus_examples._ups_action_type_id import UPSActionTypeID
 from tdwii_plus_examples.basescu import BaseSCU
+from tdwii_plus_examples.tls_config import TLSConfig
 
 # UPS Procedure Step State constants
 SCHEDULED: str = "SCHEDULED"
@@ -30,9 +33,20 @@ class UPSPullNActionSCU(BaseSCU):
         called_ae_title: The title of the called AE.
         called_ip: The IP address or hostname of the called AE.
         called_port: The port number of the called AE.
+        tls_config: Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
     """
 
-    def __init__(self, logger=None, calling_ae_title=None, called_ip=None, called_port=None, called_ae_title=None):
+    def __init__(
+        self,
+        logger=None,
+        calling_ae_title=None,
+        called_ip=None,
+        called_port=None,
+        called_ae_title=None,
+        tls_config: Optional[TLSConfig] = None,
+    ):
         """
         Initializes a UPSPullNActionSCU instance.
 
@@ -48,6 +62,10 @@ class UPSPullNActionSCU(BaseSCU):
             The port number of the called AE.
         called_ae_title : str, optional
             The AE title of the called AE.
+        tls_config : TLSConfig, optional
+            Optional TLS configuration for secure associations.
+            The usage of tls_config must include clientAuth.
+            The certificate files are read once, at construction.
         """
 
         super().__init__(
@@ -56,6 +74,7 @@ class UPSPullNActionSCU(BaseSCU):
             called_ip=called_ip,
             called_port=called_port,
             called_ae_title=called_ae_title,
+            tls_config=tls_config,
         )
         # Dictionary to store transaction UIDs for each UPS instance IN PROGRESS
         self.ups_transaction_info = {}

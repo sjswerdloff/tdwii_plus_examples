@@ -10,8 +10,8 @@ from tdwii_plus_examples._dicom_uids import (
     UPS_SOP_CLASSES,
     validate_transfer_syntaxes,
 )
-from tdwii_plus_examples.basescp import TLSConfig
 from tdwii_plus_examples.cechoscp import CEchoSCP
+from tdwii_plus_examples.tls_config import TLSConfig
 from tdwii_plus_examples.upsneventhandler import handle_nevent, nevent_callback
 
 
