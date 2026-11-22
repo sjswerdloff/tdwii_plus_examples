@@ -1,0 +1,21 @@
+# OpenSSL configuration of a lab host certificate, used both as SCP and as SCU:
+# [ req ] for the signing request, [ v3_req ] for the extensions added by the CA.
+# certgen.sh sets HOST_NAME and HOST_IP for each host.
+# The certificate lists only the host's own name and address: no localhost, no loopback.
+
+[ req ]
+distinguished_name = req_distinguished_name
+prompt             = no
+
+[ req_distinguished_name ]
+O  = Springfield General Hospital
+OU = Radiation Oncology
+CN = $ENV::HOST_NAME
+
+[ v3_req ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+basicConstraints       = CA:FALSE
+keyUsage               = critical, digitalSignature, keyEncipherment
+extendedKeyUsage       = serverAuth, clientAuth
+subjectAltName         = DNS:$ENV::HOST_NAME, IP:$ENV::HOST_IP

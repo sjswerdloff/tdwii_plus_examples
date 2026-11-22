@@ -1,0 +1,2 @@
+# Instruct Git to keep LF line endings on every platform, because the lab files are read inside Linux containers.
+* text=auto eol=lf

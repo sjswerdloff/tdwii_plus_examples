@@ -1,0 +1,19 @@
+# Docker Compose configuration of the TLS lab.
+
+# Name the project, which prefixes the names of its containers and volumes.
+name: tlslab
+
+# Define the containers of the lab.
+services:
+  # Create a certificate generation container without network and run certgen.sh in it.
+  certgen:
+    image: alpine/openssl:3.5.9
+    entrypoint: ["/bin/sh", "/certgen/certgen.sh"]
+    network_mode: none
+    volumes:
+      - ./certgen:/certgen:ro
+      - certs:/certs
+
+# Define the volumes that the containers mount.
+volumes:
+  certs:
