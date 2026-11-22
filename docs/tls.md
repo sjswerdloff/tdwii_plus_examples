@@ -268,3 +268,8 @@ python tdwii_plus_examples/cli/storescu.py --echo -aec ECHOSCP --mtls --tls-ca r
 ```
 
 An SCU application always needs `--tls-ca`, to verify the certificate of the SCP.
+
+## Testing across hosts
+
+The [TLS lab](tls-lab.md) runs the CLI applications and the dcm4che tools on two Docker hosts, each with a certificate
+issued for its own host name and IP address.
