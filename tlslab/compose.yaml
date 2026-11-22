@@ -37,6 +37,29 @@ services:
         volume:
           subpath: project
 
+  # Create the dcm4che host container once certgen has succeeded.
+  dcm4che:
+    image: dcm4che/dcm4che-tools:5.35.1
+    # Keep the host running. The tools are started with docker compose exec.
+    command: ["sleep", "infinity"]
+    hostname: dcm4che.tlslab
+    depends_on:
+      certgen:
+        condition: service_completed_successfully
+    networks:
+      tlslab:
+        ipv4_address: 172.30.0.20
+        aliases:
+          - dcm4che.tlslab
+    volumes:
+      # Mount only the dcm4che directory of the certs volume, read-only.
+      - type: volume
+        source: certs
+        target: /certs
+        read_only: true
+        volume:
+          subpath: dcm4che
+
 # Define the network of the lab hosts.
 networks:
   tlslab:
