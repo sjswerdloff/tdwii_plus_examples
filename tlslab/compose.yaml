@@ -14,6 +14,37 @@ services:
       - ./certgen:/certgen:ro
       - certs:/certs
 
+  # Create the project host container once certgen has succeeded.
+  project:
+    build:
+      context: ..
+      dockerfile: tlslab/project/Dockerfile
+    hostname: project.tlslab
+    depends_on:
+      certgen:
+        condition: service_completed_successfully
+    networks:
+      tlslab:
+        ipv4_address: 172.30.0.10
+        aliases:
+          - project.tlslab
+    volumes:
+      # Mount only the project directory of the certs volume, read-only.
+      - type: volume
+        source: certs
+        target: /certs
+        read_only: true
+        volume:
+          subpath: project
+
+# Define the network of the lab hosts.
+networks:
+  tlslab:
+    name: tlslab
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
 # Define the volumes that the containers mount.
 volumes:
   certs:
