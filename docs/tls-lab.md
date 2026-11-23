@@ -14,7 +14,20 @@ Docker is the only prerequisite.
 | `project.tlslab` | `172.30.0.10` | Python and the `tdwii_plus_examples` package, installed from the repository source |
 | `dcm4che.tlslab` | `172.30.0.20` | The dcm4che tools (`dcm4che/dcm4che-tools` image) |
 
-Both hosts are on the network `tlslab` (`172.30.0.0/24`), where Docker resolves their names.
+### Network
+
+Both hosts are on the network `tlslab`, where Docker resolves their names. This network takes the addresses
+`172.30.0.0` to `172.30.0.255`. Before the first start, check that this range is free:
+
+```shell
+docker run --rm --network host alpine ip route
+```
+
+No line of the output must start with `172.30.`. If one does, the range is already in use, by another Docker network
+or a VPN: change it in `tlslab/compose.yaml` and `tlslab/certgen/certgen.sh`, then recreate the certificates with
+`docker compose down --volumes`.
+
+### Certificates
 
 Before the hosts start, the `certgen` container creates a root CA for the lab and issues the private key and the
 certificate of each host, signed by that CA.
