@@ -122,12 +122,15 @@ Expected: `storescu` logs the C-ECHO response with `status=0H`, and `echoscp` lo
 
 ### 4. echoscp refuses a mutual TLS connection from a client without a certificate
 
-With `echoscp` from case 3, run `storescu` without `--key-store`:
+With `echoscp` from case 3, run `storescu` with `--key-store` set to the truststore `rootCA.p12` instead of the keystore
+`dcm4che.tlslab.p12`. A key store normally holds the private key and the certificate that the client presents.
+`rootCA.p12` holds only the CA certificate, without a private key, so `storescu` has no certificate to present:
 
 ```shell
 docker compose exec dcm4che storescu -c ECHOSCP@project.tlslab:2762 \
   --tls-cipher TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 \
   --trust-store /certs/rootCA.p12 --trust-store-pass secret \
+  --key-store /certs/rootCA.p12 --key-store-pass secret \
   --tls-eia-https
 ```
 
