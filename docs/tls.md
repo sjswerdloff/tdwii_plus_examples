@@ -1,6 +1,8 @@
 # Securing connections with TLS
 
-The `echoscp`, `storescp` and `upseventreceiver` CLI applications can secure their connections with TLS or mutual TLS.
+The `echoscp`, `storescp` and `upseventreceiver` CLI applications (SCPs) and the `storescu`, `upsfind`, `upscreatescu`,
+`upschangestatescu`, `upswatchscu` and `upsmodifyscu` CLI applications (SCUs) can secure their connections with TLS or
+mutual TLS.
 TLS is off unless `--tls` or `--mtls` is given.
 
 ## Quick start
@@ -32,18 +34,29 @@ of the client certificate when there is one.
 
 ## CLI applications TLS Options
 
-One of `--tls or `--mtls` is needed to enable TLS:
+One of `--tls` or `--mtls` is needed to enable TLS:
 
 | Option | Meaning |
 |---|---|
-| `--tls` | Use TLS, needs `--tls-cert` and `--tls-key` |
-| `--mtls` | Use mutual TLS: the remote AEs must also authenticate themselves, needs `--tls-cert`, `--tls-key` and `--tls-ca` |
+| `--tls` | Use TLS |
+| `--mtls` | Use mutual TLS: the remote AEs must also authenticate themselves |
 | `--tls-cert FILE` | PEM certificate of the application |
 | `--tls-key FILE` | PEM private key of the application |
-| `--tls-ca FILE` | PEM certificate authorities trusted to verify the remote AEs (`--mtls` only) |
+| `--tls-ca FILE` | PEM certificate authorities trusted to verify the remote AEs |
+
+The files needed depend on the role of the application:
+
+| | SCP | SCU |
+|---|---|---|
+| `--tls` | `--tls-cert` and `--tls-key` | `--tls-ca` |
+| `--mtls` | `--tls-cert`, `--tls-key` and `--tls-ca` | `--tls-ca`, `--tls-cert` and `--tls-key` |
+
+An SCU never uses the certificate authorities of the system (Windows Certificate Manager,
+macOS Keychain Access, Linux `/etc/ssl/certs`), it only trusts the ones given with `--tls-ca`.
 
 `--tls` and `--mtls` cannot be combined, and the application refuses to start when the options are inconsistent
-(for example a `--tls-*` option without `--tls` or `--mtls`, a missing file, or `--tls-ca` without `--mtls`),
+(for example a `--tls-*` option without `--tls` or `--mtls`, a missing file, `--tls-ca` without `--mtls` for an SCP,
+or `--tls-cert` and `--tls-key` without `--mtls` for an SCU),
 so that a mistake never silently leaves the connections unsecured.
 
 ## Certificates
@@ -243,3 +256,15 @@ About the dcm4che options:
 Without `--key-store`, dcm4che uses its own default key store (`resource:key.p12`), and an application started with
 `--mtls` refuses the connection.
 To get the details of the TLS handshake in case of errors, run `export JAVA_OPTS="-Djavax.net.debug=all"` first.
+
+### Testing with the SCU applications
+
+The SCU applications of this project, such as `storescu`, can also be used. With `--echo`, `storescu` does a
+verification (C-ECHO) and sends no file. Run it against the application started above with `--mtls`:
+
+```shell
+python tdwii_plus_examples/cli/storescu.py --echo -aec ECHOSCP --mtls --tls-ca rootCA.pem \
+  --tls-cert scu.pem --tls-key scu.key localhost 2762
+```
+
+An SCU application always needs `--tls-ca`, to verify the certificate of the SCP.

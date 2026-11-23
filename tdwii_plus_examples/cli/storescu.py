@@ -20,6 +20,11 @@ Options:
     -e, --echo               Verification of DICOM connection with Called AET
     -v, --verbose            Set log level to INFO
     -d, --debug              Set log level to DEBUG
+    --tls                    Use TLS, needs --tls-ca
+    --mtls                   Use mutual TLS, needs --tls-ca, --tls-cert and --tls-key
+    --tls-cert FILE          PEM file with the certificate of the AE
+    --tls-key FILE           PEM file with the private key of the AE
+    --tls-ca FILE            PEM file with the CA certificates trusted to verify the remote AEs
 """
 
 import argparse
@@ -32,7 +37,9 @@ from pydicom import dcmread
 from pynetdicom import build_context
 from pynetdicom.apps.common import get_files
 
+from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
 from tdwii_plus_examples.cstorescu import CStoreSCU
+from tdwii_plus_examples.tls_config import TLSUsage
 
 
 def get_contexts(fpaths, app_logger):
@@ -94,8 +101,14 @@ def main():
     parser.add_argument("-d", "--debug", action="store_true", help="Set log level to DEBUG")
     parser.add_argument("-q", "--quiet", action="store_true", help="Suppress all log output")
 
+    add_tls_arguments(parser, usage=TLSUsage.CLIENT_AUTH)
+
     args = parser.parse_args()
 
+    # Validate the TLS options and build the TLS configuration
+    tls_config = tls_config_from_args(parser, args, usage=TLSUsage.CLIENT_AUTH)
+
+    # Validate the other options
     if not args.echo and not args.path:
         parser.error("Either -e/--echo or a path must be provided")
 
@@ -123,6 +136,7 @@ def main():
         called_port=args.port,
         called_ae_title=args.called_ae_title,
         contexts=None,
+        tls_config=tls_config,
     )
 
     # Verification requested
