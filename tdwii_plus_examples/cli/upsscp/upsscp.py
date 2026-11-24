@@ -42,6 +42,11 @@ Options:
     --database-location [f]     Override the database file path
     --instance-location [d]     Override the instance storage directory
     --clean                     Empty database and instance storage directory
+    --tls                       Override the TLS mode with TLS, needs --tls-cert, --tls-key and --tls-ca
+    --mtls                      Override the TLS mode with mutual TLS, needs --tls-cert, --tls-key and --tls-ca
+    --tls-cert FILE             Override the PEM file with the certificate of the AE
+    --tls-key FILE              Override the PEM file with the private key of the AE
+    --tls-ca FILE               Override the PEM file with the CA certificates trusted to verify the remote AEs
 """
 
 import argparse
@@ -65,6 +70,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from tdwii_plus_examples.cechoscp import CEchoSCP
+from tdwii_plus_examples.cli.common.tls import add_tls_arguments, tls_config_from_args
 from tdwii_plus_examples.cli.upsscp import upsdb
 from tdwii_plus_examples.cli.upsscp.handlers import (
     handle_find,
@@ -73,6 +79,7 @@ from tdwii_plus_examples.cli.upsscp.handlers import (
     handle_nget,
     handle_nset,
 )
+from tdwii_plus_examples.tls_config import TLSUsage
 
 # Use `None` for empty values
 pydicom.config.use_none_as_empty_text_VR_value = True
@@ -92,7 +99,11 @@ _handlers._send_c_store_rq = _dont_log
 _handlers._recv_c_store_rsp = _dont_log
 
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
+
+# Use both usages as the AE also sends the event reports
+_TLS_USAGE = TLSUsage.SERVER_AUTH | TLSUsage.CLIENT_AUTH
+_TLS_MODES = ("off", "tls", "mtls")
 
 
 def _log_config(config, logger):
@@ -191,6 +202,39 @@ def clean(db_path, instance_path, logger):
             session.close()
 
         return database_cleaned and storage_cleaned
+
+
+def _tls_config(parser, args, app_config):
+    """Return the TLS configuration of the configuration file settings, overridden by the command line options.
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+        The command line parser, which reports the invalid settings.
+    args : argparse.Namespace
+        The parsed command line options.
+    app_config : configparser.SectionProxy
+        The application settings of the configuration file, where a relative path is relative to the
+        upsscp directory, as for the instance and database locations.
+
+    Returns
+    -------
+    TLSConfig or None
+        The TLS configuration, or None when the TLS mode is off.
+    """
+    mode = app_config.get("tls", "off")
+    if mode not in _TLS_MODES:
+        parser.error(f"tls in {args.config} must be off, tls or mtls")
+    if not (args.tls or args.mtls):
+        args.tls = mode == "tls"
+        args.mtls = mode == "mtls"
+    app_dir = os.path.abspath(os.path.dirname(__file__))
+    for name in ("tls_cert", "tls_key", "tls_ca"):
+        path = app_config.get(name)
+        if not getattr(args, name) and path:
+            setattr(args, name, os.path.abspath(os.path.join(app_dir, path)))
+
+    return tls_config_from_args(parser, args, usage=_TLS_USAGE)
 
 
 def _setup_argparser():
@@ -310,11 +354,13 @@ def _setup_argparser():
     )
     db_opts.add_argument(
         "--clean",
-        help=("remove all entries from the database and delete the " "corresponding stored instances"),
+        help=("remove all entries from the database and delete the corresponding stored instances"),
         action="store_true",
     )
 
-    return parser.parse_args()
+    add_tls_arguments(parser, usage=_TLS_USAGE)
+
+    return parser
 
 
 def main(args=None, loop_forever=True):  # Add a parameter to control the loop
@@ -324,7 +370,8 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
     if args is not None:
         sys.argv = args
 
-    args = _setup_argparser()
+    parser = _setup_argparser()
+    args = parser.parse_args()
 
     if args.version:
         print(f"upsscp.py v{__version__}")
@@ -361,6 +408,7 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
         config["DEFAULT"]["database_location"] = args.database_location
     if args.instance_location:
         config["DEFAULT"]["instance_location"] = args.instance_location
+    tls_config = _tls_config(parser, args, config["DEFAULT"])
 
     # Log the configuration settings
     _log_config(config, APP_LOGGER)
@@ -414,6 +462,7 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
         bind_address=app_config["bind_address"],
         port=app_config.getint("port"),
         logger=APP_LOGGER,
+        tls_config=tls_config,
     )
 
     ae = upsscp.ae
