@@ -1,0 +1,73 @@
+# Docker Compose configuration of the TLS lab.
+
+# Name the project, which prefixes the names of its containers and volumes.
+name: tlslab
+
+# Define the containers of the lab.
+services:
+  # Create a certificate generation container without network and run certgen.sh in it.
+  certgen:
+    image: alpine/openssl:3.5.9
+    entrypoint: ["/bin/sh", "/certgen/certgen.sh"]
+    network_mode: none
+    volumes:
+      - ./certgen:/certgen:ro
+      - certs:/certs
+
+  # Create the project host container once certgen has succeeded.
+  project:
+    build:
+      context: ..
+      dockerfile: tlslab/project/Dockerfile
+    hostname: project.tlslab
+    depends_on:
+      certgen:
+        condition: service_completed_successfully
+    networks:
+      tlslab:
+        ipv4_address: 172.30.0.10
+        aliases:
+          - project.tlslab
+    volumes:
+      # Mount only the project directory of the certs volume, read-only.
+      - type: volume
+        source: certs
+        target: /certs
+        read_only: true
+        volume:
+          subpath: project
+
+  # Create the dcm4che host container once certgen has succeeded.
+  dcm4che:
+    image: dcm4che/dcm4che-tools:5.35.1
+    # Keep the host running. The tools are started with docker compose exec.
+    command: ["sleep", "infinity"]
+    hostname: dcm4che.tlslab
+    depends_on:
+      certgen:
+        condition: service_completed_successfully
+    networks:
+      tlslab:
+        ipv4_address: 172.30.0.20
+        aliases:
+          - dcm4che.tlslab
+    volumes:
+      # Mount only the dcm4che directory of the certs volume, read-only.
+      - type: volume
+        source: certs
+        target: /certs
+        read_only: true
+        volume:
+          subpath: dcm4che
+
+# Define the network of the lab hosts.
+networks:
+  tlslab:
+    name: tlslab
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+# Define the volumes that the containers mount.
+volumes:
+  certs:

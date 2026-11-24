@@ -59,6 +59,25 @@ macOS Keychain Access, Linux `/etc/ssl/certs`), it only trusts the ones given wi
 or `--tls-cert` and `--tls-key` without `--mtls` for an SCU),
 so that a mistake never silently leaves the connections unsecured.
 
+## Authentication of the remote AE
+
+A remote AE authenticates itself with its certificate, and proves during the TLS handshake that it holds the private
+key of that certificate. An SCP (a TLS server) asks the remote AE to authenticate only with `--mtls`. An SCU
+(a TLS client) always authenticates the remote AE, with `--tls` or `--mtls`.
+
+The certificate of the remote AE is verified as follows:
+
+- Its certification path is validated up to a CA of the `--tls-ca` file, including the signatures and the validity
+  periods.
+- Its identity is not verified. The IP addresses and hostnames of its `subjectAltName` are not compared with the
+  address of the remote AE, and nothing binds the certificate to an AE title.
+- Its revocation is not checked.
+
+The authentication therefore proves that the remote AE holds a certificate issued by a trusted CA, not that it is the
+AE that was called or expected.
+
+The applications do not claim conformance to the TLS Secure Transport Connection Profiles of DICOM PS3.15.
+
 ## Certificates
 
 TLS needs a **public key infrastructure (PKI)** to create, manage and use digital certificates.
@@ -100,10 +119,8 @@ keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
 
 The configuration of an application is the same for the SCP and the SCU, with its own name.
 Save this one as `scp.cnf` and, for the SCU, as `scu.cnf` with `CN = RO SCU`.
-The subject alternative names (`subjectAltName`) can be used to hold the host names and IP addresses a certificate
-is valid for, and the common name (`CN`) can be used to identify the certificate, for instance in security log
-messages.
-The SCP and SCU classes of this project do not verify the host name of the remote AE against its `subjectAltName`.
+The `subjectAltName` lists the hostnames and IP addresses of the AE, which remote AEs can check to verify its
+identity. The `CN` is only a label, logged for instance with `--verbose`.
 
 ```ini
 [ req ]
@@ -268,3 +285,8 @@ python tdwii_plus_examples/cli/storescu.py --echo -aec ECHOSCP --mtls --tls-ca r
 ```
 
 An SCU application always needs `--tls-ca`, to verify the certificate of the SCP.
+
+## Testing across hosts
+
+The [TLS lab](tls-lab.md) runs the CLI applications and the dcm4che tools on two Docker hosts, each with a certificate
+issued for its own host name and IP address.
