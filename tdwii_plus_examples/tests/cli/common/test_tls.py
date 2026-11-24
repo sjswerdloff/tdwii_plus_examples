@@ -147,19 +147,76 @@ class TestSCUTLSOptions(TLSOptionsTestCase):
         self.assert_error("--tls", "--tls-ca", missing, message=f"--tls-ca: file not found: {missing}")
 
 
-class TestUnsupportedUsage(TLSOptionsTestCase):
+class TestSCPAndSCUTLSOptions(TLSOptionsTestCase):
     usage = TLSUsage.SERVER_AUTH | TLSUsage.CLIENT_AUTH
 
+    def test_help_states_the_scp_and_scu_requirements(self):
+        self.assertIn("--tls Use TLS, needs --tls-cert, --tls-key and --tls-ca", self.help_text())
+        self.assertIn("--mtls Use mutual TLS, needs --tls-cert, --tls-key and --tls-ca", self.help_text())
+
+    def test_no_options_means_no_tls(self):
+        self.assertIsNone(self.config_from())
+
+    def test_tls(self):
+        config = self.config_from("--tls", "--tls-cert", self.cert, "--tls-key", self.key, "--tls-ca", self.ca)
+        self.assertEqual(config, TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, usage=self.usage))
+
+    def test_mtls(self):
+        config = self.config_from("--mtls", "--tls-cert", self.cert, "--tls-key", self.key, "--tls-ca", self.ca)
+        expected = TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, require_mtls=True, usage=self.usage)
+        self.assertEqual(config, expected)
+
+    def test_tls_and_mtls_are_exclusive(self):
+        self.assert_error("--tls", "--mtls", message="not allowed with argument")
+
+    def test_tls_options_without_a_mode(self):
+        self.assert_error(
+            "--tls-cert",
+            self.cert,
+            "--tls-key",
+            self.key,
+            "--tls-ca",
+            self.ca,
+            message="--tls-cert, --tls-key, --tls-ca requires --tls or --mtls",
+        )
+
+    def test_tls_without_certificate_key_or_certificate_authority(self):
+        self.assert_error("--tls", message="--tls requires --tls-cert, --tls-key, --tls-ca")
+        self.assert_error("--tls", "--tls-cert", self.cert, "--tls-key", self.key, message="--tls requires --tls-ca")
+        self.assert_error("--tls", "--tls-ca", self.ca, message="--tls requires --tls-cert, --tls-key")
+
+    def test_mtls_without_certificate_key_or_certificate_authority(self):
+        self.assert_error("--mtls", message="--mtls requires --tls-cert, --tls-key, --tls-ca")
+        self.assert_error("--mtls", "--tls-cert", self.cert, "--tls-key", self.key, message="--mtls requires --tls-ca")
+        self.assert_error("--mtls", "--tls-ca", self.ca, message="--mtls requires --tls-cert, --tls-key")
+
+    def test_missing_file(self):
+        missing = os.path.join(self.temp_dir.name, "missing.pem")
+        self.assert_error(
+            "--tls",
+            "--tls-cert",
+            self.cert,
+            "--tls-key",
+            self.key,
+            "--tls-ca",
+            missing,
+            message=f"--tls-ca: file not found: {missing}",
+        )
+
+
+class TestUnsupportedUsage(TLSOptionsTestCase):
+    usage = TLSUsage(0)
+
     def setUp(self):
-        # The options themselves refuse the combined usage, so they are added with a supported one
+        # The options themselves refuse an unsupported usage, so they are added with a supported one
         self.parser = argparse.ArgumentParser(prog="app")
         add_tls_arguments(self.parser, usage=TLSUsage.SERVER_AUTH)
 
-    def test_combined_usage_is_refused_when_adding_the_options(self):
+    def test_unsupported_usage_is_refused_when_adding_the_options(self):
         with self.assertRaisesRegex(ValueError, "unsupported usage"):
             add_tls_arguments(argparse.ArgumentParser(prog="app"), usage=self.usage)
 
-    def test_combined_usage_is_refused(self):
+    def test_unsupported_usage_is_refused(self):
         with self.assertRaisesRegex(ValueError, "unsupported usage"):
             self.config_from("--tls", "--tls-cert", self.cert, "--tls-key", self.key, "--tls-ca", self.ca)
 
