@@ -476,11 +476,14 @@ def main(args=None, loop_forever=True):  # Add a parameter to control the loop
         if cx.abstract_syntax.keyword not in ("UnifiedProcedureStepEvent", "UnifiedProcedureStepQuery"):
             ae.add_supported_context(cx.abstract_syntax, ALL_TRANSFER_SYNTAXES, scp_role=True, scu_role=False)
 
+    # Create the TLS context of the associations requested to send the event reports
+    ssl_context = tls_config.create_client_ssl_context() if tls_config else None
+
     # Set our handler bindings
     upsscp.handlers.append((evt.EVT_C_FIND, handle_find, [instance_dir, db_path, args, APP_LOGGER]))
     upsscp.handlers.append((evt.EVT_N_GET, handle_nget, [db_path, args, APP_LOGGER]))
     upsscp.handlers.append((evt.EVT_N_ACTION, handle_naction, [instance_dir, db_path, args, APP_LOGGER]))
-    upsscp.handlers.append((evt.EVT_N_CREATE, handle_ncreate, [instance_dir, db_path, args, APP_LOGGER]))
+    upsscp.handlers.append((evt.EVT_N_CREATE, handle_ncreate, [instance_dir, db_path, args, APP_LOGGER, ssl_context]))
     upsscp.handlers.append((evt.EVT_N_SET, handle_nset, [db_path, args, APP_LOGGER]))
 
     # Listen for incoming association requests

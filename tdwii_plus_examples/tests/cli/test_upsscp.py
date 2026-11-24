@@ -6,6 +6,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from pynetdicom import evt
+
 from tdwii_plus_examples.cli.upsscp import upsscp
 from tdwii_plus_examples.cli.upsscp.upsscp import main
 from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
@@ -37,6 +39,12 @@ class TestMainFunctionTLS(unittest.TestCase):
             open(path, "w").close()
             setattr(cls, name, path)
 
+    def setUp(self):
+        # Mock the context creation as the certificate files are empty
+        patcher = patch.object(TLSConfig, "create_client_ssl_context")
+        self.create_client_ssl_context = patcher.start()
+        self.addCleanup(patcher.stop)
+
     def write_config(self, **tls_settings):
         """Write a configuration file with the given TLS settings and return its path."""
         settings = _SETTINGS.format(
@@ -52,6 +60,14 @@ class TestMainFunctionTLS(unittest.TestCase):
     def run_main(self, config, *argv):
         with patch.object(sys, "argv", ["upsscp.py", "-c", config, *argv]):
             main(loop_forever=False)
+
+    def ncreate_handler_ssl_context(self, MockCEchoSCP):
+        """Return the TLS context bound to the N-CREATE handler, which sends the event reports."""
+        for call in MockCEchoSCP.return_value.handlers.append.call_args_list:
+            event, _, handler_args = call.args[0]
+            if event == evt.EVT_N_CREATE:
+                return handler_args[-1]
+        self.fail("no N-CREATE handler")
 
     def assert_startup_error(self, config, *argv, message):
         """Assert that upsscp refuses to start, with a message mentioning ``message``."""
@@ -107,6 +123,16 @@ class TestMainFunctionTLS(unittest.TestCase):
         tls_config = MockCEchoSCP.call_args.kwargs["tls_config"]
         expected = TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, require_mtls=True, usage=self.usage)
         self.assertEqual(tls_config, expected)
+
+    def test_event_reports_are_sent_with_tls(self, MockCEchoSCP):
+        self.run_main(self.write_config(tls="tls", tls_cert=self.cert, tls_key=self.key, tls_ca=self.ca))
+
+        self.assertIs(self.ncreate_handler_ssl_context(MockCEchoSCP), self.create_client_ssl_context.return_value)
+
+    def test_event_reports_are_sent_without_tls_when_tls_is_off(self, MockCEchoSCP):
+        self.run_main(self.write_config(tls="off"))
+
+        self.assertIsNone(self.ncreate_handler_ssl_context(MockCEchoSCP))
 
     def test_invalid_tls_mode_prevents_startup(self, MockCEchoSCP):
         config = self.write_config(tls="yes")

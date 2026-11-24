@@ -936,7 +936,7 @@ def handle_nset(
         return
 
 
-def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
+def handle_ncreate(event, storage_dir, db_path, cli_config, logger, ssl_context=None):
     """Handler for evt.EVT_N_CREATE.
 
     Parameters
@@ -951,6 +951,8 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
         A :class:`dict` containing configuration settings passed via CLI.
     logger : logging.Logger
         The application's logger.
+    ssl_context : ssl.SSLContext or None
+        The client context to send the event reports with TLS, or None to send them without TLS.
 
     Returns
     -------
@@ -1116,6 +1118,7 @@ def handle_ncreate(event, storage_dir, db_path, cli_config, logger):
             contexts=UnifiedProcedurePresentationContexts,
             ae_title=globalsubscriber,
             max_pdu=16382,
+            tls_args=(ssl_context, subscriber_ip_addr) if ssl_context else None,
         )
 
         if assoc.is_established:
