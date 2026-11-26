@@ -341,6 +341,85 @@ python tdwii_plus_examples/cli/storescu.py --echo -aec ECHOSCP --mtls --tls-ca r
 
 An SCU application always needs `--tls-ca`, to verify the certificate of the SCP.
 
+## Testing the UPS Service application
+
+### upsscp works with mutual TLS in its two roles
+
+`upsscp` acts as a TLS server when it accepts the associations of the UPS SCUs, and as a TLS client, with the same
+certificate, when it sends the UPS event reports:
+
+```mermaid
+---
+config:
+  sequence:
+    mirrorActors: false
+---
+sequenceDiagram
+    box NEVENT_RECEIVER AE
+        participant W as upswatchscu
+        participant R as upseventreceiver
+    end
+    box UPSPUSH AE
+        participant C as upscreatescu
+    end
+    box UPSSCP AE
+        participant U as upsscp
+    end
+    W->>U: N-ACTION Subscribe, Receiving AE NEVENT_RECEIVER
+    C->>U: N-CREATE UPS
+    U->>R: N-EVENT-REPORT UPS State Report
+```
+
+Run each application in its own terminal, from the top level directory, with the certificates created above.
+
+1. Create a UPS instance file:
+
+   ```shell
+   python -c "from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_ups_file; \
+     generate_ups_file('.', 'ups.dcm')"
+   ```
+
+2. Start `upseventreceiver` as `NEVENT_RECEIVER` on port 11115, the address of this AE in
+   `tdwii_plus_examples/config/ApplicationEntities.json`:
+
+   ```shell
+   python tdwii_plus_examples/cli/upseventreceiver.py -a NEVENT_RECEIVER -p 11115 -v \
+     --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem
+   ```
+
+3. Start `upsscp` on port 11114, as configured in its default configuration file:
+
+   ```shell
+   python tdwii_plus_examples/cli/upsscp/upsscp.py -v \
+     --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem
+   ```
+
+4. Subscribe `NEVENT_RECEIVER` globally. `upswatchscu` subscribes the AE of its own AE title, so with
+   `-aet NEVENT_RECEIVER` it acts as the same AE as `upseventreceiver`. It prints `Global Subscription successful`:
+
+   ```shell
+   python tdwii_plus_examples/cli/upswatchscu.py -aet NEVENT_RECEIVER -aec UPSSCP \
+     --mtls --tls-cert scu.pem --tls-key scu.key --tls-ca rootCA.pem localhost 11114
+   ```
+
+5. Create the UPS. `upscreatescu` prints `UPS creation successful`, and `upseventreceiver` logs the TLS session with
+   the client certificate of `upsscp` (`RO SCP`), then the UPS State Report:
+
+   ```shell
+   python tdwii_plus_examples/cli/upscreatescu.py -aet UPSPUSH -aec UPSSCP \
+     --mtls --tls-cert scu.pem --tls-key scu.key --tls-ca rootCA.pem localhost 11114 ups.dcm
+   ```
+
+### upsscp refuses an SCU without a client certificate
+
+With `upsscp` started as in the previous test, `upswatchscu` prints
+`Global Subscription failed: Association could not be established`:
+
+```shell
+python tdwii_plus_examples/cli/upswatchscu.py -aet NEVENT_RECEIVER -aec UPSSCP \
+  --tls --tls-ca rootCA.pem localhost 11114
+```
+
 ## Testing across hosts
 
 The [TLS lab](tls-lab.md) runs the CLI applications and the dcm4che tools on two Docker hosts, each with a certificate
