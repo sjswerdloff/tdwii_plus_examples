@@ -7,6 +7,9 @@ TLS is off unless `--tls` or `--mtls` is given.
 
 ## Quick start
 
+First prepare the certificate, key and CA files of these examples for testing, as explained in
+[Certificates](#certificates).
+
 From the top level directory of the project, set up the Python environment with Poetry:
 
 ```shell
@@ -27,12 +30,12 @@ python tdwii_plus_examples/cli/storescp.py --port 2762 \
   --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem
 ```
 
-See [Certificates](#certificates) to create these files for testing.
-
 With `--verbose`, the application logs the TLS session of each connection, including the subject
 of the client certificate when there is one.
 
-## CLI applications TLS Options
+## Specifying TLS options
+
+### Options and their meaning
 
 One of `--tls` or `--mtls` is needed to enable TLS:
 
@@ -44,20 +47,28 @@ One of `--tls` or `--mtls` is needed to enable TLS:
 | `--tls-key FILE` | PEM private key of the application |
 | `--tls-ca FILE` | PEM certificate authorities trusted to verify the remote AEs |
 
+### Options required by role
+
 The files needed depend on the role of the application:
 
-| | SCP | SCU |
+| Role | `--tls` | `--mtls` |
 |---|---|---|
-| `--tls` | `--tls-cert` and `--tls-key` | `--tls-ca` |
-| `--mtls` | `--tls-cert`, `--tls-key` and `--tls-ca` | `--tls-ca`, `--tls-cert` and `--tls-key` |
+| SCP (server) | `--tls-cert` and `--tls-key` | `--tls-cert`, `--tls-key` and `--tls-ca` |
+| SCU (client) | `--tls-ca` | `--tls-ca`, `--tls-cert` and `--tls-key` |
 
-An SCU never uses the certificate authorities of the system (Windows Certificate Manager,
+An application never uses the certificate authorities of the system (Windows Certificate Manager,
 macOS Keychain Access, Linux `/etc/ssl/certs`), it only trusts the ones given with `--tls-ca`.
 
-`--tls` and `--mtls` cannot be combined, and the application refuses to start when the options are inconsistent
-(for example a `--tls-*` option without `--tls` or `--mtls`, a missing file, `--tls-ca` without `--mtls` for an SCP,
-or `--tls-cert` and `--tls-key` without `--mtls` for an SCU),
-so that a mistake never silently leaves the connections unsecured.
+### Options validated at startup
+
+The application validates the TLS options at startup, so that inconsistent options never leave the connections
+unsecured. It stops with an error naming the inconsistent option when:
+
+- `--tls` and `--mtls` are both present
+- a `--tls-*` option is present without `--tls` or `--mtls`
+- a file required by its role is not given, or does not exist
+- `--tls-ca` is present without `--mtls`, for an SCP
+- `--tls-cert` and `--tls-key` are present without `--mtls`, for an SCU
 
 ## Authentication of the remote AE
 
@@ -164,9 +175,18 @@ done
 This produces `rootCA.pem` (to be trusted by the remote AEs), `scp.pem` and `scp.key` for the SCP,
 and `scu.pem` and `scu.key` for the SCU.
 
-## Checking with OpenSSL
+## Testing the SCP applications
 
-`openssl s_client` checks that an application started as in the [Quick start](#quick-start) accepts TLS connections
+The examples connect to `echoscp`, started on port 2762 with the AE title `ECHOSCP`:
+
+```shell
+python tdwii_plus_examples/cli/echoscp.py -a ECHOSCP --port 2762 \
+  --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem --verbose
+```
+
+### With OpenSSL
+
+`openssl s_client` checks that the application started above accepts TLS connections
 and that its certificate is trusted.
 Add `-cert scu.pem -key scu.key` when the application was started with `--mtls`.
 With TLS 1.3, `s_client` considers the handshake complete before the server checks the client certificate, so a refusal
@@ -176,19 +196,7 @@ only shows afterwards, as the alert `certificate required`.
 openssl s_client -connect localhost:2762 -servername localhost -CAfile rootCA.pem -verify_return_error
 ```
 
-## Testing with DICOM tools
-
-The [pynetdicom command line tools](https://pydicom.github.io/pynetdicom/dev/apps/index.html) do not support TLS.
-[DCMTK](https://support.dcmtk.org/docs/mod_dcmnet.html) and [dcm4che](https://web.dcm4che.org/dcm4che-utilities)
-do, and can be used to send DICOM messages to the applications with the certificates created above.
-The examples use an application started on port 2762, with the AE title `ECHOSCP`:
-
-```shell
-python tdwii_plus_examples/cli/echoscp.py -a ECHOSCP --port 2762 \
-  --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem --verbose
-```
-
-### DCMTK
+### With DCMTK
 
 Download and install the [DCMTK tools](https://dcmtk.org/en/dcmtk/dcmtk-tools/).
 With Windows, download also the OpenSSL based security extensions, which provide the `-tls` variant of the tools
@@ -206,7 +214,7 @@ With `--mtls`, a client without certificate (anonymous TLS) is refused:
 echoscu-tls -v +tla +cf rootCA.pem -aec ECHOSCP localhost 2762
 ```
 
-### dcm4che
+### With dcm4che
 
 Download and install the [dcm4che utilities](https://github.com/dcm4che/dcm4che/releases).
 With Windows, use the `.bat` launchers (`storescu.bat`).
@@ -274,10 +282,16 @@ Without `--key-store`, dcm4che uses its own default key store (`resource:key.p12
 `--mtls` refuses the connection.
 To get the details of the TLS handshake in case of errors, run `export JAVA_OPTS="-Djavax.net.debug=all"` first.
 
-### Testing with the SCU applications
+## Testing the SCU applications
 
-The SCU applications of this project, such as `storescu`, can also be used. With `--echo`, `storescu` does a
-verification (C-ECHO) and sends no file. Run it against the application started above with `--mtls`:
+The examples connect to `echoscp`, started on port 2762 with the AE title `ECHOSCP`:
+
+```shell
+python tdwii_plus_examples/cli/echoscp.py -a ECHOSCP --port 2762 \
+  --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem --verbose
+```
+
+Check that `storescu` connects with mutual TLS. With `--echo`, it does a verification (C-ECHO) and sends no file:
 
 ```shell
 python tdwii_plus_examples/cli/storescu.py --echo -aec ECHOSCP --mtls --tls-ca rootCA.pem \

@@ -67,7 +67,7 @@ After changing the source of the package, run `docker compose up -d --build` aga
 
 Run the commands from the `tlslab` folder: the server in a first terminal, the client in a second one. Stop the server
 with Ctrl+C before starting another one. The dcm4che options are explained in
-[Testing with DICOM tools](tls.md#testing-with-dicom-tools).
+[Testing the SCP applications with dcm4che](tls.md#with-dcm4che).
 
 ## Testing the SCP applications
 
