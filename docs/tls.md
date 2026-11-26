@@ -1,9 +1,21 @@
 # Securing connections with TLS
 
-The `echoscp`, `storescp` and `upseventreceiver` CLI applications (SCPs) and the `storescu`, `upsfind`, `upscreatescu`,
-`upschangestatescu`, `upswatchscu` and `upsmodifyscu` CLI applications (SCUs) can secure their connections with TLS or
-mutual TLS.
-TLS is off unless `--tls` or `--mtls` is given.
+The CLI applications can secure their connections with TLS or mutual TLS.
+
+## Applications
+
+The following CLI applications support TLS:
+
+- SCPs: `echoscp`, `storescp` and `upseventreceiver`
+- SCUs: `storescu`, `upsfind`, `upscreatescu`, `upschangestatescu`, `upswatchscu` and `upsmodifyscu`
+- SCP and SCU: `upsscp`
+
+> **Note:** This document deviates from the DICOM terminology: SCP is used for an application that accepts
+> associations (a TLS server) and SCU for one that requests them (a TLS client), as the TLS options depend on these
+> roles. In DICOM, the SCP and SCU roles are defined for each SOP class and can be reversed. In the UPS Event SOP
+> Class (DICOM PS3.4 CC.2.4), `upseventreceiver` is the SCU and `upsscp` the SCP.
+
+TLS is off by default.
 
 ## Quick start
 
@@ -55,6 +67,11 @@ The files needed depend on the role of the application:
 |---|---|---|
 | SCP (server) | `--tls-cert` and `--tls-key` | `--tls-cert`, `--tls-key` and `--tls-ca` |
 | SCU (client) | `--tls-ca` | `--tls-ca`, `--tls-cert` and `--tls-key` |
+| SCP and SCU (both) | `--tls-cert`, `--tls-key` and `--tls-ca` | `--tls-cert`, `--tls-key` and `--tls-ca` |
+
+`upsscp` is both, as it accepts the associations of the UPS SCUs and requests associations to send the UPS event
+reports to the subscribers. It presents the same certificate in both roles, also with `--tls` when a subscriber asks
+for a client certificate.
 
 An application never uses the certificate authorities of the system (Windows Certificate Manager,
 macOS Keychain Access, Linux `/etc/ssl/certs`), it only trusts the ones given with `--tls-ca`.
@@ -69,6 +86,30 @@ unsecured. It stops with an error naming the inconsistent option when:
 - a file required by its role is not given, or does not exist
 - `--tls-ca` is present without `--mtls`, for an SCP
 - `--tls-cert` and `--tls-key` are present without `--mtls`, for an SCU
+
+### Options in the upsscp configuration file
+
+`upsscp` also reads the TLS settings from its configuration file,
+`tdwii_plus_examples/cli/upsscp/config/upsscp_default.ini` by default.
+
+```ini
+tls: mtls
+tls_cert: certs/upsscp.pem
+tls_key: certs/upsscp.key
+tls_ca: certs/rootCA.pem
+```
+
+Each option has a matching setting:
+| Setting | Option | Value |
+|---|---|---|
+| `tls` | `--tls` or `--mtls` | `off` (default), `tls` or `mtls` |
+| `tls_cert` | `--tls-cert` | Path of the PEM file with the certificate of the application |
+| `tls_key` | `--tls-key` | Path of the PEM file with the private key of the application |
+| `tls_ca` | `--tls-ca` | Path of the PEM file with the certificate authorities trusted to verify the remote AEs |
+
+An option on the command line takes precedence over its setting, and the other settings still apply.
+File paths of settings are relative to the `tdwii_plus_examples/cli/upsscp` directory, whereas file paths of options
+are relative to the current directory.
 
 ## Authentication of the remote AE
 
