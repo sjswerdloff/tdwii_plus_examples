@@ -140,6 +140,13 @@ class TestMainFunctionTLS(unittest.TestCase):
         self.assert_startup_error(config, message=f"tls in {config} must be off, tls or mtls")
         MockCEchoSCP.assert_not_called()
 
+    def test_tls_mode_option_overrides_an_invalid_tls_mode(self, MockCEchoSCP):
+        self.run_main(self.write_config(tls="yes", tls_cert=self.cert, tls_key=self.key, tls_ca=self.ca), "--mtls")
+
+        tls_config = MockCEchoSCP.call_args.kwargs["tls_config"]
+        expected = TLSConfig(cert_file=self.cert, key_file=self.key, ca_cert=self.ca, require_mtls=True, usage=self.usage)
+        self.assertEqual(tls_config, expected)
+
     def test_invalid_tls_settings_prevent_startup(self, MockCEchoSCP):
         config = self.write_config(tls="tls", tls_cert=self.cert, tls_key=self.key)
 

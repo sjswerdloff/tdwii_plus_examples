@@ -222,10 +222,10 @@ def _tls_config(parser, args, app_config):
     TLSConfig or None
         The TLS configuration, or None when the TLS mode is off.
     """
-    mode = app_config.get("tls", "off")
-    if mode not in _TLS_MODES:
-        parser.error(f"tls in {args.config} must be off, tls or mtls")
     if not (args.tls or args.mtls):
+        mode = app_config.get("tls", "off")
+        if mode not in _TLS_MODES:
+            parser.error(f"tls in {args.config} must be off, tls or mtls")
         args.tls = mode == "tls"
         args.mtls = mode == "mtls"
     app_dir = os.path.abspath(os.path.dirname(__file__))
