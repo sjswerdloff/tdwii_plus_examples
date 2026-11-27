@@ -1,5 +1,6 @@
 """Helpers generating the certificates used by the TLS tests."""
 
+import ipaddress
 import os
 from datetime import datetime, timedelta, timezone
 
@@ -50,14 +51,31 @@ def create_ca_certificate(common_name):
     return cert, key
 
 
-def issue_certificate(ca_cert, ca_key, common_name):
+def _subject_alternative_name(hosts):
+    """Return the subjectAltName entries of hosts: an IPAddress for an IP address, a DNSName otherwise."""
+    names = []
+    for host in hosts:
+        try:
+            names.append(x509.IPAddress(ipaddress.ip_address(host)))
+        except ValueError:
+            names.append(x509.DNSName(host))
+    return x509.SubjectAlternativeName(names)
+
+
+def issue_certificate(ca_cert, ca_key, common_name, hosts=None):
     """Issue a certificate signed by the given CA.
+
+    common_name is the Common Name (CN) of the subject of the certificate, a label that no host check reads.
+
+    hosts is the list of host names and IP addresses written in the subjectAltName (SAN) of the certificate,
+    such as ["localhost", "127.0.0.1"]: the hosts the certificate is issued for. Without hosts, the certificate
+    has no SAN, as a client certificate usually does.
 
     Returns the certificate and its private key.
     """
     key = _new_private_key()
     now = datetime.now(timezone.utc)
-    cert = (
+    builder = (
         x509.CertificateBuilder()
         .subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, common_name)]))
         .issuer_name(ca_cert.subject)
@@ -80,10 +98,11 @@ def issue_certificate(ca_cert, ca_key, common_name):
             ),
             critical=True,
         )
-        .add_extension(x509.SubjectAlternativeName([x509.DNSName(common_name)]), critical=False)
         .add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_cert.public_key()), critical=False)
-        .sign(ca_key, hashes.SHA256())
     )
+    if hosts:
+        builder = builder.add_extension(_subject_alternative_name(hosts), critical=False)
+    cert = builder.sign(ca_key, hashes.SHA256())
     return cert, key
 
 
