@@ -11,6 +11,19 @@ from tdwii_plus_examples.tdwii_config import (
 )
 
 
+@pytest.fixture(autouse=True)
+def empty_config():
+    """Empty the loaded configuration during each test, and restore it after."""
+    # Clear the configuration loaded on import so each test counts only its own entries
+    loaded = [(config, dict(config)) for config in (known_ae_ipaddr, known_ae_port, machine_ae_map)]
+    for config, _ in loaded:
+        config.clear()
+    yield
+    for config, content in loaded:
+        config.clear()
+        config.update(content)
+
+
 @pytest.fixture
 def sample_ae_config():
     return [

@@ -168,6 +168,9 @@ scratchpad/
 # Ignore SQLite database files
 *.sqlite
 
+# Ignore the UPS instances and database stored by upsscp
+tdwii_plus_examples/cli/upsscp/data_storage/
+
 # Visual Studio Code settings
 .vscode
 

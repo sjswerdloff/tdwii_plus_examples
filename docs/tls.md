@@ -1,11 +1,26 @@
 # Securing connections with TLS
 
-The `echoscp`, `storescp` and `upseventreceiver` CLI applications (SCPs) and the `storescu`, `upsfind`, `upscreatescu`,
-`upschangestatescu`, `upswatchscu` and `upsmodifyscu` CLI applications (SCUs) can secure their connections with TLS or
-mutual TLS.
-TLS is off unless `--tls` or `--mtls` is given.
+The CLI applications can secure their connections with TLS or mutual TLS.
+
+## Applications
+
+The following CLI applications support TLS:
+
+- SCPs: `echoscp`, `storescp` and `upseventreceiver`
+- SCUs: `storescu`, `upsfind`, `upscreatescu`, `upschangestatescu`, `upswatchscu` and `upsmodifyscu`
+- SCP and SCU: `upsscp`
+
+> **Note:** This document deviates from the DICOM terminology: SCP is used for an application that accepts
+> associations (a TLS server) and SCU for one that requests them (a TLS client), as the TLS options depend on these
+> roles. In DICOM, the SCP and SCU roles are defined for each SOP class and can be reversed. In the UPS Event SOP
+> Class (DICOM PS3.4 CC.2.4), `upseventreceiver` is the SCU and `upsscp` the SCP.
+
+TLS is off by default.
 
 ## Quick start
+
+First prepare the certificate, key and CA files of these examples for testing, as explained in
+[Certificates](#certificates).
 
 From the top level directory of the project, set up the Python environment with Poetry:
 
@@ -27,12 +42,12 @@ python tdwii_plus_examples/cli/storescp.py --port 2762 \
   --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem
 ```
 
-See [Certificates](#certificates) to create these files for testing.
-
 With `--verbose`, the application logs the TLS session of each connection, including the subject
 of the client certificate when there is one.
 
-## CLI applications TLS Options
+## Specifying TLS options
+
+### Options and their meaning
 
 One of `--tls` or `--mtls` is needed to enable TLS:
 
@@ -44,20 +59,57 @@ One of `--tls` or `--mtls` is needed to enable TLS:
 | `--tls-key FILE` | PEM private key of the application |
 | `--tls-ca FILE` | PEM certificate authorities trusted to verify the remote AEs |
 
+### Options required by role
+
 The files needed depend on the role of the application:
 
-| | SCP | SCU |
+| Role | `--tls` | `--mtls` |
 |---|---|---|
-| `--tls` | `--tls-cert` and `--tls-key` | `--tls-ca` |
-| `--mtls` | `--tls-cert`, `--tls-key` and `--tls-ca` | `--tls-ca`, `--tls-cert` and `--tls-key` |
+| SCP (server) | `--tls-cert` and `--tls-key` | `--tls-cert`, `--tls-key` and `--tls-ca` |
+| SCU (client) | `--tls-ca` | `--tls-ca`, `--tls-cert` and `--tls-key` |
+| SCP and SCU (both) | `--tls-cert`, `--tls-key` and `--tls-ca` | `--tls-cert`, `--tls-key` and `--tls-ca` |
 
-An SCU never uses the certificate authorities of the system (Windows Certificate Manager,
+`upsscp` is both, as it accepts the associations of the UPS SCUs and requests associations to send the UPS event
+reports to the subscribers. It presents the same certificate in both roles, also with `--tls` when a subscriber asks
+for a client certificate.
+
+An application never uses the certificate authorities of the system (Windows Certificate Manager,
 macOS Keychain Access, Linux `/etc/ssl/certs`), it only trusts the ones given with `--tls-ca`.
 
-`--tls` and `--mtls` cannot be combined, and the application refuses to start when the options are inconsistent
-(for example a `--tls-*` option without `--tls` or `--mtls`, a missing file, `--tls-ca` without `--mtls` for an SCP,
-or `--tls-cert` and `--tls-key` without `--mtls` for an SCU),
-so that a mistake never silently leaves the connections unsecured.
+### Options validated at startup
+
+The application validates the TLS options at startup, so that inconsistent options never leave the connections
+unsecured. It stops with an error naming the inconsistent option when:
+
+- `--tls` and `--mtls` are both present
+- a `--tls-*` option is present without `--tls` or `--mtls`
+- a file required by its role is not given, or does not exist
+- `--tls-ca` is present without `--mtls`, for an SCP
+- `--tls-cert` and `--tls-key` are present without `--mtls`, for an SCU
+
+### Options in the upsscp configuration file
+
+`upsscp` also reads the TLS settings from its configuration file,
+`tdwii_plus_examples/cli/upsscp/config/upsscp_default.ini` by default.
+
+```ini
+tls: mtls
+tls_cert: certs/upsscp.pem
+tls_key: certs/upsscp.key
+tls_ca: certs/rootCA.pem
+```
+
+Each option has a matching setting:
+| Setting | Option | Value |
+|---|---|---|
+| `tls` | `--tls` or `--mtls` | `off` (default), `tls` or `mtls` |
+| `tls_cert` | `--tls-cert` | Path of the PEM file with the certificate of the application |
+| `tls_key` | `--tls-key` | Path of the PEM file with the private key of the application |
+| `tls_ca` | `--tls-ca` | Path of the PEM file with the certificate authorities trusted to verify the remote AEs |
+
+An option on the command line takes precedence over its setting, and the other settings still apply.
+File paths of settings are relative to the `tdwii_plus_examples/cli/upsscp` directory, whereas file paths of options
+are relative to the current directory.
 
 ## Authentication of the remote AE
 
@@ -164,9 +216,18 @@ done
 This produces `rootCA.pem` (to be trusted by the remote AEs), `scp.pem` and `scp.key` for the SCP,
 and `scu.pem` and `scu.key` for the SCU.
 
-## Checking with OpenSSL
+## Testing the SCP applications
 
-`openssl s_client` checks that an application started as in the [Quick start](#quick-start) accepts TLS connections
+The examples connect to `echoscp`, started on port 2762 with the AE title `ECHOSCP`:
+
+```shell
+python tdwii_plus_examples/cli/echoscp.py -a ECHOSCP --port 2762 \
+  --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem --verbose
+```
+
+### With OpenSSL
+
+`openssl s_client` checks that the application started above accepts TLS connections
 and that its certificate is trusted.
 Add `-cert scu.pem -key scu.key` when the application was started with `--mtls`.
 With TLS 1.3, `s_client` considers the handshake complete before the server checks the client certificate, so a refusal
@@ -176,19 +237,7 @@ only shows afterwards, as the alert `certificate required`.
 openssl s_client -connect localhost:2762 -servername localhost -CAfile rootCA.pem -verify_return_error
 ```
 
-## Testing with DICOM tools
-
-The [pynetdicom command line tools](https://pydicom.github.io/pynetdicom/dev/apps/index.html) do not support TLS.
-[DCMTK](https://support.dcmtk.org/docs/mod_dcmnet.html) and [dcm4che](https://web.dcm4che.org/dcm4che-utilities)
-do, and can be used to send DICOM messages to the applications with the certificates created above.
-The examples use an application started on port 2762, with the AE title `ECHOSCP`:
-
-```shell
-python tdwii_plus_examples/cli/echoscp.py -a ECHOSCP --port 2762 \
-  --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem --verbose
-```
-
-### DCMTK
+### With DCMTK
 
 Download and install the [DCMTK tools](https://dcmtk.org/en/dcmtk/dcmtk-tools/).
 With Windows, download also the OpenSSL based security extensions, which provide the `-tls` variant of the tools
@@ -206,7 +255,7 @@ With `--mtls`, a client without certificate (anonymous TLS) is refused:
 echoscu-tls -v +tla +cf rootCA.pem -aec ECHOSCP localhost 2762
 ```
 
-### dcm4che
+### With dcm4che
 
 Download and install the [dcm4che utilities](https://github.com/dcm4che/dcm4che/releases).
 With Windows, use the `.bat` launchers (`storescu.bat`).
@@ -274,10 +323,16 @@ Without `--key-store`, dcm4che uses its own default key store (`resource:key.p12
 `--mtls` refuses the connection.
 To get the details of the TLS handshake in case of errors, run `export JAVA_OPTS="-Djavax.net.debug=all"` first.
 
-### Testing with the SCU applications
+## Testing the SCU applications
 
-The SCU applications of this project, such as `storescu`, can also be used. With `--echo`, `storescu` does a
-verification (C-ECHO) and sends no file. Run it against the application started above with `--mtls`:
+The examples connect to `echoscp`, started on port 2762 with the AE title `ECHOSCP`:
+
+```shell
+python tdwii_plus_examples/cli/echoscp.py -a ECHOSCP --port 2762 \
+  --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem --verbose
+```
+
+Check that `storescu` connects with mutual TLS. With `--echo`, it does a verification (C-ECHO) and sends no file:
 
 ```shell
 python tdwii_plus_examples/cli/storescu.py --echo -aec ECHOSCP --mtls --tls-ca rootCA.pem \
@@ -285,6 +340,85 @@ python tdwii_plus_examples/cli/storescu.py --echo -aec ECHOSCP --mtls --tls-ca r
 ```
 
 An SCU application always needs `--tls-ca`, to verify the certificate of the SCP.
+
+## Testing the UPS Service application
+
+### upsscp works with mutual TLS in its two roles
+
+`upsscp` acts as a TLS server when it accepts the associations of the UPS SCUs, and as a TLS client, with the same
+certificate, when it sends the UPS event reports:
+
+```mermaid
+---
+config:
+  sequence:
+    mirrorActors: false
+---
+sequenceDiagram
+    box NEVENT_RECEIVER AE
+        participant W as upswatchscu
+        participant R as upseventreceiver
+    end
+    box UPSPUSH AE
+        participant C as upscreatescu
+    end
+    box UPSSCP AE
+        participant U as upsscp
+    end
+    W->>U: N-ACTION Subscribe, Receiving AE NEVENT_RECEIVER
+    C->>U: N-CREATE UPS
+    U->>R: N-EVENT-REPORT UPS State Report
+```
+
+Run each application in its own terminal, from the top level directory, with the certificates created above.
+
+1. Create a UPS instance file:
+
+   ```shell
+   python -c "from tdwii_plus_examples.tests.utils.generate_sop_instances import generate_ups_file; \
+     generate_ups_file('.', 'ups.dcm')"
+   ```
+
+2. Start `upseventreceiver` as `NEVENT_RECEIVER` on port 11115, the address of this AE in
+   `tdwii_plus_examples/config/ApplicationEntities.json`:
+
+   ```shell
+   python tdwii_plus_examples/cli/upseventreceiver.py -a NEVENT_RECEIVER -p 11115 -v \
+     --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem
+   ```
+
+3. Start `upsscp` on port 11114, as configured in its default configuration file:
+
+   ```shell
+   python tdwii_plus_examples/cli/upsscp/upsscp.py -v \
+     --mtls --tls-cert scp.pem --tls-key scp.key --tls-ca rootCA.pem
+   ```
+
+4. Subscribe `NEVENT_RECEIVER` globally. `upswatchscu` subscribes the AE of its own AE title, so with
+   `-aet NEVENT_RECEIVER` it acts as the same AE as `upseventreceiver`. It prints `Global Subscription successful`:
+
+   ```shell
+   python tdwii_plus_examples/cli/upswatchscu.py -aet NEVENT_RECEIVER -aec UPSSCP \
+     --mtls --tls-cert scu.pem --tls-key scu.key --tls-ca rootCA.pem localhost 11114
+   ```
+
+5. Create the UPS. `upscreatescu` prints `UPS creation successful`, and `upseventreceiver` logs the TLS session with
+   the client certificate of `upsscp` (`RO SCP`), then the UPS State Report:
+
+   ```shell
+   python tdwii_plus_examples/cli/upscreatescu.py -aet UPSPUSH -aec UPSSCP \
+     --mtls --tls-cert scu.pem --tls-key scu.key --tls-ca rootCA.pem localhost 11114 ups.dcm
+   ```
+
+### upsscp refuses an SCU without a client certificate
+
+With `upsscp` started as in the previous test, `upswatchscu` prints
+`Global Subscription failed: Association could not be established`:
+
+```shell
+python tdwii_plus_examples/cli/upswatchscu.py -aet NEVENT_RECEIVER -aec UPSSCP \
+  --tls --tls-ca rootCA.pem localhost 11114
+```
 
 ## Testing across hosts
 

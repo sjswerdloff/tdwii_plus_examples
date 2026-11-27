@@ -16,6 +16,14 @@ The files required by each mode depend on the role of the AE, which gives its TL
   ``--mtls`` also requires ``--tls-ca``, to verify the SCUs.
 - As an SCU (a TLS client), ``--tls`` requires ``--tls-ca``, to verify the SCP.
   ``--mtls`` also requires ``--tls-cert`` and ``--tls-key``, the identity of the SCU.
+- As both an SCP and an SCU, ``--tls`` and ``--mtls`` both require ``--tls-cert``, ``--tls-key``
+  and ``--tls-ca``. The certificate and the key are the identity of the AE in both roles, and
+  ``--tls-ca`` is needed to verify the SCPs that it connects to as an SCU.
+
+In this module, SCP means the AE that accepts the association, and SCU the AE that requests it.
+This is a simplification. In DICOM, these roles are defined for each SOP class and can be the
+reverse. For example, the UPS Event receiver accepts the association, so it follows the SCP rules,
+although it is the SCU of the UPS Event SOP Class (DICOM PS3.4 CC.2.4).
 
 These rules reflect the authentication requirements of the following specifications. They do not
 claim conformance to either of them:
@@ -44,6 +52,10 @@ _MODE_HELP = {
         "Use mutual TLS, needs --tls-cert, --tls-key and --tls-ca",
     ),
     TLSUsage.CLIENT_AUTH: ("Use TLS, needs --tls-ca", "Use mutual TLS, needs --tls-ca, --tls-cert and --tls-key"),
+    TLSUsage.SERVER_AUTH | TLSUsage.CLIENT_AUTH: (
+        "Use TLS, needs --tls-cert, --tls-key and --tls-ca",
+        "Use mutual TLS, needs --tls-cert, --tls-key and --tls-ca",
+    ),
 }
 
 
@@ -55,7 +67,7 @@ def add_tls_arguments(parser: argparse.ArgumentParser, usage: TLSUsage) -> None:
     that the help of ``--tls`` and ``--mtls`` states as required.
 
     Raises:
-        ValueError: If ``usage`` is neither ``TLSUsage.SERVER_AUTH`` nor ``TLSUsage.CLIENT_AUTH``.
+        ValueError: If ``usage`` is not ``TLSUsage.SERVER_AUTH``, ``TLSUsage.CLIENT_AUTH`` or both.
     """
     if usage not in _MODE_HELP:
         raise ValueError(f"unsupported usage: {usage!r}")
@@ -134,22 +146,32 @@ def _check_scu_options(mode: str, args: argparse.Namespace) -> None:
     _check_files_exist(args)
 
 
+def _check_scp_and_scu_options(mode: str, args: argparse.Namespace) -> None:
+    """Raise a ValueError when the TLS options are not valid for an AE that is both an SCP and an SCU."""
+    # Cert and Key file options must be present for the SCP role, and CA file option for the SCU role, in both modes.
+    # The identity of the AE is the same in both roles: with tls, the SCU presents it when the server asks for it
+    _check_required_options(mode, args, ["--tls-cert", "--tls-key", "--tls-ca"])
+
+    _check_files_exist(args)
+
+
 def tls_config_from_args(parser: argparse.ArgumentParser, args: argparse.Namespace, usage: TLSUsage) -> Optional[TLSConfig]:
     """
     Build the TLS configuration for a DICOM AE from the parsed arguments.
 
     The ``usage`` is the TLS role of the AE and selects the rules applied to the options:
-    ``TLSUsage.SERVER_AUTH`` for an SCP app, which accepts the connections, or
-    ``TLSUsage.CLIENT_AUTH`` for an SCU app, which initiates them.
+    ``TLSUsage.SERVER_AUTH`` for an SCP app, which accepts the connections,
+    ``TLSUsage.CLIENT_AUTH`` for an SCU app, which initiates them, or
+    ``TLSUsage.SERVER_AUTH | TLSUsage.CLIENT_AUTH`` for an app that is both.
 
     Returns:
         Optional[TLSConfig]: The configuration, or None when neither --tls nor --mtls is selected.
 
     Raises:
         SystemExit: If the options are invalid, after ``parser.error`` printed the usage and the error.
-        ValueError: If ``usage`` is neither ``TLSUsage.SERVER_AUTH`` nor ``TLSUsage.CLIENT_AUTH``.
+        ValueError: If ``usage`` is not ``TLSUsage.SERVER_AUTH``, ``TLSUsage.CLIENT_AUTH`` or both.
     """
-    if usage not in (TLSUsage.SERVER_AUTH, TLSUsage.CLIENT_AUTH):
+    if usage not in _MODE_HELP:
         raise ValueError(f"unsupported usage: {usage!r}")
     try:
         mode = _selected_mode(args)
@@ -157,8 +179,10 @@ def tls_config_from_args(parser: argparse.ArgumentParser, args: argparse.Namespa
             return None
         if usage == TLSUsage.SERVER_AUTH:
             _check_scp_options(mode, args)
-        else:
+        elif usage == TLSUsage.CLIENT_AUTH:
             _check_scu_options(mode, args)
+        else:
+            _check_scp_and_scu_options(mode, args)
     except ValueError as error:
         parser.error(str(error))
 
