@@ -104,6 +104,8 @@ class TLSConfig:
         # (the defaults of PROTOCOL_TLS_CLIENT, set here to make the check explicit)
         context.verify_mode = ssl.CERT_REQUIRED
         context.check_hostname = True
+        # Prevent the fallback on the common name when there is no subjectAltName (RFC 9525)
+        context.hostname_checks_common_name = False
         if self.ca_cert:
             context.load_verify_locations(cafile=self.ca_cert)
         else:

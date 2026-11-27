@@ -19,6 +19,7 @@ class TestBaseSCUTLS(unittest.TestCase):
         # Generate the certificates for the tests:
         # - a CA that signs the server certificate and the client certificate
         # - a server certificate issued for another host, signed by the same CA
+        # - a server certificate with the host name as common name and without subjectAltName, signed by the same CA
         # - a second CA that signs nothing, trusted by the SCU in the test that rejects the server
         # The temporary directory is removed at teardown, even if this setup fails.
         cls.temp_dir = tempfile.TemporaryDirectory()
@@ -34,6 +35,11 @@ class TestBaseSCUTLS(unittest.TestCase):
         other_host_cert, other_host_key = issue_certificate(ca_cert, ca_key, "other server", ["other.example", "192.0.2.1"])
         cls.other_host_cert_path, cls.other_host_key_path = write_pem_files(
             directory, "other_host", other_host_cert, other_host_key
+        )
+
+        common_name_cert, common_name_key = issue_certificate(ca_cert, ca_key, cls.HOST_NAME)
+        cls.common_name_cert_path, cls.common_name_key_path = write_pem_files(
+            directory, "common_name", common_name_cert, common_name_key
         )
 
         client_cert, client_key = issue_certificate(ca_cert, ca_key, "client")
@@ -111,6 +117,13 @@ class TestBaseSCUTLS(unittest.TestCase):
         self._run_scp(TLSConfig(cert_file=self.other_host_cert_path, key_file=self.other_host_key_path))
 
         result = self._verify(self._client_tls_config())
+
+        self.assertEqual(result.status_category, "AssocFailure")
+
+    def test_verify_fails_when_only_the_common_name_of_the_server_certificate_is_the_host_name(self):
+        self._run_scp(TLSConfig(cert_file=self.common_name_cert_path, key_file=self.common_name_key_path))
+
+        result = self._verify(self._client_tls_config(), called_ip=self.HOST_NAME)
 
         self.assertEqual(result.status_category, "AssocFailure")
 

@@ -134,6 +134,7 @@ class TestTLSConfigClientContext(unittest.TestCase):
         self.assertEqual(context.protocol, ssl.PROTOCOL_TLS_CLIENT)
         self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
         self.assertTrue(context.check_hostname)
+        self.assertFalse(context.hostname_checks_common_name)
 
     @patch("tdwii_plus_examples.tls_config.ssl.SSLContext")
     def test_client_context_trusts_the_ca_cert_only(self, mock_ssl_context_class):
