@@ -159,7 +159,7 @@ docker compose exec project python -m tdwii_plus_examples.cli.storescu --echo -a
 Expected: `storescu` prints `Verification (C-ECHO) successful`, and `storescp` logs the closing of an `SSLSocket` with
 `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`.
 
-### 6. storescu accepts a server certificate without the called host name
+### 6. storescu refuses a server certificate without the called host name
 
 With `storescp` from case 5, connect to `dcm4che`, a name of the dcm4che host that is not in its certificate:
 
@@ -168,7 +168,8 @@ docker compose exec project python -m tdwii_plus_examples.cli.storescu --echo -a
   --tls --tls-ca /certs/rootCA.pem dcm4che 11112
 ```
 
-Expected: `storescu` prints `Verification (C-ECHO) successful`, because the host name is not verified
+Expected: `storescu` prints `Verification (C-ECHO) failed: Association could not be established`, and logs
+`Hostname mismatch, certificate is not valid for 'dcm4che'`
 (see [Authentication of the remote AE](tls.md#authentication-of-the-remote-ae)).
 
 ### 7. storescu connects with mutual TLS
