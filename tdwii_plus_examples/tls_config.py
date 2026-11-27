@@ -86,6 +86,9 @@ class TLSConfig:
         """
         Create the SSLContext of a client.
 
+        The context verifies the certification path of the server certificate, and that its subjectAltName
+        matches the host name or IP address the client connects to.
+
         Returns:
             ssl.SSLContext: The context to connect to a server with.
 
@@ -97,8 +100,10 @@ class TLSConfig:
         if TLSUsage.CLIENT_AUTH not in self.usage:
             raise ValueError("a client SSL context needs the clientAuth usage")
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        # Do not verify the server identity, only its certification path.
-        context.check_hostname = False
+        # Require a valid server certificate issued for the host name or IP address the client connects to
+        # (the defaults of PROTOCOL_TLS_CLIENT, set here to make the check explicit)
+        context.verify_mode = ssl.CERT_REQUIRED
+        context.check_hostname = True
         if self.ca_cert:
             context.load_verify_locations(cafile=self.ca_cert)
         else:

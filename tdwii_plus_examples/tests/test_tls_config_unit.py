@@ -128,12 +128,12 @@ class TestTLSConfigClientContext(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "clientAuth"):
             tls_config.create_client_ssl_context()
 
-    def test_client_context_verifies_the_server_certificate_but_not_its_host_name(self):
+    def test_client_context_verifies_the_server_certificate_and_its_host(self):
         context = TLSConfig(usage=TLSUsage.CLIENT_AUTH).create_client_ssl_context()
 
         self.assertEqual(context.protocol, ssl.PROTOCOL_TLS_CLIENT)
         self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
-        self.assertFalse(context.check_hostname)
+        self.assertTrue(context.check_hostname)
 
     @patch("tdwii_plus_examples.tls_config.ssl.SSLContext")
     def test_client_context_trusts_the_ca_cert_only(self, mock_ssl_context_class):

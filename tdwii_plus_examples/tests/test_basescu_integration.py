@@ -9,15 +9,16 @@ from tdwii_plus_examples.tls_config import TLSConfig, TLSUsage
 
 
 class TestBaseSCUTLS(unittest.TestCase):
-    # The SCP is addressed by IP address, while its certificate is issued for "localhost":
-    # the SCU verifies the certificate chain, not the host name.
+    # The SCP certificate is issued for "localhost" and "127.0.0.1", the host name and the IP address the SCU calls
     ADDRESS = "127.0.0.1"
+    HOST_NAME = "localhost"
     PORT = 11120
 
     @classmethod
     def setUpClass(cls):
         # Generate the certificates for the tests:
         # - a CA that signs the server certificate and the client certificate
+        # - a server certificate issued for another host, signed by the same CA
         # - a second CA that signs nothing, trusted by the SCU in the test that rejects the server
         # The temporary directory is removed at teardown, even if this setup fails.
         cls.temp_dir = tempfile.TemporaryDirectory()
@@ -27,8 +28,13 @@ class TestBaseSCUTLS(unittest.TestCase):
         ca_cert, ca_key = create_ca_certificate("Test CA")
         cls.ca_cert_path, _ = write_pem_files(directory, "ca", ca_cert, ca_key)
 
-        server_cert, server_key = issue_certificate(ca_cert, ca_key, "localhost")
+        server_cert, server_key = issue_certificate(ca_cert, ca_key, "server", [cls.HOST_NAME, cls.ADDRESS])
         cls.server_cert_path, cls.server_key_path = write_pem_files(directory, "server", server_cert, server_key)
+
+        other_host_cert, other_host_key = issue_certificate(ca_cert, ca_key, "other server", ["other.example", "192.0.2.1"])
+        cls.other_host_cert_path, cls.other_host_key_path = write_pem_files(
+            directory, "other_host", other_host_cert, other_host_key
+        )
 
         client_cert, client_key = issue_certificate(ca_cert, ca_key, "client")
         cls.client_cert_path, cls.client_key_path = write_pem_files(directory, "client", client_cert, client_key)
@@ -46,12 +52,12 @@ class TestBaseSCUTLS(unittest.TestCase):
         self.assertIsNotNone(scp.threaded_server, f"the SCP server did not start on port {self.PORT}")
         self.addCleanup(scp.stop)
 
-    def _verify(self, tls_config=None):
+    def _verify(self, tls_config=None, called_ip=ADDRESS):
         """Send a C-ECHO request with a BaseSCU configured as given and return its result."""
         scu = BaseSCU(
             logger=self.logger,
             calling_ae_title="ECHOSCU",
-            called_ip=self.ADDRESS,
+            called_ip=called_ip,
             called_port=self.PORT,
             called_ae_title="ECHO_SCP",
             tls_config=tls_config,
@@ -93,6 +99,20 @@ class TestBaseSCUTLS(unittest.TestCase):
         result = self._verify(self._client_tls_config())
 
         self.assertEqual(result.status_category, "Success")
+
+    def test_verify_with_tls_by_host_name(self):
+        self._run_scp(self._server_tls_config())
+
+        result = self._verify(self._client_tls_config(), called_ip=self.HOST_NAME)
+
+        self.assertEqual(result.status_category, "Success")
+
+    def test_verify_fails_when_the_server_certificate_is_issued_for_another_host(self):
+        self._run_scp(TLSConfig(cert_file=self.other_host_cert_path, key_file=self.other_host_key_path))
+
+        result = self._verify(self._client_tls_config())
+
+        self.assertEqual(result.status_category, "AssocFailure")
 
     def test_verify_with_mtls(self):
         self._run_scp(self._server_mtls_config())
