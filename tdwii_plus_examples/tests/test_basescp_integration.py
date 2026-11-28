@@ -37,7 +37,7 @@ class TestBaseSCP(unittest.TestCase):
         ca_cert, ca_key = create_ca_certificate("Test CA")
         cls.ca_cert_path, _ = write_pem_files(directory, "ca", ca_cert, ca_key)
 
-        server_cert, server_key = issue_certificate(ca_cert, ca_key, "localhost")
+        server_cert, server_key = issue_certificate(ca_cert, ca_key, "server", ["localhost"])
         cls.server_cert_path, cls.server_key_path = write_pem_files(directory, "server", server_cert, server_key)
 
         client_cert, client_key = issue_certificate(ca_cert, ca_key, "client")

@@ -121,12 +121,14 @@ The certificate of the remote AE is verified as follows:
 
 - Its certification path is validated up to a CA of the `--tls-ca` file, including the signatures and the validity
   periods.
-- Its identity is not verified. The IP addresses and hostnames of its `subjectAltName` are not compared with the
-  address of the remote AE, and nothing binds the certificate to an AE title.
+- An SCU checks that it is issued for the host it calls: the hostname or IP address it connects to must be in the
+  `subjectAltName` of the certificate. An SCP does not check the host of the remote AE.
+- Nothing binds it to an AE title.
 - Its revocation is not checked.
 
-The authentication therefore proves that the remote AE holds a certificate issued by a trusted CA, not that it is the
-AE that was called or expected.
+An SCU therefore knows that the SCP holds a certificate issued by a trusted CA for the host it called. An SCP with
+`--mtls` knows only that the SCU holds a certificate issued by a trusted CA. Neither knows that the remote AE is the AE
+that was called or expected.
 
 The applications do not claim conformance to the TLS Secure Transport Connection Profiles of DICOM PS3.15.
 
